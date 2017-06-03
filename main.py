@@ -17,7 +17,7 @@ class Window(QtGui.QMainWindow):
         textEdit = QtGui.QTextEdit()
         self.setCentralWidget(textEdit)
 
-        exitAction = QtGui.QAction(QtGui.QIcon('resources/exit24.png'), 'Exit', self)
+        exitAction = QtGui.QAction(QtGui.QIcon('resources/exit.png'), 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
