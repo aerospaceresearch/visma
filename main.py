@@ -50,10 +50,14 @@ class WorkSpace(QWidget):
         hbox = QHBoxLayout(self)
 
         eqautionList = QFrame()
+        eqautionList.setLayout(self.equationsLayout())
         eqautionList.setFrameShape(QFrame.StyledPanel)
+        eqautionList.setStatusTip("Track of old equations")
         #eqautionList.setStyleSheet("background-color: rgb(0, 0, 255)")
         inputList = QFrame()
+        inputList.setLayout(self.inputsLayout())
         inputList.setFrameShape(QFrame.StyledPanel)
+        inputList.setStatusTip("Input characters")
         #inputList.setStyleSheet("background-color: rgb(0, 255, 0)")
         buttonSpace = QFrame()
         buttonSpace.setFrameShape(QFrame.StyledPanel)
@@ -78,9 +82,55 @@ class WorkSpace(QWidget):
         hbox.addWidget(splitter3)
 
         self.setLayout(hbox)
-        QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
+        #QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
+        
+    def equationsLayout(self):
+       vbox = QVBoxLayout(self)
 
+       listWidget = myListWidget()
+        
+       #Resize width and height
+       listWidget.resize(400,300)
+        
+       listWidget.addItem("Equation 1"); 
+       listWidget.addItem("Equation 2");
+       listWidget.addItem("Equation 3");
+       listWidget.addItem("Equation 4");
+        
+       listWidget.itemClicked.connect(listWidget.Clicked)    
+       vbox.addWidget(listWidget)
+       return vbox
+
+    def inputsLayout(self):
+        vbox = QVBoxLayout(self)
+        
+        combo = QtGui.QComboBox(self)
+        combo.addItem("LaTeX")
+        combo.addItem("Greek")
+        #combo.move(50, 50)
     
+        combo.activated[str].connect(self.onActivated)        
+        
+        
+        vbox.addWidget(combo)
+        inputBox = QGridLayout(self)
+        buttons = {}
+        for i in range(10):
+            for j in range(3):
+                buttons[(i, j)] = QtGui.QPushButton('row %d, col %d' % (i, j))
+                inputBox.addWidget(buttons[(i, j)], i, j)       
+        vbox.addLayout(inputBox)
+        return vbox
+    def onActivated(self, text):
+        pass
+
+
+class myListWidget(QListWidget):
+
+   def Clicked(self,item):
+      QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())
+
+
 def main():
     app = QApplication(sys.argv)
     ex = Window()
