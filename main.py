@@ -49,18 +49,16 @@ class WorkSpace(QWidget):
     
         hbox = QHBoxLayout(self)
 
-        eqautionList = QFrame()
+        eqautionList = QWidget()
         eqautionList.setLayout(self.equationsLayout())
-        eqautionList.setFrameShape(QFrame.StyledPanel)
         eqautionList.setStatusTip("Track of old equations")
         #eqautionList.setStyleSheet("background-color: rgb(0, 0, 255)")
-        inputList = QFrame()
+        inputList = QWidget()
         inputList.setLayout(self.inputsLayout())
-        inputList.setFrameShape(QFrame.StyledPanel)
         inputList.setStatusTip("Input characters")
         #inputList.setStyleSheet("background-color: rgb(0, 255, 0)")
-        buttonSpace = QFrame()
-        buttonSpace.setFrameShape(QFrame.StyledPanel)
+        buttonSpace = QWidget()
+        #buttonSpace.setFrameShape(QFrame.StyledPanel)
         #buttonSpace.setStyleSheet("background-color: rgb(255, 0, 0)")
 
         splitter1 = QSplitter(Qt.Vertical)
@@ -85,50 +83,102 @@ class WorkSpace(QWidget):
         #QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
         
     def equationsLayout(self):
-       vbox = QVBoxLayout(self)
+        vbox = QVBoxLayout()
 
-       listWidget = myListWidget()
+        myQListWidget = QtGui.QListWidget(self)     
+        for index, name in [
+            ('Equation 1', 'x + y = 2'),
+            ('Equation 2', 'x^2 + x = 5'),
+            ('Equation 3', 'x - y = 3')]:
+            # Create QCustomQWidget
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setTextUp(index)
+            myQCustomQWidget.setTextDown(name)
+            #myQCustomQWidget.setIcon(icon)
+            # Create QListWidgetItem
+            myQListWidgetItem = QtGui.QListWidgetItem(myQListWidget)
+            # Set size hint
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+            # Add QListWidgetItem into QListWidget
+            myQListWidget.addItem(myQListWidgetItem)
+            myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
         
-       #Resize width and height
-       listWidget.resize(400,300)
+        #Resize width and height
+        myQListWidget.resize(400,300)
         
-       listWidget.addItem("Equation 1"); 
-       listWidget.addItem("Equation 2");
-       listWidget.addItem("Equation 3");
-       listWidget.addItem("Equation 4");
-        
-       listWidget.itemClicked.connect(listWidget.Clicked)    
-       vbox.addWidget(listWidget)
-       return vbox
+        #myQListWidget.itemClicked.connect(myQListWidget.Clicked)  
+        vbox.addWidget(myQListWidget)
+        return vbox
 
     def inputsLayout(self):
-        vbox = QVBoxLayout(self)
+        inputLayout = QHBoxLayout(self)
+        blank = QFrame()
         
+        comboLabel = QtGui.QLabel()
+        comboLabel.setText("Input Type:")
+
         combo = QtGui.QComboBox(self)
         combo.addItem("LaTeX")
         combo.addItem("Greek")
-        #combo.move(50, 50)
-    
+        combo.resize(10, 10)
         combo.activated[str].connect(self.onActivated)        
         
-        
-        vbox.addWidget(combo)
+        inputTypeSplitter = QSplitter(Qt.Horizontal)
+        inputTypeSplitter.addWidget(comboLabel)
+        inputTypeSplitter.addWidget(combo)
+
+        topSplitter = QSplitter (Qt.Horizontal)
+        topSplitter.addWidget(blank)
+        topSplitter.addWidget(inputTypeSplitter)
+        inputSplitter = QSplitter(Qt.Vertical)
+        inputWidget = QWidget()
         inputBox = QGridLayout(self)
         buttons = {}
+        inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '='] 
         for i in range(10):
             for j in range(3):
-                buttons[(i, j)] = QtGui.QPushButton('row %d, col %d' % (i, j))
-                inputBox.addWidget(buttons[(i, j)], i, j)       
-        vbox.addLayout(inputBox)
-        return vbox
+                if (i*3 + j) < len(inputLaTeX):
+                    buttons[(i, j)] = QtGui.QPushButton(inputLaTeX[i * 3 + j])
+                    buttons[(i, j)].resize(10, 10)
+                    inputBox.addWidget(buttons[(i, j)], i, j)       
+        inputWidget.setLayout(inputBox)
+        inputSplitter.addWidget(topSplitter)
+        inputSplitter.addWidget(inputWidget)
+        inputLayout.addWidget(inputSplitter)
+        return inputLayout
+    
     def onActivated(self, text):
         pass
 
 
-class myListWidget(QListWidget):
 
-   def Clicked(self,item):
-      QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())
+class QCustomQWidget (QtGui.QWidget):
+    def __init__ (self, parent = None):
+        super(QCustomQWidget, self).__init__(parent)
+        self.textQVBoxLayout = QtGui.QVBoxLayout()
+        self.textUpQLabel    = QtGui.QLabel()
+        self.textDownQLabel  = QtGui.QLabel()
+        self.textQVBoxLayout.addWidget(self.textUpQLabel)
+        self.textQVBoxLayout.addWidget(self.textDownQLabel)
+        self.allQHBoxLayout  = QtGui.QHBoxLayout()
+        self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
+        self.setLayout(self.allQHBoxLayout)
+        # setStyleSheet
+        self.textUpQLabel.setStyleSheet('''
+            color: rgb(0, 0, 255);
+        ''')
+        self.textDownQLabel.setStyleSheet('''
+            color: rgb(255, 0, 0);
+        ''')
+
+    def setTextUp (self, text):
+        self.textUpQLabel.setText(text)
+
+    def setTextDown (self, text):
+        self.textDownQLabel.setText(text)
+
+    def Clicked(self,item):
+        QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())     
 
 
 def main():
