@@ -77,7 +77,7 @@ def scenemodel():
 #--------
 
 def printHelp(): 
-    print """\n\n    
+    print ("""\n\n    
          -------------------------------------------------------------------\n
          Left Mousebutton       - move eye position (+ Shift for third axis)\n
          Middle Mousebutton     - translate the scene\n
@@ -85,7 +85,7 @@ def printHelp():
          R Key                - reset viewpoint\n
          Q Key                - exit the program\n
          -------------------------------------------------------------------\n
-         \n"""
+         \n""")
 
 
 def init():
@@ -185,7 +185,7 @@ def motion(x, y):
         elif zoom < 1.1:
             zoom = 1.1
     else:
-        print("unknown action\n", action)
+        print ("unknown action\n", action)
     xStart = x
     yStart = y 
     glutPostRedisplay()
@@ -199,7 +199,7 @@ if __name__=="__main__":
     glutInit()
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB| GLUT_DEPTH)      # zBuffer
     glutInitWindowSize (g_Width,g_Height) 
-    glutInitWindowPosition (0 + 4, g_Height / 4)
+    glutInitWindowPosition (0 + 4, g_Height // 4)
     glutCreateWindow ("VisMa")
     glClearColor(1.0, 1.0, 1.0, 0.0)
     # Initialize OpenGL graphics state
