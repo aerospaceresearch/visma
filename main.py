@@ -58,6 +58,7 @@ class WorkSpace(QWidget):
         inputList.setStatusTip("Input characters")
         #inputList.setStyleSheet("background-color: rgb(0, 255, 0)")
         buttonSpace = QWidget()
+        buttonSpace.setLayout(self.buttonsLayout())
         #buttonSpace.setFrameShape(QFrame.StyledPanel)
         #buttonSpace.setStyleSheet("background-color: rgb(255, 0, 0)")
 
@@ -110,6 +111,34 @@ class WorkSpace(QWidget):
         vbox.addWidget(myQListWidget)
         return vbox
 
+    def buttonsLayout(self):
+    	vbox = QVBoxLayout()
+
+    	blank = QFrame()
+
+    	topButtonSplitter = QSplitter(Qt.Horizontal)
+    	topButtonSplitter.addWidget(blank)
+    	permanentButtons = QWidget(self)
+    	documentButtonsLayout = QHBoxLayout()
+    	newButton = PicButton(QPixmap("resources/new.png"))
+    	saveButton = PicButton(QPixmap("resources/save.png"))
+    	newButton.setToolTip('Add New Equation')
+    	saveButton.setToolTip('Save Equation')
+    	documentButtonsLayout.addWidget(newButton)
+    	documentButtonsLayout.addWidget(saveButton)
+
+    	permanentButtons.setLayout(documentButtonsLayout)
+    	topButtonSplitter.addWidget(permanentButtons)
+    	topButtonSplitter.setSizes([10000, 2])
+
+    	bottomButton = QFrame()
+    	buttonSplitter = QSplitter(Qt.Vertical)
+    	buttonSplitter.addWidget(topButtonSplitter)
+    	buttonSplitter.addWidget(bottomButton)
+    	buttonSplitter.setSizes([10, 1000])
+    	vbox.addWidget(buttonSplitter)
+    	return vbox
+
     def inputsLayout(self):
         inputLayout = QHBoxLayout(self)
         blank = QFrame()
@@ -134,16 +163,17 @@ class WorkSpace(QWidget):
         inputWidget = QWidget()
         inputBox = QGridLayout(self)
         buttons = {}
-        inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '='] 
+        inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\frac{}', '\\\sqrt[n]{}'] 
         for i in range(10):
             for j in range(3):
                 if (i*3 + j) < len(inputLaTeX):
                     buttons[(i, j)] = QtGui.QPushButton(inputLaTeX[i * 3 + j])
-                    buttons[(i, j)].resize(10, 10)
+                    buttons[(i, j)].resize(100, 100)
                     inputBox.addWidget(buttons[(i, j)], i, j)       
         inputWidget.setLayout(inputBox)
         inputSplitter.addWidget(topSplitter)
         inputSplitter.addWidget(inputWidget)
+        inputSplitter.setSizes([10,1000])
         inputLayout.addWidget(inputSplitter)
         return inputLayout
     
@@ -180,6 +210,18 @@ class QCustomQWidget (QtGui.QWidget):
     def Clicked(self,item):
         QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())     
 
+
+class PicButton(QAbstractButton):
+    def __init__(self, pixmap, parent=None):
+        super(PicButton, self).__init__(parent)
+        self.pixmap = pixmap
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawPixmap(event.rect(), self.pixmap)
+
+    def sizeHint(self):
+        return self.pixmap.size()
 
 def main():
     app = QApplication(sys.argv)
