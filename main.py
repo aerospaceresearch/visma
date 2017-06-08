@@ -35,12 +35,11 @@ class Window(QtGui.QMainWindow):
 class WorkSpace(QWidget):
 
     inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\frac{}',
-                       '\\\sqrt[n]{}']
+                       '\\sqrt[n]{}']
     inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', '+', '-', '=', '^{}', 'sqrt[n]{}']
     buttons = {}
     inputBox = QGridLayout()
     selectedCombo = "LaTeX"
-    global textedit
 
     def __init__(self):
         super(WorkSpace, self).__init__()
@@ -138,7 +137,7 @@ class WorkSpace(QWidget):
         vbox.addWidget(buttonSplitter)
         return vbox
 
-    def inputsLayout(self, loadList="Greek"):
+    def inputsLayout(self, loadList="LaTeX"):
         inputLayout = QHBoxLayout(self)
         blank = QFrame()
         
@@ -167,13 +166,14 @@ class WorkSpace(QWidget):
                     if (i*3 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtGui.QPushButton(self.inputGreek[i * 3 + j])
                         self.buttons[(i, j)].resize(100, 100)
-                        self.buttons[(i, j)].clicked.connect(self.onInput(self.inputGreek[i * 3 + j]))
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputGreek[i * 3 + j]))
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
                 elif str(loadList) in "LaTeX":
                     if (i*3 + j) < len(self.inputLaTeX):
                         self.buttons[(i, j)] = QtGui.QPushButton(self.inputLaTeX[i * 3 + j])
                         self.buttons[(i, j)].resize(100, 100)
-                        self.buttons[(i, j)].clicked.connect(self.onInput(self.inputLaTeX[i * 3 + j]))
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputLaTeX[i * 3 + j]))
+			#(self.inputLaTeX[i * 3 + j])
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
         inputWidget.setLayout(self.inputBox)
         inputSplitter.addWidget(topSplitter)
@@ -183,34 +183,29 @@ class WorkSpace(QWidget):
         return inputLayout
     
     def onActivated(self, text):
-        for i in range(10):
-            for j in range(3):
-                if self.selectedCombo == "Greek":
-                    if (i*3 + j) < len(self.inputGreek):
-                        self.inputBox.removeWidget(self.buttons[(i, j)])
-                elif self.selectedCombo == "LaTeX":
-                    if (i * 3 + j) < len(self.inputLaTeX):
-                        self.inputBox.removeWidget(self.buttons[(i, j)])
-
+	for i in reversed(range(self.inputBox.count())): 
+	        self.inputBox.itemAt(i).widget().setParent(None)        
+	
         for i in range(10):
             for j in range(3):
                 if str(text) in "Greek":
                     if (i*3 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtGui.QPushButton(self.inputGreek[i * 3 + j])
                         self.buttons[(i, j)].resize(100, 100)
-                        self.buttons[(i, j)].clicked.connect(self.onInput(self.inputGreek[i * 3 + j]))
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputGreek[i * 3 + j]))
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
                 elif str(text) in "LaTeX":
                     if (i*3 + j) < len(self.inputLaTeX):
                         self.buttons[(i, j)] = QtGui.QPushButton(self.inputLaTeX[i * 3 + j])
                         self.buttons[(i, j)].resize(100, 100)
-                        self.buttons[(i, j)].clicked.connect(self.onInput(self.inputLaTeX[i * 3 + j]))
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputLaTeX[i * 3 + j]))
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
         self.selectedCombo = str(text)
-
-    def onInput(self, name):
-        self.textedit.append(name + " ")
-
+	
+    def onInputPress(self, name):
+        def calluser():
+            self.textedit.insertPlainText(unicode(name) + " ")
+        return calluser	
 
 class QCustomQWidget (QtGui.QWidget):
     def __init__ (self, parent = None):
