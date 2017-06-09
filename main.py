@@ -40,6 +40,8 @@ class WorkSpace(QWidget):
     buttons = {}
     inputBox = QGridLayout()
     selectedCombo = "LaTeX"
+    equations =[('No equations stored', '')]
+    equationListVbox = QVBoxLayout()
 
     def __init__(self):
         super(WorkSpace, self).__init__()
@@ -81,33 +83,29 @@ class WorkSpace(QWidget):
 
         self.setLayout(hbox)
 
-    def equationsLayout(self):
-        vbox = QVBoxLayout()
 
-        myQListWidget = QtGui.QListWidget(self)     
-        for index, name in [
-            ('Equation 1', 'x + y = 2'),
-            ('Equation 2', 'x^2 + x = 5'),
-            ('Equation 3', 'x - y = 3')]:
-            # Create QCustomQWidget
+    def equationsLayout(self):
+        self.myQListWidget = QtGui.QListWidget(self)     
+        for index, name in self.equations:
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(index)
             myQCustomQWidget.setTextDown(name)
-            #myQCustomQWidget.setIcon(icon)
-            # Create QListWidgetItem
-            myQListWidgetItem = QtGui.QListWidgetItem(myQListWidget)
-            # Set size hint
+            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
             myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
-            # Add QListWidgetItem into QListWidget
-            myQListWidget.addItem(myQListWidgetItem)
-            myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+            self.myQListWidget.addItem(myQListWidgetItem)
+            self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
         
-        #Resize width and height
-        myQListWidget.resize(400,300)
+        self.myQListWidget.resize(400,300)
         
-        #myQListWidget.itemClicked.connect(myQListWidget.Clicked)  
-        vbox.addWidget(myQListWidget)
-        return vbox
+        self.myQListWidget.itemClicked.connect(self.Clicked)  
+        self.equationListVbox.addWidget(self.myQListWidget)
+        return self.equationListVbox
+
+
+    def Clicked(self,item):
+        index, name = self.equations[self.myQListWidget.currentRow()]
+        self.textedit.setText(name)     
+
 
     def buttonsLayout(self):
         vbox = QVBoxLayout()
@@ -124,7 +122,8 @@ class WorkSpace(QWidget):
         saveButton.setToolTip('Save Equation')
         documentButtonsLayout.addWidget(newButton)
         documentButtonsLayout.addWidget(saveButton)
-
+        newButton.clicked.connect(self.newEquation)
+        saveButton.clicked.connect(self.saveEquation)
         permanentButtons.setLayout(documentButtonsLayout)
         topButtonSplitter.addWidget(permanentButtons)
         topButtonSplitter.setSizes([10000, 2])
@@ -136,6 +135,41 @@ class WorkSpace(QWidget):
         buttonSplitter.setSizes([01, 1000])
         vbox.addWidget(buttonSplitter)
         return vbox
+
+    def newEquation(self):
+        self.textedit.setText("")    
+
+    def saveEquation(self):
+        for i in reversed(range(self.equationListVbox.count())): 
+                self.equationListVbox.itemAt(i).widget().setParent(None)     
+        
+        eqn = unicode(self.textedit.toPlainText())
+        if len(self.equations) ==  1:
+            index, name = self.equations[0]
+            if index == "No equations stored":
+                self.equations[0] = ("Equation No. 1", eqn)
+            else:
+                self.equations.append(("Equation No. 2", eqn))
+        else:
+            self.equations.append(("Equation No. " + str(len(self.equations) + 1), eqn))
+
+        self.textedit.setText('')
+        self.myQListWidget = QtGui.QListWidget(self)     
+        for index, name in self.equations:
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setTextUp(index)
+            myQCustomQWidget.setTextDown(name)
+            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+            self.myQListWidget.addItem(myQListWidgetItem)
+            self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+        
+        self.myQListWidget.resize(400,300)
+        
+        self.myQListWidget.itemClicked.connect(self.Clicked)  
+        self.equationListVbox.addWidget(self.myQListWidget)
+        return self.equationListVbox
+
 
     def inputsLayout(self, loadList="LaTeX"):
         inputLayout = QHBoxLayout(self)
@@ -208,6 +242,7 @@ class WorkSpace(QWidget):
         return calluser	
 
 class QCustomQWidget (QtGui.QWidget):
+
     def __init__ (self, parent = None):
         super(QCustomQWidget, self).__init__(parent)
         self.textQVBoxLayout = QtGui.QVBoxLayout()
@@ -231,9 +266,6 @@ class QCustomQWidget (QtGui.QWidget):
 
     def setTextDown (self, text):
         self.textDownQLabel.setText(text)
-
-    def Clicked(self,item):
-        QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())     
 
 
 class PicButton(QAbstractButton):
