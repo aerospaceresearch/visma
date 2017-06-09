@@ -8,15 +8,9 @@ class Window(QtGui.QMainWindow):
     
     def __init__(self):
         super(Window, self).__init__()
-        
         self.initUI()
-        
-        
-    def initUI(self):               
-        
-        textEdit = QtGui.QTextEdit()
-        self.setCentralWidget(textEdit)
 
+    def initUI(self):
         exitAction = QtGui.QAction(QtGui.QIcon('resources/exit.png'), 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
@@ -36,36 +30,42 @@ class Window(QtGui.QMainWindow):
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowTitle('VisMa')    
         self.show()
-        
-        
+
 
 class WorkSpace(QWidget):
+
+    inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\frac{}',
+                       '\\sqrt[n]{}']
+    inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', '+', '-', '=', '^{}', 'sqrt[n]{}']
+    buttons = {}
+    inputBox = QGridLayout()
+    selectedCombo = "LaTeX"
+    equations =[('No equations stored', '')]
+    equationListVbox = QVBoxLayout()
 
     def __init__(self):
         super(WorkSpace, self).__init__()
         self.initUI()
-    
+
     def initUI(self):
     
         hbox = QHBoxLayout(self)
 
-        eqautionList = QFrame()
+        eqautionList = QWidget()
         eqautionList.setLayout(self.equationsLayout())
-        eqautionList.setFrameShape(QFrame.StyledPanel)
         eqautionList.setStatusTip("Track of old equations")
-        #eqautionList.setStyleSheet("background-color: rgb(0, 0, 255)")
-        inputList = QFrame()
+
+        inputList = QWidget()
         inputList.setLayout(self.inputsLayout())
-        inputList.setFrameShape(QFrame.StyledPanel)
         inputList.setStatusTip("Input characters")
-        #inputList.setStyleSheet("background-color: rgb(0, 255, 0)")
-        buttonSpace = QFrame()
-        buttonSpace.setFrameShape(QFrame.StyledPanel)
-        #buttonSpace.setStyleSheet("background-color: rgb(255, 0, 0)")
+
+        buttonSpace = QWidget()
+        buttonSpace.setLayout(self.buttonsLayout())
+
+        self.textedit = QTextEdit()
 
         splitter1 = QSplitter(Qt.Vertical)
-        textedit = QTextEdit()
-        splitter1.addWidget(textedit)
+        splitter1.addWidget(self.textedit)
         splitter1.addWidget(buttonSpace)
         splitter1.setSizes([600, 400])
 
@@ -82,54 +82,203 @@ class WorkSpace(QWidget):
         hbox.addWidget(splitter3)
 
         self.setLayout(hbox)
-        #QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
-        
+
+
     def equationsLayout(self):
-       vbox = QVBoxLayout(self)
+        self.myQListWidget = QtGui.QListWidget(self)     
+        for index, name in self.equations:
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setTextUp(index)
+            myQCustomQWidget.setTextDown(name)
+            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+            self.myQListWidget.addItem(myQListWidgetItem)
+            self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+        
+        self.myQListWidget.resize(400,300)
+        
+        self.myQListWidget.itemClicked.connect(self.Clicked)  
+        self.equationListVbox.addWidget(self.myQListWidget)
+        return self.equationListVbox
 
-       listWidget = myListWidget()
-        
-       #Resize width and height
-       listWidget.resize(400,300)
-        
-       listWidget.addItem("Equation 1"); 
-       listWidget.addItem("Equation 2");
-       listWidget.addItem("Equation 3");
-       listWidget.addItem("Equation 4");
-        
-       listWidget.itemClicked.connect(listWidget.Clicked)    
-       vbox.addWidget(listWidget)
-       return vbox
 
-    def inputsLayout(self):
-        vbox = QVBoxLayout(self)
+    def Clicked(self,item):
+        index, name = self.equations[self.myQListWidget.currentRow()]
+        self.textedit.setText(name)     
+
+
+    def buttonsLayout(self):
+        vbox = QVBoxLayout()
+
+        blank = QFrame()
+
+        topButtonSplitter = QSplitter(Qt.Horizontal)
+        topButtonSplitter.addWidget(blank)
+        permanentButtons = QWidget(self)
+        documentButtonsLayout = QHBoxLayout()
+        newButton = PicButton(QPixmap("resources/new.png"))
+        saveButton = PicButton(QPixmap("resources/save.png"))
+        newButton.setToolTip('Add New Equation')
+        saveButton.setToolTip('Save Equation')
+        documentButtonsLayout.addWidget(newButton)
+        documentButtonsLayout.addWidget(saveButton)
+        newButton.clicked.connect(self.newEquation)
+        saveButton.clicked.connect(self.saveEquation)
+        permanentButtons.setLayout(documentButtonsLayout)
+        topButtonSplitter.addWidget(permanentButtons)
+        topButtonSplitter.setSizes([10000, 2])
+
+        bottomButton = QFrame()
+        buttonSplitter = QSplitter(Qt.Vertical)
+        buttonSplitter.addWidget(topButtonSplitter)
+        buttonSplitter.addWidget(bottomButton)
+        buttonSplitter.setSizes([01, 1000])
+        vbox.addWidget(buttonSplitter)
+        return vbox
+
+    def newEquation(self):
+        self.textedit.setText("")    
+
+    def saveEquation(self):
+        for i in reversed(range(self.equationListVbox.count())): 
+                self.equationListVbox.itemAt(i).widget().setParent(None)     
         
+        eqn = unicode(self.textedit.toPlainText())
+        if len(self.equations) ==  1:
+            index, name = self.equations[0]
+            if index == "No equations stored":
+                self.equations[0] = ("Equation No. 1", eqn)
+            else:
+                self.equations.append(("Equation No. 2", eqn))
+        else:
+            self.equations.append(("Equation No. " + str(len(self.equations) + 1), eqn))
+
+        self.textedit.setText('')
+        self.myQListWidget = QtGui.QListWidget(self)     
+        for index, name in self.equations:
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setTextUp(index)
+            myQCustomQWidget.setTextDown(name)
+            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+            self.myQListWidget.addItem(myQListWidgetItem)
+            self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+        
+        self.myQListWidget.resize(400,300)
+        
+        self.myQListWidget.itemClicked.connect(self.Clicked)  
+        self.equationListVbox.addWidget(self.myQListWidget)
+        return self.equationListVbox
+
+
+    def inputsLayout(self, loadList="LaTeX"):
+        inputLayout = QHBoxLayout(self)
+        blank = QFrame()
+        
+        comboLabel = QtGui.QLabel()
+        comboLabel.setText("Input Type:")
+
         combo = QtGui.QComboBox(self)
         combo.addItem("LaTeX")
         combo.addItem("Greek")
-        #combo.move(50, 50)
-    
-        combo.activated[str].connect(self.onActivated)        
+        combo.resize(10, 10)
+        combo.activated[str].connect(self.onActivated)
         
-        
-        vbox.addWidget(combo)
-        inputBox = QGridLayout(self)
-        buttons = {}
+        inputTypeSplitter = QSplitter(Qt.Horizontal)
+        inputTypeSplitter.addWidget(comboLabel)
+        inputTypeSplitter.addWidget(combo)
+
+        topSplitter = QSplitter(Qt.Horizontal)
+        topSplitter.addWidget(blank)
+        topSplitter.addWidget(inputTypeSplitter)
+        inputSplitter = QSplitter(Qt.Vertical)
+        inputWidget = QWidget()
+        self.selectedCombo = str(loadList)
         for i in range(10):
             for j in range(3):
-                buttons[(i, j)] = QtGui.QPushButton('row %d, col %d' % (i, j))
-                inputBox.addWidget(buttons[(i, j)], i, j)       
-        vbox.addLayout(inputBox)
-        return vbox
+                if str(loadList) in "Greek":
+                    if (i*3 + j) < len(self.inputGreek):
+                        self.buttons[(i, j)] = QtGui.QPushButton(self.inputGreek[i * 3 + j])
+                        self.buttons[(i, j)].resize(100, 100)
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputGreek[i * 3 + j]))
+                        self.inputBox.addWidget(self.buttons[(i, j)], i, j)
+                elif str(loadList) in "LaTeX":
+                    if (i*3 + j) < len(self.inputLaTeX):
+                        self.buttons[(i, j)] = QtGui.QPushButton(self.inputLaTeX[i * 3 + j])
+                        self.buttons[(i, j)].resize(100, 100)
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputLaTeX[i * 3 + j]))
+			#(self.inputLaTeX[i * 3 + j])
+                        self.inputBox.addWidget(self.buttons[(i, j)], i, j)
+        inputWidget.setLayout(self.inputBox)
+        inputSplitter.addWidget(topSplitter)
+        inputSplitter.addWidget(inputWidget)
+        inputSplitter.setSizes([10, 1000])
+        inputLayout.addWidget(inputSplitter)
+        return inputLayout
+    
     def onActivated(self, text):
-        pass
+	for i in reversed(range(self.inputBox.count())): 
+	        self.inputBox.itemAt(i).widget().setParent(None)        
+	
+        for i in range(10):
+            for j in range(3):
+                if str(text) in "Greek":
+                    if (i*3 + j) < len(self.inputGreek):
+                        self.buttons[(i, j)] = QtGui.QPushButton(self.inputGreek[i * 3 + j])
+                        self.buttons[(i, j)].resize(100, 100)
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputGreek[i * 3 + j]))
+                        self.inputBox.addWidget(self.buttons[(i, j)], i, j)
+                elif str(text) in "LaTeX":
+                    if (i*3 + j) < len(self.inputLaTeX):
+                        self.buttons[(i, j)] = QtGui.QPushButton(self.inputLaTeX[i * 3 + j])
+                        self.buttons[(i, j)].resize(100, 100)
+                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputLaTeX[i * 3 + j]))
+                        self.inputBox.addWidget(self.buttons[(i, j)], i, j)
+        self.selectedCombo = str(text)
+	
+    def onInputPress(self, name):
+        def calluser():
+            self.textedit.insertPlainText(unicode(name) + " ")
+        return calluser	
+
+class QCustomQWidget (QtGui.QWidget):
+
+    def __init__ (self, parent = None):
+        super(QCustomQWidget, self).__init__(parent)
+        self.textQVBoxLayout = QtGui.QVBoxLayout()
+        self.textUpQLabel    = QtGui.QLabel()
+        self.textDownQLabel  = QtGui.QLabel()
+        self.textQVBoxLayout.addWidget(self.textUpQLabel)
+        self.textQVBoxLayout.addWidget(self.textDownQLabel)
+        self.allQHBoxLayout  = QtGui.QHBoxLayout()
+        self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
+        self.setLayout(self.allQHBoxLayout)
+        # setStyleSheet
+        self.textUpQLabel.setStyleSheet('''
+            color: rgb(0, 0, 255);
+        ''')
+        self.textDownQLabel.setStyleSheet('''
+            color: rgb(255, 0, 0);
+        ''')
+
+    def setTextUp (self, text):
+        self.textUpQLabel.setText(text)
+
+    def setTextDown (self, text):
+        self.textDownQLabel.setText(text)
 
 
-class myListWidget(QListWidget):
+class PicButton(QAbstractButton):
+    def __init__(self, pixmap, parent=None):
+        super(PicButton, self).__init__(parent)
+        self.pixmap = pixmap
 
-   def Clicked(self,item):
-      QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawPixmap(event.rect(), self.pixmap)
 
+    def sizeHint(self):
+        return self.pixmap.size()
 
 def main():
     app = QApplication(sys.argv)
