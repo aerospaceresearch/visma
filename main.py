@@ -63,7 +63,7 @@ class WorkSpace(QWidget):
         buttonSpace.setLayout(self.buttonsLayout())
 
         self.textedit = QTextEdit()
-
+        self.textedit.textChanged.connect(self.textChangeTrigger)
         splitter1 = QSplitter(Qt.Vertical)
         splitter1.addWidget(self.textedit)
         splitter1.addWidget(buttonSpace)
@@ -83,6 +83,8 @@ class WorkSpace(QWidget):
 
         self.setLayout(hbox)
 
+    def textChangeTrigger(self):
+        print self.textedit.toPlainText()
 
     def equationsLayout(self):
         self.myQListWidget = QtGui.QListWidget(self)     
@@ -110,10 +112,15 @@ class WorkSpace(QWidget):
     def buttonsLayout(self):
         vbox = QVBoxLayout()
 
-        blank = QFrame()
-
+        interactionModeWidget = QWidget(self)
+        interactionModeLayout = QVBoxLayout()
+        interactionModeButton = QPushButton("Interaction Mode")
+        interactionModeButton.resize(30, 70)
+        interactionModeButton.clicked.connect(self.interactionMode)
+        interactionModeLayout.addWidget(interactionModeButton)
+        interactionModeWidget.setLayout(interactionModeLayout)
         topButtonSplitter = QSplitter(Qt.Horizontal)
-        topButtonSplitter.addWidget(blank)
+        topButtonSplitter.addWidget(interactionModeWidget)
         permanentButtons = QWidget(self)
         documentButtonsLayout = QHBoxLayout()
         newButton = PicButton(QPixmap("resources/new.png"))
@@ -135,6 +142,11 @@ class WorkSpace(QWidget):
         buttonSplitter.setSizes([01, 1000])
         vbox.addWidget(buttonSplitter)
         return vbox
+
+    def interactionMode(self):
+        cursor = self.textedit.textCursor()
+        textSelected = cursor.selectedText()
+        print textSelected    
 
     def newEquation(self):
         self.textedit.setText("")    
@@ -266,7 +278,6 @@ class QCustomQWidget (QtGui.QWidget):
 
     def setTextDown (self, text):
         self.textDownQLabel.setText(text)
-
 
 class PicButton(QAbstractButton):
     def __init__(self, pixmap, parent=None):
