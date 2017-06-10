@@ -34,9 +34,8 @@ class Window(QtGui.QMainWindow):
 
 class WorkSpace(QWidget):
 
-    inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\frac{}',
-                       '\\sqrt[n]{}']
-    inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', '+', '-', '=', '^{}', 'sqrt[n]{}']
+    inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\sqrt[n]{}']
+    inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^{}', 'sqrt[n]{}']
     buttons = {}
     inputBox = QGridLayout()
     selectedCombo = "LaTeX"
