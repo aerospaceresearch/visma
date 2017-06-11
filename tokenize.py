@@ -100,7 +100,7 @@ def getVariable(terms):
 					elif isNumber(terms[x]):
 						power[-1] *= getNum(terms[x])
 				else:
-					power[-1] = getToken(varTerms)
+					power[-1] = getVariable(varTerms)
 				x += 1
 					
 			elif isVariable(terms[x]) or isNumber(terms[x]):
@@ -110,11 +110,11 @@ def getVariable(terms):
 						while (isVariable(terms[x]) or isNumber(terms[x])) and terms[x+1] == '^':
 							varTerms.append(terms[x])
 							varTerms.append(terms[x+1])
-							varTerms.append(terms[x+2])
 							if x + 3 < len(terms):
 								x += 2
 							else:
-								break				
+								varTerms.append(terms[x+2])
+								break						
 						power[-1] = getVariable(varTerms)
 						x += 3
 					else:
@@ -130,7 +130,6 @@ def getVariable(terms):
 						power[-1] = terms[x]
 					x += 1
 
-
 	variable["value"] = value
 	variable["power"] = power
 	variable["coefficient"] = coefficient
@@ -145,9 +144,9 @@ def getToken(terms):
 			while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '*' and terms[x] != '=':
 				varTerms.append(terms[x])
 				x += 1
+			print varTerms	
 			variable = getVariable(varTerms)
 			tokens.append(variable)
-
 		x += 1	
 	return tokens		  
 
@@ -159,7 +158,7 @@ def clean(eqn):
 	tokens = getToken(terms)
 	print tokens
 
-def tokenizer(eqn="    x y^22^22^x     +     y^22    =    22   "):
+def tokenizer(eqn="    x y^22^22^x^s     +     y^22    =    22   "):
 	clean(eqn)
 
 if __name__ == "__main__":
