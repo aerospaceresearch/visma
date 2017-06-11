@@ -1,6 +1,34 @@
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 	
+def isVariable(term):
+	if term in greek: 
+		return True
+	elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
+		x = 0
+		while x < len(term):
+			if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+				return False
+			x += 1
+		return True
+
+def isNumber(term):
+	x = 0
+	while x < len(term):
+		if term[x] < '0' or term[x] > '9':
+			return False
+		x += 1	
+	return True
+
+def getNum(term):
+	x = 0
+	val = 0
+	while x < len(term):
+		val *= 10
+		val += int(term[x])
+		x += 1
+	return val	
+
 def removeSpaces(eqn):
 	cleanEqn = ''
 	x = 0
@@ -46,36 +74,92 @@ def getVariable(terms):
 	value = []
 	coefficient = 1
 	power = []
-	value.append(terms[x])
-	power.append(1)
-	while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '*' and terms[x] != '=':
-		if (terms[x][0] >= 'a' and terms[x][0] <= 'z') or (terms[x][0] >= 'A' and terms[x][0] <= 'Z') or terms[x][0] in greek:
+	x = 0
+	while x < len(terms):
+		if isVariable(terms[x]) :
 			value.append(terms[x])
-			power.append(1) 	
+			power.append(1)
+			x += 1
+
+		elif isNumber(terms[x]):
+			value.append(getNum(terms[x]))
+			power.append(1)
+			x +=1 
+				
+		elif terms[x] == '^':
+			x += 1
+			if terms[x] == '{':
+				x += 1
+				varTerms = []
+				while terms[x] == '}':
+					varTerms.append(terms[x])
+					x += 1
+				if len(varTerms) == 1:
+					if isVariable(terms[x]):
+						power[-1] = terms[x]
+					elif isNumber(terms[x]):
+						power[-1] *= getNum(terms[x])
+				else:
+					power[-1] = getToken(varTerms)
+				x += 1
+					
+			elif isVariable(terms[x]) or isNumber(terms[x]):
+				if x+1 < len(terms):
+					if terms[x+1] == '^':
+						varTerms = []
+						while (isVariable(terms[x]) or isNumber(terms[x])) and terms[x+1] == '^':
+							varTerms.append(terms[x])
+							varTerms.append(terms[x+1])
+							varTerms.append(terms[x+2])
+							if x + 3 < len(terms):
+								x += 2
+							else:
+								break				
+						power[-1] = getVariable(varTerms)
+						x += 3
+					else:
+						if isNumber(terms[x]):
+							power[-1] = getNum(terms[x])
+						else:
+							power[-1] = terms[x]	
+						x += 1	
+				else:
+					if isNumber(terms[x]):
+						power[-1] = getNum(terms[x])
+					else:	
+						power[-1] = terms[x]
+					x += 1
+
+
 	variable["value"] = value
+	variable["power"] = power
 	variable["coefficient"] = coefficient
-	
+	return variable
 
 def getToken(terms):
 	tokens = []
 	x = 0
 	while x < len(terms):
-		if (terms[x][0] >= 'a' and terms[x][0] <= 'z') or (terms[x][0] >= 'A' and terms[x][0] <= 'Z') or terms[x][0] in greek:
+		if isVariable(terms[x]):
 			varTerms = []
 			while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '*' and terms[x] != '=':
 				varTerms.append(terms[x])
 				x += 1
 			variable = getVariable(varTerms)
 			tokens.append(variable)
+
 		x += 1	
-	print tokens		  
+	return tokens		  
 
 				
 def clean(eqn):
 	cleanEqn = removeSpaces(eqn)
+	print cleanEqn
 	terms = getTerms(cleanEqn)
-	
-def tokenizer(eqn="    x     +     y^22    =    22   "):
+	tokens = getToken(terms)
+	print tokens
+
+def tokenizer(eqn="    x y^22^22^x     +     y^22    =    22   "):
 	clean(eqn)
 
 if __name__ == "__main__":
