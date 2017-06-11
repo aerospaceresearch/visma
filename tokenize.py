@@ -82,8 +82,15 @@ def getVariable(terms):
 			x += 1
 
 		elif isNumber(terms[x]):
-			value.append(getNum(terms[x]))
-			power.append(1)
+			if x+1 < len(terms):
+				if terms[x+1] != '^':
+					coefficient *= getNum(terms[x])
+				else:	
+					value.append(getNum(terms[x]))
+					power.append(1)
+			else:
+				value.append(getNum(terms[x]))
+				power.append(1)		
 			x +=1 
 				
 		elif terms[x] == '^':
@@ -110,7 +117,7 @@ def getVariable(terms):
 						while (isVariable(terms[x]) or isNumber(terms[x])) and terms[x+1] == '^':
 							varTerms.append(terms[x])
 							varTerms.append(terms[x+1])
-							if x + 3 < len(terms):
+							if x + 3 < len(terms) and terms[x+3] == '^':
 								x += 2
 							else:
 								varTerms.append(terms[x+2])
@@ -144,9 +151,59 @@ def getToken(terms):
 			while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '*' and terms[x] != '=':
 				varTerms.append(terms[x])
 				x += 1
-			print varTerms	
+			x -= 1	
 			variable = getVariable(varTerms)
 			tokens.append(variable)
+	
+		elif isNumber(terms[x]):
+			if x + 1 < len(terms):
+				if terms[x+1] == '^' or isVariable(terms[x+1]):
+					varTerms = []
+					while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '/' and terms[x] != '=':
+						varTerms.append(terms[x])
+						x += 1
+					x -= 1	
+					variable = getVariable(varTerms)
+					tokens.append(variable)
+				else:
+					variable = {}
+					variable["type"] = "constant"
+					variable["value"] = getNum(terms[x])
+					tokens.append(variable)
+			else:
+				variable = {}
+				variable["type"] = "constant"
+				variable["value"] = getNum(terms[x])
+				tokens.append(variable)
+				
+		elif terms[x] in symbols:
+			if terms[x] == '*' or terms[x] == '/':
+				operator = {}
+				operator["type"] = "binary"
+				operator["value"] = terms[x]
+				tokens.append(operator)
+			elif terms[x] == '+' or terms == '-':
+				if x == 0:
+					operator = {}
+					operator["type"] = "unary"
+					operator["value"] = terms[x]
+					tokens.append(operator)
+				elif terms[x-1] == '+' or terms[x-1] == '-' or terms[x-1] == '/' or terms[x-1] == '*' or terms[x-1] == '=':
+					operator = {}
+					operator["type"] = "unary"
+					operator["value"] = terms[x]
+					tokens.append(operator)
+				else:
+					operator = {}
+					operator["type"] = "binary"
+					operator["value"] = terms[x]
+					tokens.append(operator)
+			else:
+				operator = {}
+				operator["type"] = "others"	
+				operator["value"] = terms[x]
+				tokens.append(operator)		
+
 		x += 1	
 	return tokens		  
 
@@ -158,7 +215,7 @@ def clean(eqn):
 	tokens = getToken(terms)
 	print tokens
 
-def tokenizer(eqn="    x y^22^22^x^s     +     y^22    =    22   "):
+def tokenizer(eqn="  -  x y^22^22^x^s    +     y^22    =    22   "):
 	clean(eqn)
 
 if __name__ == "__main__":
