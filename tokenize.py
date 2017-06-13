@@ -1,6 +1,9 @@
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 	
+inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
+inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
+
 def isVariable(term):
 	if term in greek: 
 		return True
@@ -66,6 +69,13 @@ def getTerms(eqn):
 			x += 1
 		else:
 			x += 1
+	return terms
+
+def normalize(terms):
+	for term in terms:
+		for i, x in enumerate(inputLaTeX):
+			if x == term:
+				term = inputGreek[i]
 	return terms
 
 def getVariable(terms):
@@ -209,10 +219,10 @@ def getToken(terms):
 
 				
 def clean(eqn):
-	cleanEqn = removeSpaces(eqn)
-	print cleanEqn
+	cleanEqn = removeSpaces(eqn) 
 	terms = getTerms(cleanEqn)
-	tokens = getToken(terms)
+	normalizedTerms = normalize(terms)
+	tokens = getToken(normalizedTerms)
 	print tokens
 
 def tokenizer(eqn="  -  x y^22^22^x^s    +     y^22    =    22   "):
