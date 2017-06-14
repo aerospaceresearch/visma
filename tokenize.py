@@ -78,11 +78,11 @@ def normalize(terms):
 				term = inputGreek[i]
 	return terms
 
-def getVariable(terms):
+def getVariable(terms, coeff=1):
 	variable = {}
 	variable["type"] = "variable"
 	value = []
-	coefficient = 1
+	coefficient = coeff
 	power = []
 	x = 0
 	while x < len(terms):
@@ -152,13 +152,14 @@ def getVariable(terms):
 	variable["coefficient"] = coefficient
 	return variable
 
-def getToken(terms):
+def getToken(terms, symTokens):
 	tokens = []
 	x = 0
 	while x < len(terms):
+		print x
 		if isVariable(terms[x]):
 			varTerms = []
-			while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '*' and terms[x] != '=':
+			while symTokens[x] != 'binary':
 				varTerms.append(terms[x])
 				x += 1
 			x -= 1	
@@ -217,15 +218,35 @@ def getToken(terms):
 		x += 1	
 	return tokens		  
 
-				
+def tokenizeSymbols(terms):
+	symTokens=[]
+	for i, term in enumerate(terms):
+		symTokens.append('')
+		if term in symbols:
+			if term == '*' or term == '/':
+				if (isVariable(terms[i-1]) or terms[i-1] == '}') and (isVariable(terms[i+1]) or terms[i+1] == '{' or ((terms[i+1] == '-' or terms[i+1]) and (isVariable(terms[i+2] or terms[i+2])) )):  		
+					symTokens[-1] = "binary"
+			elif term == '+' or term == '-':
+				if i == 0:
+					symTokens[-1] = "unary"
+				elif (isVariable(terms[i-1]) or terms[i-1] == '}') and (isVariable(terms[i+1]) or terms[i+1] == '{' or ((terms[i+1] == '-' or terms[i+1]) and (isVariable(terms[i+2] or terms[i+2])) )):  		
+					symTokens[-1] = "binary"
+				elif terms[i-1] in ['-', '+', '*', '/', '=', '^']:
+					symTokens[-1] = "unary"
+			elif term == '=':
+				symTokens[-1] = "binary"
+	return symTokens
+
+	
 def clean(eqn):
 	cleanEqn = removeSpaces(eqn) 
 	terms = getTerms(cleanEqn)
 	normalizedTerms = normalize(terms)
-	tokens = getToken(normalizedTerms)
-	print tokens
+	symTokens = tokenizeSymbols(normalizedTerms)
+	tokens = getToken(normalizedTerms, symTokens)
+	print symTokens
 
-def tokenizer(eqn="  -  x y^22^22^x^s    +     y^22    =    22   "):
+def tokenizer(eqn="  -  x y^-22^22^x^s    +     y^22    =    22   "):
 	clean(eqn)
 
 if __name__ == "__main__":
