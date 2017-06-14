@@ -156,7 +156,6 @@ def getToken(terms, symTokens):
 	tokens = []
 	x = 0
 	while x < len(terms):
-		print x
 		if isVariable(terms[x]):
 			varTerms = []
 			while symTokens[x] != 'binary':
@@ -170,7 +169,7 @@ def getToken(terms, symTokens):
 			if x + 1 < len(terms):
 				if terms[x+1] == '^' or isVariable(terms[x+1]):
 					varTerms = []
-					while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '/' and terms[x] != '=':
+					while symTokens[x] != 'binary':
 						varTerms.append(terms[x])
 						x += 1
 					x -= 1	
@@ -187,33 +186,14 @@ def getToken(terms, symTokens):
 				variable["value"] = getNum(terms[x])
 				tokens.append(variable)
 				
-		elif terms[x] in symbols:
-			if terms[x] == '*' or terms[x] == '/':
-				operator = {}
-				operator["type"] = "binary"
-				operator["value"] = terms[x]
-				tokens.append(operator)
-			elif terms[x] == '+' or terms == '-':
-				if x == 0:
-					operator = {}
-					operator["type"] = "unary"
-					operator["value"] = terms[x]
-					tokens.append(operator)
-				elif terms[x-1] == '+' or terms[x-1] == '-' or terms[x-1] == '/' or terms[x-1] == '*' or terms[x-1] == '=':
-					operator = {}
-					operator["type"] = "unary"
-					operator["value"] = terms[x]
-					tokens.append(operator)
-				else:
-					operator = {}
-					operator["type"] = "binary"
-					operator["value"] = terms[x]
-					tokens.append(operator)
+		elif terms[x] in ['-', '+', '/', '*', '=']:
+			operator = {}
+			operator["value"] = terms[x]
+			if symTokens[x] == '':
+				operator["type"] = "other"
 			else:
-				operator = {}
-				operator["type"] = "others"	
-				operator["value"] = terms[x]
-				tokens.append(operator)		
+				operator["type"] = symTokens[x]	
+			tokens.append(operator)
 
 		x += 1	
 	return tokens		  
@@ -244,9 +224,9 @@ def clean(eqn):
 	normalizedTerms = normalize(terms)
 	symTokens = tokenizeSymbols(normalizedTerms)
 	tokens = getToken(normalizedTerms, symTokens)
-	print symTokens
+	print tokens
 
-def tokenizer(eqn="  -  x y^-22^22^x^s    +     y^22    =    22   "):
+def tokenizer(eqn="  -  x y^22^22^x^s    +     y^22    =    22   "):
 	clean(eqn)
 
 if __name__ == "__main__":
