@@ -78,7 +78,7 @@ def normalize(terms):
 				term = inputGreek[i]
 	return terms
 
-def getVariable(terms, coeff=1):
+def getVariable(terms, symTokens, coeff=1):
 	variable = {}
 	variable["type"] = "variable"
 	value = []
@@ -107,9 +107,14 @@ def getVariable(terms, coeff=1):
 			x += 1
 			if terms[x] == '{':
 				x += 1
+				binary = 0
 				varTerms = []
+				varSymTokens = []
 				while terms[x] == '}':
+					if symTokens[x] == 'binary':
+						binary += 1
 					varTerms.append(terms[x])
+					varSymTokens.append(symTokens[x])
 					x += 1
 				if len(varTerms) == 1:
 					if isVariable(terms[x]):
@@ -117,22 +122,29 @@ def getVariable(terms, coeff=1):
 					elif isNumber(terms[x]):
 						power[-1] *= getNum(terms[x])
 				else:
-					power[-1] = getVariable(varTerms)
+					if binary == 0:
+						power[-1] = getVariable(varTerms, symTokens)
+					else:
+						power[-1] = getToken(varTerms, symTokens)
 				x += 1
 					
 			elif isVariable(terms[x]) or isNumber(terms[x]):
 				if x+1 < len(terms):
 					if terms[x+1] == '^':
 						varTerms = []
+						varSymTokens = []
 						while (isVariable(terms[x]) or isNumber(terms[x])) and terms[x+1] == '^':
 							varTerms.append(terms[x])
+							varSymTokens.append(symTokens[x])
 							varTerms.append(terms[x+1])
+							varSymTokens.append(symTokens[x+1])
 							if x + 3 < len(terms) and terms[x+3] == '^':
 								x += 2
 							else:
 								varTerms.append(terms[x+2])
+								varSymTokens.append(symTokens[x+2])
 								break						
-						power[-1] = getVariable(varTerms)
+						power[-1] = getVariable(varTerms, symTokens)
 						x += 3
 					else:
 						if isNumber(terms[x]):
@@ -147,19 +159,36 @@ def getVariable(terms, coeff=1):
 						power[-1] = terms[x]
 					x += 1
 
+			elif symTokens[x] == 'unary':
+				coeff = 1
+				if terms[x] == '-':
+					coeff = -1
+				x += 1 
+
+
 	variable["value"] = value
 	variable["power"] = power
 	variable["coefficient"] = coefficient
 	return variable
 
-def getToken(terms, symTokens):
+def getToken(terms, symTokens, coeff=1):
+	eqn = {}
+	eqn["type"] = "equation"
+	eqn["coeff"] = coeff
 	tokens = []
 	x = 0
 	while x < len(terms):
 		if isVariable(terms[x]):
 			varTerms = []
-			while symTokens[x] != 'binary':
+			varSymTokens = []
+			brackets = 0
+			while symTokens[x] != 'binary' and brackets == 0:
+				if terms[x] == '{':
+					brackets += 1
+				elif terms[x] == '}':
+					brackets -= 1	
 				varTerms.append(terms[x])
+				varSymTokens.append(symTokens[x])
 				x += 1
 			x -= 1	
 			variable = getVariable(varTerms)
@@ -169,8 +198,14 @@ def getToken(terms, symTokens):
 			if x + 1 < len(terms):
 				if terms[x+1] == '^' or isVariable(terms[x+1]):
 					varTerms = []
-					while symTokens[x] != 'binary':
+					brackets = 0
+					while symTokens[x] != 'binary' and brackets = 0:
+						if terms[x] == '}':
+							brackets += 1
+						elif terms[x] == '{':
+							brackets -= 1	
 						varTerms.append(terms[x])
+						varSymTokens.append(symTokens[x])
 						x += 1
 					x -= 1	
 					variable = getVariable(varTerms)
@@ -196,7 +231,8 @@ def getToken(terms, symTokens):
 			tokens.append(operator)
 
 		x += 1	
-	return tokens		  
+	eqn["tokens"] = tokens	
+	return eqn		  
 
 def tokenizeSymbols(terms):
 	symTokens=[]
