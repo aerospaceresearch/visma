@@ -1,6 +1,30 @@
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 	
+inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
+inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
+
+
+def checkEquation(terms, symTokens):
+	brackets = 0
+	sqrBrackets = 0
+	for i, term in enumerate(terms):
+		if term == '{':
+			brackets += 1
+		elif term == '}':
+			brackets -= 1
+		elif term == '[':
+			sqrBrackets += 1
+		elif term == ']':
+			sqrBrackets -= 1
+		elif term == '^':
+			if symTokens[i+1] == 'binary':
+				return False 					
+	i = len(terms) - 1
+	if symTokens[i] == 'binary' or symTokens[i] == 'unary' or brackets != 0 or sqrBrackets != 0:
+		return False			
+	return True	
+
 def isVariable(term):
 	if term in greek: 
 		return True
@@ -68,11 +92,18 @@ def getTerms(eqn):
 			x += 1
 	return terms
 
-def getVariable(terms):
+def normalize(terms):
+	for term in terms:
+		for i, x in enumerate(inputLaTeX):
+			if x == term:
+				term = inputGreek[i]
+	return terms
+
+def getVariable(terms, symTokens, coeff=1):
 	variable = {}
 	variable["type"] = "variable"
 	value = []
-	coefficient = 1
+	coefficient = coeff
 	power = []
 	x = 0
 	while x < len(terms):
@@ -97,33 +128,55 @@ def getVariable(terms):
 			x += 1
 			if terms[x] == '{':
 				x += 1
+				binary = 0
 				varTerms = []
-				while terms[x] == '}':
-					varTerms.append(terms[x])
-					x += 1
+				varSymTokens = []
+				brackets = 0
+				while x < len(terms):
+					if terms[x] != '}' or brackets != 0:
+						if symTokens[x] == 'binary':
+							binary += 1
+						if terms[x] == '{':
+							brackets += 1
+						elif terms[x] == '}':
+							brackets -= 1	
+						varTerms.append(terms[x])
+						varSymTokens.append(symTokens[x])
+						x += 1
+					else: 
+						break	
 				if len(varTerms) == 1:
 					if isVariable(terms[x]):
 						power[-1] = terms[x]
 					elif isNumber(terms[x]):
 						power[-1] *= getNum(terms[x])
 				else:
-					power[-1] = getVariable(varTerms)
+					if binary == 0:
+						power[-1] = getVariable(varTerms, varSymTokens)
+					else:
+						power[-1] = getToken(varTerms, varSymTokens)
 				x += 1
 					
 			elif isVariable(terms[x]) or isNumber(terms[x]):
 				if x+1 < len(terms):
-					if terms[x+1] == '^':
+					if terms[x+1] == '^' or isNumber(terms[x]) or isVariable(terms[x]):
 						varTerms = []
-						while (isVariable(terms[x]) or isNumber(terms[x])) and terms[x+1] == '^':
-							varTerms.append(terms[x])
-							varTerms.append(terms[x+1])
-							if x + 3 < len(terms) and terms[x+3] == '^':
-								x += 2
+						varSymTokens = []
+						brackets = 0
+						while x < len(terms):
+							if symTokens[x] != "binary" or brackets != 0:
+								if terms[x] == '{':
+									brackets += 1
+								elif terms[x] == '}':
+									brackets -= 1	
+								varTerms.append(terms[x])
+								varSymTokens.append(symTokens[x])
+								x += 1
 							else:
-								varTerms.append(terms[x+2])
-								break						
-						power[-1] = getVariable(varTerms)
-						x += 3
+								break 
+
+						power[-1] = getVariable(varTerms, symTokens)
+						
 					else:
 						if isNumber(terms[x]):
 							power[-1] = getNum(terms[x])
@@ -137,33 +190,124 @@ def getVariable(terms):
 						power[-1] = terms[x]
 					x += 1
 
+			elif symTokens[x] == 'unary':
+				coeff = 1
+				if terms[x] == '-':
+					coeff = -1
+				x += 1 
+				if terms[x] == '{':
+					x += 1
+					binary = 0
+					varTerms = []
+					varSymTokens = []
+					brackets = 0
+					while x < len(terms): 
+						if terms[x] != '}' or brackets != 0:
+							if symTokens[x] == 'binary':
+								binary += 1
+							if terms[x] == '{':
+								brackets += 1
+							elif terms[x] == '}':
+								brackets -= 1	
+							varTerms.append(terms[x])
+							varSymTokens.append(symTokens[x])
+							x += 1
+						else: 
+							break	
+					if len(varTerms) == 1:
+						if isVariable(terms[x]):
+							power[-1] = terms[x]
+						elif isNumber(terms[x]):
+							power[-1] *= getNum(terms[x])
+					else:
+						if binary == 0:
+							power[-1] = getVariable(varTerms, varSymTokens, -1)
+						else:
+							power[-1] = getToken(varTerms, varSymTokens , -1)
+					x += 1
+						
+				elif isVariable(terms[x]) or isNumber(terms[x]):
+					if x+1 < len(terms):
+						if terms[x+1] == '^' or isNumber(terms[x]) or isVariable(terms[x]):
+							varTerms = []
+							varSymTokens = []
+							brackets = 0
+							while x < len(terms):
+								if symTokens[x] != "binary" or brackets != 0:
+									if terms[x] == '{':
+										brackets += 1
+									elif terms[x] == '}':
+										brackets -= 1	
+									varTerms.append(terms[x])
+									varSymTokens.append(symTokens[x])
+									x += 1
+								else:
+									break 
+										 						
+							power[-1] = getVariable(varTerms, symTokens, -1)
+							
+						else:
+							if isNumber(terms[x]):
+								power[-1] = getNum(terms[x])
+							else:
+								power[-1] = terms[x]	
+							x += 1	
+					else:
+						if isNumber(terms[x]):
+							power[-1] = getNum(terms[x])
+						else:	
+							power[-1] = terms[x]
+						x += 1
+
 	variable["value"] = value
 	variable["power"] = power
 	variable["coefficient"] = coefficient
 	return variable
 
-def getToken(terms):
+def getToken(terms, symTokens, coeff=1):
+	eqn = {}
+	eqn["type"] = "equation"
+	eqn["coeff"] = coeff
 	tokens = []
 	x = 0
 	while x < len(terms):
 		if isVariable(terms[x]):
 			varTerms = []
-			while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '*' and terms[x] != '=':
-				varTerms.append(terms[x])
-				x += 1
+			varSymTokens = []
+			brackets = 0
+			while x < len(terms):
+				if symTokens[x] != 'binary' or brackets != 0:
+					if terms[x] == '{':
+						brackets += 1
+					elif terms[x] == '}':
+						brackets -= 1	
+					varTerms.append(terms[x])
+					varSymTokens.append(symTokens[x])	
+					x += 1
+				else:
+					break		
 			x -= 1	
-			variable = getVariable(varTerms)
+			variable = getVariable(varTerms, varSymTokens)
 			tokens.append(variable)
 	
 		elif isNumber(terms[x]):
 			if x + 1 < len(terms):
 				if terms[x+1] == '^' or isVariable(terms[x+1]):
 					varTerms = []
-					while terms[x] != '+' and terms[x] != '-' and terms[x] != '*' and terms[x] != '/' and terms[x] != '=':
-						varTerms.append(terms[x])
+					brackets = 0
+					while x < len (terms):
+						if symTokens[x] != 'binary' or brackets != 0:
+							if terms[x] == '}':
+								brackets += 1
+							elif terms[x] == '{':
+								brackets -= 1	
+							varTerms.append(terms[x])
+							varSymTokens.append(symTokens[x])
+						else:
+							break	
 						x += 1
 					x -= 1	
-					variable = getVariable(varTerms)
+					variable = getVariable(varTerms, varSymTokens)
 					tokens.append(variable)
 				else:
 					variable = {}
@@ -176,46 +320,49 @@ def getToken(terms):
 				variable["value"] = getNum(terms[x])
 				tokens.append(variable)
 				
-		elif terms[x] in symbols:
-			if terms[x] == '*' or terms[x] == '/':
-				operator = {}
-				operator["type"] = "binary"
-				operator["value"] = terms[x]
-				tokens.append(operator)
-			elif terms[x] == '+' or terms == '-':
-				if x == 0:
-					operator = {}
-					operator["type"] = "unary"
-					operator["value"] = terms[x]
-					tokens.append(operator)
-				elif terms[x-1] == '+' or terms[x-1] == '-' or terms[x-1] == '/' or terms[x-1] == '*' or terms[x-1] == '=':
-					operator = {}
-					operator["type"] = "unary"
-					operator["value"] = terms[x]
-					tokens.append(operator)
-				else:
-					operator = {}
-					operator["type"] = "binary"
-					operator["value"] = terms[x]
-					tokens.append(operator)
+		elif terms[x] in ['-', '+', '/', '*', '=']:
+			operator = {}
+			operator["value"] = terms[x]
+			if symTokens[x] == '':
+				operator["type"] = "other"
 			else:
-				operator = {}
-				operator["type"] = "others"	
-				operator["value"] = terms[x]
-				tokens.append(operator)		
-
+				operator["type"] = symTokens[x]	
+			tokens.append(operator)
+		
 		x += 1	
-	return tokens		  
+	eqn["tokens"] = tokens	
+	return eqn		  
 
-				
+def tokenizeSymbols(terms):
+	symTokens=[]
+	for i, term in enumerate(terms):
+		symTokens.append('')
+		if term in symbols:
+			if term == '*' or term == '/':
+				if (isVariable(terms[i-1]) or terms[i-1] == '}') and (isVariable(terms[i+1]) or terms[i+1] == '{' or ((terms[i+1] == '-' or terms[i+1]) and (isVariable(terms[i+2] or terms[i+2])) )):  		
+					symTokens[-1] = "binary"
+			elif term == '+' or term == '-':
+				if i == 0:
+					symTokens[-1] = "unary"
+				elif (isVariable(terms[i-1]) or terms[i-1] == '}') and (isVariable(terms[i+1]) or terms[i+1] == '{' or ((terms[i+1] == '-' or terms[i+1]) and (isVariable(terms[i+2] or terms[i+2])) )):  		
+					symTokens[-1] = "binary"
+				elif terms[i-1] in ['-', '+', '*', '/', '=', '^']:
+					symTokens[-1] = "unary"
+			elif term == '=':
+				symTokens[-1] = "binary"
+	return symTokens
+
+	
 def clean(eqn):
-	cleanEqn = removeSpaces(eqn)
-	print cleanEqn
+	cleanEqn = removeSpaces(eqn) 
 	terms = getTerms(cleanEqn)
-	tokens = getToken(terms)
-	print tokens
+	normalizedTerms = normalize(terms)
+	symTokens = tokenizeSymbols(normalizedTerms)
+	if checkEquation(normalizedTerms, symTokens):
+		tokens = getToken(normalizedTerms, symTokens)
+		print tokens
 
-def tokenizer(eqn="  -  x y^22^22^x^s    +     y^22    =    22   "):
+def tokenizer(eqn="  -  x y^22^22^x^s    +     y^22    =    x  "):
 	clean(eqn)
 
 if __name__ == "__main__":
