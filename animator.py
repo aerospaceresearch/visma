@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-
+import time
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -13,10 +13,13 @@ width = 600
 height = 600
 
 def do_ortho():
+    
     w, h = width, height
     glViewport(0, 0, w, h)
+    
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
+
     size = max(w, h) / 2.0
     aspect = float(w) / float(h)
     if w <= h:
@@ -25,57 +28,31 @@ def do_ortho():
     else:
         glOrtho(-size*aspect, size*aspect, -size, size, -100000.0, 100000.0)
     glScaled(aspect, aspect, 1.0)
+    
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
+    
+
 
 def draw_scene():
     string = []
-    chars = []
     
-    chars[:] = []
-    for i in range(1, 32):
-        chars.append(chr(i))
-    string.append("".join(chars))
-    #print string
-    chars[:] = []
-    for i in range(32, 64):
-        chars.append(chr(i))
-    string.append("".join(chars))
-    #print string
-    chars[:] = []
-    for i in range(64, 96):
-        chars.append(chr(i))
-    string.append("".join(chars))
-    #print string
-    chars[:] = []
-    for i in range(96, 128):
-        chars.append(chr(i))
-    string.append("".join(chars))
-    #print string
-    chars[:] = []
-    for i in range(128, 160):
-        chars.append(chr(i))
-    string.append("".join(chars))
-    #print string
-    chars[:] = []
-    for i in range(160, 192):
-        chars.append(chr(i))
-    string.append("".join(chars))
-    #print string
-    chars[:] = []
-    for i in range(192, 224):
-        chars.append(chr(i))
-    string.append("".join(chars))
-    #print string
-    chars[:] = []
-    for i in range(224, 256):
-        chars.append(chr(i))
-    string.append("".join(chars))
+    string = u'\u03B1'.encode('utf8') + u'\u03B2'.encode('utf8') + u'\u03B3'.encode('utf8') + u'\u03C0'.encode('utf8')
     
+    print string
     glColor3f(1.0, 1.0, 1.0)
-
+   
+    x, y = 0, 0
+    i = 0
+    while  True:
+        i += 1
+        
+        
+        time.sleep(1)
+        glutSwapBuffers()
+    '''
     for i, font in enumerate(fonts):
-        x = -250.0
+        x = 0.0
         yild = 20.0
         for j in range(0, 4):
             y = 275.0 - i * 120.0 - j * yild
@@ -97,13 +74,18 @@ def draw_scene():
                 glTranslatef(x, y, 0.0)
                 font.Render(string[j])
                 glPopMatrix()
-            
-  
+    '''
+
+def render_equation(x, y):
+    
+    glRasterPos(x, y)
+    font.Render(string + str(i))
+
+
 def on_display():
     glClear(GL_COLOR_BUFFER_BIT)
     do_ortho()
     draw_scene()
-    glutSwapBuffers()
 
 def on_reshape(w, h):
     width, height = w, h
@@ -112,21 +94,21 @@ def on_key(key, x, y):
     if key == '\x1b':
         sys.exit(1)
 
-if __name__ == '__main__':
+if __name__ == '__main__':  
     glutInitWindowSize(width, height)
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE)
-    glutCreateWindow("PyFTGL Demo")
+    glutCreateWindow("Equation")
     glClearColor(0.0, 0.0, 0.0, 0.0)
-    f ="/usr/share/fonts/truetype/ttf-liberation/LiberationMono-Regular.ttf"
+    f ="/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"
     #print sys.argv[1]
     try:
         fonts = [
-            FTGL.OutlineFont(f),
-            FTGL.PolygonFont(f),
-            FTGL.TextureFont(f),
+            #FTGL.OutlineFont(f),
+            #FTGL.PolygonFont(f),
+            #FTGL.TextureFont(f),
             FTGL.BitmapFont(f),
-            FTGL.PixmapFont(f),
+            #FTGL.PixmapFont(f),
             ]
         for font in fonts:
             font.FaceSize(24, 72)
