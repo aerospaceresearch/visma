@@ -11,6 +11,32 @@ import FTGL
 fonts = []
 width = 600
 height = 600
+symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
+greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
+    
+inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
+inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
+
+
+def isVariable(term):
+    if term in greek: 
+        return True
+    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
+        x = 0
+        while x < len(term):
+            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+                return False
+            x += 1
+        return True
+
+def isNumber(term):
+    x = 0
+    while x < len(term):
+        if term[x] < '0' or term[x] > '9':
+            return False
+        x += 1  
+    return True
+
 
 def do_ortho():
     
@@ -37,19 +63,19 @@ def do_ortho():
 def draw_scene():
     string = []
     
-    string = u'\u03B1'.encode('utf8') + u'\u03B2'.encode('utf8') + u'\u03B3'.encode('utf8') + u'\u03C0'.encode('utf8')
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}])
     
-    print string
     glColor3f(1.0, 1.0, 1.0)
-   
+    font = fonts[0]
     x, y = 0, 0
     i = 0
-    while  True:
-        i += 1
-        
-        
-        time.sleep(1)
-        glutSwapBuffers()
+    #while  True:
+    i += 1
+    render_equation(x, y, string[0])
+    
+    glutSwapBuffers()
+    time.sleep(10)
     '''
     for i, font in enumerate(fonts):
         x = 0.0
@@ -76,10 +102,27 @@ def draw_scene():
                 glPopMatrix()
     '''
 
-def render_equation(x, y):
+def render_equation(x, y, string):
     
-    glRasterPos(x, y)
-    font.Render(string + str(i))
+
+    for i, term in enumerate(string):
+        if term["type"] == "variable":
+            if len(term["value"])> 0:
+                for j, val in enumerate(term["value"]):
+                    if isVariable(val) or isNumber(str(val)):
+                        glRasterPos(x, y)
+                        x += 20
+                        font.Render(str(val))
+        elif term["type"] == "constant":
+                glRasterPos(x, y)
+                x += 20
+                font.Render(str(term["value"]))
+        elif term["type"] == "binary":
+            if len(term["value"])> 0:
+                glRasterPos(x, y)
+                x += 20
+                font.Render(term["value"])
+
 
 
 def on_display():
@@ -103,6 +146,7 @@ if __name__ == '__main__':
     f ="/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"
     #print sys.argv[1]
     try:
+
         fonts = [
             #FTGL.OutlineFont(f),
             #FTGL.PolygonFont(f),

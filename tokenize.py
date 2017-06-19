@@ -68,8 +68,9 @@ def removeSpaces(eqn):
 	while x < len(eqn):
 		cleanEqn += eqn[x]
 		if eqn[x] == ' ':
-			while (x+1 < len(eqn) and eqn[x+1] == ' '):
-				x += 1
+			while (x+1 < len(eqn)):
+				if (eqn[x+1] == ' '):
+					x += 1
 		x += 1		
 	return cleanEqn
 	
@@ -97,16 +98,18 @@ def getTerms(eqn):
 		elif eqn[x] == '\\':
 			buf = '\\'
 			x += 1
-			while (eqn[x] >= 'a' and eqn[x] <= 'z') or (eqn[x] >= 'A' and eqn[x] <= 'Z'):
-				buf += eqn[x]
-			  	x +=1
+			while x < len(terms):
+				if (eqn[x] >= 'a' and eqn[x] <= 'z') or (eqn[x] >= 'A' and eqn[x] <= 'Z'):
+					buf += eqn[x]
+				  	x +=1
 			terms.append(buf)
 		elif eqn[x] > '0' and eqn[x] < '9':
 			buf = eqn[x]
 			x += 1
-			while eqn[x] > '0' and eqn[x] < '9':
-				buf += eqn[x]
-				x += 1
+			while x < len(terms):
+				if eqn[x] > '0' and eqn[x] < '9':
+					buf += eqn[x]
+					x += 1
 			terms.append(buf)
 		elif eqn[x] in symbols:				
 			terms.append(eqn[x])
@@ -836,8 +839,9 @@ def clean(eqn):
 		tokens = getToken(normalizedTerms, symTokens)
 		print tokens["tokens"]
 
-def tokenizer(eqn="-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}"):
+def tokenizer(eqn="x+y=2^xy^2 "):
 	clean(eqn)
 
 if __name__ == "__main__":
 	tokenizer()
+#-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
