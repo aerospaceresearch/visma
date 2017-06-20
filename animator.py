@@ -52,7 +52,12 @@ def render_variable(x, y, term, level=1, fontSize=24):
     if len(term["value"])> 0:
         for j, val in enumerate(term["value"]):
             if type(val) == dict:
-                pass
+                if val["type"] == 'variable':
+                    x, y = render_variable(x, y, val, level+1)
+                elif val["type"] == 'expression':
+                    x, y = render_equation(x, y, val, level)        
+                else:
+                    pass    
             elif is_variable(str(val)) or is_number(str(val)):
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
@@ -64,6 +69,10 @@ def render_variable(x, y, term, level=1, fontSize=24):
             if type(term["power"][j]) == dict:
                 if term["power"][j]["type"] == 'variable':
                     x, y = render_variable(x, y+10, term["power"][j], level + 1, 2*fontSize/3)
+                elif term["power"][j]["type"] == 'expression':
+                    x, y = render_equation(x, y+10, term["power"][j], level + 1, 2*fontSize/3)    
+                else:  
+                    pass  
             elif is_variable(str(term["power"][j])):
                 glRasterPos(x, y + 10)
                 font.FaceSize(2  * fontSize/3)
@@ -125,9 +134,7 @@ def draw_scene():
     glutSwapBuffers()
     time.sleep(10)
 
-def render_equation(x, y, string):
-    
-
+def render_equation(x, y, string, level=1, fontSize=24):
     for i, term in enumerate(string):
         if term["type"] == "variable":
             x, y = render_variable(x, y, term)
@@ -142,7 +149,10 @@ def render_equation(x, y, string):
                 x += 20
                 font.FaceSize(24, 72)
                 font.Render(term["value"])
-
+        elif term["type"] == "expression":
+            x, y = render_equation(x, y, term, level+1)    
+                
+    return x, y
 
 
 def on_display():

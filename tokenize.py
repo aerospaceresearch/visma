@@ -476,7 +476,7 @@ def getVariable(terms, symTokens, coeff=1):
 
 def getToken(terms, symTokens, coeff=1):
 	eqn = {}
-	eqn["type"] = "equation"
+	eqn["type"] = "expression"
 	eqn["coeff"] = coeff
 	tokens = []
 	x = 0
@@ -839,7 +839,7 @@ def clean(eqn):
 		tokens = getToken(normalizedTerms, symTokens)
 		print tokens["tokens"]
 
-def tokenizer(eqn="x+y=2^xy^2 "):
+def tokenizer(eqn="x+y=2^-{x+y} "):
 	clean(eqn)
 
 if __name__ == "__main__":
