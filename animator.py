@@ -62,7 +62,8 @@ def render_variable(x, y, term, level=1, fontSize=24):
                     font.Render(str(val)) 
             x += 10
             if type(term["power"][j]) == dict:
-                pass
+                if term["power"][j]["type"] == 'variable':
+                    x, y = render_variable(x, y+10, term["power"][j], level + 1, 2*fontSize/3)
             elif is_variable(str(term["power"][j])):
                 glRasterPos(x, y + 10)
                 font.FaceSize(2  * fontSize/3)
@@ -123,31 +124,6 @@ def draw_scene():
     
     glutSwapBuffers()
     time.sleep(10)
-    '''
-    for i, font in enumerate(fonts):
-        x = 0.0
-        yild = 20.0
-        for j in range(0, 4):
-            y = 275.0 - i * 120.0 - j * yild
-            if i >= 3:
-                glRasterPos(x, y)
-                font.Render(string[j])
-            elif i == 2:
-                glEnable(GL_TEXTURE_2D)
-                glEnable(GL_BLEND)
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-                glPushMatrix()
-                glTranslatef(x, y, 0.0)
-                font.Render(string[j])
-                glPopMatrix()
-                glDisable(GL_TEXTURE_2D)
-                glDisable(GL_BLEND)
-            else:
-                glPushMatrix()
-                glTranslatef(x, y, 0.0)
-                font.Render(string[j])
-                glPopMatrix()
-    '''
 
 def render_equation(x, y, string):
     
