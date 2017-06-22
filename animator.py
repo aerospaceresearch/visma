@@ -140,17 +140,40 @@ def render_equation(x, y, string, level=1, fontSize=24):
             x, y = render_variable(x, y, term)
         elif term["type"] == "constant":
                 glRasterPos(x, y)
-                font.FaceSize(24, 72)
+                font.FaceSize(fontSize)
                 x += 20
                 font.Render(str(term["value"]))
         elif term["type"] == "binary":
             if len(term["value"])> 0:
                 glRasterPos(x, y)
                 x += 20
-                font.FaceSize(24, 72)
+                font.FaceSize(fontSize)
                 font.Render(term["value"])
         elif term["type"] == "expression":
-            x, y = render_equation(x, y, term, level+1)    
+            x, y = render_equation(x, y, term, level+1) 
+        elif term["type"] == "sqrt":
+            if term["power"]["type"] == 'constant':
+                glRasterPos(x, y + 5)
+                font.FaceSize(fontSize/2)
+                x += 20
+                font.Render(term["power"]["value"])
+            elif term["power"]["type"] == 'variable':
+                x, y, = render_variable(x, y+5, term["power"], level+1, fontSize/2)
+            elif term["power"]["type"] == 'expression':
+                x, y = render_equation(x, y+5, term["power"], level+1, fontSize/2)
+            glRasterPos(x, y)
+            font.FaceSize(fontSize)
+            font.Render(u"\u221A".encode("utf-8"))
+            if term["eqn"]["type"] == 'constant':
+                glRasterPos(x, y)
+                font.FaceSize(fontSize)
+                x += 20
+                font.Render(term["eqn"]["value"])
+            elif term["eqn"]["type"] == 'variable':
+                x, y, = render_variable(x, y, term["eqn"], level+1, fontSize)
+            elif term["eqn"]["type"] == 'expression':
+                x, y = render_equation(x, y, term["eqn"], level+1, fontSize)
+                       
                 
     return x, y
 
