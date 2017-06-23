@@ -838,9 +838,22 @@ def clean(eqn):
 	if check_equation(normalizedTerms, symTokens):
 		tokens = get_token(normalizedTerms, symTokens)
 		print tokens["tokens"]
+		return tokens["tokens"]
 
 def tokenizer(eqn="x+y=2^-{x+y} "):
 	clean(eqn)
+
+def get_lhs_rhs(tokens):
+	lhs = []
+	rhs = []
+	eqn = False
+	for token in tokens:
+		if token["type"] == 'binary' and token["value"] == '=':
+			eqn = True
+		elif !eqn:
+			lhs.append(token)
+		else:
+			rhs.append(token)		
 
 if __name__ == "__main__":
 	tokenizer()
