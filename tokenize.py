@@ -848,8 +848,9 @@ def get_lhs_rhs(tokens):
 	rhs = []
 	eqn = False
 	for token in tokens:
-		if token["type"] == 'binary' and token["value"] == '=':
-			eqn = True
+		if token["type"] == 'binary':
+			if token["value"] == '=':
+				eqn = True
 		elif !eqn:
 			lhs.append(token)
 		else:
