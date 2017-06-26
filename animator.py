@@ -8,9 +8,93 @@ from OpenGL.GLUT import *
 
 import FTGL
 
-fonts = []
+fontStyle = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"  
+font = FTGL.BitmapFont(fontStyle)
 width = 600
 height = 600
+symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
+greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
+    
+inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
+inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
+
+
+def is_variable(term):
+    if term in greek: 
+        return True
+    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
+        x = 0
+        while x < len(term):
+            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+                return False
+            x += 1
+        return True
+
+def is_number(term):
+    x = 0
+    while x < len(term):
+        if term[x] < '0' or term[x] > '9':
+            return False
+        x += 1  
+    return True
+
+
+def render_variable(x, y, term, level=1, fontSize=24):
+    font.FaceSize(24)
+    if term["coefficient"] == 1:
+        pass
+    elif term["coefficient"] == -1:
+        font.Render(str('-'))
+        x += 10
+    else:
+        font.Render(str(term["coefficient"]))
+        x += 10
+    if len(term["value"])> 0:
+        for j, val in enumerate(term["value"]):
+            if type(val) == dict:
+                if val["type"] == 'variable':
+                    x, y = render_variable(x, y, val, level+1)
+                elif val["type"] == 'expression':
+                    x, y = render_equation(x, y, val, level)        
+                else:
+                    pass    
+            elif is_variable(str(val)) or is_number(str(val)):
+                glRasterPos(x, y)
+                font.FaceSize(fontSize)
+                if val in greek:
+                    font.Render(str(val.encode('utf-8')))
+                else:
+                    font.Render(str(val)) 
+            x += 10
+            if type(term["power"][j]) == dict:
+                if term["power"][j]["type"] == 'variable':
+                    x, y = render_variable(x, y+10, term["power"][j], level + 1, 2*fontSize/3)
+                elif term["power"][j]["type"] == 'expression':
+                    x, y = render_equation(x, y+10, term["power"][j], level + 1, 2*fontSize/3)    
+                else:  
+                    pass  
+            elif is_variable(str(term["power"][j])):
+                glRasterPos(x, y + 10)
+                font.FaceSize(2  * fontSize/3)
+                if term["power"][j] in greek:
+                    font.Render(str(term["power"][j].encode('utf-8')))
+                else:
+                    font.Render(str(term["power"][j]))
+                x += 20   
+            elif is_number(str(term["power"][j])):
+                if term["power"][j] == 1:
+                    x += 10
+                    pass
+                else:
+                    glRasterPos(x, y + 10)
+                    font.FaceSize(2  * fontSize/3)
+                    if term["power"][j] in greek:
+                        font.Render(str(term["power"][j].encode('utf-8')))
+                    else:
+                        font.Render(str(term["power"][j]))
+                    x += 20           
+                    
+    return x, y
 
 def do_ortho():
     
@@ -37,49 +121,61 @@ def do_ortho():
 def draw_scene():
     string = []
     
-    string = u'\u03B1'.encode('utf8') + u'\u03B2'.encode('utf8') + u'\u03B3'.encode('utf8') + u'\u03C0'.encode('utf8')
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}])
     
-    print string
     glColor3f(1.0, 1.0, 1.0)
-   
     x, y = 0, 0
     i = 0
-    while  True:
-        i += 1
-        
-        
-        time.sleep(1)
-        glutSwapBuffers()
-    '''
-    for i, font in enumerate(fonts):
-        x = 0.0
-        yild = 20.0
-        for j in range(0, 4):
-            y = 275.0 - i * 120.0 - j * yild
-            if i >= 3:
-                glRasterPos(x, y)
-                font.Render(string[j])
-            elif i == 2:
-                glEnable(GL_TEXTURE_2D)
-                glEnable(GL_BLEND)
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-                glPushMatrix()
-                glTranslatef(x, y, 0.0)
-                font.Render(string[j])
-                glPopMatrix()
-                glDisable(GL_TEXTURE_2D)
-                glDisable(GL_BLEND)
-            else:
-                glPushMatrix()
-                glTranslatef(x, y, 0.0)
-                font.Render(string[j])
-                glPopMatrix()
-    '''
-
-def render_equation(x, y):
+    #while  True:
+    i += 1
+    render_equation(x, y, string[1])
     
-    glRasterPos(x, y)
-    font.Render(string + str(i))
+    glutSwapBuffers()
+    time.sleep(10)
+
+def render_equation(x, y, string, level=1, fontSize=24):
+    for i, term in enumerate(string):
+        if term["type"] == "variable":
+            x, y = render_variable(x, y, term)
+        elif term["type"] == "constant":
+                glRasterPos(x, y)
+                font.FaceSize(fontSize)
+                x += 20
+                font.Render(str(term["value"]))
+        elif term["type"] == "binary":
+            if len(term["value"])> 0:
+                glRasterPos(x, y)
+                x += 20
+                font.FaceSize(fontSize)
+                font.Render(term["value"])
+        elif term["type"] == "expression":
+            x, y = render_equation(x, y, term, level+1) 
+        elif term["type"] == "sqrt":
+            if term["power"]["type"] == 'constant':
+                glRasterPos(x, y + 5)
+                font.FaceSize(fontSize/2)
+                x += 20
+                font.Render(term["power"]["value"])
+            elif term["power"]["type"] == 'variable':
+                x, y, = render_variable(x, y+5, term["power"], level+1, fontSize/2)
+            elif term["power"]["type"] == 'expression':
+                x, y = render_equation(x, y+5, term["power"], level+1, fontSize/2)
+            glRasterPos(x, y)
+            font.FaceSize(fontSize)
+            font.Render(u"\u221A".encode("utf-8"))
+            if term["eqn"]["type"] == 'constant':
+                glRasterPos(x, y)
+                font.FaceSize(fontSize)
+                x += 20
+                font.Render(term["eqn"]["value"])
+            elif term["eqn"]["type"] == 'variable':
+                x, y, = render_variable(x, y, term["eqn"], level+1, fontSize)
+            elif term["eqn"]["type"] == 'expression':
+                x, y = render_equation(x, y, term["eqn"], level+1, fontSize)
+                       
+                
+    return x, y
 
 
 def on_display():
@@ -100,22 +196,7 @@ if __name__ == '__main__':
     glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE)
     glutCreateWindow("Equation")
     glClearColor(0.0, 0.0, 0.0, 0.0)
-    f ="/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"
-    #print sys.argv[1]
-    try:
-        fonts = [
-            #FTGL.OutlineFont(f),
-            #FTGL.PolygonFont(f),
-            #FTGL.TextureFont(f),
-            FTGL.BitmapFont(f),
-            #FTGL.PixmapFont(f),
-            ]
-        for font in fonts:
-            font.FaceSize(24, 72)
-    except Exception as e:
-	print e
-        print "usage:", sys.argv[0], "font_filename.ttf"
-        sys.exit(0)
+    font.FaceSize(24, 72)
 
     glutDisplayFunc(on_display)
     glutReshapeFunc(on_reshape)
