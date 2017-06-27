@@ -122,17 +122,25 @@ def draw_scene():
     string = []
     
     string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}]) 
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
     string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}])
     
     glColor3f(1.0, 1.0, 1.0)
-    x, y = 0, 0
     i = 0
-    #while  True:
-    i += 1
-    render_equation(x, y, string[1])
-    
-    glutSwapBuffers()
-    time.sleep(10)
+    x, y = -50, 0    
+    while i < len(string):
+        glClear(GL_COLOR_BUFFER_BIT)
+        i += 1
+        j = 0
+        tempY = y
+        while j < i:
+            render_equation(x, tempY, string[j])
+            tempY -= 50
+            j += 1
+        y += 50
+        glutSwapBuffers()
+        time.sleep(2)
 
 def render_equation(x, y, string, level=1, fontSize=24):
     for i, term in enumerate(string):
@@ -181,6 +189,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
 def on_display():
     glClear(GL_COLOR_BUFFER_BIT)
     do_ortho()
+    print "Test"
     draw_scene()
 
 def on_reshape(w, h):
@@ -200,6 +209,6 @@ if __name__ == '__main__':
 
     glutDisplayFunc(on_display)
     glutReshapeFunc(on_reshape)
-    glutKeyboardUpFunc(on_key)
+    #glutKeyboardUpFunc(on_key)
 
     glutMainLoop()
