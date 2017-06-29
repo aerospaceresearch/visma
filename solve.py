@@ -1,3 +1,13 @@
+def is_number(term):
+	if isinstance(term, int) or isinstance(term, float):
+		return True
+	else:	
+	    x = 0
+	    while x < len(term):
+	        if term[x] < '0' or term[x] > '9':
+	            return False
+	        x += 1  
+	    return True
 
 class Linear(object):
 	def __init__(self, tokens):
@@ -66,7 +76,53 @@ class ExpressionCompatibility(object):
 							variable["after"].append('')
 					else:
 						variable["after"].append('')
-					variables.append(variable)	
+					variables.append(variable)
+			if term["type"] == 'constant':
+				skip = False
+				for var in variables:
+					if isinstance(var["value"], list) and is_number(var["value"][0]):
+						var["value"].append(term["value"])
+						var["power"].append(1)
+						if i != 0:
+							if self.tokens[i-1]["type"] == 'binary':
+								var["before"].append(self.tokens[i-1]["value"])
+							else:
+								var["before"].append('')
+						else:
+							var["before"].append('')
+
+						if i+1 < len(self.tokens):
+							if self.tokens[i+1]["type"] == 'binary':
+								var["after"].append(self.tokens[i+1]["value"])
+							else:
+								var["after"].append('')
+						else:
+							var["after"].append('')
+						skip = True
+						break
+				if not skip: 
+					variable = {}
+					variable["value"] = [term["value"]]
+					variable["power"] = []
+					variable["before"] = []
+					variable["after"] = []
+					variable["power"].append(1)
+					if i != 0:
+						if self.tokens[i-1]["type"] == 'binary':
+							variable["before"].append(self.tokens[i-1]["value"])
+						else:
+							variable["before"].append('')
+					else:
+						variable["before"].append('')
+
+					if i+1 < len(self.tokens):
+						if self.tokens[i+1]["type"] == 'binary':
+							variable["after"].append(self.tokens[i+1]["value"])
+						else:
+							variable["after"].append('')
+					else:
+						variable["after"].append('')
+					variables.append(variable)				
 		print variables
 		return variables
 			
