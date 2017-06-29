@@ -68,7 +68,7 @@ def remove_spaces(eqn):
 	while x < len(eqn):
 		cleanEqn += eqn[x]
 		if eqn[x] == ' ':
-			while (x+1 < len(eqn)):
+			while (x+1 < len(eqn) and eqn[x+1] == ' '):
 				if (eqn[x+1] == ' '):
 					x += 1
 		x += 1		
@@ -1091,7 +1091,7 @@ def clean(eqn):
 		print tokens["tokens"]
 		return tokens["tokens"]
 
-def tokenizer(eqn="x+y=2^-{x+y} "):
+def tokenizer(eqn=" x + 6 / 3 - 2x = 7 "):
 	clean(eqn)
 
 def get_lhs_rhs(tokens):
@@ -1110,3 +1110,4 @@ def get_lhs_rhs(tokens):
 if __name__ == "__main__":
 	tokenizer()
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
+#x+y=2^-{x+y}
