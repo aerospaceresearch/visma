@@ -19,63 +19,63 @@ class ExpressionCompatibility(object):
 		self.variables = []
 		self.variables.extend(self.get_level_variables())
 
-	def get_level_variables():
+	def get_level_variables(self):
 		variables = []
 		for i, term in enumerate(self.tokens):
-			if term["type"] = 'variable':
+			if term["type"] == 'variable':
 				skip = False
 				for var in variables:
 					if var["value"] == term["value"]:
 						var["power"].append(term["power"])
 						if i != 0:
-							if tokens[i-1]["type"] == 'binary':
-								var["before"].append(tokens[i-1]["value"])
+							if self.tokens[i-1]["type"] == 'binary':
+								var["before"].append(self.tokens[i-1]["value"])
 							else:
 								var["before"].append('')
 						else:
 							var["before"].append('')
 
 						if i+1 < len(self.tokens):
-							if tokens[i+1]["type"] == 'binary':
-								var["after"].append(tokens[i-1]["value"])
+							if self.tokens[i+1]["type"] == 'binary':
+								var["after"].append(self.tokens[i+1]["value"])
 							else:
 								var["after"].append('')
 						else:
 							var["after"].append('')
 						skip = True
 						break
-
 				if not skip: 
 					variable = {}
 					variable["value"] = term["value"]
 					variable["power"] = []
 					variable["before"] = []
 					variable["after"] = []
-					var["power"].append(term["power"])
+					variable["power"].append(term["power"])
 					if i != 0:
-						if tokens[i-1]["type"] == 'binary':
-							var["before"].append(tokens[i-1]["value"])
+						if self.tokens[i-1]["type"] == 'binary':
+							variable["before"].append(self.tokens[i-1]["value"])
 						else:
-							var["before"].append('')
+							variable["before"].append('')
 					else:
-						var["before"].append('')
+						variable["before"].append('')
 
 					if i+1 < len(self.tokens):
-						if tokens[i+1]["type"] == 'binary':
-							var["after"].append(tokens[i-1]["value"])
+						if self.tokens[i+1]["type"] == 'binary':
+							variable["after"].append(self.tokens[i+1]["value"])
 						else:
-							var["after"].append('')
+							variable["after"].append('')
 					else:
-						var["after"].append('')
-
-
+						variable["after"].append('')
+					variables.append(variable)	
+		print variables
+		return variables
 			
 		
-def check_types(lTokens, rTokens = 0):
+def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
 	else:
-		expressionCompatible = ExpressionCompatibility(tokens)		
+		expressionCompatible = ExpressionCompatibility(lTokens)		
 
 if __name__ == '__main__':
-			check_types([])		
+			check_types()		
