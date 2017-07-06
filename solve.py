@@ -27,102 +27,139 @@ class ExpressionCompatibility(object):
 		super(ExpressionCompatibility, self).__init__()
 		self.tokens = tokens
 		self.variables = []
-		self.variables.extend(self.get_level_variables())
+		self.variables.extend(self.get_level_variables(self.tokens))
 
-	def get_level_variables(self):
+	def get_level_variables(self, tokens):
 		variables = []
-		for i, term in enumerate(self.tokens):
+		for i, term in enumerate(tokens):
 			if term["type"] == 'variable':
 				skip = False
 				for var in variables:
 					if var["value"] == term["value"]:
 						var["power"].append(term["power"])
 						if i != 0:
-							if self.tokens[i-1]["type"] == 'binary':
-								var["before"].append(self.tokens[i-1]["value"])
+							if tokens[i-1]["type"] == 'binary':
+								var["before"].append(tokens[i-1]["value"])
+								var["before_scope"].append(tokens[i-1]["scope"])
 							else:
 								var["before"].append('')
+								var["before_scope"].append('')
 						else:
 							var["before"].append('')
+							var["before_scope"].append('')
 
-						if i+1 < len(self.tokens):
-							if self.tokens[i+1]["type"] == 'binary':
-								var["after"].append(self.tokens[i+1]["value"])
+						if i+1 < len(tokens):
+							if tokens[i+1]["type"] == 'binary':
+								var["after"].append(tokens[i+1]["value"])
+								var["after_scope"].append(tokens[i+1]["scope"])
 							else:
 								var["after"].append('')
+								var["after_scope"].append('')
 						else:
 							var["after"].append('')
+							var["after_scope"].append('')
 						skip = True
 						break
 				if not skip: 
 					variable = {}
+					variable["type"] = "variable"
 					variable["value"] = term["value"]
 					variable["power"] = []
 					variable["before"] = []
+					variable["before_scope"] = []
 					variable["after"] = []
+					variable["after_scope"] = []
+
 					variable["power"].append(term["power"])
 					if i != 0:
-						if self.tokens[i-1]["type"] == 'binary':
-							variable["before"].append(self.tokens[i-1]["value"])
+						if tokens[i-1]["type"] == 'binary':
+							variable["before"].append(tokens[i-1]["value"])
+							variable["before_scope"].append(tokens[i-1]["scope"])
 						else:
 							variable["before"].append('')
+							variable["before_scope"].append('')
 					else:
 						variable["before"].append('')
+						variable["before_scope"].append('')
 
-					if i+1 < len(self.tokens):
-						if self.tokens[i+1]["type"] == 'binary':
-							variable["after"].append(self.tokens[i+1]["value"])
+					if i+1 < len(tokens):
+						if tokens[i+1]["type"] == 'binary':
+							variable["after"].append(tokens[i+1]["value"])
+							variable["after_scope"].append(tokens[i+1]["scope"])
 						else:
 							variable["after"].append('')
+							variable["after_scope"].append('')
 					else:
 						variable["after"].append('')
+						variable["after_scope"].append('')
 					variables.append(variable)
-			if term["type"] == 'constant':
+			elif term["type"] == 'constant':
 				skip = False
 				for var in variables:
 					if isinstance(var["value"], list) and is_number(var["value"][0]):
 						var["value"].append(term["value"])
 						var["power"].append(1)
 						if i != 0:
-							if self.tokens[i-1]["type"] == 'binary':
-								var["before"].append(self.tokens[i-1]["value"])
+							if tokens[i-1]["type"] == 'binary':
+								var["before"].append(tokens[i-1]["value"])
+								var["before_scope"].append(tokens[i-1]["scope"])
 							else:
 								var["before"].append('')
+								var["before_scope"].append('')
 						else:
 							var["before"].append('')
+							var["before_scope"].append('')
 
-						if i+1 < len(self.tokens):
-							if self.tokens[i+1]["type"] == 'binary':
-								var["after"].append(self.tokens[i+1]["value"])
+						if i+1 < len(tokens):
+							if tokens[i+1]["type"] == 'binary':
+								var["after"].append(tokens[i+1]["value"])
+								var["after_scope"].append(tokens[i+1]["scope"])
 							else:
 								var["after"].append('')
+								var["after_scope"].append('')
 						else:
 							var["after"].append('')
+							var["after_scope"].append('')
 						skip = True
 						break
 				if not skip: 
 					variable = {}
+					variable["type"] = "constant"
 					variable["value"] = [term["value"]]
 					variable["power"] = []
 					variable["before"] = []
+					variable["before_scope"] = []
 					variable["after"] = []
+					variable["after_scope"] = []
 					variable["power"].append(1)
 					if i != 0:
-						if self.tokens[i-1]["type"] == 'binary':
-							variable["before"].append(self.tokens[i-1]["value"])
+						if tokens[i-1]["type"] == 'binary':
+							variable["before"].append(tokens[i-1]["value"])
+							variable["before_scope"].append(tokens[i-1]["scope"])
 						else:
 							variable["before"].append('')
+							variable["before_scope"].append('')
 					else:
 						variable["before"].append('')
+						variable["before_scope"].append('')
 
-					if i+1 < len(self.tokens):
-						if self.tokens[i+1]["type"] == 'binary':
-							variable["after"].append(self.tokens[i+1]["value"])
+					if i+1 < len(tokens):
+						if tokens[i+1]["type"] == 'binary':
+							variable["after"].append(tokens[i+1]["value"])
+							variable["after_scope"].append(tokens[i+1]["scope"])
 						else:
 							variable["after"].append('')
+							variable["after_scope"].append('')
 					else:
 						variable["after"].append('')
-					variables.append(variable)				
+						variable["after_scope"].append('')
+					variables.append(variable)
+			elif term["type"] == "expression":
+				variable = {}
+				variable["type"] = "expression"
+				variable["value"] = self.get_level_variables(term["tokens"]) 
+
+		print variables							
 		return variables
 			
 		
