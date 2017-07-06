@@ -1,3 +1,12 @@
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module is created to handle the GUI of the project, this module interacts with all the other modules on occurence of some event.
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
+
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
