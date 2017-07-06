@@ -1,3 +1,14 @@
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module's basic purpose is to be able to tokenize every possible input given by the user into a consistent key-value pair format for 
+	each equation/expression. Redundant data has been provided with the tokens on purpose, to make the job of future developers easier. 
+	Still far from perfect and requires a bit of clean up.
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
+
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 	

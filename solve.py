@@ -1,3 +1,13 @@
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module aims to create a sort of middleware module to call other modules which can handle/solve different types of equations and 
+	expressions.
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
+
 def is_number(term):
 	if isinstance(term, int) or isinstance(term, float):
 		return True

@@ -1,5 +1,15 @@
 #!/usr/bin/python
 
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module is aimed at creating a one function call animator. The developer will only need to make a function call with the list of
+	equations that were achieved while solving the problem, and this module will do the rest.
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
+
 import sys
 import time
 from OpenGL.GL import *
