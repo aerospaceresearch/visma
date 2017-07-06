@@ -123,7 +123,6 @@ class ExpressionCompatibility(object):
 					else:
 						variable["after"].append('')
 					variables.append(variable)				
-		print variables
 		return variables
 			
 		
