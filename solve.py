@@ -38,6 +38,11 @@ class ExpressionCompatibility(object):
 		self.tokens = tokens
 		self.variables = []
 		self.variables.extend(self.get_level_variables(self.tokens))
+		self.availableOperations = self.get_available_operations(self.variables)
+
+	def get_available_operations(self, variables):
+		operations = []
+
 
 	def get_level_variables(self, tokens):
 		variables = []
@@ -47,6 +52,7 @@ class ExpressionCompatibility(object):
 				for var in variables:
 					if var["value"] == term["value"]:
 						var["power"].append(term["power"])
+						var["coefficient"].append(term["coefficient"])
 						if i != 0:
 							if tokens[i-1]["type"] == 'binary':
 								var["before"].append(tokens[i-1]["value"])
@@ -75,12 +81,13 @@ class ExpressionCompatibility(object):
 					variable["type"] = "variable"
 					variable["value"] = term["value"]
 					variable["power"] = []
+					variable["coefficient"] = []
 					variable["before"] = []
 					variable["before_scope"] = []
 					variable["after"] = []
 					variable["after_scope"] = []
-
 					variable["power"].append(term["power"])
+					variable["coefficient"].append(term["coefficient"])
 					if i != 0:
 						if tokens[i-1]["type"] == 'binary':
 							variable["before"].append(tokens[i-1]["value"])
@@ -108,7 +115,7 @@ class ExpressionCompatibility(object):
 				for var in variables:
 					if isinstance(var["value"], list) and is_number(var["value"][0]):
 						var["value"].append(term["value"])
-						var["power"].append(1)
+						var["power"].append(term["power"])
 						if i != 0:
 							if tokens[i-1]["type"] == 'binary':
 								var["before"].append(tokens[i-1]["value"])
@@ -141,7 +148,7 @@ class ExpressionCompatibility(object):
 					variable["before_scope"] = []
 					variable["after"] = []
 					variable["after_scope"] = []
-					variable["power"].append(1)
+					variable["power"].append(term["power"])
 					if i != 0:
 						if tokens[i-1]["type"] == 'binary':
 							variable["before"].append(tokens[i-1]["value"])
@@ -165,19 +172,84 @@ class ExpressionCompatibility(object):
 						variable["after_scope"].append('')
 					variables.append(variable)
 			elif term["type"] == "expression":
-				variable = {}
-				variable["type"] = "expression"
-				variable["value"] = self.get_level_variables(term["tokens"]) 
+				var = self.get_level_variables(term["tokens"])
+				retType, val = self.extract_expression(var)
+				if retType == "expression":
+					variable = {}
+					variable["type"] = "expression"
+					variable["value"] = val
+					variables.append(variable)
+				elif retType == "constant":
+					skip = False
+					for var in variables:
+						if isinstance(var["value"], list) and is_number(var["value"][0]):
+							var["value"].append(val["value"])
+							var["power"].append(val["power"])
+							var["before"].append(val["before"])
+							var["before_scope"].append(val["before_scope"])
+							var["after"].append(val["after"])
+							var["after_scope"].append(val["after_scope"])
+							skip = True
+							break
+					if not skip: 
+						var = {}
+						var["type"] = "constant"
+						var["value"] = [val["value"]]
+						var["power"] = [val["power"]]
+						var["before"] = [val["before"]]
+						var["before_scope"] = [val["before_scope"]]
+						var["after"] = [val["after"]]
+						var["after_scope"] = [val["after_scope"]]
+						variables.append(var)
+				elif retType == "variable":
+					skip = False
+					for var in variables:
+						if var["value"] == val["value"]:
+							var["value"].append(val["value"])
+							var["power"].append(val["power"])
+							var["before"].append(val["before"])
+							var["before_scope"].append(val["before_scope"])
+							var["after"].append(val["after"])
+							var["after_scope"].append(val["after_scope"])
+							var["coefficient"].append(val["coefficient"])
+							skip = True
+							break
+					if not skip: 
+						var = {}
+						var["type"] = "variable"
+						var["coefficient"] = [val["coefficient"]]
+						var["value"] = [val["value"]]
+						var["power"] = [val["power"]]
+						var["before"] = [val["before"]]
+						var["before_scope"] = [val["before_scope"]]
+						var["after"] = [val["after"]]
+						var["after_scope"] = [val["after_scope"]]
+						variables.append(var)
+
 
 		print variables							
 		return variables
 			
+	def extract_expression(self, variable):
+		retType = ''
+		if len(variable) == 1:
+			if variable[0]["type"] == "expression":
+				retType, variable = extract_expression(variable[0]["value"])
+			elif variable[0]["type"] == "constant":
+				return "constant", variable[0]
+			elif variable[0]["type"] == "variable":
+				return "variable", variable[0]
+		else:
+			retType = "mixed"
+
+
 		
-def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
+def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
 	else:
-		expressionCompatible = ExpressionCompatibility(lTokens)		
+		expressionCompatible = ExpressionCompatibility(lTokens)
+
 
 if __name__ == '__main__':
 			check_types()		

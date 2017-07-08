@@ -235,6 +235,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 									variable = {}
 									variable["type"] = "constant"
 									variable["value"] = get_num(terms[x-1])
+									variable["power"] = 1
 									tempScope = []
 									tempScope.extend(scope)
 									tempScope.append(level)
@@ -458,6 +459,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 										variable = {}
 										variable["type"] = "constant"
 										variable["value"] = get_num(terms[x-1])
+										variable["power"] = 1
 										tempScope = []
 										tempScope.extend(scope)
 										tempScope.append(level)
@@ -694,6 +696,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 					tempScope.append(level)
 					variable["type"] = "constant"
 					variable["scope"] = tempScope
+					variable["power"] = 1
 					variable["value"] = get_num(terms[x])
 					level += 1
 					tokens.append(variable)
@@ -704,6 +707,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 				tempScope.append(level)
 				variable["type"] = "constant"
 				variable["scope"] = tempScope
+				variable["power"] = 1
 				variable["value"] = get_num(terms[x])
 				level += 1
 				tokens.append(variable)
@@ -788,6 +792,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 								variable = {}
 								variable["type"] = "constant"
 								variable["value"] = get_num(terms[x-1])
+								variable["power"] = 1
 								tempScope = []
 								tempScope.extend(scope)
 								tempScope.append(level)
@@ -957,6 +962,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 									variable = {}
 									variable["type"] = "constant"
 									variable["value"] = get_num(terms[x-1])
+									variable["power"] = 1
 									tempScope = []
 									tempScope.extend(scope)
 									tempScope.append(level)
@@ -1131,6 +1137,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 						variable = {}
 						variable["type"] = "constant"
 						variable["value"] = get_num(terms[x])
+						variable["power"] = 1
 						tempScope = []
 						tempScope.extend(scope)
 						tempScope.append(level)
@@ -1141,6 +1148,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 					variable = {}
 					variable["type"] = "constant"
 					variable["value"] = get_num(terms[x])
+					variable["power"] = 1
 					tempScope = []
 					tempScope.extend(scope)
 					tempScope.append(level)
@@ -1181,6 +1189,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 					variable = {}
 					variable["type"] = "constant"
 					variable["value"] = get_num(terms[x-1])
+					variable["power"] = 1
 					tempScope = []
 					tempScope.extend(scope)
 					tempScope.append(level)
@@ -1239,6 +1248,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 					variable = {}
 					variable["type"] = "constant"
 					variable["value"] = get_num(terms[x-1])
+					variable["power"] = 1
 					tempScope = []
 					tempScope.extend(scope)
 					tempScope.append(level)
