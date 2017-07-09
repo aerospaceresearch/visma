@@ -211,7 +211,6 @@ class ExpressionCompatibility(object):
 					skip = False
 					for var in variables:
 						if var["value"] == val["value"]:
-							var["value"].append(val["value"])
 							var["power"].append(val["power"])
 							var["before"].append('')
 							var["before_scope"].append('')
@@ -225,7 +224,7 @@ class ExpressionCompatibility(object):
 						var = {}
 						var["type"] = "variable"
 						var["coefficient"] = [val["coefficient"]]
-						var["value"] = [val["value"]]
+						var["value"] = val["value"]
 						var["power"] = [val["power"]]
 						var["scope"] = [val["scope"]]
 						var["before"] = ['']
@@ -233,7 +232,59 @@ class ExpressionCompatibility(object):
 						var["after"] = ['']
 						var["after_scope"] = ['']
 						variables.append(var)
-
+				elif retType == "mixed":
+					for v in val:
+						if v["type"] == "variable":
+							for var in variables:
+								if var["value"] == v["value"]:
+									var["power"].extend(v["power"])
+									var["before"].extend(v["before"])
+									var["before_scope"].extend(v["before_scope"])
+									var["after"].extend(v["after"])
+									var["after_scope"].extend(v["after_scope"])
+									var["coefficient"].extend(v["coefficient"])
+									var["scope"].extend(v["scope"])
+									skip = True
+									break
+							if not skip: 
+								var = {}
+								var["type"] = "variable"
+								var["coefficient"] = [v["coefficient"]]
+								var["value"] = v["value"]
+								var["power"] = [v["power"]]
+								var["scope"] = [v["scope"]]
+								var["before"] = [v["before"]]
+								var["before_scope"] = [v["before_scope"]]
+								var["after"] = [v["after"]]
+								var["after_scope"] = [v["after_scope"]]
+								variables.append(var)
+						elif v["type"] == "constant":
+							for var in variables:
+								if isinstance(var["value"], list) and is_number(var["value"][0]):
+									var["value"].extend(v["value"])
+									var["power"].extend(v["power"])
+									var["before"].extend(v["before"])
+									var["before_scope"].extend(v["before_scope"])
+									var["after"].extend(v["after"])
+									var["after_scope"].extend(v["after_scope"])
+									var["coefficient"].extend(v["coefficient"])
+									var["scope"].extend(v["scope"])
+									skip = True
+									break
+							if not skip: 
+								var = {}
+								var["type"] = "constant"
+								var["coefficient"] = [v["coefficient"]]
+								var["value"] = [v["value"]]
+								var["power"] = [v["power"]]
+								var["scope"] = [v["scope"]]
+								var["before"] = [v["before"]]
+								var["before_scope"] = [v["before_scope"]]
+								var["after"] = [v["after"]]
+								var["after_scope"] = [v["after_scope"]]
+								variables.append(var)
+						elif v["type"] == "expression":
+							variables.append(v)		
 
 		print variables							
 		return variables
@@ -248,10 +299,11 @@ class ExpressionCompatibility(object):
 			elif variable[0]["type"] == "variable":
 				return "variable", variable[0]
 		else:
-			retType = "mixed"
 			val = []
-			if self.eval_expressions(variable):
-				pass	
+			if not self.eval_expressions(variable):
+				return "expression", self.get_level_variables(variable)
+			else:
+				return "mixed", self.get_level_variables(variable)
 
 	def eval_expressions(self, variables):
 		constantCount = 0
@@ -327,6 +379,8 @@ class ExpressionCompatibility(object):
 					if not match:	
 						var.append([variable["value"]])			
 						varPowers.append([variable["power"]])
+		return True
+
 
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
