@@ -254,9 +254,80 @@ class ExpressionCompatibility(object):
 				pass	
 
 	def eval_expressions(self, variables):
+		constantCount = 0
+		var = []
+		varPowers = []
 		for variable in variables:
-			if variable["type"]
-		
+			if variable["type"] == "expression":
+				if eval_expressions(variable["tokens"]):
+					return False
+			elif variable["type"] == "variable":
+				prev = False
+				nxt = False
+				if i != 0:
+					if tokens[i-1]["type"] == 'binary':
+						if tokens[i-1]["value"] in ['-', '+']:
+							prev = True
+					else:
+						print tokens[i-1]
+				else:
+					prev = True
+				
+				if i+1 < len(tokens):
+					if tokens[i+1]["type"] == 'binary':
+						if tokens[i+1]["value"] in ['-', '+']:
+							nxt = True
+					else:
+						print tokens[i+1]
+				else:
+					nxt = True
+				if nxt and prev:
+					match = False	
+					for i, v in enumerate(var):
+						if variable["value"] == v:
+							for j, p in enumerate(varPowers[i]):
+								if variable["power"] == p:
+									return False
+							varPowers[i].append(variable["power"])
+							match = True
+							break
+					if not match:	
+						var.append(variable["value"])
+						varPowers.append([variable["power"]])
+			elif variable["type"] == "constant":
+				prev = False
+				nxt = False
+				if i != 0:
+					if tokens[i-1]["type"] == 'binary':
+						if tokens[i-1]["value"] in ['-', '+']:
+							prev = True
+					else:
+						print tokens[i-1]
+				else:
+					prev = True
+				
+				if i+1 < len(tokens):
+					if tokens[i+1]["type"] == 'binary':
+						if tokens[i+1]["value"] in ['-', '+']:
+							nxt = True
+					else:
+						print tokens[i+1]
+				else:
+					nxt = True
+				if nxt and prev:
+					match = False
+					for i, v in enumerate(var):
+						if isinstance(v["value"], list) and is_number(v["value"][0]):
+							for j, p in enumerate(varPowers[i]):
+								if variable["power"] == p:
+									return False
+							varPowers[i].append(variable["power"])
+							match = True
+							break
+					if not match:	
+						var.append([variable["value"]])			
+						varPowers.append([variable["power"]])
+
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
@@ -265,4 +336,4 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 
 
 if __name__ == '__main__':
-			check_types()		
+			check_types()
