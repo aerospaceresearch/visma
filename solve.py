@@ -38,10 +38,58 @@ class ExpressionCompatibility(object):
 		self.tokens = tokens
 		self.variables = []
 		self.variables.extend(self.get_level_variables(self.tokens))
-		self.availableOperations = self.get_available_operations(self.variables)
+		self.availableOperations = self.get_available_operations(self.variables, self.tokens)
 
-	def get_available_operations(self, variables):
+	def get_available_operations(self, variables, tokens):
 		operations = []
+		for i, token in enumerate(tokens):
+			if token["type"] == 'binary':
+				if token["value"] in ['*', '/']:
+					prev = False
+					nxt = False
+					if i != 0:
+						if tokens[i-1]["type"] in ["variable", "constant"]:
+							prev = True
+					if i+1 < len(tokens):
+						if tokens[i+1]["type"] in ["variable", "constant"]:
+							nxt = True
+					if nxt and prev:
+						op = token["value"]
+						if not op in operations:
+							operations.append(op)
+		for i, variable in enumerate(variables):
+			if variable["type"] == "constant":
+				if len(value) > 1:
+					count = 0
+					ops = []
+					for j in xrange(len(value)):
+						if variable["after"] in ['+','-',''] and variable["before"] in ['+', '-']:
+							count += 1
+							if not variable["before"] in ops:
+								ops.append(variable["before"])
+					if count > 1:
+						for op in ops:
+							if not op in operations:
+								operations.append(op)			
+			elif variable["type"] == "variable":
+				if len(value) > 1:
+					count = 0
+					ops = []
+					for j in xrange(len(value)):
+						if variable["after"] in ['+','-',''] and variable["before"] in ['+', '-']:
+							count += 1
+							if not variable["before"] in ops:
+								ops.append(variable["before"])
+
+			elif variable["type"] == "expression":
+				ops = self.get_available_operations(variable["value"], variable["tokens"])
+				for op in ops:
+					if not op in operations:
+						operations.append(op)
+						
+		print operations
+		return operations								
+
 				
 
 	def get_level_variables(self, tokens):
@@ -182,6 +230,7 @@ class ExpressionCompatibility(object):
 					variable = {}
 					variable["type"] = "expression"
 					variable["value"] = val
+					variable["tokens"] = term["tokens"]
 					variables.append(variable)
 				elif retType == "constant":
 					skip = False
@@ -285,8 +334,7 @@ class ExpressionCompatibility(object):
 								variables.append(var)
 						elif v["type"] == "expression":
 							variables.append(v)		
-
-		print variables							
+						
 		return variables
 
 	def extract_expression(self, variable):
@@ -379,6 +427,20 @@ class ExpressionCompatibility(object):
 					if not match:	
 						var.append([variable["value"]])			
 						varPowers.append([variable["power"]])
+		for i, variable in enumerate(variables):
+			if variable["type"] == 'binary':
+				prev = False
+				nxt = False
+				if variable["value"] in ['*', '/']:
+					if i != 0:
+						if variables[i-1]["type"] in ["variable", "constant"]:
+							prev = True
+					if i+1 < len(variables):
+						if variables[i+1]["type"] in ["variable", "constant"]:
+							nxt = True
+					if prev and nxt:
+						return False
+
 		return True
 
 
