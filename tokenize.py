@@ -1328,9 +1328,13 @@ def get_lhs_rhs(tokens):
 	if not isinstance(tokens, list):
 		return False, False
 	for token in tokens:
-		if token["type"] == 'binary':
+		if token["type"] == 'binary' :
 			if token["value"] == '=':
 				eqn = True
+			elif not eqn:
+				lhs.append(token)
+			else:
+				rhs.append(token)		
 		elif not eqn:
 			lhs.append(token)
 		else:

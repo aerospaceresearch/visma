@@ -59,35 +59,45 @@ class ExpressionCompatibility(object):
 							operations.append(op)
 		for i, variable in enumerate(variables):
 			if variable["type"] == "constant":
-				if len(value) > 1:
+				if len(variable["value"]) > 1:
 					count = 0
 					ops = []
-					for j in xrange(len(value)):
-						if variable["after"] in ['+','-',''] and variable["before"] in ['+', '-']:
+					for j in xrange(len(variable["value"])):
+						if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
 							count += 1
-							if not variable["before"] in ops:
-								ops.append(variable["before"])
+							if not (variable["before"][j] in ops):
+								ops.append(variable["before"][j])
 					if count > 1:
 						for op in ops:
 							if not op in operations:
 								operations.append(op)			
 			elif variable["type"] == "variable":
-				if len(value) > 1:
+				if len(variable["power"]) > 1:
 					count = 0
 					ops = []
-					for j in xrange(len(value)):
-						if variable["after"] in ['+','-',''] and variable["before"] in ['+', '-']:
+					power = []
+					scope = []
+					for j in xrange(len(variable["power"])):
+						if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
 							count += 1
-							if not variable["before"] in ops:
-								ops.append(variable["before"])
+							if not (variable["before"][j] in ops):
+								ops.append(variable["before"][j])
+								power.append(variable["power"][j])
+					for i, op in enumerate(ops):
+						for j, op2 in enumerate(ops):
+							if i != j:
+								if power[i] == power[j]:
+									if not (op in operations):
+										operations.append(op)
+									if not (op2 in operations):
+										operations.append(op2)
+									
 
 			elif variable["type"] == "expression":
 				ops = self.get_available_operations(variable["value"], variable["tokens"])
 				for op in ops:
 					if not op in operations:
-						operations.append(op)
-						
-		print operations
+						operations.append(op)			
 		return operations								
 
 				
@@ -449,6 +459,7 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
 	else:
 		expressionCompatible = ExpressionCompatibility(lTokens)
+		return expressionCompatible.availableOperations
 
 
 if __name__ == '__main__':
