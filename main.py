@@ -11,7 +11,9 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
-
+import tokenize
+import solve
+import animator
 
 class Window(QtGui.QMainWindow):
     
@@ -152,9 +154,13 @@ class WorkSpace(QWidget):
         return vbox
 
     def interactionMode(self):
-        cursor = self.textedit.textCursor()
-        textSelected = cursor.selectedText()
-        print textSelected    
+        #cursor = self.textedit.textCursor()
+        #textSelected = cursor.selectedText()
+        textSelected = str(self.textedit.toPlainText())
+        tokens = tokenize.tokenizer(textSelected)
+        print tokens
+        lhs, rhs = tokenize.get_lhs_rhs(tokens)
+        print lhs, rhs
 
     def newEquation(self):
         self.textedit.setText("")    

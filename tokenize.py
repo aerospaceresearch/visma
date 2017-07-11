@@ -40,9 +40,10 @@ def check_equation(terms, symTokens):
 				if terms[i+1] == '{':
 					return False
 							
-	i = len(terms) - 1
-	if symTokens[i] == 'binary' or symTokens[i] == 'unary' or brackets != 0 or sqrBrackets != 0:
-		return False				
+	if len(terms) != 0:
+		i = len(terms) - 1
+		if symTokens[i] == 'binary' or symTokens[i] == 'unary' or brackets != 0 or sqrBrackets != 0:
+			return False				
 	return True	
 
 def is_variable(term):
@@ -58,20 +59,17 @@ def is_variable(term):
 
 def is_number(term):
 	x = 0
+	dot = 0
 	while x < len(term):
-		if term[x] < '0' or term[x] > '9':
+		if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '\.'):
 			return False
+		if term[x] == '.':
+			dot += 1	
 		x += 1	
 	return True
 
 def get_num(term):
-	x = 0
-	val = 0
-	while x < len(term):
-		val *= 10
-		val += int(term[x])
-		x += 1
-	return val	
+	return float(term)
 
 def remove_spaces(eqn):
 	cleanEqn = ''
@@ -1136,7 +1134,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 					else:
 						variable = {}
 						variable["type"] = "constant"
-						variable["value"] = get_num(terms[x])
+						variable["value"] = coeff * get_num(terms[x])
 						variable["power"] = 1
 						tempScope = []
 						tempScope.extend(scope)
@@ -1147,7 +1145,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 				else:
 					variable = {}
 					variable["type"] = "constant"
-					variable["value"] = get_num(terms[x])
+					variable["value"] = coeff * get_num(terms[x])
 					variable["power"] = 1
 					tempScope = []
 					tempScope.extend(scope)
@@ -1312,23 +1310,23 @@ def tokenize_symbols(terms):
 
 	
 def clean(eqn):
-	print eqn
 	cleanEqn = remove_spaces(eqn) 
 	terms = get_terms(cleanEqn)
 	normalizedTerms = normalize(terms)
 	symTokens = tokenize_symbols(normalizedTerms)
 	if check_equation(normalizedTerms, symTokens):
 		tokens = get_token(normalizedTerms, symTokens)
-		print tokens["tokens"]
 		return tokens["tokens"]
 
-def tokenizer(eqn=" x + 6 / 3 - 2x = 7 "):
-	clean(eqn)
+def tokenizer(eqn=" x + 6.00 / 3 - 2x = 7 "):
+	return clean(eqn)
 
 def get_lhs_rhs(tokens):
 	lhs = []
 	rhs = []
 	eqn = False
+	if not isinstance(tokens, list):
+		return False, False
 	for token in tokens:
 		if token["type"] == 'binary':
 			if token["value"] == '=':
@@ -1336,7 +1334,8 @@ def get_lhs_rhs(tokens):
 		elif not eqn:
 			lhs.append(token)
 		else:
-			rhs.append(token)		
+			rhs.append(token)	
+	return lhs, rhs			
 
 if __name__ == "__main__":
 	tokenizer()
