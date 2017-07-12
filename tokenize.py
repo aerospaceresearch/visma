@@ -58,15 +58,18 @@ def is_variable(term):
 		return True
 
 def is_number(term):
-	x = 0
-	dot = 0
-	while x < len(term):
-		if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '\.'):
-			return False
-		if term[x] == '.':
-			dot += 1	
-		x += 1	
-	return True
+	if isinstance(term, int) or isinstance(term, float):
+		return True
+	else:	
+	    x = 0
+	    dot = 0
+	    while x < len(term):
+	    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '\.'):
+	    		return False
+	    	if term[x] == '.':
+	    		dot += 1
+	    	x += 1
+	    return True
 
 def get_num(term):
 	return float(term)
@@ -1318,9 +1321,58 @@ def clean(eqn):
 		tokens = get_token(normalizedTerms, symTokens)
 		return tokens["tokens"]
 
-def tokenizer(eqn=" x + 6.00 / 3 - 2x = 7 "):
-	return clean(eqn)
+def constant_variable(variable):
+	constant = True
+	for var in variable["value"]:
+		if isinstance(var, dict):
+			if var["type"] == "expression":
+				result, token = constant_conversion(var["tokens"])
+				if not result:
+					constant = False
+			elif var["type"] == "variable":
+				if not constant_variable(var):
+					constant = False
+		elif not is_number(var):
+			constant = False
 
+						
+	for p in variable["power"]:
+		if isinstance(var, dict):
+			if p["type"] == "expression":
+				result, token = constant_conversion(p["tokens"])
+				if not result:
+					constant = False
+			elif p["type"] == "variable":
+				if not constant_variable(p):
+					constant = False
+		elif not is_number(p):
+			constant = False
+
+	return constant
+
+def constant_conversion(tokens):
+	constantExpression = True
+	for token in tokens:
+		if token["type"] == "variable":
+			constant = True
+			if not constant_variable(token):
+				constant = False
+				constantExpression = False
+			if constant:
+				token["type"] = "constant"
+
+		elif token["type"] == "binary":
+			constantExpression = False
+		
+		elif token["type"] == "expression":
+			result, token = constant_conversion(token["tokens"])
+			if not result:
+				constantExpression = False
+	return constantExpression, tokens
+
+def tokenizer(eqn=" x + 6.00 / 3 ^ 2 - 2x = 7 "):
+	result, tokens = constant_conversion(clean(eqn))
+	return tokens
 def get_lhs_rhs(tokens):
 	lhs = []
 	rhs = []
@@ -1342,6 +1394,6 @@ def get_lhs_rhs(tokens):
 	return lhs, rhs			
 
 if __name__ == "__main__":
-	tokenizer()
+	print tokenizer()
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}

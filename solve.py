@@ -22,6 +22,21 @@ def is_number(term):
 			x += 1	
 		return True
 
+def get_num(term):
+	return float(term)
+
+def is_variable(term):
+	if term in greek: 
+		return True
+	elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
+		x = 0
+		while x < len(term):
+			if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+				return False
+			x += 1
+		return True
+
+
 class Linear(object):
 	def __init__(self, tokens):
 		super(Linear, self).__init__()
@@ -34,15 +49,15 @@ class EqautionCompatibility(object):
 		self.lTokens = lTokens
 		self.rTokens = rTokens
 
+
 class Expression(object):
 	"""docstring for Expression"""
 	def __init__(self, tokens, variables):
 		super(Expression, self).__init__()
 		self.tokens = tokens
 		self.variables = variables
+
 	
-
-
 class ExpressionCompatibility(object):
 	"""docstring for ExpressionCompatibility"""
 	def __init__(self, tokens):
@@ -51,6 +66,50 @@ class ExpressionCompatibility(object):
 		self.variables = []
 		self.variables.extend(get_level_variables(self.tokens))
 		self.availableOperations = get_available_operations(self.variables, self.tokens)
+
+def expression_addition(variables, tokens):
+	for i, variable in enumerate(variables):
+		if variable["type"] == "constant":
+			if len(variable["value"]) > 1:
+				count = 0
+				count2 = 0
+				constantAdd = []
+				constant = []
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+']:
+						constantAdd.append(j)
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['', '-']:
+						constant.append(j)
+				if len(constant) > 0 and len(constantAdd) > 0:
+								
+		elif variable["type"] == "variable":
+			if len(variable["power"]) > 1:
+				count = 0
+				ops = []
+				power = []
+				for j in xrange(len(variable["power"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+							power.append(variable["power"][j])
+				for i, op in enumerate(ops):
+					for j, op2 in enumerate(ops):
+						if i != j:
+							if power[i] == power[j]:
+								if not (op in operations):
+									operations.append(op)
+								if not (op2 in operations):
+									operations.append(op2)
+								
+
+		elif variable["type"] == "expression":
+			ops = get_available_operations(variable["value"], variable["tokens"])
+			for op in ops:
+				if not op in operations:
+					operations.append(op)			
+	return operations					
+
 
 def get_available_operations(variables, tokens):
 	operations = []
@@ -111,8 +170,6 @@ def get_available_operations(variables, tokens):
 				if not op in operations:
 					operations.append(op)			
 	return operations								
-
-			
 
 def get_level_variables(tokens):
 	variables = []
@@ -464,8 +521,6 @@ def eval_expressions(variables):
 					return False
 
 	return True
-
-
 
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
