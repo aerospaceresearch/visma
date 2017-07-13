@@ -1,5 +1,15 @@
 #!/usr/bin/python
 
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module is aimed at creating a one function call animator. The developer will only need to make a function call with the list of
+	equations that were achieved while solving the problem, and this module will do the rest.
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
+
 import sys
 import time
 from OpenGL.GL import *
@@ -18,6 +28,8 @@ greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
 
+string = []
+    
 
 def is_variable(term):
     if term in greek: 
@@ -119,20 +131,22 @@ def do_ortho():
 
 
 def draw_scene():
-    string = []
-    
-    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
-    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}])
     
     glColor3f(1.0, 1.0, 1.0)
-    x, y = 0, 0
     i = 0
-    #while  True:
-    i += 1
-    render_equation(x, y, string[1])
-    
-    glutSwapBuffers()
-    time.sleep(10)
+    x, y = -50, 0    
+    while i < len(string):
+        glClear(GL_COLOR_BUFFER_BIT)
+        i += 1
+        j = 0
+        tempY = y
+        while j < i:
+            render_equation(x, tempY, string[j])
+            tempY -= 50
+            j += 1
+        y += 50
+        glutSwapBuffers()
+        time.sleep(2)
 
 def render_equation(x, y, string, level=1, fontSize=24):
     for i, term in enumerate(string):
@@ -181,6 +195,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
 def on_display():
     glClear(GL_COLOR_BUFFER_BIT)
     do_ortho()
+    print "Test"
     draw_scene()
 
 def on_reshape(w, h):
@@ -190,7 +205,7 @@ def on_key(key, x, y):
     if key == '\x1b':
         sys.exit(1)
 
-if __name__ == '__main__':  
+def main():
     glutInitWindowSize(width, height)
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE)
@@ -203,3 +218,16 @@ if __name__ == '__main__':
     glutKeyboardUpFunc(on_key)
 
     glutMainLoop()
+
+
+def animate(tokens):
+    string = tokens
+    main()
+
+if __name__ == '__main__':  
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}]) 
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
+    string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}])
+
+    main()

@@ -1,8 +1,19 @@
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module is created to handle the GUI of the project, this module interacts with all the other modules on occurence of some event.
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
+
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
-
+import tokenize
+import solve
+import animator
 
 class Window(QtGui.QMainWindow):
     
@@ -37,6 +48,8 @@ class WorkSpace(QWidget):
     inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\sqrt[n]{}']
     inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^{}', 'sqrt[n]{}']
     buttons = {}
+    solutionOptionsBox = QGridLayout()
+    solutionButtons = {}
     inputBox = QGridLayout()
     selectedCombo = "LaTeX"
     equations =[('No equations stored', '')]
@@ -134,18 +147,45 @@ class WorkSpace(QWidget):
         topButtonSplitter.addWidget(permanentButtons)
         topButtonSplitter.setSizes([10000, 2])
 
-        bottomButton = QFrame()
-        buttonSplitter = QSplitter(Qt.Vertical)
-        buttonSplitter.addWidget(topButtonSplitter)
-        buttonSplitter.addWidget(bottomButton)
-        buttonSplitter.setSizes([01, 1000])
-        vbox.addWidget(buttonSplitter)
+        self.bottomButton = QFrame()
+        self.buttonSplitter = QSplitter(Qt.Vertical)
+        self.buttonSplitter.addWidget(topButtonSplitter)
+        self.buttonSplitter.addWidget(self.bottomButton)
+        self.buttonSplitter.setSizes([01, 1000])
+        vbox.addWidget(self.buttonSplitter)
         return vbox
 
     def interactionMode(self):
-        cursor = self.textedit.textCursor()
-        textSelected = cursor.selectedText()
-        print textSelected    
+        #cursor = self.textedit.textCursor()
+        #textSelected = cursor.selectedText()
+        textSelected = str(self.textedit.toPlainText())
+        tokens = tokenize.tokenizer(textSelected)
+        lhs, rhs = tokenize.get_lhs_rhs(tokens)
+        operations = solve.check_types(lhs, rhs)
+        if isinstance(operations, list):
+        	if len(operations) > 0:
+        		opButtons = ['Simplify']
+        		for operation in operations:
+        			if operation == '+':
+        				opButtons.append("Addition")
+        			elif operation == '-':
+        				opButtons.append("Subtraction")		
+        			elif operation == '*':
+        				opButtons.append("Multiplication")
+        			elif operation == '-':
+        				opButtons.append("Division")
+        		self.bottomButton.setParent(None) 
+        		self.solutionWidget = QWidget()
+		        for i in xrange(int(len(opButtons)/3)):
+		            for j in range(3):
+		                if len(opButtons) > (i * 3 + j):
+		                	self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
+		                	self.solutionButtons[(i,j)].resize(100, 100)
+		                	self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
+		                	self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)
+		        self.solutionWidget.setLayout(self.solutionOptionsBox)
+        		self.buttonSplitter.addWidget(self.solutionWidget)
+        		self.buttonSplitter.setSizes([01, 1000])
 
     def newEquation(self):
         self.textedit.setText("")    
@@ -228,29 +268,36 @@ class WorkSpace(QWidget):
         return inputLayout
     
     def onActivated(self, text):
-	for i in reversed(range(self.inputBox.count())): 
-	        self.inputBox.itemAt(i).widget().setParent(None)        
-	
-        for i in range(10):
-            for j in range(3):
-                if str(text) in "Greek":
-                    if (i*3 + j) < len(self.inputGreek):
-                        self.buttons[(i, j)] = QtGui.QPushButton(self.inputGreek[i * 3 + j])
-                        self.buttons[(i, j)].resize(100, 100)
-                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputGreek[i * 3 + j]))
-                        self.inputBox.addWidget(self.buttons[(i, j)], i, j)
-                elif str(text) in "LaTeX":
-                    if (i*3 + j) < len(self.inputLaTeX):
-                        self.buttons[(i, j)] = QtGui.QPushButton(self.inputLaTeX[i * 3 + j])
-                        self.buttons[(i, j)].resize(100, 100)
-                        self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputLaTeX[i * 3 + j]))
-                        self.inputBox.addWidget(self.buttons[(i, j)], i, j)
-        self.selectedCombo = str(text)
+		for i in reversed(range(self.inputBox.count())):
+			self.inputBox.itemAt(i).widget().setParent(None)
+
+		for i in range(10):
+			for j in range(3):
+				if str(text) in "Greek":
+					if (i*3 + j) < len(self.inputGreek):
+						self.buttons[(i, j)] = QtGui.QPushButton(self.inputGreek[i * 3 + j])
+						self.buttons[(i, j)].resize(100, 100)
+						self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputGreek[i * 3 + j]))
+						self.inputBox.addWidget(self.buttons[(i, j)], i, j)
+				elif str(text) in "LaTeX":
+					if (i*3 + j) < len(self.inputLaTeX):
+						self.buttons[(i, j)] = QtGui.QPushButton(self.inputLaTeX[i * 3 + j])
+						self.buttons[(i, j)].resize(100, 100)
+						self.buttons[(i, j)].clicked.connect(self.onInputPress(self.inputLaTeX[i * 3 + j]))
+						self.inputBox.addWidget(self.buttons[(i, j)], i, j)
+		self.selectedCombo = str(text)
 	
     def onInputPress(self, name):
         def calluser():
             self.textedit.insertPlainText(unicode(name) + " ")
         return calluser	
+
+    def onSolvePress(self, name):
+		def calluser():
+			print name
+		return calluser 
+		
+
 
 class QCustomQWidget (QtGui.QWidget):
 
