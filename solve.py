@@ -67,12 +67,15 @@ class ExpressionCompatibility(object):
 		self.variables.extend(get_level_variables(self.tokens))
 		self.availableOperations = get_available_operations(self.variables, self.tokens)
 
+def removeToken(tokens, scope):
+	remScope = scope.pop(0)
+	#for token in tokens:
+
+
 def expression_addition(variables, tokens):
 	for i, variable in enumerate(variables):
 		if variable["type"] == "constant":
 			if len(variable["value"]) > 1:
-				count = 0
-				count2 = 0
 				constantAdd = []
 				constant = []
 				for j in xrange(len(variable["value"])):
@@ -81,34 +84,43 @@ def expression_addition(variables, tokens):
 					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['', '-']:
 						constant.append(j)
 				if len(constant) > 0 and len(constantAdd) > 0:
-								
+					i = 0
+					while i < len(constantAdd):
+						for const in constant:
+							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+								variable[const]["value"] += variable[constantAdd[i]]["value"]
+								#TODO re-evaluate variable and tokens?
+								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+								variable.pop(constantAdd[i])
+								break
+						i += 1	
+
 		elif variable["type"] == "variable":
 			if len(variable["power"]) > 1:
-				count = 0
-				ops = []
-				power = []
-				for j in xrange(len(variable["power"])):
-					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
-						count += 1
-						if not (variable["before"][j] in ops):
-							ops.append(variable["before"][j])
-							power.append(variable["power"][j])
-				for i, op in enumerate(ops):
-					for j, op2 in enumerate(ops):
-						if i != j:
-							if power[i] == power[j]:
-								if not (op in operations):
-									operations.append(op)
-								if not (op2 in operations):
-									operations.append(op2)
-								
+				constantAdd = []
+				constant = []
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+']:
+						constantAdd.append(j)
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['', '-']:
+						constant.append(j)
+				if len(constant) > 0 and len(constantAdd) > 0:
+					i = 0
+					while i < len(constantAdd):
+						for const in constant:
+							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+								variable[const]["coefficient"] += variable[constantAdd[i]]["coefficient"]
+								#TODO re-evaluate variable and tokens?
+								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+								variable.pop(constantAdd[i])
+								break
+						i += 1	
+
 
 		elif variable["type"] == "expression":
-			ops = get_available_operations(variable["value"], variable["tokens"])
-			for op in ops:
-				if not op in operations:
-					operations.append(op)			
-	return operations					
+			pass
+
+	return variables, tokens					
 
 
 def get_available_operations(variables, tokens):
@@ -243,32 +255,33 @@ def get_level_variables(tokens):
 			skip = False
 			for var in variables:
 				if isinstance(var["value"], list) and is_number(var["value"][0]):
-					var["value"].append(term["value"])
-					var["power"].append(term["power"])
-					var["scope"].append(term["scope"])
-					if i != 0:
-						if tokens[i-1]["type"] == 'binary':
-							var["before"].append(tokens[i-1]["value"])
-							var["before_scope"].append(tokens[i-1]["scope"])
+					if var["power"] == term["power"]:
+						var["value"].append(term["value"])
+						var["power"].append(term["power"])
+						var["scope"].append(term["scope"])
+						if i != 0:
+							if tokens[i-1]["type"] == 'binary':
+								var["before"].append(tokens[i-1]["value"])
+								var["before_scope"].append(tokens[i-1]["scope"])
+							else:
+								var["before"].append('')
+								var["before_scope"].append('')
 						else:
 							var["before"].append('')
 							var["before_scope"].append('')
-					else:
-						var["before"].append('')
-						var["before_scope"].append('')
 
-					if i+1 < len(tokens):
-						if tokens[i+1]["type"] == 'binary':
-							var["after"].append(tokens[i+1]["value"])
-							var["after_scope"].append(tokens[i+1]["scope"])
+						if i+1 < len(tokens):
+							if tokens[i+1]["type"] == 'binary':
+								var["after"].append(tokens[i+1]["value"])
+								var["after_scope"].append(tokens[i+1]["scope"])
+							else:
+								var["after"].append('')
+								var["after_scope"].append('')
 						else:
 							var["after"].append('')
 							var["after_scope"].append('')
-					else:
-						var["after"].append('')
-						var["after_scope"].append('')
-					skip = True
-					break
+						skip = True
+						break
 			if not skip: 
 				variable = {}
 				variable["type"] = "constant"
