@@ -73,6 +73,7 @@ def removeToken(tokens, scope):
 
 
 def expression_addition(variables, tokens):
+	removeScopes = []
 	for i, variable in enumerate(variables):
 		if variable["type"] == "constant":
 			if len(variable["value"]) > 1:
@@ -89,6 +90,7 @@ def expression_addition(variables, tokens):
 						for const in constant:
 							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
 								variable[const]["value"] += variable[constantAdd[i]]["value"]
+								removeScopes.append(variable[constantAdd[i]]["scope"])
 								#TODO re-evaluate variable and tokens?
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
@@ -110,6 +112,7 @@ def expression_addition(variables, tokens):
 						for const in constant:
 							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
 								variable[const]["coefficient"] += variable[constantAdd[i]]["coefficient"]
+								removeScopes.append(variable[constantAdd[i]]["scope"])
 								#TODO re-evaluate variable and tokens?
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
@@ -118,9 +121,64 @@ def expression_addition(variables, tokens):
 
 
 		elif variable["type"] == "expression":
-			pass
+			
 
-	return variables, tokens					
+	return variables, tokens, removeScopes					
+
+def expression_addition(variables, tokens):
+	removeScopes = []
+	for i, variable in enumerate(variables):
+		if variable["type"] == "constant":
+			if len(variable["value"]) > 1:
+				constantAdd = []
+				constant = []
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['-']:
+						constantAdd.append(j)
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['', '+']:
+						constant.append(j)
+				if len(constant) > 0 and len(constantAdd) > 0:
+					i = 0
+					while i < len(constantAdd):
+						for const in constant:
+							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+								variable[const]["value"] -= variable[constantAdd[i]]["value"]
+								removeScopes.append(variable[constantAdd[i]]["scope"])
+								#TODO re-evaluate variable and tokens?
+								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+								variable.pop(constantAdd[i])
+								break
+						i += 1	
+
+		elif variable["type"] == "variable":
+			if len(variable["power"]) > 1:
+				constantAdd = []
+				constant = []
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['-']:
+						constantAdd.append(j)
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['', '+']:
+						constant.append(j)
+				if len(constant) > 0 and len(constantAdd) > 0:
+					i = 0
+					while i < len(constantAdd):
+						for const in constant:
+							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+								variable[const]["coefficient"] -= variable[constantAdd[i]]["coefficient"]
+								removeScopes.append(variable[constantAdd[i]]["scope"])
+								#TODO re-evaluate variable and tokens?
+								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+								variable.pop(constantAdd[i])
+								break
+						i += 1	
+				elif len(constant) == 0 and len(constantAdd) > 1:		
+
+
+		elif variable["type"] == "expression":
+			
+
+	return variables, tokens, removeScopes					
+
 
 
 def get_available_operations(variables, tokens):
@@ -254,7 +312,7 @@ def get_level_variables(tokens):
 		elif term["type"] == 'constant':
 			skip = False
 			for var in variables:
-				if isinstance(var["value"], list) and is_number(var["value"][0]):
+				if isinstance(var["value"], list) and is_number(var["value"][0]) :
 					if var["power"] == term["power"]:
 						var["value"].append(term["value"])
 						var["power"].append(term["power"])
@@ -328,15 +386,16 @@ def get_level_variables(tokens):
 				skip = False
 				for var in variables:
 					if isinstance(var["value"], list) and is_number(var["value"][0]):
-						var["value"].append(val["value"])
-						var["power"].append(val["power"])
-						var["scope"].append(val["scope"])
-						var["before"].append(val["before"])
-						var["before_scope"].append(val["before_scope"])
-						var["after"].append(val["after"])
-						var["after_scope"].append(val["after_scope"])
-						skip = True
-						break
+						if var["power"] == val["power"]:
+							var["value"].append(val["value"])
+							var["power"].append(val["power"])
+							var["scope"].append(val["scope"])
+							var["before"].append(val["before"])
+							var["before_scope"].append(val["before_scope"])
+							var["after"].append(val["after"])
+							var["after_scope"].append(val["after_scope"])
+							skip = True
+							break
 				if not skip: 
 					var = {}
 					var["type"] = "constant"
@@ -402,16 +461,17 @@ def get_level_variables(tokens):
 					elif v["type"] == "constant":
 						for var in variables:
 							if isinstance(var["value"], list) and is_number(var["value"][0]):
-								var["value"].extend(v["value"])
-								var["power"].extend(v["power"])
-								var["before"].extend(v["before"])
-								var["before_scope"].extend(v["before_scope"])
-								var["after"].extend(v["after"])
-								var["after_scope"].extend(v["after_scope"])
-								var["coefficient"].extend(v["coefficient"])
-								var["scope"].extend(v["scope"])
-								skip = True
-								break
+								if var["power"] == v["power"]:
+									var["value"].extend(v["value"])
+									var["power"].extend(v["power"])
+									var["before"].extend(v["before"])
+									var["before_scope"].extend(v["before_scope"])
+									var["after"].extend(v["after"])
+									var["after_scope"].extend(v["after_scope"])
+									var["coefficient"].extend(v["coefficient"])
+									var["scope"].extend(v["scope"])
+									skip = True
+									break
 						if not skip: 
 							var = {}
 							var["type"] = "constant"

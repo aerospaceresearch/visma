@@ -6,6 +6,10 @@ About: This module's basic purpose is to be able to tokenize every possible inpu
 	each equation/expression. Redundant data has been provided with the tokens on purpose, to make the job of future developers easier. 
 	Still far from perfect and requires a bit of clean up.
 Note: Please try to maintain proper documentation
+-1 -> power
+-2 -> value
+-3 -> sqrt expression
+-4 -> sqrt power
 Logic Description:
 """
 
