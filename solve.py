@@ -125,7 +125,7 @@ def expression_addition(variables, tokens):
 
 	return variables, tokens, removeScopes					
 
-def expression_addition(variables, tokens):
+def expression_subtraction(variables, tokens):
 	removeScopes = []
 	for i, variable in enumerate(variables):
 		if variable["type"] == "constant":
@@ -175,11 +175,145 @@ def expression_addition(variables, tokens):
 
 
 		elif variable["type"] == "expression":
-			
+			pass
 
 	return variables, tokens, removeScopes					
 
 
+def expression_multiplication(variables, tokens):
+	removeScopes = []
+	for i, token in enumerate(tokens):
+		if token["type"] == 'binary':
+			if token["value"] in ['*']:
+				prev = False
+				nxt = False
+				if i != 0:
+					if tokens[i-1]["type"] in ["variable", "constant"]:
+						prev = True
+				if i+1 < len(tokens):
+					if tokens[i+1]["type"] in ["variable", "constant"]:
+						nxt = True
+				if nxt and prev:
+					if tokens[i+1] == "constant" and tokens[i-1] == "constant":
+						no_1 = False
+						no_2 = False
+						if is_number(tokens[i-1]["value"]):
+							no_1 = True
+						if is_number(tokens[i+1]["value"]):
+							no_2 = True
+						if no_1 and no_2:
+							tokens[i+1]["value"] *= tokens[i-1]["value"]
+							tokens[i+1]["power"] += tokens[i-1]["power"]
+						elif no_1 and not no_2:
+							tokens[i+1]["value"].append(tokens[i-1]["value"])
+							tokens[i+1]["power"].append(tokens[i-1]["power"])
+						elif not no_1 and no_2:	
+							tokens[i-1]["value"].append(tokens[i+1]["value"])
+							tokens[i-1]["power"].append(tokens[i+1]["power"])
+						
+						elif not no_1 and not no_2:
+							for vals in tokens[i-1]["value"]:
+								tokens[i+1]["value"].append(vals)
+							for pows in tokens[i-1]["power"]:
+								tokens[i+1]["power"].append(pows)
+						
+						return variables, tokens, removeScopes
+
+					elif tokens[i+1] == "variable" and tokens[i-1] == "variable":
+						for j, var in enumerate(tokens[i+1]["value"]):
+							found = False
+							for k, var2 in enumerate(tokens[i-1]["value"]):
+								if var == var2:
+									if tokens[i+1]["power"][j] == tokens[i-1]["power"][k]:
+										if is_number(tokens[i+1]["power"][j])  and is_number(tokens[i-1]["power"][k]):
+											tokens[i-1]["power"][k] += tokens[i+1]["power"][j]
+											found = True
+											break
+							if not found:
+								tokens[i-1]["value"].append(tokens[i+1]["value"][j])				
+								tokens[i-1]["power"].append(tokens[i+1]["power"][j])				
+
+						return variables, tokens, removeScopes
+					
+					elif (tokens[i+1] == "variable" and tokens[i-1] == "constant"):
+						tokens[i+1]["coefficient"] *= evaluate_constant(tokens[i-1])
+						return variables, tokens, removeScopes
+
+					elif (tokens[i-1] == "variable" and tokens[i+1] == "constant"):
+						tokens[i-1]["coefficient"] *= evaluate_constant(tokens[i+1])
+						return variables, tokens, removeScopes
+
+
+def expression_division(variables, tokens):
+	removeScopes = []
+	for i, token in enumerate(tokens):
+		if token["type"] == 'binary':
+			if token["value"] in ['/']:
+				prev = False
+				nxt = False
+				if i != 0:
+					if tokens[i-1]["type"] in ["variable", "constant"]:
+						prev = True
+				if i+1 < len(tokens):
+					if tokens[i+1]["type"] in ["variable", "constant"]:
+						nxt = True
+				if nxt and prev:
+					if tokens[i+1] == "constant" and tokens[i-1] == "constant":
+						no_1 = False
+						no_2 = False
+						if is_number(tokens[i-1]["value"]):
+							no_1 = True
+						if is_number(tokens[i+1]["value"]):
+							no_2 = True
+						if no_1 and no_2:
+							tokens[i+1]["value"] *= tokens[i-1]["value"]
+							tokens[i+1]["power"] += tokens[i-1]["value"]
+						elif no_1 and not no_2:
+							tokens[i+1]["value"].append(tokens[i-1]["value"])
+							tokens[i+1]["power"].append(tokens[i-1]["power"])
+						elif not no_1 and no_2:	
+							tokens[i-1]["value"].append(tokens[i+1]["value"])
+							tokens[i-1]["power"].append(tokens[i+1]["power"])
+						
+						elif not no_1 and not no_2:
+							for vals in tokens[i-1]["value"]:
+								tokens[i+1]["value"].append(vals)
+							for pows in tokens[i-1]["power"]:
+								tokens[i+1]["power"].append(pows)
+						return variables, tokens, removeScopes
+
+					elif tokens[i+1] == "variable" and tokens[i-1] == "variable":
+						for j, var in enumerate(tokens[i+1]["value"]):
+							found = False
+							for k, var2 in enumerate(tokens[i-1]["value"]):
+								if var == var2:
+									if tokens[i+1]["power"][j] == tokens[i-1]["power"][k]:
+										if is_number(tokens[i+1]["power"][j])  and is_number(tokens[i-1]["power"][k]):
+											tokens[i-1]["power"][k] += tokens[i+1]["power"][j]
+											found = True
+											break
+							if not found:
+								tokens[i-1]["value"].append(tokens[i+1]["value"][j])				
+								tokens[i-1]["power"].append(tokens[i+1]["power"][j])				
+
+							return variables, tokens, removeScopes
+
+					elif (tokens[i+1] == "variable" and tokens[i-1] == "constant"):
+						tokens[i+1]["coefficient"] *= evaluate_constant(tokens[i-1])
+						return variables, tokens, removeScopes
+
+					elif (tokens[i-1] == "variable" and tokens[i+1] == "constant"):
+						tokens[i-1]["coefficient"] *= evaluate_constant(tokens[i+1])
+						return variables, tokens, removeScopes
+
+def evaluate_constant(constant):
+	if is_number(constant["value"]):
+		return constant["value"]
+	elif isinstance(constant["value"], list):
+		val = 1
+		for i, c_val in enumerate(constant["value"]):
+			val *= math.pow(c_val, constant["power"][i])
+		return val		
 
 def get_available_operations(variables, tokens):
 	operations = []
