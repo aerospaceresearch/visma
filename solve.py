@@ -121,6 +121,27 @@ def expression_addition(variables, tokens):
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
 								return variables, tokens, removeScopes
+						for const in constantAdd:
+							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+								variable[const]["value"] -= variable[constantAdd[i]]["value"]
+								removeScopes.append(variable[constantAdd[i]]["scope"])
+								#TODO re-evaluate variable and tokens?
+								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+								variable.pop(constantAdd[i])
+								return variables, tokens, removeScopes
+						i += 1	
+				elif len(constant) == 0 and len(constantAdd) > 1:
+					i = 0
+					while i < len(constantAdd):
+						for j, const in enumerate(constantAdd):
+							if i !=j:
+								if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+									variable[const]["value"] -= variable[constantAdd[i]]["value"]
+									removeScopes.append(variable[constantAdd[i]]["scope"])
+									#TODO re-evaluate variable and tokens?
+									#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+									variable.pop(constantAdd[i])
+									return variables, tokens, removeScopes
 						i += 1	
 
 		elif variable["type"] == "variable":
@@ -174,7 +195,29 @@ def expression_subtraction(variables, tokens):
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
 								return variables, tokens, removeScopes
+						for const in constantAdd:
+							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+								variable[const]["value"] -= variable[constantAdd[i]]["value"]
+								removeScopes.append(variable[constantAdd[i]]["scope"])
+								#TODO re-evaluate variable and tokens?
+								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+								variable.pop(constantAdd[i])
+								return variables, tokens, removeScopes
 						i += 1	
+				elif len(constant) == 0 and len(constantAdd) > 1:
+					i = 0
+					while i < len(constantAdd):
+						for j, const in enumerate(constantAdd):
+							if i !=j:
+								if variable[constantAdd[i]]["power"] == variable[const]["power"]:
+									variable[const]["value"] -= variable[constantAdd[i]]["value"]
+									removeScopes.append(variable[constantAdd[i]]["scope"])
+									#TODO re-evaluate variable and tokens?
+									#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
+									variable.pop(constantAdd[i])
+									return variables, tokens, removeScopes
+						i += 1	
+							
 
 		elif variable["type"] == "variable":
 			if len(variable["power"]) > 1:
