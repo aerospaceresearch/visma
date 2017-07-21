@@ -67,9 +67,35 @@ class ExpressionCompatibility(object):
 		self.variables.extend(get_level_variables(self.tokens))
 		self.availableOperations = get_available_operations(self.variables, self.tokens)
 
+
+def tokens_to_string(tokens):
+	token_string = ''
+	for i, token in tokens:
+		if token["type"] == 'constant':
+			if isinstance(token["value"], list):
+				for j, val in token["value"]:
+					token_string += (str(val) + '^{' + token["power"][j] + '} ')
+			elif is_number(token["value"]):
+				token_string += (str(token["value"]) + ' ^{' + token["power"] + '} ') 		
+		elif token["type"] == 'variable':
+			if token["coefficient"] == 1:
+				pass
+			elif token["coefficient"] == -1:
+				token_string += ' -'
+			else:
+				token_string += str(token["coefficient"])	
+			for j, val in token["value"]:
+				token_string += (str(val) + '^{' + token["power"][j] + '} ')
+		elif token["type"] == 'binary':
+			token_string += str(token["value"])
+		elif token["type"] == 'expression':
+			token_string += tokens_to_string(token["tokens"])
+	return token_string					 		
+
+
 def removeToken(tokens, scope):
 	remScope = scope.pop(0)
-	#for token in tokens:
+
 
 
 def expression_addition(variables, tokens):
@@ -94,7 +120,7 @@ def expression_addition(variables, tokens):
 								#TODO re-evaluate variable and tokens?
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
-								break
+								return variables, tokens, removeScopes
 						i += 1	
 
 		elif variable["type"] == "variable":
@@ -116,7 +142,7 @@ def expression_addition(variables, tokens):
 								#TODO re-evaluate variable and tokens?
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
-								break
+								return variables, tokens, removeScopes
 						i += 1	
 
 
@@ -147,7 +173,7 @@ def expression_subtraction(variables, tokens):
 								#TODO re-evaluate variable and tokens?
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
-								break
+								return variables, tokens, removeScopes
 						i += 1	
 
 		elif variable["type"] == "variable":
@@ -169,7 +195,7 @@ def expression_subtraction(variables, tokens):
 								#TODO re-evaluate variable and tokens?
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
 								variable.pop(constantAdd[i])
-								break
+								return variables, tokens, removeScopes
 						i += 1	
 				elif len(constant) == 0 and len(constantAdd) > 1:		
 
@@ -202,8 +228,8 @@ def expression_multiplication(variables, tokens):
 						if is_number(tokens[i+1]["value"]):
 							no_2 = True
 						if no_1 and no_2:
-							tokens[i+1]["value"] *= tokens[i-1]["value"]
-							tokens[i+1]["power"] += tokens[i-1]["power"]
+							tokens[i+1]["value"] = evaluate_constant(tokens[i-1]) * evaluate_constant(tokens[i+1]) 
+							tokens[i+1]["power"] = 1
 						elif no_1 and not no_2:
 							tokens[i+1]["value"].append(tokens[i-1]["value"])
 							tokens[i+1]["power"].append(tokens[i-1]["power"])
@@ -236,11 +262,11 @@ def expression_multiplication(variables, tokens):
 						return variables, tokens, removeScopes
 					
 					elif (tokens[i+1] == "variable" and tokens[i-1] == "constant"):
-						tokens[i+1]["coefficient"] *= evaluate_constant(tokens[i-1])
+						tokens[i+1]["coefficient"] +=  evaluate_constant(tokens[i-1])
 						return variables, tokens, removeScopes
 
 					elif (tokens[i-1] == "variable" and tokens[i+1] == "constant"):
-						tokens[i-1]["coefficient"] *= evaluate_constant(tokens[i+1])
+						tokens[i-1]["coefficient"] += evaluate_constant(tokens[i+1])
 						return variables, tokens, removeScopes
 
 
@@ -266,20 +292,26 @@ def expression_division(variables, tokens):
 						if is_number(tokens[i+1]["value"]):
 							no_2 = True
 						if no_1 and no_2:
-							tokens[i+1]["value"] *= tokens[i-1]["value"]
-							tokens[i+1]["power"] += tokens[i-1]["value"]
+							tokens[i+1]["value"] = evaluate_constant(tokens[i-1]) / evaluate_constant(tokens[i+1])
+							tokens[i+1]["power"] = 1
 						elif no_1 and not no_2:
-							tokens[i+1]["value"].append(tokens[i-1]["value"])
-							tokens[i+1]["power"].append(tokens[i-1]["power"])
+							value = tokens[i-1]["value"]
+							power = tokens[i-1]["power"]
+							tokens[i-1]["value"] = [value]
+							tokens[i-1]["power"] = [power]
+							for val in tokens[i+1]["value"]:
+								tokens[i-1]["value"].append(val)
+							for pows in tokens[i+1]["power"]:
+								tokens[i-1]["power"].append(-pows)
 						elif not no_1 and no_2:	
 							tokens[i-1]["value"].append(tokens[i+1]["value"])
-							tokens[i-1]["power"].append(tokens[i+1]["power"])
+							tokens[i-1]["power"].append(-tokens[i+1]["power"])
 						
 						elif not no_1 and not no_2:
-							for vals in tokens[i-1]["value"]:
-								tokens[i+1]["value"].append(vals)
-							for pows in tokens[i-1]["power"]:
-								tokens[i+1]["power"].append(pows)
+							for vals in tokens[i+1]["value"]:
+								tokens[i-1]["value"].append(vals)
+							for pows in tokens[i+1]["power"]:
+								tokens[i-1]["power"].append(pows)
 						return variables, tokens, removeScopes
 
 					elif tokens[i+1] == "variable" and tokens[i-1] == "variable":
@@ -289,26 +321,33 @@ def expression_division(variables, tokens):
 								if var == var2:
 									if tokens[i+1]["power"][j] == tokens[i-1]["power"][k]:
 										if is_number(tokens[i+1]["power"][j])  and is_number(tokens[i-1]["power"][k]):
-											tokens[i-1]["power"][k] += tokens[i+1]["power"][j]
+											tokens[i-1]["power"][k] -= tokens[i+1]["power"][j]
 											found = True
 											break
 							if not found:
 								tokens[i-1]["value"].append(tokens[i+1]["value"][j])				
-								tokens[i-1]["power"].append(tokens[i+1]["power"][j])				
+								tokens[i-1]["power"].append(-tokens[i+1]["power"][j])				
 
 							return variables, tokens, removeScopes
 
 					elif (tokens[i+1] == "variable" and tokens[i-1] == "constant"):
-						tokens[i+1]["coefficient"] *= evaluate_constant(tokens[i-1])
+						val = evaluate_constant(tokens[i-1])
+						scope = tokens[i-1]["scope"]
+						tokens[i-1] = {}
+						tokens[i-1]["value"] = tokens[i+1]["value"]
+						tokens[i-1]["coefficient"] = tokens[i+1]["coefficient"]/val
+						tokens[i-1]["power"] = []
+						for pows in tokens[i+1]["power"]:
+							tokens[i-1]["power"].append(pows)
 						return variables, tokens, removeScopes
 
 					elif (tokens[i-1] == "variable" and tokens[i+1] == "constant"):
-						tokens[i-1]["coefficient"] *= evaluate_constant(tokens[i+1])
+						tokens[i-1]["coefficient"] /= evaluate_constant(tokens[i+1])
 						return variables, tokens, removeScopes
 
 def evaluate_constant(constant):
 	if is_number(constant["value"]):
-		return constant["value"]
+		return math.pow(constant["value"], evaluate_constant(constant["power"]))
 	elif isinstance(constant["value"], list):
 		val = 1
 		for i, c_val in enumerate(constant["value"]):
