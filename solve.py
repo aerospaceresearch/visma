@@ -93,11 +93,29 @@ def tokens_to_string(tokens):
 	return token_string					 		
 
 
-def removeToken(tokens, scope):
-	remScope = scope.pop(0)
-
-
-
+def remove_token(tokens, scope, scope_times=0):
+	for remScope in scope:
+		removed = False
+		for i, token in enumerate(tokens):
+			if token["type"] == 'constant' or token["type"] == 'variable':
+				if token["scope"] == remScope:
+					tokens.pop(i)
+					removed = True
+					break
+			elif token["type"] == 'expression':
+				if scope_times + 1 == len(remScope):
+					if token["scope"] = remScope:
+						tokens.pop(i)
+						removed = True
+						break
+				elif token["scope"] == remScope[0:(scope_times+1)]:
+					token["tokens"] = remove_token(token["tokens"], scope, scope_times += 1)
+					removed = True
+					break
+		if removed: 
+			break			
+	return tokens
+	
 def expression_addition(variables, tokens):
 	removeScopes = []
 	for i, variable in enumerate(variables):
@@ -123,7 +141,7 @@ def expression_addition(variables, tokens):
 								return variables, tokens, removeScopes
 						for const in constantAdd:
 							if variable[constantAdd[i]]["power"] == variable[const]["power"]:
-								variable[const]["value"] -= variable[constantAdd[i]]["value"]
+								variable[const]["value"] += variable[constantAdd[i]]["value"]
 								removeScopes.append(variable[constantAdd[i]]["scope"])
 								#TODO re-evaluate variable and tokens?
 								#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
@@ -136,7 +154,7 @@ def expression_addition(variables, tokens):
 						for j, const in enumerate(constantAdd):
 							if i !=j:
 								if variable[constantAdd[i]]["power"] == variable[const]["power"]:
-									variable[const]["value"] -= variable[constantAdd[i]]["value"]
+									variable[const]["value"] += variable[constantAdd[i]]["value"]
 									removeScopes.append(variable[constantAdd[i]]["scope"])
 									#TODO re-evaluate variable and tokens?
 									#tokens = removeToken(tokens, variable[constantAdd[i]]["scope"])	
