@@ -110,7 +110,34 @@ def remove_token(tokens, scope, scope_times=0):
 			break			
 	return tokens
 
+def change_token(tokens, variables):
+	for changeVariable in variables:
+		changed = False
+		for i, token in enumerate(tokens):
+			if token["type"] == 'constant':
+				if token["scope"] == changeVariable:
+					tokens.pop(i)
+					removed = True
+					break
+			elif  token["type"] == 'variable':
+				if token["scope"] == remScope:
+				pass		
+			elif token["type"] == 'expression':
+				if scope_times + 1 == len(remScope):
+					if token["scope"] = remScope:
+						tokens.pop(i)
+						removed = True
+						break
+				elif token["scope"] == remScope[0:(scope_times+1)]:
+					token["tokens"] = remove_token(token["tokens"], scope, scope_times += 1)
+					removed = True
+					break
+		if removed: 
+			break			
+	return tokens
+
 def expression_addition(variables, tokens):
+	changeScopes = []
 	removeScopes = []
 	for i, variable in enumerate(variables):
 		if variable["type"] == "constant":
@@ -208,6 +235,7 @@ def expression_addition(variables, tokens):
 	return variables, tokens, removeScopes					
 
 def expression_subtraction(variables, tokens):
+	changeScopes = []
 	removeScopes = []
 	for i, variable in enumerate(variables):
 		if variable["type"] == "constant":
@@ -297,6 +325,7 @@ def expression_subtraction(variables, tokens):
 
 
 def expression_multiplication(variables, tokens):
+	changeScopes = []
 	removeScopes = []
 	for i, token in enumerate(tokens):
 		if token["type"] == 'binary':
@@ -320,18 +349,25 @@ def expression_multiplication(variables, tokens):
 						if no_1 and no_2:
 							tokens[i+1]["value"] = evaluate_constant(tokens[i-1]) * evaluate_constant(tokens[i+1]) 
 							tokens[i+1]["power"] = 1
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i-1]["scope"])
 						elif no_1 and not no_2:
 							tokens[i+1]["value"].append(tokens[i-1]["value"])
 							tokens[i+1]["power"].append(tokens[i-1]["power"])
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i-1]["scope"])
 						elif not no_1 and no_2:	
 							tokens[i-1]["value"].append(tokens[i+1]["value"])
 							tokens[i-1]["power"].append(tokens[i+1]["power"])
-						
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i+1]["scope"])
 						elif not no_1 and not no_2:
 							for vals in tokens[i-1]["value"]:
 								tokens[i+1]["value"].append(vals)
 							for pows in tokens[i-1]["power"]:
 								tokens[i+1]["power"].append(pows)
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i-1]["scope"])	
 						
 						return variables, tokens, removeScopes
 
@@ -348,19 +384,27 @@ def expression_multiplication(variables, tokens):
 							if not found:
 								tokens[i-1]["value"].append(tokens[i+1]["value"][j])				
 								tokens[i-1]["power"].append(tokens[i+1]["power"][j])				
-
+						removeScopes.append(tokens[i]["scope"])
+						removeScopes.append(tokens[i+1]["scope"])
 						return variables, tokens, removeScopes
 					
 					elif (tokens[i+1] == "variable" and tokens[i-1] == "constant"):
 						tokens[i+1]["coefficient"] +=  evaluate_constant(tokens[i-1])
+						removeScopes.append(tokens[i]["scope"])
+						removeScopes.append(tokens[i-1]["scope"])
 						return variables, tokens, removeScopes
 
 					elif (tokens[i-1] == "variable" and tokens[i+1] == "constant"):
 						tokens[i-1]["coefficient"] += evaluate_constant(tokens[i+1])
+						removeScopes.append(tokens[i]["scope"])
+						removeScopes.append(tokens[i+1]["scope"])
 						return variables, tokens, removeScopes
+
+	return variables, tokens, removeScopes
 
 
 def expression_division(variables, tokens):
+	changeScopes = []
 	removeScopes = []
 	for i, token in enumerate(tokens):
 		if token["type"] == 'binary':
@@ -384,6 +428,8 @@ def expression_division(variables, tokens):
 						if no_1 and no_2:
 							tokens[i+1]["value"] = evaluate_constant(tokens[i-1]) / evaluate_constant(tokens[i+1])
 							tokens[i+1]["power"] = 1
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i-1]["scope"])
 						elif no_1 and not no_2:
 							value = tokens[i-1]["value"]
 							power = tokens[i-1]["power"]
@@ -393,15 +439,20 @@ def expression_division(variables, tokens):
 								tokens[i-1]["value"].append(val)
 							for pows in tokens[i+1]["power"]:
 								tokens[i-1]["power"].append(-pows)
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i+1]["scope"])	
 						elif not no_1 and no_2:	
 							tokens[i-1]["value"].append(tokens[i+1]["value"])
 							tokens[i-1]["power"].append(-tokens[i+1]["power"])
-						
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i+1]["scope"])
 						elif not no_1 and not no_2:
 							for vals in tokens[i+1]["value"]:
 								tokens[i-1]["value"].append(vals)
 							for pows in tokens[i+1]["power"]:
 								tokens[i-1]["power"].append(pows)
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i+1]["scope"])	
 						return variables, tokens, removeScopes
 
 					elif tokens[i+1] == "variable" and tokens[i-1] == "variable":
@@ -418,6 +469,8 @@ def expression_division(variables, tokens):
 								tokens[i-1]["value"].append(tokens[i+1]["value"][j])				
 								tokens[i-1]["power"].append(-tokens[i+1]["power"][j])				
 
+							removeScopes.append(tokens[i]["scope"])
+							removeScopes.append(tokens[i+1]["scope"])
 							return variables, tokens, removeScopes
 
 					elif (tokens[i+1] == "variable" and tokens[i-1] == "constant"):
@@ -429,11 +482,17 @@ def expression_division(variables, tokens):
 						tokens[i-1]["power"] = []
 						for pows in tokens[i+1]["power"]:
 							tokens[i-1]["power"].append(pows)
+
+						removeScopes.append(tokens[i]["scope"])
+						removeScopes.append(tokens[i+1]["scope"])	
 						return variables, tokens, removeScopes
 
 					elif (tokens[i-1] == "variable" and tokens[i+1] == "constant"):
 						tokens[i-1]["coefficient"] /= evaluate_constant(tokens[i+1])
+						removeScopes.append(tokens[i]["scope"])
+						removeScopes.append(tokens[i+1]["scope"])
 						return variables, tokens, removeScopes
+	return variables, tokens, removeScopes						
 
 def evaluate_constant(constant):
 	if is_number(constant["value"]):
@@ -865,6 +924,6 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 		expressionCompatible = ExpressionCompatibility(lTokens)
 		return expressionCompatible.availableOperations
 
-
 if __name__ == '__main__':
-			check_types()
+			#check_types()
+			test()

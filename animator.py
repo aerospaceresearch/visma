@@ -164,7 +164,11 @@ def render_equation(x, y, string, level=1, fontSize=24):
                 font.FaceSize(fontSize)
                 font.Render(term["value"])
         elif term["type"] == "expression":
-            x, y = render_equation(x, y, term, level+1) 
+        	font.FaceSize(fontSize)
+        	font.Render('{')
+            x, y = render_equation(x, y, term, level+1)
+            font.FaceSize(fontSize)
+        	font.Render('}') 
         elif term["type"] == "sqrt":
             if term["power"]["type"] == 'constant':
                 glRasterPos(x, y + 5)
