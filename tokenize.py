@@ -1377,7 +1377,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn="  x + 6.00 / 3 ^ 2 - 2x "):
+def tokenizer(eqn="  x + 6.00 / 3 + 2 - 2x "):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):
