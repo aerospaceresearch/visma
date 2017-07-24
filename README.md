@@ -5,4 +5,9 @@ Project Idea: https://summerofcode.withgoogle.com/projects/#6347577401278464
 
 Project Resources such as mock-up and planning document: https://goo.gl/imySCH 
 
-**Linear expression solving (interaction mode only):** type an expression, select a part of it with your mouse and press interaction mode, and select one of the options provided in the area.
+**Linear expression solving (interaction mode only):** type an expression ~~, select a part of it with your mouse~~ and press interaction mode, and select one of the options provided in the area. 
+Issue: The dynamic buttons don't change after pressing the interaction mode button once, you may have to run 
+```
+python main.py 
+```
+once again in your terminal.
