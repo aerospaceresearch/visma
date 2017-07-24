@@ -14,6 +14,8 @@ from PyQt4 import QtGui
 import tokenize
 import solve
 import animator
+import json
+from subprocess import Popen
 
 class Window(QtGui.QMainWindow):
     
@@ -54,6 +56,8 @@ class WorkSpace(QWidget):
     selectedCombo = "LaTeX"
     equations =[('No equations stored', '')]
     equationListVbox = QVBoxLayout()
+    tokens = []
+    buttonSet = False
 
     def __init__(self):
         super(WorkSpace, self).__init__()
@@ -96,7 +100,8 @@ class WorkSpace(QWidget):
         self.setLayout(hbox)
 
     def textChangeTrigger(self):
-        print self.textedit.toPlainText()
+    	pass
+        #print self.textedit.toPlainText()
 
     def equationsLayout(self):
         self.myQListWidget = QtGui.QListWidget(self)     
@@ -157,10 +162,10 @@ class WorkSpace(QWidget):
 
     def interactionMode(self):
         #cursor = self.textedit.textCursor()
-        #textSelected = cursor.selectedText()
+        #textSelected = cursor.selectedText()	
         textSelected = str(self.textedit.toPlainText())
-        tokens = tokenize.tokenizer(textSelected)
-        lhs, rhs = tokenize.get_lhs_rhs(tokens)
+        self.tokens = tokenize.tokenizer(textSelected)
+        lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
         operations = solve.check_types(lhs, rhs)
         if isinstance(operations, list):
         	if len(operations) > 0:
@@ -172,19 +177,25 @@ class WorkSpace(QWidget):
         				opButtons.append("Subtraction")		
         			elif operation == '*':
         				opButtons.append("Multiplication")
-        			elif operation == '-':
+        			elif operation == '/':
         				opButtons.append("Division")
-        		self.bottomButton.setParent(None) 
+        		if self.buttonSet:
+        			self.solutionWidget.setParent(None)	
+        			self.buttonSet = False			
+        		else:
+        			self.bottomButton.setParent(None) 
+        			self.buttonSet = False
         		self.solutionWidget = QWidget()
-		        for i in xrange(int(len(opButtons)/3)):
-		            for j in range(3):
-		                if len(opButtons) > (i * 3 + j):
+		        for i in xrange(int(len(opButtons)/3) + 1):
+		        	for j in range(3):
+		        	    if len(opButtons) > (i * 3 + j):
 		                	self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
 		                	self.solutionButtons[(i,j)].resize(100, 100)
 		                	self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
 		                	self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)
 		        self.solutionWidget.setLayout(self.solutionOptionsBox)
         		self.buttonSplitter.addWidget(self.solutionWidget)
+        		self.buttonSet = True
         		self.buttonSplitter.setSizes([01, 1000])
 
     def newEquation(self):
@@ -294,7 +305,27 @@ class WorkSpace(QWidget):
 
     def onSolvePress(self, name):
 		def calluser():
-			print name
+			if name == 'Addition':
+				self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)
+			elif name == 'Subtraction':
+				self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)
+			elif name == 'Multiplication':
+				self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)
+			elif name == 'Division':
+				self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)	
+			elif name == 'Simplify':
+				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)	
+					
 		return calluser 
 		
 
