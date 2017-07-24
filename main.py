@@ -54,6 +54,7 @@ class WorkSpace(QWidget):
     selectedCombo = "LaTeX"
     equations =[('No equations stored', '')]
     equationListVbox = QVBoxLayout()
+    tokens = []
 
     def __init__(self):
         super(WorkSpace, self).__init__()
@@ -96,7 +97,8 @@ class WorkSpace(QWidget):
         self.setLayout(hbox)
 
     def textChangeTrigger(self):
-        print self.textedit.toPlainText()
+    	pass
+        #print self.textedit.toPlainText()
 
     def equationsLayout(self):
         self.myQListWidget = QtGui.QListWidget(self)     
@@ -159,8 +161,8 @@ class WorkSpace(QWidget):
         #cursor = self.textedit.textCursor()
         #textSelected = cursor.selectedText()
         textSelected = str(self.textedit.toPlainText())
-        tokens = tokenize.tokenizer(textSelected)
-        lhs, rhs = tokenize.get_lhs_rhs(tokens)
+        self.tokens = tokenize.tokenizer(textSelected)
+        lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
         operations = solve.check_types(lhs, rhs)
         if isinstance(operations, list):
         	if len(operations) > 0:
@@ -172,13 +174,13 @@ class WorkSpace(QWidget):
         				opButtons.append("Subtraction")		
         			elif operation == '*':
         				opButtons.append("Multiplication")
-        			elif operation == '-':
-        				opButtons.append("Division")
+        			elif operation == '/':
+        				opButtons.append("Division")		
         		self.bottomButton.setParent(None) 
         		self.solutionWidget = QWidget()
-		        for i in xrange(int(len(opButtons)/3)):
-		            for j in range(3):
-		                if len(opButtons) > (i * 3 + j):
+		        for i in xrange(int(len(opButtons)/3) + 1):
+		        	for j in range(3):
+		        	    if len(opButtons) > (i * 3 + j):
 		                	self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
 		                	self.solutionButtons[(i,j)].resize(100, 100)
 		                	self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
@@ -294,7 +296,14 @@ class WorkSpace(QWidget):
 
     def onSolvePress(self, name):
 		def calluser():
-			print name
+			if name == 'Addition':
+				print solve.addition(self.tokens)
+			elif name == 'Subtraction':
+				print solve.subtraction(self.tokens)
+			elif name == 'Multiplication':
+				print solve.multiplication(self.tokens)
+			elif name == 'Division':
+				print solve.division(self.tokens)	
 		return calluser 
 		
 

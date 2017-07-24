@@ -166,8 +166,8 @@ def render_equation(x, y, string, level=1, fontSize=24):
         elif term["type"] == "expression":
         	font.FaceSize(fontSize)
         	font.Render('{')
-            x, y = render_equation(x, y, term, level+1)
-            font.FaceSize(fontSize)
+           	x, y = render_equation(x, y, term, level+1)
+            	font.FaceSize(fontSize)
         	font.Render('}') 
         elif term["type"] == "sqrt":
             if term["power"]["type"] == 'constant':

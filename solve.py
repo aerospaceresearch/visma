@@ -130,6 +130,7 @@ def addition(tokens):
 		tokens = change_token(remove_token(tok, rem), [change])
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
+	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string
 		
 def subtraction(tokens):
@@ -137,10 +138,11 @@ def subtraction(tokens):
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while '-' in availableOperations:
-		var, tok, rem, change = expression_addition(variables, tokens)
+		var, tok, rem, change = expression_subtraction(variables, tokens)
 		tokens = change_token(remove_token(tok, rem), [change])
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
+	token_string = tokens_to_string(tokens)	
 	return tokens, availableOperations, token_string
 
 def division(tokens):
@@ -148,10 +150,11 @@ def division(tokens):
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while '/' in availableOperations:
-		var, tok, rem, change = expression_addition(variables, tokens)
+		var, tok, rem = expression_division(variables, tokens)
 		tokens = remove_token(tok, rem)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
+	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string
 
 
@@ -160,10 +163,11 @@ def multiplication(tokens):
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while '*' in availableOperations:
-		var, tok, rem, change = expression_addition(variables, tokens)
+		var, tok, rem = expression_multiplication(variables, tokens)
 		tokens = remove_token(tok, rem)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
+	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string
 
 def change_token(tokens, variables, scope_times=0):
@@ -301,10 +305,9 @@ def expression_addition(variables, tokens):
 			pass
 			
 
-	return variables, tokens, removeScopes, changeScopes, change					
+	return variables, tokens, removeScopes, change					
 
 def expression_subtraction(variables, tokens):
-	changeScopes = []
 	removeScopes = []
 	change = {}
 	for i, variable in enumerate(variables):
@@ -405,11 +408,10 @@ def expression_subtraction(variables, tokens):
 						i += 1
 		elif variable["type"] == "expression":
 			pass
-	return variables, tokens, removeScopes, changeScopes, change					
+	return variables, tokens, removeScopes, change					
 
 
 def expression_multiplication(variables, tokens):
-	changeScopes = []
 	removeScopes = []
 	for i, token in enumerate(tokens):
 		if token["type"] == 'binary':
@@ -488,7 +490,6 @@ def expression_multiplication(variables, tokens):
 
 
 def expression_division(variables, tokens):
-	changeScopes = []
 	removeScopes = []
 	for i, token in enumerate(tokens):
 		if token["type"] == 'binary':
@@ -601,7 +602,7 @@ def get_available_operations(variables, tokens):
 						prev = True
 				if i+1 < len(tokens):
 					if tokens[i+1]["type"] in ["variable", "constant"]:
-						nxt = True
+						nxt = True	
 				if nxt and prev:
 					op = token["value"]
 					if not op in operations:
@@ -632,10 +633,11 @@ def get_available_operations(variables, tokens):
 						if not (variable["before"][j] in ops):
 							ops.append(variable["before"][j])
 							power.append(variable["power"][j])		
-				for i, op in enumerate(ops):
-					if not (op in operations):
-						operations.append(op)
-								
+				if count > 1:					
+					for i, op in enumerate(ops):
+						if not (op in operations):
+							operations.append(op)
+									
 
 		elif variable["type"] == "expression":
 			ops = get_available_operations(variable["value"], variable["tokens"])
