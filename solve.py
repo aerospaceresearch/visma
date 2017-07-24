@@ -119,56 +119,91 @@ def remove_token(tokens, scope, scope_times=0):
 				elif token["scope"] == remScope[0:(scope_times+1)]:
 					token["tokens"] = remove_token(token["tokens"], scope, scope_times + 1)
 					break			
+
 	return tokens
 
+def simplify(tokens):
+	animation = [tokens]
+	variables = []
+	variables.extend(get_level_variables(tokens))
+	availableOperations = get_available_operations(variables, tokens)
+	while len(availableOperations)>0:
+		if '/' in availableOperations:
+			tokens, availableOperations, token_string, anim = division(tokens)
+			animation.pop(len(animation)-1)
+			animation.append(anim)
+		elif '*' in availableOperations:
+			tokens, availableOperations, token_string, anim = multiplication(tokens)
+			animation.pop(len(animation)-1)
+			animation.append(anim)
+		elif '+' in availableOperations:
+			tokens, availableOperations, token_string, anim = addition(tokens)
+			animation.pop(len(animation)-1)
+			animation.append(anim)
+		elif '-' in availableOperations:
+			tokens, availableOperations, token_string, anim = subtraction(tokens)
+			animation.pop(len(animation)-1)
+			animation.append(anim)
+	token_string = tokens_to_string(tokens)
+	return tokens, availableOperations, token_string, animation
+
+
 def addition(tokens):
+	animation = [tokens]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while '+' in availableOperations:
 		var, tok, rem, change = expression_addition(variables, tokens)
 		tokens = change_token(remove_token(tok, rem), [change])
+		animation.append(tokens)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
-	return tokens, availableOperations, token_string
+	return tokens, availableOperations, token_string, animation
 		
 def subtraction(tokens):
+	animation = [tokens]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while '-' in availableOperations:
 		var, tok, rem, change = expression_subtraction(variables, tokens)
 		tokens = change_token(remove_token(tok, rem), [change])
+		animation.append(tokens)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)	
-	return tokens, availableOperations, token_string
+	return tokens, availableOperations, token_string, animation
 
 def division(tokens):
+	animation = [tokens]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while '/' in availableOperations:
 		var, tok, rem = expression_division(variables, tokens)
 		tokens = remove_token(tok, rem)
+		animation.append(tokens)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
-	return tokens, availableOperations, token_string
+	return tokens, availableOperations, token_string, animation
 
 
 def multiplication(tokens):
+	animation = [tokens]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while '*' in availableOperations:
 		var, tok, rem = expression_multiplication(variables, tokens)
 		tokens = remove_token(tok, rem)
+		animation.append(tokens)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
-	return tokens, availableOperations, token_string
+	return tokens, availableOperations, token_string, animation
 
 def change_token(tokens, variables, scope_times=0):
 	for changeVariable in variables:
@@ -627,13 +662,18 @@ def get_available_operations(variables, tokens):
 				ops = []
 				power = []
 				scope = []
+				opCount = 0
 				for j in xrange(len(variable["power"])):
 					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
 						count += 1
+						opCount += 1						
 						if not (variable["before"][j] in ops):
 							ops.append(variable["before"][j])
-							power.append(variable["power"][j])		
-				if count > 1:					
+							power.append(variable["power"][j])
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
+						count += 1
+
+				if count > 1 and opCount > 0:					
 					for i, op in enumerate(ops):
 						if not (op in operations):
 							operations.append(op)

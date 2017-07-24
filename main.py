@@ -14,6 +14,8 @@ from PyQt4 import QtGui
 import tokenize
 import solve
 import animator
+import json
+from subprocess import Popen
 
 class Window(QtGui.QMainWindow):
     
@@ -55,6 +57,7 @@ class WorkSpace(QWidget):
     equations =[('No equations stored', '')]
     equationListVbox = QVBoxLayout()
     tokens = []
+    buttonSet = False
 
     def __init__(self):
         super(WorkSpace, self).__init__()
@@ -159,7 +162,7 @@ class WorkSpace(QWidget):
 
     def interactionMode(self):
         #cursor = self.textedit.textCursor()
-        #textSelected = cursor.selectedText()
+        #textSelected = cursor.selectedText()	
         textSelected = str(self.textedit.toPlainText())
         self.tokens = tokenize.tokenizer(textSelected)
         lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
@@ -175,8 +178,13 @@ class WorkSpace(QWidget):
         			elif operation == '*':
         				opButtons.append("Multiplication")
         			elif operation == '/':
-        				opButtons.append("Division")		
-        		self.bottomButton.setParent(None) 
+        				opButtons.append("Division")
+        		if self.buttonSet:
+        			self.solutionWidget.setParent(None)	
+        			self.buttonSet = False			
+        		else:
+        			self.bottomButton.setParent(None) 
+        			self.buttonSet = False
         		self.solutionWidget = QWidget()
 		        for i in xrange(int(len(opButtons)/3) + 1):
 		        	for j in range(3):
@@ -187,6 +195,7 @@ class WorkSpace(QWidget):
 		                	self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)
 		        self.solutionWidget.setLayout(self.solutionOptionsBox)
         		self.buttonSplitter.addWidget(self.solutionWidget)
+        		self.buttonSet = True
         		self.buttonSplitter.setSizes([01, 1000])
 
     def newEquation(self):
@@ -297,13 +306,26 @@ class WorkSpace(QWidget):
     def onSolvePress(self, name):
 		def calluser():
 			if name == 'Addition':
-				print solve.addition(self.tokens)
+				self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
-				print solve.subtraction(self.tokens)
+				self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
-				print solve.multiplication(self.tokens)
+				self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)
 			elif name == 'Division':
-				print solve.division(self.tokens)	
+				self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)	
+			elif name == 'Simplify':
+				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
+				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.textedit.setText(token_string)	
+					
 		return calluser 
 		
 
