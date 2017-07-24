@@ -65,11 +65,11 @@ def is_variable(term):
 def is_number(term):
 	if isinstance(term, int) or isinstance(term, float):
 		return True
-	else:	
+	else:
 	    x = 0
 	    dot = 0
 	    while x < len(term):
-	    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '\.'):
+	    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
 	    		return False
 	    	if term[x] == '.':
 	    		dot += 1
@@ -120,13 +120,24 @@ def get_terms(eqn):
 					buf += eqn[x]
 				  	x +=1
 			terms.append(buf)
-		elif eqn[x] > '0' and eqn[x] < '9':
+		elif eqn[x] >= '0' and eqn[x] <= '9':
+			buf = ''
 			buf = eqn[x]
 			x += 1
-			while x < len(terms):
-				if eqn[x] > '0' and eqn[x] < '9':
+			dot = 0
+			while x < len(eqn):
+				if (eqn[x] >= '0' and eqn[x] <= '9'):
 					buf += eqn[x]
 					x += 1
+				elif eqn[x] == '.':
+					if dot == 0:
+						buf += eqn[x]
+						dot += 1
+						x += 1
+					else:
+						break
+				else:
+					break			
 			terms.append(buf)
 		elif eqn[x] in symbols:				
 			terms.append(eqn[x])
@@ -173,7 +184,13 @@ def get_variable(terms, symTokens, scope, coeff=1):
 				power.append(1)		
 			level += 1	
 			x +=1 
-				
+		
+		elif symTokens[x] == 'unary':
+			c = 1
+			if terms[x] == '-':
+				c *= -1
+			coefficient *= c
+			x += 1
 		elif terms[x] == '^':
 			x += 1
 			if terms[x] == '{':
@@ -615,6 +632,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 						else:	
 							power[-1] = terms[x]
 						x += 1
+
 	variable["scope"] = scope
 	variable["value"] = value
 	variable["power"] = power
@@ -1308,10 +1326,12 @@ def tokenize_symbols(terms):
 			elif term == '+' or term == '-':
 				if i == 0:
 					symTokens[-1] = "unary"
-				elif terms[i-1] in ['-', '+', '*', '/', '=', '^']:
+				elif terms[i-1] in ['-', '+', '*', '/', '=', '^', '{']:
 					symTokens[-1] = "unary"	
 				elif (is_variable(terms[i-1]) or is_number(terms[i-1]) or terms[i-1] == '}') and (is_variable(terms[i+1]) or is_number(terms[i+1]) or terms[i+1] == '{' or ((terms[i+1] == '-' or terms[i+1] == '+') and (is_variable(terms[i+2]) or is_number(terms[i+2])) )):
 					symTokens[-1] = "binary"
+				else:
+					print terms[i-1], terms[i], is_number(terms[i+1])	
 			elif term == '=':
 				symTokens[-1] = "binary"
 		elif term == "sqrt":
@@ -1344,14 +1364,14 @@ def constant_variable(variable):
 
 						
 	for p in variable["power"]:
-		if isinstance(var, dict):
+		if isinstance(p, dict):
 			if p["type"] == "expression":
 				result, token = constant_conversion(p["tokens"])
 				if not result:
 					constant = False
 			elif p["type"] == "variable":
 				if not constant_variable(p):
-					constant = False
+					constant = False		
 		elif not is_number(p):
 			constant = False
 
@@ -1377,7 +1397,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn="  x + 6.00 / 3 + 2 - 2x "):
+def tokenizer(eqn=" x^{1}  - 0.125x^{-1} "):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):
@@ -1404,3 +1424,5 @@ if __name__ == "__main__":
 	print tokenizer()
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}
+#x + 6.00 / 3 + 2 - 2x
+#x^{1} - x^{-1}

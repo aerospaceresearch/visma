@@ -304,7 +304,7 @@ def expression_addition(variables, tokens):
 									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
 								change["scope"] = variable["scope"][const]
 								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								change["value"] = variable["value"]
 								change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								removeScopes.append(variable["scope"][constantAdd[i]])
@@ -314,7 +314,7 @@ def expression_addition(variables, tokens):
 								variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
 								change["scope"] = variable["scope"][const]
 								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								change["value"] = variable["value"]
 								change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
@@ -326,10 +326,10 @@ def expression_addition(variables, tokens):
 						for j, const in enumerate(constantAdd):
 							if i !=j:
 								if variable["power"][constantAdd[i]] == variable["power"][const]:
-									variable["value"][const] += variable["value"][constantAdd[i]]
+									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
 									change["scope"] = variable["scope"][const]
 									change["power"] = variable["power"][const]
-									change["value"] = variable["value"][const]
+									change["value"] = variable["value"]
 									change["coefficient"] = variable["coefficient"][const]
 									removeScopes.append(variable["scope"][constantAdd[i]])
 									removeScopes.append(variable["before_scope"][constantAdd[i]])
@@ -410,7 +410,7 @@ def expression_subtraction(variables, tokens):
 								variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
 								change["scope"] = variable["scope"][const]
 								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								change["value"] = variable["value"]
 								change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
@@ -420,7 +420,7 @@ def expression_subtraction(variables, tokens):
 								variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
 								change["scope"] = variable["scope"][const]
 								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								change["value"] = variable["value"]
 								change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
@@ -432,10 +432,10 @@ def expression_subtraction(variables, tokens):
 						for j, const in enumerate(constantAdd):
 							if i !=j:
 								if variable["power"][constantAdd[i]] == variable["power"][const]:
-									variable["value"][const] += variable["value"][constantAdd[i]]
+									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
 									change["scope"] = variable["scope"][const]
 									change["power"] = variable["power"][const]
-									change["value"] = variable["value"][const]
+									change["value"] = variable["value"]
 									change["coefficient"] = variable["coefficient"][const]
 									removeScopes.append(variable["scope"][constantAdd[i]])
 									removeScopes.append(variable["before_scope"][constantAdd[i]])
@@ -600,8 +600,10 @@ def expression_division(variables, tokens):
 						tokens[i-1]["value"] = tokens[i+1]["value"]
 						tokens[i-1]["coefficient"] = tokens[i+1]["coefficient"]/val
 						tokens[i-1]["power"] = []
+						tokens[i-1]["type"] = 'variable'
+						tokens[i-1]["scope"] = scope
 						for pows in tokens[i+1]["power"]:
-							tokens[i-1]["power"].append(pows)
+							tokens[i-1]["power"].append(-pows)
 
 						removeScopes.append(tokens[i]["scope"])
 						removeScopes.append(tokens[i+1]["scope"])	
