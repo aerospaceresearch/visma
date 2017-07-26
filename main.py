@@ -13,7 +13,7 @@ from PyQt4.QtCore import *
 from PyQt4 import QtGui
 import tokenize
 import solve
-import animator
+#import animator
 import json
 from subprocess import Popen
 
