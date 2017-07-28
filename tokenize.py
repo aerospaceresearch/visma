@@ -1397,7 +1397,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn=" x^{1}  - 0.125x^{-1} "):
+def tokenizer(eqn=" x^5  - x^4 "):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):
