@@ -90,13 +90,14 @@ def tokens_to_string(tokens):
 	return token_string					 		
 
 def test():
-	tokens = [{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'value': 6.0, 'power': 1}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'value': 3.0, 'power': 1}, {'scope': [5], 'type': 'binary', 'value': '+'}, {'scope': [6], 'type': 'constant', 'value': 2.0, 'power': 1}, {'scope': [7], 'type': 'binary', 'value': '-'}, {'coefficient': 2.0, 'scope': [8], 'type': 'variable', 'power': [1], 'value': ['x']}]
+	tokens = [{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [5.0], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '-'}, {'coefficient': 1, 'scope': [2], 'type': 'variable', 'power': [4.0], 'value': ['x']}]
+	#tokens = [{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'value': 6.0, 'power': 1}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'value': 3.0, 'power': 1}, {'scope': [5], 'type': 'binary', 'value': '+'}, {'scope': [6], 'type': 'constant', 'value': 2.0, 'power': 1}, {'scope': [7], 'type': 'binary', 'value': '-'}, {'coefficient': 2.0, 'scope': [8], 'type': 'variable', 'power': [1], 'value': ['x']}]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	print variables, availableOperations
-	var, tok, rem, change = expression_subtraction(variables, tokens)
-	print tokens_to_string(change_token(remove_token(tok, rem), [change]))
+	#var, tok, rem, change = expression_subtraction(variables, tokens)
+	#print tokens_to_string(change_token(remove_token(tok, rem), [change]))
 	#print tokens_to_string(remove_token(tok, rem))
 
 
@@ -695,32 +696,33 @@ def get_level_variables(tokens):
 			skip = False
 			for var in variables:
 				if var["value"] == term["value"]:
-					var["power"].append(term["power"])
-					var["scope"].append(term["scope"])
-					var["coefficient"].append(term["coefficient"])
-					if i != 0:
-						if tokens[i-1]["type"] == 'binary':
-							var["before"].append(tokens[i-1]["value"])
-							var["before_scope"].append(tokens[i-1]["scope"])
+					if var["power"][0] == term["power"]:
+						var["power"].append(term["power"])
+						var["scope"].append(term["scope"])
+						var["coefficient"].append(term["coefficient"])
+						if i != 0:
+							if tokens[i-1]["type"] == 'binary':
+								var["before"].append(tokens[i-1]["value"])
+								var["before_scope"].append(tokens[i-1]["scope"])
+							else:
+								var["before"].append('')
+								var["before_scope"].append('')
 						else:
 							var["before"].append('')
 							var["before_scope"].append('')
-					else:
-						var["before"].append('')
-						var["before_scope"].append('')
 
-					if i+1 < len(tokens):
-						if tokens[i+1]["type"] == 'binary':
-							var["after"].append(tokens[i+1]["value"])
-							var["after_scope"].append(tokens[i+1]["scope"])
+						if i+1 < len(tokens):
+							if tokens[i+1]["type"] == 'binary':
+								var["after"].append(tokens[i+1]["value"])
+								var["after_scope"].append(tokens[i+1]["scope"])
+							else:
+								var["after"].append('')
+								var["after_scope"].append('')
 						else:
 							var["after"].append('')
 							var["after_scope"].append('')
-					else:
-						var["after"].append('')
-						var["after_scope"].append('')
-					skip = True
-					break
+						skip = True
+						break
 			if not skip: 
 				variable = {}
 				variable["type"] = "variable"

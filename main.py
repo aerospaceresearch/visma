@@ -169,41 +169,67 @@ class WorkSpace(QWidget):
         lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
         operations = solve.check_types(lhs, rhs)
         if isinstance(operations, list):
+        	opButtons = []
         	if len(operations) > 0:
         		opButtons = ['Simplify']
-        		for operation in operations:
-        			if operation == '+':
-        				opButtons.append("Addition")
-        			elif operation == '-':
-        				opButtons.append("Subtraction")		
-        			elif operation == '*':
-        				opButtons.append("Multiplication")
-        			elif operation == '/':
-        				opButtons.append("Division")
-        		if self.buttonSet:
-        			for i in reversed(range(self.solutionOptionsBox.count())): 
-                			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-        			for i in xrange(int(len(opButtons)/3) + 1):
-			        	for j in range(3):
-			        	    if len(opButtons) > (i * 3 + j):
-			                	self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
-			                	self.solutionButtons[(i,j)].resize(100, 100)
-			                	self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
-			                	self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)			
-        		else:
-        			self.bottomButton.setParent(None) 
-        			self.solutionWidget = QWidget()
-			        for i in xrange(int(len(opButtons)/3) + 1):
-			        	for j in range(3):
-			        	    if len(opButtons) > (i * 3 + j):
-			                	self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
-			                	self.solutionButtons[(i,j)].resize(100, 100)
-			                	self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
-			                	self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)
-			        self.solutionWidget.setLayout(self.solutionOptionsBox)
-	        		self.buttonSplitter.addWidget(self.solutionWidget)
-	        		self.buttonSet = True
-	        		self.buttonSplitter.setSizes([01, 1000])
+    		for operation in operations:
+    			if operation == '+':
+    				opButtons.append("Addition")
+    			elif operation == '-':
+    				opButtons.append("Subtraction")		
+    			elif operation == '*':
+    				opButtons.append("Multiplication")
+    			elif operation == '/':
+    				opButtons.append("Division")
+    		if self.buttonSet:
+    			for i in reversed(range(self.solutionOptionsBox.count())): 
+            			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+    			for i in xrange(int(len(opButtons)/3) + 1):
+		        	for j in range(3):
+		        	    if len(opButtons) > (i * 3 + j):
+		                	self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
+		                	self.solutionButtons[(i,j)].resize(100, 100)
+		                	self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
+		                	self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)			
+    		else:
+    			self.bottomButton.setParent(None) 
+    			self.solutionWidget = QWidget()
+		        for i in xrange(int(len(opButtons)/3) + 1):
+		        	for j in range(3):
+		        	    if len(opButtons) > (i * 3 + j):
+		                	self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
+		                	self.solutionButtons[(i,j)].resize(100, 100)
+		                	self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
+		                	self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)
+		        self.solutionWidget.setLayout(self.solutionOptionsBox)
+        		self.buttonSplitter.addWidget(self.solutionWidget)
+        		self.buttonSet = True
+        		self.buttonSplitter.setSizes([01, 1000])
+
+    def refreshButtons(self, operations):
+        if isinstance(operations, list):
+        	opButtons = []
+        	if len(operations) > 0:
+        		opButtons = ['Simplify']
+    		for operation in operations:
+    			if operation == '+':
+    				opButtons.append("Addition")
+    			elif operation == '-':
+    				opButtons.append("Subtraction")		
+    			elif operation == '*':
+    				opButtons.append("Multiplication")
+    			elif operation == '/':
+    				opButtons.append("Division")
+    		
+    		for i in reversed(range(self.solutionOptionsBox.count())): 
+        			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+        	for i in xrange(int(len(opButtons)/3) + 1):
+				for j in range(3):
+					if len(opButtons) > (i * 3 + j):
+						self.solutionButtons[(i,j)] = QtGui.QPushButton(opButtons[i*3 + j])
+	                			self.solutionButtons[(i,j)].resize(100, 100)
+	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
+	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)	
 
     def newEquation(self):
         self.textedit.setText("")    
@@ -315,22 +341,27 @@ class WorkSpace(QWidget):
 			if name == 'Addition':
 				self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
 				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
 				self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
 				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
 				self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
 				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Division':
 				self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
 				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 			elif name == 'Simplify':
 				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
 				#Popen(['python', 'animator.py', json.dumps(animation)])
+				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 					
 		return calluser 
