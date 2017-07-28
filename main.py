@@ -165,7 +165,7 @@ class WorkSpace(QWidget):
         #textSelected = cursor.selectedText()	
         textSelected = str(self.textedit.toPlainText())
         self.tokens = tokenize.tokenizer(textSelected)
-        print self.tokens
+        #print self.tokens
         lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
         operations = solve.check_types(lhs, rhs)
         if isinstance(operations, list):
