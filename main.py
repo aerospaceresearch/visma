@@ -156,7 +156,7 @@ class WorkSpace(QWidget):
         self.buttonSplitter = QSplitter(Qt.Vertical)
         self.buttonSplitter.addWidget(topButtonSplitter)
         self.buttonSplitter.addWidget(self.bottomButton)
-        self.buttonSplitter.setSizes([01, 1000])
+        self.buttonSplitter.setSizes([1, 1000])
         vbox.addWidget(self.buttonSplitter)
         return vbox
 
