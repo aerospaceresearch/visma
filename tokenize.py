@@ -73,7 +73,7 @@ def is_number(term):
 	    		return False
 	    	if term[x] == '.':
 	    		dot += 1
-	    	x += 1
+	    	x += 1	
 	    return True
 
 def get_num(term):
@@ -216,8 +216,8 @@ def get_variable(terms, symTokens, scope, coeff=1):
 						varSymTokens.append(symTokens[x])
 						x += 1
 					else: 
-						break
-				if x+1 < len(terms):		
+						break		
+				if x+1 < len(terms):	
 					if terms[x+1] == '^':
 						x += 2
 						binary2 = 0
@@ -292,7 +292,6 @@ def get_variable(terms, symTokens, scope, coeff=1):
 									tempScope.append(level)
 									variable["scope"] = tempScope
 									power[-1] = variable
-
 								elif is_number(varTerms[-1]):
 									variable = {}
 									variable["type"] = "constant"
@@ -327,10 +326,10 @@ def get_variable(terms, symTokens, scope, coeff=1):
 
 					else:
 						if len(varTerms) == 1:
-							if is_variable(terms[x-1]):
-								power[-1] = terms[x-1]
-							elif is_number(terms[x-1]):
-								power[-1] *= get_num(terms[x-1])
+							if is_variable(varTerms[0]):
+								power[-1] = varTerms[0]
+							elif is_number(varTerms[0]):
+								power[-1] *= get_num(varTerms[0])
 						else:
 							if binary == 0 and nSqrt == 0:
 								tempScope = []
@@ -345,10 +344,10 @@ def get_variable(terms, symTokens, scope, coeff=1):
 
 				else:
 					if len(varTerms) == 1:
-						if is_variable(terms[x]):
-							power[-1] = terms[x]
-						elif is_number(terms[x]):
-							power[-1] *= get_num(terms[x])
+						if is_variable(varTerms[0]):
+							power[-1] = varTerms[0]
+						elif is_number(varTerms[0]):
+							power[-1] *= get_num(varTerms[0])
 					else:
 						if binary == 0 and nSqrt == 0:
 							tempScope = []
@@ -360,7 +359,6 @@ def get_variable(terms, symTokens, scope, coeff=1):
 							tempScope.extend(scope)
 							tempScope.append(level)
 							power[-1] = get_token(varTerms, varSymTokens, tempScope)
-
 				x += 1
 					
 			elif is_variable(terms[x]) or is_number(terms[x]):
@@ -1397,7 +1395,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn=" x^5  - x^4 "):
+def tokenizer(eqn=" x^{5}  - x^{4} "):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):
