@@ -926,7 +926,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 						tempScope.extend(scope)
 						tempScope.append(level)
 						tokens.append(get_token(varTerms, varSymTokens, tempScope, coeff))
-			x += 1
+			
 		elif symTokens[x] == 'unary':
 			coeff = 1
 			if terms[x] == '-':
@@ -1419,7 +1419,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn=" x^{-1} "):
+def tokenizer(eqn=" {x-1} * {x+1} "):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):

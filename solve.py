@@ -584,6 +584,7 @@ def multiply_constants(constant1, constant2, binary):
 def multiply_variable_constant(constant, variable, binary):	
 	variable1 = {}
 	variable1 = variable 
+	removeScopes = []
 	variable1["coefficient"] *=  evaluate_constant(constant)
 	#removeScopes.append(tokens[i]["scope"])
 	#removeScopes.append(tokens[i-1]["scope"])
@@ -1221,4 +1222,6 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 
 if __name__ == '__main__':
 			#check_types()
-			test()
+			#test()
+			
+			multiply_expressions({'tokens': [{'coefficient': 1, 'scope': [0, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [0, 1], 'type': 'binary', 'value': '-'}, {'scope': [0, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [0], 'coeff': 1, 'type': 'expression'}, {'tokens': [{'coefficient': 1, 'scope': [1, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1, 1], 'type': 'binary', 'value': '+'}, {'scope': [1, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [1], 'coeff': 1, 'type': 'expression'})
