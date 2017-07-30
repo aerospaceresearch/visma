@@ -68,13 +68,26 @@ def is_number(term):
 	else:
 	    x = 0
 	    dot = 0
-	    while x < len(term):
-	    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
-	    		return False
-	    	if term[x] == '.':
-	    		dot += 1
-	    	x += 1	
-	    return True
+	    if term[0] == '-':
+	    	x += 1
+	    	while x < len(term):
+		    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+		    		return False
+		    	if term[x] == '.':
+		    		dot += 1
+		    	x += 1
+			if x >= 2:
+				return True
+			else:
+		    		return False
+	    else:
+		while x < len(term):
+		    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+		    		return False
+		    	if term[x] == '.':
+		    		dot += 1
+		    	x += 1	
+		return True
 
 def get_num(term):
 	return float(term)
@@ -216,7 +229,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 						varSymTokens.append(symTokens[x])
 						x += 1
 					else: 
-						break		
+						break
 				if x+1 < len(terms):	
 					if terms[x+1] == '^':
 						x += 2
@@ -343,6 +356,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 								power[-1] = get_token(varTerms, varSymTokens, tempScope)
 
 				else:
+					print varTerms, is_number(varTerms[0])
 					if len(varTerms) == 1:
 						if is_variable(varTerms[0]):
 							power[-1] = varTerms[0]
@@ -1336,12 +1350,22 @@ def tokenize_symbols(terms):
 			symTokens[-1] = "sqrt"	
 	return symTokens
 
+def check_negative_number(terms, symTokens):
+	for i, symToken in enumerate(symTokens):
+		if symToken == 'unary':
+			if i+1 < len(terms):
+				if is_number(terms[i+1]):
+					terms[i+1] =  terms[i] + terms[i+1]
+			terms.pop(i)
+			symTokens.pop(i)
+	return terms, symTokens				
 	
 def clean(eqn):
 	cleanEqn = remove_spaces(eqn) 
 	terms = get_terms(cleanEqn)
 	normalizedTerms = normalize(terms)
 	symTokens = tokenize_symbols(normalizedTerms)
+	terms, symTokens = check_negative_number(normalizedTerms, symTokens)
 	if check_equation(normalizedTerms, symTokens):
 		tokens = get_token(normalizedTerms, symTokens)
 		return tokens["tokens"]
@@ -1395,7 +1419,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn=" x^{5}  - x^{4} "):
+def tokenizer(eqn=" x^{-1} "):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):
