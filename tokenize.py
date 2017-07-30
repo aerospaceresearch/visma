@@ -654,7 +654,6 @@ def get_variable(terms, symTokens, scope, coeff=1):
 def get_token(terms, symTokens, scope=[], coeff=1):
 	eqn = {}
 	eqn["type"] = "expression"
-	eqn["coeff"] = coeff
 	tokens = []
 	x = 0
 	level = 0
@@ -1324,6 +1323,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 				
 		x += 1	
 	eqn["scope"] = scope
+	eqn["coeff"] = coeff
 	eqn["tokens"] = tokens	
 	return eqn		  
 
