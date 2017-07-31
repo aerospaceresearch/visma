@@ -1323,7 +1323,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 				
 		x += 1	
 	eqn["scope"] = scope
-	eqn["coeff"] = coeff
+	eqn["coefficient"] = coeff
 	eqn["tokens"] = tokens	
 	return eqn		  
 
