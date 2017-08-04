@@ -13,7 +13,7 @@ from PyQt4.QtCore import *
 from PyQt4 import QtGui
 import tokenize
 import solve
-#import animator
+import animator
 import json
 from subprocess import Popen
 
@@ -361,8 +361,10 @@ class WorkSpace(QWidget):
 			elif name == 'Simplify':
 				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
 				#Popen(['python', 'animator.py', json.dumps(animation)])
+				animator.animate(animation)
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
+				#print animation
 					
 		return calluser 
 		

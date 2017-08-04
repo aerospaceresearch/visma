@@ -124,7 +124,7 @@ def remove_token(tokens, scope, scope_times=0):
 	return tokens
 
 def simplify(tokens):
-	animation = [tokens]
+	animation = [list(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -132,25 +132,34 @@ def simplify(tokens):
 		if '/' in availableOperations:
 			tokens, availableOperations, token_string, anim = division(tokens)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			print "division bef ", animation
+			animation.extend(anim)
+			print "division ", animation
 		elif '*' in availableOperations:
 			tokens, availableOperations, token_string, anim = multiplication(tokens)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			print "multi bef ", animation
+			animation.extend(anim)
+			print "multi ", animation
 		elif '+' in availableOperations:
 			tokens, availableOperations, token_string, anim = addition(tokens)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			print "add bef ", animation
+			animation.extend(anim)
+			print "add ", animation
 		elif '-' in availableOperations:
 			tokens, availableOperations, token_string, anim = subtraction(tokens)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			print "sub bef ", animation
+			animation.extend(anim)
+			print "sub ", animation
 	token_string = tokens_to_string(tokens)
+	print token_string
 	return tokens, availableOperations, token_string, animation
 
 
 def addition(tokens):
-	animation = [tokens]
+	animation = [list(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -164,7 +173,7 @@ def addition(tokens):
 	return tokens, availableOperations, token_string, animation
 		
 def subtraction(tokens):
-	animation = [tokens]
+	animation = [list(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -178,7 +187,7 @@ def subtraction(tokens):
 	return tokens, availableOperations, token_string, animation
 
 def division(tokens):
-	animation = [tokens]
+	animation = [list(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -193,7 +202,7 @@ def division(tokens):
 
 
 def multiplication(tokens):
-	animation = [tokens]
+	animation = [list(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -249,7 +258,7 @@ def expression_addition(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '-':
+								if variable["before"][const] == '-' or variable["before"][const] == '':
 									variable["value"][const] -= variable["value"][constantAdd[i]]
 								else:
 									variable["value"][const] += variable["value"][constantAdd[i]]
@@ -323,7 +332,7 @@ def expression_addition(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '-':
+								if variable["before"][const] == '-' or variable["before"][const] == '':
 									variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
 								else:
 									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
@@ -393,7 +402,7 @@ def expression_subtraction(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '+':
+								if variable["before"][const] == '+' or variable["before"][const] == '':
 									variable["value"][const] -= variable["value"][constantAdd[i]]
 								else:
 									variable["value"][const] += variable["value"][constantAdd[i]]
@@ -467,7 +476,7 @@ def expression_subtraction(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '+':
+								if variable["before"][const] == '+' or variable["before"][const] == '':
 									variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
 								else:
 									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
@@ -552,6 +561,7 @@ def multiply_variables(variable1, variable2, coeff):
 	return variable
 
 
+
 def multiply_constants(constant1, constant2, coeff):
 	no_1 = False
 	no_2 = False
@@ -617,6 +627,11 @@ def multiply_variable_constant(constant, variable, coeff):
 	#removeScopes.append(tokens[i-1]["scope"])
 	return variable1
 
+def multiply_expression_constant(constant, expression, coeff):
+	pass
+
+def multiply_expression_variable(variable, expression, coeff):
+	pass
 
 def multiply_select(token1, token2, coeff=1):
 	if token1["type"] == "variable" and token2["type"] == "variable":
@@ -819,7 +834,7 @@ def expression_division(variables, tokens):
 						scope = tokens[i-1]["scope"]
 						tokens[i-1] = {}
 						tokens[i-1]["value"] = tokens[i+1]["value"]
-						tokens[i-1]["coefficient"] = tokens[i+1]["coefficient"]/val
+						tokens[i-1]["coefficient"] = val/tokens[i+1]["coefficient"]
 						tokens[i-1]["power"] = []
 						tokens[i-1]["type"] = 'variable'
 						tokens[i-1]["scope"] = scope

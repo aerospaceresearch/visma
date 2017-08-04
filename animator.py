@@ -51,64 +51,6 @@ def is_number(term):
         x += 1  
     return True
 
-
-def render_variable(x, y, term, level=1, fontSize=24):
-    font.FaceSize(24)
-    if term["coefficient"] == 1:
-        pass
-    elif term["coefficient"] == -1:
-        font.Render(str('-'))
-        x += 10
-    else:
-        font.Render(str(term["coefficient"]))
-        x += 10
-    if len(term["value"])> 0:
-        for j, val in enumerate(term["value"]):
-            if type(val) == dict:
-                if val["type"] == 'variable':
-                    x, y = render_variable(x, y, val, level+1)
-                elif val["type"] == 'expression':
-                    x, y = render_equation(x, y, val, level)        
-                else:
-                    pass    
-            elif is_variable(str(val)) or is_number(str(val)):
-                glRasterPos(x, y)
-                font.FaceSize(fontSize)
-                if val in greek:
-                    font.Render(str(val.encode('utf-8')))
-                else:
-                    font.Render(str(val)) 
-            x += 10
-            if type(term["power"][j]) == dict:
-                if term["power"][j]["type"] == 'variable':
-                    x, y = render_variable(x, y+10, term["power"][j], level + 1, 2*fontSize/3)
-                elif term["power"][j]["type"] == 'expression':
-                    x, y = render_equation(x, y+10, term["power"][j], level + 1, 2*fontSize/3)    
-                else:  
-                    pass  
-            elif is_variable(str(term["power"][j])):
-                glRasterPos(x, y + 10)
-                font.FaceSize(2  * fontSize/3)
-                if term["power"][j] in greek:
-                    font.Render(str(term["power"][j].encode('utf-8')))
-                else:
-                    font.Render(str(term["power"][j]))
-                x += 20   
-            elif is_number(str(term["power"][j])):
-                if term["power"][j] == 1:
-                    x += 10
-                    pass
-                else:
-                    glRasterPos(x, y + 10)
-                    font.FaceSize(2  * fontSize/3)
-                    if term["power"][j] in greek:
-                        font.Render(str(term["power"][j].encode('utf-8')))
-                    else:
-                        font.Render(str(term["power"][j]))
-                    x += 20           
-                    
-    return x, y
-
 def do_ortho():
     
     w, h = width, height
@@ -132,10 +74,9 @@ def do_ortho():
 
 
 def draw_scene():
-    
     glColor3f(1.0, 1.0, 1.0)
     i = 0
-    x, y = -50, 0    
+    x, y = -50, 0
     while i < len(string):
         glClear(GL_COLOR_BUFFER_BIT)
         i += 1
@@ -149,6 +90,70 @@ def draw_scene():
         glutSwapBuffers()
         time.sleep(2)
 
+def render_variable(x, y, term, level=1, fontSize=24):
+    glRasterPos(x, y)
+    font.FaceSize(24)
+    if term["coefficient"] == 1:
+        pass
+    elif term["coefficient"] < 0:
+        if term["coefficient"] == -1:
+            font.Render(str('-'))
+            x += 20
+        else:
+            font.Render(str(term["coefficient"]))    
+            x += 60
+    else:
+        font.Render(str(term["coefficient"]))
+        x += 50
+    if len(term["value"])> 0:
+        for j, val in enumerate(term["value"]):
+            if type(val) == dict:
+                if val["type"] == 'variable':
+                    x, y = render_variable(x, y, val, level+1)
+                elif val["type"] == 'expression':
+                    x, y = render_equation(x, y, val, level)        
+                else:
+                    pass    
+            elif is_variable(str(val)) or is_number(str(val)):
+                glRasterPos(x, y)
+                font.FaceSize(fontSize)
+                if val in greek:
+                    font.Render(str(val.encode('utf-8')))
+                else:
+                    font.Render(str(val)) 
+            x += 20
+
+            if type(term["power"][j]) == dict:
+                if term["power"][j]["type"] == 'variable':
+                    x, y = render_variable(x, y+10, term["power"][j], level + 1, 2*fontSize/3)
+                elif term["power"][j]["type"] == 'expression':
+                    x, y = render_equation(x, y+10, term["power"][j], level + 1, 2*fontSize/3)    
+                else:
+                    pass 
+            elif is_variable(str(term["power"][j])):
+                glRasterPos(x, y + 10)
+                font.FaceSize(2  * fontSize/3)
+                if term["power"][j] in greek:
+                    font.Render(str(term["power"][j].encode('utf-8')))
+                else:
+                    font.Render(str(term["power"][j]))
+                x += 20   
+            elif is_number(str(term["power"][j])):
+                if term["power"][j] == 1:
+                    x += 10
+                    pass
+                else:
+                    glRasterPos(x, y + 10)
+                    font.FaceSize(2  * fontSize/3)
+                    if term["power"][j] in greek:
+                        font.Render(str(term["power"][j].encode('utf-8')))
+                    else:
+                        font.Render(str(term["power"][j]))
+                    x += 20           
+                    
+    return x, y
+
+
 def render_equation(x, y, string, level=1, fontSize=24):
     for i, term in enumerate(string):
         if term["type"] == "variable":
@@ -156,7 +161,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
         elif term["type"] == "constant":
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
-                x += 20
+                x += 40
                 font.Render(str(term["value"]))
         elif term["type"] == "binary":
             if len(term["value"])> 0:
@@ -174,7 +179,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
             if term["power"]["type"] == 'constant':
                 glRasterPos(x, y + 5)
                 font.FaceSize(fontSize/2)
-                x += 20
+                x += 30
                 font.Render(term["power"]["value"])
             elif term["power"]["type"] == 'variable':
                 x, y, = render_variable(x, y+5, term["power"], level+1, fontSize/2)
@@ -186,7 +191,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
             if term["eqn"]["type"] == 'constant':
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
-                x += 20
+                x += 30
                 font.Render(term["eqn"]["value"])
             elif term["eqn"]["type"] == 'variable':
                 x, y, = render_variable(x, y, term["eqn"], level+1, fontSize)
@@ -200,7 +205,6 @@ def render_equation(x, y, string, level=1, fontSize=24):
 def on_display():
     glClear(GL_COLOR_BUFFER_BIT)
     do_ortho()
-    print "Test"
     draw_scene()
 
 def on_reshape(w, h):
@@ -211,6 +215,7 @@ def on_key(key, x, y):
         sys.exit(1)
 
 def main():
+    print string
     glutInitWindowSize(width, height)
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE)
@@ -221,12 +226,12 @@ def main():
     glutDisplayFunc(on_display)
     glutReshapeFunc(on_reshape)
     glutKeyboardUpFunc(on_key)
-
+    
     glutMainLoop()
 
 
 def animate(tokens):
-    print tokens
+    global string 
     string = tokens
     main()
 
