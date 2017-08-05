@@ -63,31 +63,31 @@ def is_variable(term):
 		return True
 
 def is_number(term):
-	if isinstance(term, int) or isinstance(term, float):
-		return True
-	else:
-	    x = 0
-	    dot = 0
-	    if term[0] == '-':
-	    	x += 1
-	    	while x < len(term):
-		    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
-		    		return False
-		    	if term[x] == '.':
-		    		dot += 1
-		    	x += 1
-			if x >= 2:
-				return True
-			else:
-		    		return False
-	    else:
-		while x < len(term):
-		    	if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
-		    		return False
-		    	if term[x] == '.':
-		    		dot += 1
-		    	x += 1	
-		return True
+    if isinstance(term, int) or isinstance(term, float):
+        return True
+    else:
+        x = 0
+        dot = 0
+        if term[0] == '-':
+            x += 1
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1
+            if x >= 2:
+                return True
+            else:
+                    return False
+        else:
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1  
+        return True
 
 def get_num(term):
 	return float(term)
@@ -654,7 +654,6 @@ def get_variable(terms, symTokens, scope, coeff=1):
 def get_token(terms, symTokens, scope=[], coeff=1):
 	eqn = {}
 	eqn["type"] = "expression"
-	eqn["coeff"] = coeff
 	tokens = []
 	x = 0
 	level = 0
@@ -927,7 +926,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 						tempScope.extend(scope)
 						tempScope.append(level)
 						tokens.append(get_token(varTerms, varSymTokens, tempScope, coeff))
-			x += 1
+			
 		elif symTokens[x] == 'unary':
 			coeff = 1
 			if terms[x] == '-':
@@ -1324,6 +1323,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 				
 		x += 1	
 	eqn["scope"] = scope
+	eqn["coefficient"] = coeff
 	eqn["tokens"] = tokens	
 	return eqn		  
 
@@ -1419,7 +1419,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn=" x^{-1} "):
+def tokenizer(eqn=" {x-1} * {x+1} "):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):

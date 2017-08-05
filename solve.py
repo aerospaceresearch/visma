@@ -9,21 +9,34 @@ Logic Description:
 """
 
 import math
+import copy
 
 def is_number(term):
-	if isinstance(term, int) or isinstance(term, float):
-		return True
-	else:
-	    x = 0
-	    dot = 0
-	    while x < len(term):
-			if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '\.'):
-				return False
-			if term[x] == '.':
-				dot += 1
-			x += 1
-	    return True
-	return False
+    if isinstance(term, int) or isinstance(term, float):
+        return True
+    else:
+        x = 0
+        dot = 0
+        if term[0] == '-':
+            x += 1
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1
+            if x >= 2:
+                return True
+            else:
+                    return False
+        else:
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1  
+        return True
 
 def get_num(term):
 	return float(term)
@@ -124,33 +137,38 @@ def remove_token(tokens, scope, scope_times=0):
 	return tokens
 
 def simplify(tokens):
-	animation = [tokens]
+	tokens_orig = copy.deepcopy(tokens)
+	animation = [tokens_orig]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while len(availableOperations)>0:
 		if '/' in availableOperations:
-			tokens, availableOperations, token_string, anim = division(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = division(tokens_temp)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			animation.extend(anim)
 		elif '*' in availableOperations:
-			tokens, availableOperations, token_string, anim = multiplication(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = multiplication(tokens_temp)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			animation.extend(anim)
 		elif '+' in availableOperations:
-			tokens, availableOperations, token_string, anim = addition(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = addition(tokens_temp)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			animation.extend(anim)
 		elif '-' in availableOperations:
-			tokens, availableOperations, token_string, anim = subtraction(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = subtraction(tokens_temp)
 			animation.pop(len(animation)-1)
-			animation.append(anim)
+			animation.extend(anim)
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation
 
 
 def addition(tokens):
-	animation = [tokens]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -164,7 +182,7 @@ def addition(tokens):
 	return tokens, availableOperations, token_string, animation
 		
 def subtraction(tokens):
-	animation = [tokens]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -178,7 +196,7 @@ def subtraction(tokens):
 	return tokens, availableOperations, token_string, animation
 
 def division(tokens):
-	animation = [tokens]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -193,7 +211,7 @@ def division(tokens):
 
 
 def multiplication(tokens):
-	animation = [tokens]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -249,13 +267,21 @@ def expression_addition(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '-':
+								if variable["before"][const] == '-' or variable["before"][const] == '':
 									variable["value"][const] -= variable["value"][constantAdd[i]]
 								else:
 									variable["value"][const] += variable["value"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								if variable["value"][const] == 0:
+									if variable["power"][const] == 0:
+										variable["value"][const] = 1
+										variable["power"][const] = 1
+									else:
+										removeScopes.append(variable["scope"][const])
+										removeScopes.append(variable["before_scope"][const])
+								else:				
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								#TODO re-evaluate variable and tokens?
@@ -263,9 +289,17 @@ def expression_addition(variables, tokens):
 						for const in constantAdd:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
 								variable["value"][const] += variable["value"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								if variable["value"][const] == 0:
+									if variable["power"][const] == 0:
+										variable["value"][const] = 1
+										variable["power"][const] = 1
+									else:
+										removeScopes.append(variable["scope"][const])
+										removeScopes.append(variable["before_scope"][const])
+								else:
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								return variables, tokens, removeScopes, change
@@ -277,9 +311,17 @@ def expression_addition(variables, tokens):
 							if i !=j:
 								if variable["power"][constantAdd[i]] == variable["power"][const]:
 									variable["value"][const] += variable["value"][constantAdd[i]]
-									change["scope"] = variable["scope"][const]
-									change["power"] = variable["power"][const]
-									change["value"] = variable["value"][const]
+									if variable["value"][const] == 0:
+										if variable["power"][const] == 0:
+											variable["value"][const] = 1
+											variable["power"][const] = 1
+										else:
+											removeScopes.append(variable["scope"][const])
+											removeScopes.append(variable["before_scope"][const])
+									else:
+										change["scope"] = variable["scope"][const]
+										change["power"] = variable["power"][const]
+										change["value"] = variable["value"][const]
 									removeScopes.append(variable["scope"][constantAdd[i]])
 									removeScopes.append(variable["before_scope"][constantAdd[i]])
 									return variables, tokens, removeScopes, change
@@ -299,14 +341,18 @@ def expression_addition(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '-':
+								if variable["before"][const] == '-' or variable["before"][const] == '':
 									variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
 								else:
 									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"]
-								change["coefficient"] = variable["coefficient"][const]
+								if variable["coefficient"][const] == 0:
+									removeScopes.append(variable["scope"][const])
+									removeScopes.append(variable["before_scope"][const])
+								else:
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"]
+									change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								return variables, tokens, removeScopes, change
@@ -328,10 +374,14 @@ def expression_addition(variables, tokens):
 							if i !=j:
 								if variable["power"][constantAdd[i]] == variable["power"][const]:
 									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
-									change["scope"] = variable["scope"][const]
-									change["power"] = variable["power"][const]
-									change["value"] = variable["value"]
-									change["coefficient"] = variable["coefficient"][const]
+									if variable["coefficient"][const] == 0:
+										removeScopes.append(variable["scope"][const])
+										removeScopes.append(variable["before_scope"][const])
+									else:
+										change["scope"] = variable["scope"][const]
+										change["power"] = variable["power"][const]
+										change["value"] = variable["value"]
+										change["coefficient"] = variable["coefficient"][const]
 									removeScopes.append(variable["scope"][constantAdd[i]])
 									removeScopes.append(variable["before_scope"][constantAdd[i]])
 									return variables, tokens, removeScopes, change
@@ -361,19 +411,38 @@ def expression_subtraction(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								variable["value"][const] -= variable["value"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								if variable["before"][const] == '+' or variable["before"][const] == '':
+									variable["value"][const] -= variable["value"][constantAdd[i]]
+								else:
+									variable["value"][const] += variable["value"][constantAdd[i]]
+								if variable["value"][const] == 0:
+									if variable["power"][const] == 0:
+										variable["value"][const] = 1
+										variable["power"][const] = 1
+									else:
+										removeScopes.append(variable["scope"][const])
+										removeScopes.append(variable["before_scope"][const])
+								else:	
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								return variables, tokens, removeScopes, change
 						for const in constantAdd:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
 								variable["value"][const] += variable["value"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"][const]
+								if variable["value"][const] == 0:
+									if variable["power"][const] == 0:
+										variable["value"][const] = 1
+										variable["power"][const] = 1
+									else:
+										removeScopes.append(variable["scope"][const])
+										removeScopes.append(variable["before_scope"][const])
+								else:
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								return variables, tokens, removeScopes, change
@@ -385,9 +454,17 @@ def expression_subtraction(variables, tokens):
 							if i !=j:
 								if variable["power"][constantAdd[i]] == variable["power"][const]:
 									variable["value"][const] += variable["value"][constantAdd[i]]
-									change["scope"] = variable["scope"][const]
-									change["power"] = variable["power"][const]
-									change["value"] = variable["value"][const]
+									if variable["value"][const] == 0:
+										if variable["power"][const] == 0:
+											variable["value"][const] = 1
+											variable["power"][const] = 1
+										else:
+											removeScopes.append(variable["scope"][const])
+											removeScopes.append(variable["before_scope"][const])
+									else:
+										change["scope"] = variable["scope"][const]
+										consthange["power"] = variable["power"][const]
+										change["value"] = variable["value"][const]
 									removeScopes.append(variable["scope"][constantAdd[i]])
 									removeScopes.append(variable["before_scope"][constantAdd[i]])
 									return variables, tokens, removeScopes, change
@@ -408,21 +485,32 @@ def expression_subtraction(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"]
-								change["coefficient"] = variable["coefficient"][const]
+								if variable["before"][const] == '+' or variable["before"][const] == '':
+									variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
+								else:
+									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
+								if variable["coefficient"][const] == 0:
+									removeScopes.append(variable["scope"][const])
+									removeScopes.append(variable["before_scope"][const])
+								else:
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"]
+									change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								return variables, tokens, removeScopes, change
 						for const in constantAdd:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
 								variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"]
-								change["coefficient"] = variable["coefficient"][const]
+								if variable["coefficient"][const] == 0:
+									removeScopes.append(variable["scope"][const])
+									removeScopes.append(variable["before_scope"][const])
+								else:
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"]
+									change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["scope"][constantAdd[i]])
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
 								return variables, tokens, removeScopes, change		
@@ -434,10 +522,14 @@ def expression_subtraction(variables, tokens):
 							if i !=j:
 								if variable["power"][constantAdd[i]] == variable["power"][const]:
 									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
-									change["scope"] = variable["scope"][const]
-									change["power"] = variable["power"][const]
-									change["value"] = variable["value"]
-									change["coefficient"] = variable["coefficient"][const]
+									if variable["coefficient"][const] == 0:
+										removeScopes.append(variable["scope"][const])
+										removeScopes.append(variable["before_scope"][const])
+									else:
+										change["scope"] = variable["scope"][const]
+										change["power"] = variable["power"][const]
+										change["value"] = variable["value"]
+										change["coefficient"] = variable["coefficient"][const]
 									removeScopes.append(variable["scope"][constantAdd[i]])
 									removeScopes.append(variable["before_scope"][constantAdd[i]])
 									return variables, tokens, removeScopes, change
@@ -446,6 +538,158 @@ def expression_subtraction(variables, tokens):
 			pass
 	return variables, tokens, removeScopes, change					
 
+def multiply_variables(variable1, variable2, coeff):
+	variable = {}
+	variable["value"] = []
+	variable["value"].extend(variable1["value"])
+	variable["power"] = []
+	variable["power"].extend(variable1["power"])
+	if is_number(variable1["coefficient"]):
+		variable["coefficient"] = float(variable1["coefficient"])
+	elif isinstance(variable1["coefficient"], dict):
+		variable["coefficient"] = evaluate_constant(variable1["coefficient"])
+	else:
+		variable["coefficient"] = variable1["coefficient"]	
+	removeScopes = []
+	for j, var in enumerate(variable["value"]):
+		found = False
+		for k, var2 in enumerate(variable2["value"]):
+			if var == var2:
+				if variable["power"][j] == variable2["power"][k]:
+					if is_number(variable["power"][j])  and is_number(variable2["power"][k]):
+						variable["power"][j] += variable2["power"][k]
+						found = True
+						break
+		if not found:
+			variable["value"].append(variable2["value"][j])				
+			variable["power"].append(variable2["power"][j])	
+	variable["coefficient"] *= variable2["coefficient"]
+	variable["coefficient"] *= coeff
+	#removeScopes.append(tokens[i]["scope"])
+	#removeScopes.append(tokens[i+1]["scope"])
+	return variable
+
+
+
+def multiply_constants(constant1, constant2, coeff):
+	no_1 = False
+	no_2 = False
+	removeScopes = []
+	constant = {}
+	if is_number(constant1["value"]):
+		no_1 = True
+	if is_number(constant2["value"]):
+		no_2 = True
+	if no_1 and no_2:
+		constant["value"] = evaluate_constant(constant1) * evaluate_constant(constant2) * coeff
+		constant["power"] = 1
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])
+	elif no_1 and not no_2:
+		constant["value"] = constant2["value"]
+		constant["power"] = constant2["power"]
+		constant["value"].append(constant1["value"])
+		constant["power"].append(constant1["power"])
+		constant["value"].append(coeff)
+		constant["power"].append(1)
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])
+	elif not no_1 and no_2:	
+		constant["value"] = constant1["value"]
+		constant["power"] = constant1["power"]
+		constant["value"].append(constant2["value"])
+		constant["power"].append(constant2["power"])
+		constant["value"].append(coeff)
+		constant["power"].append(1)
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i+1]["scope"])
+	elif not no_1 and not no_2:
+		constant["value"] = constant2["value"]
+		constant["power"] = constant2["power"]
+		for vals in constant1["value"]:
+			constant["value"].append(vals)
+		for pows in constant1["power"]:
+			constant["power"].append(pows)
+		constant["value"].append(coeff)
+		constant["power"].append(1)	
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])	
+	
+	return constant
+
+def multiply_variable_constant(constant, variable, coeff):	
+	variable1 = {}
+	variable1["value"] = []
+	variable1["value"].extend(variable["value"])
+	variable1["power"] = []
+	variable1["power"].extend(variable["power"])
+	if is_number(variable["coefficient"]):
+		variable1["coefficient"] = float(variable["coefficient"])
+	elif isinstance(variable["coefficient"], dict):
+		variable1["coefficient"] = evaluate_constant(variable["coefficient"])
+	else:
+		variable["coefficient"] = variable1["coefficient"]	
+
+	variable1["coefficient"] *=  evaluate_constant(constant)
+	variable1["coefficient"] *= coeff
+	#removeScopes.append(tokens[i]["scope"])
+	#removeScopes.append(tokens[i-1]["scope"])
+	return variable1
+
+def multiply_expression_constant(constant, expression, coeff):
+	pass
+
+def multiply_expression_variable(variable, expression, coeff):
+	pass
+
+def multiply_select(token1, token2, coeff=1):
+	if token1["type"] == "variable" and token2["type"] == "variable":
+		return multiply_variables(token1, token2, coeff)
+	elif token1["type"] == "variable" and token2["type"] == "constant":
+		return multiply_variable_constant(token2, token1, coeff)
+	elif token1["type"]	== "constant" and token2["type"] == "variable":
+		return multiply_variable_constant(token1, token2, coeff)
+	elif token1["type"]	== "constant" and token2["type"] == "constant":
+		return multiply_constants(token1, token2, coeff)
+ 
+def multiply_expressions(expression1, expression2):
+	tokens = []
+	tokens1 = expression1["tokens"]
+	tokens2 = expression2["tokens"]
+	coeff = expression1["coefficient"] * expression2["coefficient"]
+	for i, token1 in enumerate(tokens1):
+		#print token1["value"]
+		op = 1
+		if i != 0:
+			if tokens1[i-1]["type"] == "binary":
+				if tokens1[i-1]["value"] == '+':
+					op *= 1
+				elif tokens1[i-1]["value"] == '-':
+					op *= -1	
+		if token1["type"] == "variable" or token1["type"] == "constant":
+			for j, token2 in enumerate(tokens2):
+				#print token2["value"]
+				op2 = op
+				if token2["type"] == "variable" or token2["type"] == "constant":
+					if j == 0 and i == 0:
+						pass
+					else:
+						if j!= 0:
+							if tokens2[j-1]["type"] == "binary":
+								if tokens2[j-1]["value"] == "+":
+									op2 *= 1
+								elif tokens2[j-1]["value"] == "-":
+									op2 *= -1					
+						binary = {}
+						binary["type"] = 'binary'
+						if op2 == -1:
+							binary["value"] = '-'
+						elif op2 == 1:
+							binary["value"] = '+'
+						tokens.append(binary)				
+					tokens.append(multiply_select(token1, token2, coeff))
+					#print tokens
+	print tokens				
 
 def expression_multiplication(variables, tokens):
 	removeScopes = []
@@ -511,13 +755,13 @@ def expression_multiplication(variables, tokens):
 						return variables, tokens, removeScopes
 					
 					elif (tokens[i+1]["type"] == "variable" and tokens[i-1]["type"] == "constant"):
-						tokens[i+1]["coefficient"] +=  evaluate_constant(tokens[i-1])
+						tokens[i+1]["coefficient"] *=  evaluate_constant(tokens[i-1])
 						removeScopes.append(tokens[i]["scope"])
 						removeScopes.append(tokens[i-1]["scope"])
 						return variables, tokens, removeScopes
 
 					elif (tokens[i-1]["type"] == "variable" and tokens[i+1]["type"] == "constant"):
-						tokens[i-1]["coefficient"] += evaluate_constant(tokens[i+1])
+						tokens[i-1]["coefficient"] *= evaluate_constant(tokens[i+1])
 						removeScopes.append(tokens[i]["scope"])
 						removeScopes.append(tokens[i+1]["scope"])
 						return variables, tokens, removeScopes
@@ -599,7 +843,7 @@ def expression_division(variables, tokens):
 						scope = tokens[i-1]["scope"]
 						tokens[i-1] = {}
 						tokens[i-1]["value"] = tokens[i+1]["value"]
-						tokens[i-1]["coefficient"] = tokens[i+1]["coefficient"]/val
+						tokens[i-1]["coefficient"] = val/tokens[i+1]["coefficient"]
 						tokens[i-1]["power"] = []
 						tokens[i-1]["type"] = 'variable'
 						tokens[i-1]["scope"] = scope
@@ -1053,4 +1297,6 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 
 if __name__ == '__main__':
 			#check_types()
-			test()
+			#test()
+			
+			multiply_expressions({'tokens': [{'coefficient': 1, 'scope': [0, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [0, 1], 'type': 'binary', 'value': '-'}, {'scope': [0, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [0], 'coefficient': 1, 'type': 'expression'}, {'tokens': [{'coefficient': 1, 'scope': [1, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1, 1], 'type': 'binary', 'value': '+'}, {'scope': [1, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [1], 'coefficient': 1, 'type': 'expression'})

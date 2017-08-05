@@ -13,7 +13,7 @@ from PyQt4.QtCore import *
 from PyQt4 import QtGui
 import tokenize
 import solve
-#import animator
+import animator
 import json
 from subprocess import Popen
 
@@ -340,27 +340,27 @@ class WorkSpace(QWidget):
 		def calluser():
 			if name == 'Addition':
 				self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
-				#Popen(['python', 'animator.py', json.dumps(animation)])
+				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
 				self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
-				#Popen(['python', 'animator.py', json.dumps(animation)])
+				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
 				self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
-				#Popen(['python', 'animator.py', json.dumps(animation)])
+				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Division':
 				self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
-				#Popen(['python', 'animator.py', json.dumps(animation)])
+				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 			elif name == 'Simplify':
 				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
-				#Popen(['python', 'animator.py', json.dumps(animation)])
+				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 					
