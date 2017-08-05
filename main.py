@@ -360,8 +360,8 @@ class WorkSpace(QWidget):
 				self.textedit.setText(token_string)	
 			elif name == 'Simplify':
 				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
-				#Popen(['python', 'animator.py', json.dumps(animation)])
-				animator.animate(animation)
+				Popen(['python', 'animator.py', json.dumps(animation)])
+				#animator.animate(animation)
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 				#print animation

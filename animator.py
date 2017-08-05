@@ -30,7 +30,7 @@ inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '
 inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
 
 string = []
-
+first_time = False
 
 def is_number(term):
     if isinstance(term, int) or isinstance(term, float):
@@ -99,18 +99,34 @@ def draw_scene():
     glColor3f(1.0, 1.0, 1.0)
     i = 0
     x, y = -50, 0
-    while i < len(string):
-        glClear(GL_COLOR_BUFFER_BIT)
-        i += 1
-        j = 0
-        tempY = y
-        while j < i:
-            render_equation(x, tempY, string[j])
-            tempY -= 50
-            j += 1
-        y += 50
-        glutSwapBuffers()
-        time.sleep(2)
+    global first_time
+    if not first_time:
+        while i < len(string):
+            glClear(GL_COLOR_BUFFER_BIT)
+            i += 1
+            j = 0
+            tempY = y
+            while j < i:
+                render_equation(x, tempY, string[j])
+                tempY -= 50
+                j += 1
+            y += 50
+            glutSwapBuffers()
+            time.sleep(2)
+        first_time = True
+    else:
+        while i < len(string):
+            glClear(GL_COLOR_BUFFER_BIT)
+            i += 1
+            j = 0
+            tempY = y
+            while j < i:
+                render_equation(x, tempY, string[j])
+                tempY -= 50
+                j += 1
+            y += 50
+            glutSwapBuffers()
+
 
 def render_variable(x, y, term, level=1, fontSize=24):
     glRasterPos(x, y)
@@ -189,7 +205,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
                 glRasterPos(x, y)
                 x += 20
                 font.FaceSize(fontSize)
-                font.Render(term["value"])
+                font.Render(term["value"].encode("utf-8"))
         elif term["type"] == "expression":
         	font.FaceSize(fontSize)
         	font.Render('{')
@@ -236,7 +252,7 @@ def on_key(key, x, y):
         sys.exit(1)
 
 def main():
-    print string
+    #print string
     glutInitWindowSize(width, height)
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE)
@@ -263,7 +279,9 @@ if __name__ == '__main__':
     string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'type': 'constant', 'value': 2}])
     string.append([{'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['x']}, {'type': 'binary', 'value': '+'}, {'coefficient': 1, 'type': 'variable', 'power': [1], 'value': ['y']}, {'type': 'binary', 'value': '='}, {'coefficient': 1, 'type': 'variable', 'power': [{'coefficient': 1, 'type': 'variable', 'power': [1, 2], 'value': ['x', 'y']}], 'value': [2]}])
     '''
+
     tokens = sys.argv[1]
+    #print tokens
     animate(json.loads(tokens))
     
     #main()

@@ -164,7 +164,6 @@ def simplify(tokens):
 			animation.pop(len(animation)-1)
 			animation.extend(anim)
 	token_string = tokens_to_string(tokens)
-	print token_string
 	return tokens, availableOperations, token_string, animation
 
 
