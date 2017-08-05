@@ -249,6 +249,61 @@ def change_token(tokens, variables, scope_times=0):
 					break			
 	return tokens
 
+
+def define_scope_variable(variable, scope):
+	pass
+
+def define_scope_constant(constant, scope):
+	pass	
+
+def define_scope(tokens, scope=[]):
+	i = 0
+	for token in tokens:
+		local_scope = copy.deepcopy(scope)
+		local_scope.extend(i)
+		token["scope"] = local_scope
+		if token["type"] == 'variable':
+			if isinstance(token["value"], list):
+				for j, val in enumerate(token["value"]):
+					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+						local_scope_value = copy.deepcopy(local_scope)
+						local_scope_value.extend(-1)
+						local_scope_value.extend(j)
+						val["scope"] = local_scope_value
+
+			if isinstance(token["power"], list):
+				for j, val in enumerate(token["value"]):
+					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+						local_scope_value = copy.deepcopy(local_scope)
+						local_scope_value.extend(-2)
+						local_scope_value.extend(j)
+						val["scope"] = local_scope_value
+
+		elif token["type"] == 'constant':
+			if isinstance(token["value"], list):
+				for j, val in enumerate(token["value"]):
+					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+						local_scope_value = copy.deepcopy(local_scope)
+						local_scope_value.extend(-1)
+						local_scope_value.extend(j)
+						val["scope"] = local_scope_value
+
+			if isinstance(token["power"], list):
+				for j, val in enumerate(token["value"]):
+					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+						local_scope_value = copy.deepcopy(local_scope)
+						local_scope_value.extend(-2)
+						local_scope_value.extend(j)
+						val["scope"] = local_scope_value
+
+		elif token["type"] == 'expression':
+			token["tokens"] = define_scope(token["tokens"], local_scope)
+		elif token["type"] == 'binary':
+			pass
+		i += 1	
+	return tokens				
+
+
 def expression_addition(variables, tokens):
 	removeScopes = []
 	change = {}
@@ -569,8 +624,6 @@ def multiply_variables(variable1, variable2, coeff):
 	#removeScopes.append(tokens[i+1]["scope"])
 	return variable
 
-
-
 def multiply_constants(constant1, constant2, coeff):
 	no_1 = False
 	no_2 = False
@@ -637,10 +690,22 @@ def multiply_variable_constant(constant, variable, coeff):
 	return variable1
 
 def multiply_expression_constant(constant, expression, coeff):
-	pass
+	tokens = copy.deepcopy(expression)
+	tokens["coefficient"] *= (evaluate_constant(constant) * coeff)
+	return tokens
 
 def multiply_expression_variable(variable, expression, coeff):
-	pass
+	tokens = []
+	for token in expression["tokens"]:
+		if token["type"] == 'variable':
+			tokens.append(multiply_variables(variable, token, expression["coefficient"]))
+		elif token["type"] == 'constant':
+			tokens.append(multiply_variable_constant(token, variable, expression["coefficient"]))
+		elif token["type"] == 'expression':
+			tokens.append(multiply_expression_variable(variable, token, expression["coefficient"]))
+		elif token["type"] == 'binary':
+			tokens.append(token)
+	return tokens					
 
 def multiply_select(token1, token2, coeff=1):
 	if token1["type"] == "variable" and token2["type"] == "variable":
@@ -769,6 +834,170 @@ def expression_multiplication(variables, tokens):
 	return variables, tokens, removeScopes
 
 
+def division_variables(variable1, variable2, coeff):
+	variable = {}
+	variable["value"] = []
+	variable["value"].extend(variable1["value"])
+	variable["power"] = []
+	variable["power"].extend(variable1["power"])
+	if is_number(variable1["coefficient"]):
+		variable["coefficient"] = float(variable1["coefficient"])
+	elif isinstance(variable1["coefficient"], dict):
+		variable["coefficient"] = evaluate_constant(variable1["coefficient"])
+	else:
+		variable["coefficient"] = variable1["coefficient"]	
+	removeScopes = []
+	for j, var in enumerate(variable["value"]):
+		found = False
+		for k, var2 in enumerate(variable2["value"]):
+			if var == var2:
+				if variable["power"][j] == variable2["power"][k]:
+					if is_number(variable["power"][j])  and is_number(variable2["power"][k]):
+						variable["power"][j] += variable2["power"][k]
+						found = True
+						break
+		if not found:
+			variable["value"].append(variable2["value"][j])				
+			variable["power"].append(variable2["power"][j])	
+	variable["coefficient"] *= variable2["coefficient"]
+	variable["coefficient"] *= coeff
+	#removeScopes.append(tokens[i]["scope"])
+	#removeScopes.append(tokens[i+1]["scope"])
+	return variable
+
+def division_constants(constant1, constant2, coeff):
+	no_1 = False
+	no_2 = False
+	removeScopes = []
+	constant = {}
+	if is_number(constant1["value"]):
+		no_1 = True
+	if is_number(constant2["value"]):
+		no_2 = True
+	if no_1 and no_2:
+		constant["value"] = evaluate_constant(constant1) * evaluate_constant(constant2) * coeff
+		constant["power"] = 1
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])
+	elif no_1 and not no_2:
+		constant["value"] = constant2["value"]
+		constant["power"] = constant2["power"]
+		constant["value"].append(constant1["value"])
+		constant["power"].append(constant1["power"])
+		constant["value"].append(coeff)
+		constant["power"].append(1)
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])
+	elif not no_1 and no_2:	
+		constant["value"] = constant1["value"]
+		constant["power"] = constant1["power"]
+		constant["value"].append(constant2["value"])
+		constant["power"].append(constant2["power"])
+		constant["value"].append(coeff)
+		constant["power"].append(1)
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i+1]["scope"])
+	elif not no_1 and not no_2:
+		constant["value"] = constant2["value"]
+		constant["power"] = constant2["power"]
+		for vals in constant1["value"]:
+			constant["value"].append(vals)
+		for pows in constant1["power"]:
+			constant["power"].append(pows)
+		constant["value"].append(coeff)
+		constant["power"].append(1)	
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])	
+	
+	return constant
+
+def division_variable_constant(constant, variable, coeff):	
+	variable1 = {}
+	variable1["value"] = []
+	variable1["value"].extend(variable["value"])
+	variable1["power"] = []
+	variable1["power"].extend(variable["power"])
+	if is_number(variable["coefficient"]):
+		variable1["coefficient"] = float(variable["coefficient"])
+	elif isinstance(variable["coefficient"], dict):
+		variable1["coefficient"] = evaluate_constant(variable["coefficient"])
+	else:
+		variable["coefficient"] = variable1["coefficient"]	
+
+	variable1["coefficient"] *=  evaluate_constant(constant)
+	variable1["coefficient"] *= coeff
+	#removeScopes.append(tokens[i]["scope"])
+	#removeScopes.append(tokens[i-1]["scope"])
+	return variable1
+
+def division_expression_constant(constant, expression, coeff):
+	tokens = copy.deepcopy(expression)
+	tokens["coefficient"] *= (evaluate_constant(constant) * coeff)
+	return tokens
+
+def division_expression_variable(variable, expression, coeff):
+	tokens = []
+	for token in expression["tokens"]:
+		if token["type"] == 'variable':
+			tokens.append(multiply_variables(variable, token, expression["coefficient"]))
+		elif token["type"] == 'constant':
+			tokens.append(multiply_variable_constant(token, variable, expression["coefficient"]))
+		elif token["type"] == 'expression':
+			tokens.append(multiply_expression_variable(variable, token, expression["coefficient"]))
+		elif token["type"] == 'binary':
+			tokens.append(token)
+	return tokens					
+
+def division_select(token1, token2, coeff=1):
+	if token1["type"] == "variable" and token2["type"] == "variable":
+		return division_variables(token1, token2, coeff)
+	elif token1["type"] == "variable" and token2["type"] == "constant":
+		return division_variable_constant(token2, token1, coeff)
+	elif token1["type"]	== "constant" and token2["type"] == "variable":
+		return division_variable_constant(token1, token2, coeff)
+	elif token1["type"]	== "constant" and token2["type"] == "constant":
+		return division_constants(token1, token2, coeff)
+ 
+def division_expressions(expression1, expression2):
+	tokens = []
+	tokens1 = expression1["tokens"]
+	tokens2 = expression2["tokens"]
+	coeff = expression1["coefficient"] * expression2["coefficient"]
+	for i, token1 in enumerate(tokens1):
+		#print token1["value"]
+		op = 1
+		if i != 0:
+			if tokens1[i-1]["type"] == "binary":
+				if tokens1[i-1]["value"] == '+':
+					op *= 1
+				elif tokens1[i-1]["value"] == '-':
+					op *= -1	
+		if token1["type"] == "variable" or token1["type"] == "constant":
+			for j, token2 in enumerate(tokens2):
+				#print token2["value"]
+				op2 = op
+				if token2["type"] == "variable" or token2["type"] == "constant":
+					if j == 0 and i == 0:
+						pass
+					else:
+						if j!= 0:
+							if tokens2[j-1]["type"] == "binary":
+								if tokens2[j-1]["value"] == "+":
+									op2 *= 1
+								elif tokens2[j-1]["value"] == "-":
+									op2 *= -1					
+						binary = {}
+						binary["type"] = 'binary'
+						if op2 == -1:
+							binary["value"] = '-'
+						elif op2 == 1:
+							binary["value"] = '+'
+						tokens.append(binary)				
+					tokens.append(multiply_select(token1, token2, coeff))
+					#print tokens
+	print tokens				
+
+
 def expression_division(variables, tokens):
 	removeScopes = []
 	for i, token in enumerate(tokens):
@@ -862,15 +1091,18 @@ def expression_division(variables, tokens):
 	return variables, tokens, removeScopes						
 
 def evaluate_constant(constant):
-	if is_number(constant["value"]):
-		return math.pow(constant["value"], constant["power"])
-	elif isinstance(constant["value"], list):
-		val = 1
-		if "coefficient" in constant:
-			val*= constant["coefficient"]
-		for i, c_val in enumerate(constant["value"]):
-			val *= math.pow(c_val, constant["power"][i])
-		return val		
+	if is_number(constant):
+		return constant
+	elif isinstance(constant, dict):	
+		if is_number(constant["value"]):
+			return math.pow(constant["value"], constant["power"])
+		elif isinstance(constant["value"], list):
+			val = 1
+			if "coefficient" in constant:
+				val*= constant["coefficient"]
+			for i, c_val in enumerate(constant["value"]):
+				val *= math.pow(c_val, constant["power"][i])
+			return val		
 
 def get_available_operations(variables, tokens):
 	operations = []
