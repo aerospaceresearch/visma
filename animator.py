@@ -30,7 +30,37 @@ inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '
 inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
 
 string = []
-    
+
+
+def is_number(term):
+    if isinstance(term, int) or isinstance(term, float):
+        return True
+    else:
+        x = 0
+        dot = 0
+        if term[0] == '-':
+            x += 1
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1
+            if x >= 2:
+                return True
+            else:
+                    return False
+        else:
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1  
+        return True
+
+def get_num(term):
+    return float(term)
 
 def is_variable(term):
     if term in greek: 
@@ -42,14 +72,6 @@ def is_variable(term):
                 return False
             x += 1
         return True
-
-def is_number(term):
-    x = 0
-    while x < len(term):
-        if term[x] < '0' or term[x] > '9':
-            return False
-        x += 1  
-    return True
 
 def do_ortho():
     
@@ -122,7 +144,6 @@ def render_variable(x, y, term, level=1, fontSize=24):
                 else:
                     font.Render(str(val)) 
             x += 20
-
             if type(term["power"][j]) == dict:
                 if term["power"][j]["type"] == 'variable':
                     x, y = render_variable(x, y+10, term["power"][j], level + 1, 2*fontSize/3)

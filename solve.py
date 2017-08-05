@@ -9,21 +9,34 @@ Logic Description:
 """
 
 import math
+import copy
 
 def is_number(term):
-	if isinstance(term, int) or isinstance(term, float):
-		return True
-	else:
-	    x = 0
-	    dot = 0
-	    while x < len(term):
-			if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '\.'):
-				return False
-			if term[x] == '.':
-				dot += 1
-			x += 1
-	    return True
-	return False
+    if isinstance(term, int) or isinstance(term, float):
+        return True
+    else:
+        x = 0
+        dot = 0
+        if term[0] == '-':
+            x += 1
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1
+            if x >= 2:
+                return True
+            else:
+                    return False
+        else:
+            while x < len(term):
+                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+                    return False
+                if term[x] == '.':
+                    dot += 1
+                x += 1  
+        return True
 
 def get_num(term):
 	return float(term)
@@ -124,42 +137,39 @@ def remove_token(tokens, scope, scope_times=0):
 	return tokens
 
 def simplify(tokens):
-	animation = [list(tokens)]
+	tokens_orig = copy.deepcopy(tokens)
+	animation = [tokens_orig]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while len(availableOperations)>0:
 		if '/' in availableOperations:
-			tokens, availableOperations, token_string, anim = division(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = division(tokens_temp)
 			animation.pop(len(animation)-1)
-			print "division bef ", animation
 			animation.extend(anim)
-			print "division ", animation
 		elif '*' in availableOperations:
-			tokens, availableOperations, token_string, anim = multiplication(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = multiplication(tokens_temp)
 			animation.pop(len(animation)-1)
-			print "multi bef ", animation
 			animation.extend(anim)
-			print "multi ", animation
 		elif '+' in availableOperations:
-			tokens, availableOperations, token_string, anim = addition(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = addition(tokens_temp)
 			animation.pop(len(animation)-1)
-			print "add bef ", animation
 			animation.extend(anim)
-			print "add ", animation
 		elif '-' in availableOperations:
-			tokens, availableOperations, token_string, anim = subtraction(tokens)
+			tokens_temp = copy.deepcopy(tokens)
+			tokens, availableOperations, token_string, anim = subtraction(tokens_temp)
 			animation.pop(len(animation)-1)
-			print "sub bef ", animation
 			animation.extend(anim)
-			print "sub ", animation
 	token_string = tokens_to_string(tokens)
 	print token_string
 	return tokens, availableOperations, token_string, animation
 
 
 def addition(tokens):
-	animation = [list(tokens)]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -173,7 +183,7 @@ def addition(tokens):
 	return tokens, availableOperations, token_string, animation
 		
 def subtraction(tokens):
-	animation = [list(tokens)]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -187,7 +197,7 @@ def subtraction(tokens):
 	return tokens, availableOperations, token_string, animation
 
 def division(tokens):
-	animation = [list(tokens)]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
@@ -202,7 +212,7 @@ def division(tokens):
 
 
 def multiplication(tokens):
-	animation = [list(tokens)]
+	animation = [copy.deepcopy(tokens)]
 	variables = []
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
