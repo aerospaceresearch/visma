@@ -251,10 +251,46 @@ def change_token(tokens, variables, scope_times=0):
 
 
 def define_scope_variable(variable, scope):
-	pass
+	token = copy.deepcopy(variable)
+	local_scope = copy.deepcopy(scope)
+	if isinstance(token["value"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-1)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+
+	if isinstance(token["power"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-2)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+
+	return token
 
 def define_scope_constant(constant, scope):
-	pass	
+	token = copy.deepcopy(constant)
+	local_scope = copy.deepcopy(scope)
+	if isinstance(token["value"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-1)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+
+
+	if isinstance(token["power"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-2)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+	return token
 
 def define_scope(tokens, scope=[]):
 	i = 0
@@ -263,39 +299,9 @@ def define_scope(tokens, scope=[]):
 		local_scope.extend(i)
 		token["scope"] = local_scope
 		if token["type"] == 'variable':
-			if isinstance(token["value"], list):
-				for j, val in enumerate(token["value"]):
-					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
-						local_scope_value = copy.deepcopy(local_scope)
-						local_scope_value.extend(-1)
-						local_scope_value.extend(j)
-						val["scope"] = local_scope_value
-
-			if isinstance(token["power"], list):
-				for j, val in enumerate(token["value"]):
-					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
-						local_scope_value = copy.deepcopy(local_scope)
-						local_scope_value.extend(-2)
-						local_scope_value.extend(j)
-						val["scope"] = local_scope_value
-
+			token = define_scope_variable(token, copy.deepcopy(local_scope))
 		elif token["type"] == 'constant':
-			if isinstance(token["value"], list):
-				for j, val in enumerate(token["value"]):
-					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
-						local_scope_value = copy.deepcopy(local_scope)
-						local_scope_value.extend(-1)
-						local_scope_value.extend(j)
-						val["scope"] = local_scope_value
-
-			if isinstance(token["power"], list):
-				for j, val in enumerate(token["value"]):
-					if val["type"] in ['binary', 'variable', 'constant', 'expression']:
-						local_scope_value = copy.deepcopy(local_scope)
-						local_scope_value.extend(-2)
-						local_scope_value.extend(j)
-						val["scope"] = local_scope_value
-
+			token = define_scope_constant(token, copy.deepcopy(local_scope))
 		elif token["type"] == 'expression':
 			token["tokens"] = define_scope(token["tokens"], local_scope)
 		elif token["type"] == 'binary':
@@ -641,8 +647,15 @@ def multiply_constants(constant1, constant2, coeff):
 	elif no_1 and not no_2:
 		constant["value"] = constant2["value"]
 		constant["power"] = constant2["power"]
-		constant["value"].append(constant1["value"])
-		constant["power"].append(constant1["power"])
+		done = False
+		for i, val in enumerate(constant["value"]):
+			if val == constant1["value"]:
+				constant["power"][i] += constant1["power"]
+				done = True
+				break
+		if not done:		
+			constant["value"].append(constant1["value"])
+			constant["power"].append(constant1["power"])
 		constant["value"].append(coeff)
 		constant["power"].append(1)
 		#removeScopes.append(tokens[i]["scope"])
@@ -650,8 +663,15 @@ def multiply_constants(constant1, constant2, coeff):
 	elif not no_1 and no_2:	
 		constant["value"] = constant1["value"]
 		constant["power"] = constant1["power"]
-		constant["value"].append(constant2["value"])
-		constant["power"].append(constant2["power"])
+		done = False
+		for i, val in enumerate(constant["value"]):
+			if val == constant2["value"]:
+				constant["power"][i] += constant2["power"]
+				done = True
+				break
+		if not done:		
+			constant["value"].append(constant2["value"])
+			constant["power"].append(constant2["power"])
 		constant["value"].append(coeff)
 		constant["power"].append(1)
 		#removeScopes.append(tokens[i]["scope"])
@@ -659,10 +679,17 @@ def multiply_constants(constant1, constant2, coeff):
 	elif not no_1 and not no_2:
 		constant["value"] = constant2["value"]
 		constant["power"] = constant2["power"]
-		for vals in constant1["value"]:
-			constant["value"].append(vals)
-		for pows in constant1["power"]:
-			constant["power"].append(pows)
+		for i, val in enumerate(constant1["value"]):
+			done = False
+			for j, val2 in enumerate(constant["value"]):
+				if val == val2:
+					constant["power"][j] += constant1["power"][i]
+					done = True
+					break
+			if not done:
+				constant["value"].append(val)
+				constant["power"].append(constant1["power"][i])	 
+
 		constant["value"].append(coeff)
 		constant["power"].append(1)	
 		#removeScopes.append(tokens[i]["scope"])
@@ -875,15 +902,24 @@ def division_constants(constant1, constant2, coeff):
 	if is_number(constant2["value"]):
 		no_2 = True
 	if no_1 and no_2:
-		constant["value"] = evaluate_constant(constant1) * evaluate_constant(constant2) * coeff
+		constant["value"] = (evaluate_constant(constant1) / evaluate_constant(constant2)) * coeff
 		constant["power"] = 1
 		#removeScopes.append(tokens[i]["scope"])
 		#removeScopes.append(tokens[i-1]["scope"])
 	elif no_1 and not no_2:
-		constant["value"] = constant2["value"]
-		constant["power"] = constant2["power"]
-		constant["value"].append(constant1["value"])
-		constant["power"].append(constant1["power"])
+		constant["value"] = [constant1["value"]]
+		constant["power"] = [constant1["power"]]
+		for i, val in enumerate(constant2["value"]):
+			done = False
+			for j, val2 in enumerate(constant["value"]):
+				if val == val2:
+					constant["power"][j] -= constant2["power"][i]
+					done = True
+					break
+			if not done:
+				constant["value"].append(val)
+				constant["power"].append(-constant2["power"][i])
+
 		constant["value"].append(coeff)
 		constant["power"].append(1)
 		#removeScopes.append(tokens[i]["scope"])
@@ -891,19 +927,32 @@ def division_constants(constant1, constant2, coeff):
 	elif not no_1 and no_2:	
 		constant["value"] = constant1["value"]
 		constant["power"] = constant1["power"]
-		constant["value"].append(constant2["value"])
-		constant["power"].append(constant2["power"])
+		done = False
+		for i, val in enumerate(constant["value"]):
+			if val == constant2["value"]:
+				constant["power"][i] -= constant2["power"]
+				done = True
+				break
+		if not done:
+			constant["value"].append(constant2["value"])
+			constant["power"].append(-constant2["power"])
 		constant["value"].append(coeff)
 		constant["power"].append(1)
 		#removeScopes.append(tokens[i]["scope"])
 		#removeScopes.append(tokens[i+1]["scope"])
 	elif not no_1 and not no_2:
-		constant["value"] = constant2["value"]
-		constant["power"] = constant2["power"]
-		for vals in constant1["value"]:
-			constant["value"].append(vals)
-		for pows in constant1["power"]:
-			constant["power"].append(pows)
+		constant["value"] = constant1["value"]
+		constant["power"] = constant1["power"]
+		for i, val in enumerate(constant2["value"]):
+			done = False
+			for j, val2 in enumerate(constant["value"]):
+				if val == val2:
+					constant["power"][j] -= constant2["power"][i]
+					done = True
+					break
+			if not done:
+				constant["value"].append(val)
+				constant["power"].append(-constant2["power"][i])		 
 		constant["value"].append(coeff)
 		constant["power"].append(1)	
 		#removeScopes.append(tokens[i]["scope"])
