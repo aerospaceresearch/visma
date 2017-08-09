@@ -181,6 +181,8 @@ class WorkSpace(QWidget):
     				opButtons.append("Multiplication")
     			elif operation == '/':
     				opButtons.append("Division")
+    			elif operation == 'solve':
+    				opButtons.append("Solve For")	
     		if self.buttonSet:
     			for i in reversed(range(self.solutionOptionsBox.count())): 
             			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
@@ -220,6 +222,8 @@ class WorkSpace(QWidget):
     				opButtons.append("Multiplication")
     			elif operation == '/':
     				opButtons.append("Division")
+    			elif operation == 'solve':
+    				opButtons.append("Solve For")	
     		
     		for i in reversed(range(self.solutionOptionsBox.count())): 
         			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
@@ -363,6 +367,8 @@ class WorkSpace(QWidget):
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
+			elif name == 'Solve For':
+				pass	
 					
 		return calluser 
 		

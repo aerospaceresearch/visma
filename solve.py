@@ -57,16 +57,24 @@ class EqautionCompatibility(object):
 	def __init__(self, lTokens, rTokens):
 		super(EquationCompatibility, self).__init__()
 		self.lTokens = lTokens
+		self.lVariables = []
+		self.lVariables.extend(get_level_variables(self.lTokens))
+		self.availableOperations = get_available_operations(self.lVariables, self.lTokens)
+		
 		self.rTokens = rTokens
-
-
-class Expression(object):
-	"""docstring for Expression"""
-	def __init__(self, tokens, variables):
-		super(Expression, self).__init__()
-		self.tokens = tokens
-		self.variables = variables
-
+		self.rVariables = []
+		self.rVariables.extend(get_level_variables(self.rTokens))
+		tempAvailableOps = get_available_operations(self.rVariables, self.lTokens)
+		for tempOp in tempAvailableOps:
+			found = False
+			for op in self.availableOperations:
+				if tempOps == ops:
+					found = True
+					break
+			if not found:
+				self.availableOperations.append(tempOp)			
+		if check_solve_for(rTokens) or check_solve_for(lTokens):
+			self.availableOperations.append("solve")
 	
 class ExpressionCompatibility(object):
 	"""docstring for ExpressionCompatibility"""
@@ -77,6 +85,14 @@ class ExpressionCompatibility(object):
 		self.variables.extend(get_level_variables(self.tokens))
 		self.availableOperations = get_available_operations(self.variables, self.tokens)
 
+
+def check_solve_for(tokens):
+	for i, token in enumerate(tokens):
+		if token["type"] == 'variable':
+			return True
+		elif token["type"] == 'expression':
+			if check_solve_for(token["tokens"]):
+				return True	
 
 def tokens_to_string(tokens):
 	token_string = ''
@@ -1530,6 +1546,7 @@ def eval_expressions(variables):
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
+		return equationCompatibile.availableOperations
 	else:
 		expressionCompatible = ExpressionCompatibility(lTokens)
 		return expressionCompatible.availableOperations
