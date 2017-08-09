@@ -1546,10 +1546,10 @@ def eval_expressions(variables):
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
-		return equationCompatibile.availableOperations
+		return equationCompatibile.availableOperations, "equation"
 	else:
 		expressionCompatible = ExpressionCompatibility(lTokens)
-		return expressionCompatible.availableOperations
+		return expressionCompatible.availableOperations, "expression"
 
 if __name__ == '__main__':
 			#check_types()

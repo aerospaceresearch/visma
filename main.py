@@ -57,7 +57,10 @@ class WorkSpace(QWidget):
     equations =[('No equations stored', '')]
     equationListVbox = QVBoxLayout()
     tokens = []
+    lTokens = []
+    rTokens = []
     buttonSet = False
+    solutionType = ""
 
     def __init__(self):
         super(WorkSpace, self).__init__()
@@ -167,11 +170,15 @@ class WorkSpace(QWidget):
         self.tokens = tokenize.tokenizer(textSelected)
         #print self.tokens
         lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
-        operations = solve.check_types(lhs, rhs)
+        operations, self.solutionType = solve.check_types(lhs, rhs)
         if isinstance(operations, list):
         	opButtons = []
         	if len(operations) > 0:
-        		opButtons = ['Simplify']
+        		if len(operations) == 1:
+        			if operations[0] != 'solve':
+        				opButtons = ['Simplify']
+        		else:
+        			opButtons = ['Simplify']		
     		for operation in operations:
     			if operation == '+':
     				opButtons.append("Addition")
@@ -342,28 +349,46 @@ class WorkSpace(QWidget):
 
     def onSolvePress(self, name):
 		def calluser():
+			availableOperations = []
+			token_string = ''
+			animation = []
 			if name == 'Addition':
-				self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.addition_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
-				self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.subtraction_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
-				self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.multiplication_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Division':
-				self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.division_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 			elif name == 'Simplify':
-				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.simplify_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
