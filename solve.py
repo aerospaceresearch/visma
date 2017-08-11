@@ -1127,6 +1127,151 @@ def evaluate_constant(constant):
 				val *= math.pow(c_val, constant["power"][i])
 			return val		
 
+
+def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens):
+	operations = []
+	for i, token in enumerate(lTokens):
+		if token["type"] == 'binary':
+			if token["value"] in ['*', '/']:
+				prev = False
+				nxt = False
+				if i != 0:
+					if lTokens[i-1]["type"] in ["variable", "constant"]:
+						prev = True
+				if i+1 < len(lTokens):
+					if lTokens[i+1]["type"] in ["variable", "constant"]:
+						nxt = True	
+				if nxt and prev:
+					op = token["value"]
+					if not op in operations:
+						operations.append(op)
+
+	for i, token in enumerate(rTokens):
+		if token["type"] == 'binary':
+			if token["value"] in ['*', '/']:
+				prev = False
+				nxt = False
+				if i != 0:
+					if rTokens[i-1]["type"] in ["variable", "constant"]:
+						prev = True
+				if i+1 < len(rTokens):
+					if rTokens[i+1]["type"] in ["variable", "constant"]:
+						nxt = True	
+				if nxt and prev:
+					op = token["value"]
+					if not op in operations:
+						operations.append(op)
+
+	for i, variable in enumerate(lVariables):
+		if variable["type"] == "constant":
+			if len(variable["value"]) > 1:
+				count = 0
+				ops = []
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+				for k, variable2 in enumerate(rVariables):
+					if variable2["type"] == 'constant':
+						for l in xrange(len(variable2["value"])):
+							if variable2["after"][l] in ['+', '-', ''] and variable2["before"][l] in ['+', '-']:
+								count += 1
+								if not (variable2["before"][l] in ops):
+									ops.append(variable2["before"][l])
+				if count > 1:
+					for op in ops:
+						if not op in operations:
+							operations.append(op)
+
+		elif variable["type"] == "variable":
+			if len(variable["power"]) > 1:
+				count = 0
+				ops = []
+				power = []
+				scope = []
+				opCount = 0
+				for j in xrange(len(variable["power"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						opCount += 1						
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+							power.append(variable["power"][j])
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
+						count += 1
+
+				for k, variable2 in enumerate(rVariables):
+					for l in xrange(len(variable2["power"])):
+						if variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-']:
+							count += 1
+							opCount += 1						
+							if not (variable2["before"][l] in ops):
+								ops.append(variable2["before"][l])
+								power.append(variable2["power"][l])
+						elif variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-', '']:
+							count += 1
+
+				if count > 1 and opCount > 0:					
+					for i, op in enumerate(ops):
+						if not (op in operations):
+							operations.append(op)
+									
+
+		elif variable["type"] == "expression":
+			ops = get_available_operations(variable["value"], variable["tokens"])
+			for op in ops:
+				if not op in operations:
+					operations.append(op)
+
+	
+	for i, variable in enumerate(rVariables):
+		if variable["type"] == "constant":
+			if len(variable["value"]) > 1:
+				count = 0
+				ops = []
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+				if count > 1:
+					for op in ops:
+						if not op in operations:
+							operations.append(op)			
+		elif variable["type"] == "variable":
+			if len(variable["power"]) > 1:
+				count = 0
+				ops = []
+				power = []
+				scope = []
+				opCount = 0
+				for j in xrange(len(variable["power"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						opCount += 1						
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+							power.append(variable["power"][j])
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
+						count += 1
+
+				if count > 1 and opCount > 0:					
+					for i, op in enumerate(ops):
+						if not (op in operations):
+							operations.append(op)
+									
+
+		elif variable["type"] == "expression":
+			ops = get_available_operations(variable["value"], variable["tokens"])
+			for op in ops:
+				if not op in operations:
+					operations.append(op)
+
+								
+	return operations								
+
+
 def get_available_operations(variables, tokens):
 	operations = []
 	for i, token in enumerate(tokens):
