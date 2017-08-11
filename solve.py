@@ -1177,8 +1177,13 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 						for l in xrange(len(variable2["value"])):
 							if variable2["after"][l] in ['+', '-', ''] and variable2["before"][l] in ['+', '-']:
 								count += 1
-								if not (variable2["before"][l] in ops):
-									ops.append(variable2["before"][l])
+								tempOp = '+'
+								if variable2["before"] == '+':
+									tempOp = '-'
+								else:
+									tempOp = '+'	
+								if not (tempOp in ops):
+									ops.append(tempOp)
 				if count > 1:
 					for op in ops:
 						if not op in operations:
@@ -1205,9 +1210,14 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 					for l in xrange(len(variable2["power"])):
 						if variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-']:
 							count += 1
-							opCount += 1						
-							if not (variable2["before"][l] in ops):
-								ops.append(variable2["before"][l])
+							opCount += 1
+							tempOp = '+'
+							if variable2["before"] == '+':
+								tempOp = '-'
+							else:
+								tempOp = '+'	
+							if not (tempOp in ops):
+								ops.append(tempOp)
 								power.append(variable2["power"][l])
 						elif variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-', '']:
 							count += 1
