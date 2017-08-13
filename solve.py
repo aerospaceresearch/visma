@@ -63,9 +63,30 @@ class EquationCompatibility(object):
 		self.rTokens = rTokens
 		self.rVariables = []
 		self.rVariables.extend(get_level_variables(self.rTokens))
-		self.availableOperations = get_available_operations_equations(self.lVariables, self.lTokens, self.rVariables, self.rTokens)
-		print self.availableOperations
+		self.availableOperations = []
+		if check_solve_for(lTokens, rTokens):
+			self.availableOperations.append('solve')
+		self.availableOperations.extend(get_available_operations_equations(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
+		#print self.availableOperations
 	
+def find_solve_for(lTokens, rTokens=[], variables = []):	
+	for i, token in enumerate(lTokens):
+		if token["type"] == "variable":
+			for val in token["value"]:
+				if val not in variables:
+					variables.append(val)
+		elif token["type"] == "expression":
+			variables.extend(find_solve_for(token["tokens"]))
+	
+	for i, token in enumerate(rTokens):
+		if token["type"] == "variable":
+			for val in token["value"]:
+				if val not in variables:
+					variables.append(val)
+		elif token["type"] == "expression":
+			variables.extend(find_solve_for(token["tokens"], [], variables))
+	return variables
+
 class ExpressionCompatibility(object):
 	"""docstring for ExpressionCompatibility"""
 	def __init__(self, tokens):
@@ -76,8 +97,15 @@ class ExpressionCompatibility(object):
 		self.availableOperations = get_available_operations(self.variables, self.tokens)
 
 
-def check_solve_for(tokens):
-	for i, token in enumerate(tokens):
+def check_solve_for(lTokens, rTokens):
+	for i, token in enumerate(lTokens):
+		if token["type"] == 'variable':
+			return True
+		elif token["type"] == 'expression':
+			if check_solve_for(token["tokens"]):
+				return True	
+
+	for i, token in enumerate(rTokens):
 		if token["type"] == 'variable':
 			return True
 		elif token["type"] == 'expression':
@@ -1152,7 +1180,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 	for i, variable in enumerate(lVariables):
 		if variable["type"] == "constant":
 			rCount = 0
-			for variable2  in rVariables:
+			for variable2 in rVariables:
 				if variable2["type"] == 'constant':
 					if variable2["power"][0] == variable["power"][0]: 
 						rCount += len(variable2["value"])
@@ -1160,8 +1188,8 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 			count = 0
 			opCount = 0
 			ops = []
+
 			if len(variable["value"]) > 1:
-				
 				for j in xrange(len(variable["value"])):
 					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
 						count += 1
@@ -1169,24 +1197,25 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 						if not (variable["before"][j] in ops):
 							ops.append(variable["before"][j])
 					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
-						count += 1
-
+						count += 1			
+			else:
+				if variable["after"][0] in ['+','-',''] and variable["before"][0] in ['+', '-', '']:
+					count += 1			
+			
 			if (len(variable["value"]) > 0 and rCount > 0):
 				for k, variable2 in enumerate(rVariables):
 					if variable2["type"] == 'constant':
 						for l in xrange(len(variable2["value"])):
-							if variable2["after"][l] in ['+', '-', ''] and variable2["before"][l] in ['+', '-']:
+							if variable2["after"][l] in ['+', '-', ''] and variable2["before"][l] in ['+', '-', '']:
 								count += 1
 								opCount += 1
 								tempOp = '+'
-								if variable2["before"] == '+':
+								if variable2["before"][l] == '+' or (variable2["before"][l] == '' and get_num(variable2["value"][l]) > 0):
 									tempOp = '-'
 								else:
-									tempOp = '+'	
+									tempOp = '+'
 								if not (tempOp in ops):
 									ops.append(tempOp)
-							elif variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-', '']:
-								count += 1
 
 			if count > 1 and opCount > 0:
 				for op in ops:
@@ -1196,18 +1225,17 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 		elif variable["type"] == "variable":
 			rCount = 0
 			for variable2  in rVariables:
-				if variable2["type"] == 'constant':
-					if variable2["power"][0] == variable["power"][0]: 
-						rCount += len(variable2["value"])
-						break
-
+				if variable2["type"] == 'variable':
+					if variable2["value"] == variable["value"]:
+						if variable2["power"][0] == variable["power"][0]: 
+							rCount += len(variable2["value"])
+							break
 			count = 0
 			ops = []
 			power = []
 			scope = []
 			opCount = 0			
-	
-			if len(variable["power"]) > 1:			
+			if len(variable["power"]) > 1:
 				for j in xrange(len(variable["power"])):
 					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
 						count += 1
@@ -1217,25 +1245,26 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 							power.append(variable["power"][j])
 					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
 						count += 1
+			else:
+				if variable["after"][0] in ['+','-',''] and variable["before"][0] in ['+', '-', '']:
+					count += 1			
 
 			if len(variable["power"]) > 0 and rCount > 0:
 				for k, variable2 in enumerate(rVariables):
 					if variable2["type"] == 'variable':
 						if variable2["value"] == variable["value"] and variable2["power"][0] == variable["power"][0]:
 							for l in xrange(len(variable2["power"])):
-								if variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-']:
+								if variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-', '']:
 									count += 1
 									opCount += 1
 									tempOp = '+'
-									if variable2["before"] == '+':
+									if variable2["before"][l] == '+' or variable2["before"][l] == '':
 										tempOp = '-'
 									else:
-										tempOp = '+'	
+										tempOp = '+'		
 									if not (tempOp in ops):
 										ops.append(tempOp)
 										power.append(variable2["power"][l])
-								elif variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-', '']:
-									count += 1
 
 			if count > 1 and opCount > 0:					
 				for i, op in enumerate(ops):
@@ -1249,7 +1278,6 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 				if not op in operations:
 					operations.append(op)
 
-	
 	for i, variable in enumerate(rVariables):
 		if variable["type"] == "constant":
 			if len(variable["value"]) > 1:

@@ -242,6 +242,23 @@ class WorkSpace(QWidget):
 	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
 	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)	
 
+    def solveForButtons(self, variables):
+	if isinstance(variables, list):
+		varButtons = []
+		if len(variables) > 0:
+			for variable in variables:
+				varButtons.append(variable)
+			varButtons.append("Back")
+			for i in reversed(range(self.solutionOptionsBox.count())):
+				self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+			for i in xrange(int(len(varButtons)/3) + 1):
+				for j in range(3):
+					if len(varButtons) > (i * 3 + j):
+						self.solutionButtons[(i,j)] = QtGui.QPushButton(varButtons[i*3 + j])
+	                			self.solutionButtons[(i,j)].resize(100, 100)
+	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolveForPress(varButtons[i*3+j]))
+	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)
+
     def newEquation(self):
         self.textedit.setText("")    
 
@@ -393,11 +410,33 @@ class WorkSpace(QWidget):
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 			elif name == 'Solve For':
-				pass	
-					
+				lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
+				variables = solve.find_solve_for(lhs, rhs)
+				self.solveForButtons(variables)
+
+		return calluser 
+
+    def onSolveForPress(self, name):
+		def calluser():
+			availableOperations = []
+			token_string = ''
+			animation = []
+			if name == 'Back':
+				textSelected = str(self.textedit.toPlainText())
+        			self.tokens = tokenize.tokenizer(textSelected)
+        			#print self.tokens
+        			lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
+        			operations, self.solutionType = solve.check_types(lhs, rhs)
+        			self.refreshButtons(operations)
+
+			else:
+				print name
+				self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.solve_for(self.lTokens, self.rTokens, name)
+				Popen(['python', 'animator.py', json.dumps(animation)])
+				self.refreshButtons(availableOperations)
+				self.textedit.setText(token_string)
 		return calluser 
 		
-
 
 class QCustomQWidget (QtGui.QWidget):
 
