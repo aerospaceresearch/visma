@@ -1419,7 +1419,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 	return constantExpression, tokens
 
-def tokenizer(eqn=" {x-1} * {x+1} "):
+def tokenizer(eqn=" {x-1} * {x+1} = x"):
 	result, tokens = constant_conversion(clean(eqn))
 	return tokens
 def get_lhs_rhs(tokens):

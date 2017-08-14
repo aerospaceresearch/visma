@@ -219,7 +219,11 @@ class WorkSpace(QWidget):
         if isinstance(operations, list):
         	opButtons = []
         	if len(operations) > 0:
-        		opButtons = ['Simplify']
+        		if len(operations) == 1:
+        			if operations[0] != 'solve':
+        				opButtons = ['Simplify']
+        		else:
+        			opButtons = ['Simplify']
     		for operation in operations:
     			if operation == '+':
     				opButtons.append("Addition")

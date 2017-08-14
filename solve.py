@@ -200,7 +200,52 @@ def simplify(tokens):
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation
 
+def addition_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '+' in availableOperations:
+		var, tok, rem, change = expression_addition(lVariables, lTokens)
+		lTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '+' in availableOperations:
+		var, tok, rem, change = expression_addition(rVariables, rTokens)
+		rTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
 
+	#add function
+
+	tokenToStringBuilder = lTokens
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	return	lTokens, rTokens, availableOperations, token_string, animation
+			
 def addition(tokens):
 	animation = [copy.deepcopy(tokens)]
 	variables = []
@@ -214,7 +259,53 @@ def addition(tokens):
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation
-		
+
+def subtraction_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '-' in availableOperations:
+		var, tok, rem, change = expression_subtraction(lVariables, lTokens)
+		lTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '-' in availableOperations:
+		var, tok, rem, change = expression_subtraction(rVariables, rTokens)
+		rTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
+
+	#add function
+
+	tokenToStringBuilder = lTokens
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	return	lTokens, rTokens, availableOperations, token_string, animation
+
 def subtraction(tokens):
 	animation = [copy.deepcopy(tokens)]
 	variables = []
@@ -228,6 +319,52 @@ def subtraction(tokens):
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)	
 	return tokens, availableOperations, token_string, animation
+
+def division_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '/' in availableOperations:
+		var, tok, rem, change = expression_division(lVariables, lTokens)
+		lTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '/' in availableOperations:
+		var, tok, rem, change = expression_division(rVariables, rTokens)
+		rTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
+
+	#add function
+
+	tokenToStringBuilder = lTokens
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	return	lTokens, rTokens, availableOperations, token_string, animation
 
 def division(tokens):
 	animation = [copy.deepcopy(tokens)]
@@ -243,6 +380,51 @@ def division(tokens):
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation
 
+def multiplication_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '*' in availableOperations:
+		var, tok, rem, change = expression_multiplication(lVariables, lTokens)
+		lTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '*' in availableOperations:
+		var, tok, rem, change = expression_multiplication(rVariables, rTokens)
+		rTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = lTokens
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
+
+	#add function
+
+	tokenToStringBuilder = lTokens
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	return	lTokens, rTokens, availableOperations, token_string, animation
 
 def multiplication(tokens):
 	animation = [copy.deepcopy(tokens)]
