@@ -52,6 +52,37 @@ def is_variable(term):
 			x += 1
 		return True
 
+def move_rTokens_to_lTokens(lTokens, rTokens):
+	if len(lTokens) == 0 and len(rTokens) > 0:
+		return rTokens, lTokens
+	elif len(lTokens) != 0:
+		for i, token in enumerate(rTokens):
+			if i == 0:
+				if token["type"] == 'binary':
+					tempToken = copy.deepcopy(token)
+					if token["value"] == '-':
+						tempToken["value"] = '+'
+					else: 
+						tempToken["value"] = '-'
+					lTokens.append(tempToken)		
+				else:	
+					binary = {}
+					binary["type"] = 'binary'
+					binary["value"] = '-'
+					binary["scope"] = copy.copy(token["scope"])
+					binary["scope"][-1] -= 1
+					lTokens.append(binary)
+					lTokens.append(token)
+			else:
+				if token["type"] == 'binary':
+					if token["value"] in ['+', '-']:
+						if token["value"] == '-':
+							token["value"] = '+'
+						else:
+							token["value"] = '-'	
+				lTokens.append(token)
+									
+	return lTokens, rTokens
 
 class EquationCompatibility(object):
 	def __init__(self, lTokens, rTokens):

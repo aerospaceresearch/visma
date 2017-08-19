@@ -122,6 +122,20 @@ def get_terms(eqn):
 						continue 
 
 					terms.append(eqn[x])
+				elif eqn[x] == 'l':
+					i = x
+					buf = eqn[x]
+					while (i-x) < len("og") :
+						i += 1
+						if i < len(eqn):
+							buf += eqn[i]
+					if buf == "log":
+						terms.append(buf)
+						x = i + 1
+						continue 
+
+					terms.append(eqn[x])
+						
 				else:
 					terms.append(eqn[x])
 				x += 1	
@@ -926,7 +940,8 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 						tempScope.extend(scope)
 						tempScope.append(level)
 						tokens.append(get_token(varTerms, varSymTokens, tempScope, coeff))
-			
+			level += 1
+
 		elif symTokens[x] == 'unary':
 			coeff = 1
 			if terms[x] == '-':
@@ -1051,7 +1066,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 									tempScope.append(level)
 									variable["value"] = get_token(varTerms, varSymTokens, tempScope)
 									variable["coefficient"] = coeff
-									variable["type"] = "equation"
+									variable["type"] = "expression"
 									tokens.append(variable) 
 					else:
 						if len(varTerms) == 1:
@@ -1097,6 +1112,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 							tempScope.append(level)
 							tokens.append(get_token(varTerms, varSymTokens, tempScope, coeff))
 				x += 1
+				level += 1
 			elif is_variable(terms[x]):
 				varTerms = []
 				varSymTokens = []
