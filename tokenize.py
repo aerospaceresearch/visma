@@ -20,6 +20,7 @@ greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
 
+words = ['tan', 'sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot']
 
 def check_equation(terms, symTokens):
 	brackets = 0
@@ -120,8 +121,31 @@ def get_terms(eqn):
 						terms.append(buf)
 						x = i + 1
 						continue 
-
+					
+					i = x
+					buf = eqn[x]
+					while (i-x) < len("in") :
+						i += 1
+						if i < len(eqn):
+							buf += eqn[i]
+					if buf == "sin":
+						terms.append(buf)
+						x = i + 1
+						continue 
+					
+					i = x
+					buf = eqn[x]
+					while (i-x) < len("ec") :
+						i += 1
+						if i < len(eqn):
+							buf += eqn[i]
+					if buf == "sec":
+						terms.append(buf)
+						x = i + 1
+						continue 
+							
 					terms.append(eqn[x])
+				
 				elif eqn[x] == 'l':
 					i = x
 					buf = eqn[x]
@@ -133,6 +157,54 @@ def get_terms(eqn):
 						terms.append(buf)
 						x = i + 1
 						continue 
+					terms.append(eqn[x])
+				
+				elif eqn[x] == 't':
+					i = x
+					buf = eqn[x]
+					while (i-x) < len("an") :
+						i += 1
+						if i < len(eqn):
+							buf += eqn[i]
+					if buf == "tan":
+						terms.append(buf)
+						x = i + 1
+						continue 
+					terms.append(eqn[x])
+				
+				elif eqn[x] == 'c':
+					i = x
+					buf = eqn[x]
+					while (i-x) < len("osec") :
+						i += 1
+						if i < len(eqn):
+							buf += eqn[i]
+					if buf == "cosec":
+						terms.append(buf)
+						x = i + 1
+						continue	
+					
+					i = x
+					buf = eqn[x]
+					while (i-x) < len("os") :
+						i += 1
+						if i < len(eqn):
+							buf += eqn[i]
+					if buf == "cos":
+						terms.append(buf)
+						x = i + 1
+						continue 
+					
+					i = x
+					buf = eqn[x]
+					while (i-x) < len("ot") :
+						i += 1
+						if i < len(eqn):
+							buf += eqn[i]
+					if buf == "cot":
+						terms.append(buf)
+						x = i + 1
+						continue
 
 					terms.append(eqn[x])
 						
@@ -169,6 +241,9 @@ def get_terms(eqn):
 		elif eqn[x] in symbols:				
 			terms.append(eqn[x])
 			x += 1
+		elif eqn[x] in ['(', ')']:
+			terms.append(eqn[x])
+			x += 1	
 		else:
 			x += 1
 	return terms
@@ -189,10 +264,6 @@ def get_variable(terms, symTokens, scope, coeff=1):
 	x = 0
 	level = 0
 	while x < len(terms):
-		if terms[0] == '{':
-			print terms
-			print terms[100]
-
 		if is_variable(terms[x]) :
 			value.append(terms[x])
 			power.append(1)
@@ -1356,9 +1427,10 @@ def tokenize_symbols(terms):
 					symTokens[-1] = "unary"
 				elif terms[i-1] in ['-', '+', '*', '/', '=', '^', '{']:
 					symTokens[-1] = "unary"	
-				elif (is_variable(terms[i-1]) or is_number(terms[i-1]) or terms[i-1] == '}') and (is_variable(terms[i+1]) or is_number(terms[i+1]) or terms[i+1] == '{' or ((terms[i+1] == '-' or terms[i+1] == '+') and (is_variable(terms[i+2]) or is_number(terms[i+2])) )):
+				elif (is_variable(terms[i-1]) or is_number(terms[i-1]) or terms[i-1] == '}' or terms[i-1] == ')') and (is_variable(terms[i+1]) or is_number(terms[i+1]) or terms[i+1] == '{' or terms[i+1] in words or ((terms[i+1] == '-' or terms[i+1] == '+') and (is_variable(terms[i+2]) or is_number(terms[i+2]) or terms[i+2] in words) )):
 					symTokens[-1] = "binary"
 				else:
+					#pass
 					print terms[i-1], terms[i], is_number(terms[i+1])	
 			elif term == '=':
 				symTokens[-1] = "binary"
@@ -1459,7 +1531,15 @@ def get_lhs_rhs(tokens):
 	return lhs, rhs			
 
 if __name__ == "__main__":
-	print tokenizer()
+	eqn = 'sqrt + sin(x) + sec - tan * cos / cot = cosec'
+	cleanEqn = remove_spaces(eqn) 
+	terms = get_terms(cleanEqn)
+	normalizedTerms = normalize(terms)
+	symTokens = tokenize_symbols(normalizedTerms)
+	terms, symTokens = check_negative_number(normalizedTerms, symTokens)
+	print terms
+	print symTokens
+	#print tokenizer()
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}
 #x + 6.00 / 3 + 2 - 2x
