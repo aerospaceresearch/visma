@@ -10,6 +10,8 @@ Logic Description:
 
 import math
 import copy
+import integration
+import find_roots
 
 def is_number(term):
     if isinstance(term, int) or isinstance(term, float):
@@ -52,22 +54,72 @@ def is_variable(term):
 			x += 1
 		return True
 
+def move_rTokens_to_lTokens(lTokens, rTokens):
+	if len(lTokens) == 0 and len(rTokens) > 0:
+		return rTokens, lTokens
+	elif len(lTokens) != 0:
+		for i, token in enumerate(rTokens):
+			if i == 0:
+				if token["type"] == 'binary':
+					tempToken = copy.deepcopy(token)
+					if token["value"] == '-':
+						tempToken["value"] = '+'
+					else: 
+						tempToken["value"] = '-'
+					lTokens.append(tempToken)		
+				else:	
+					binary = {}
+					binary["type"] = 'binary'
+					binary["value"] = '-'
+					binary["scope"] = copy.copy(token["scope"])
+					binary["scope"][-1] -= 1
+					lTokens.append(binary)
+					lTokens.append(token)
+			else:
+				if token["type"] == 'binary':
+					if token["value"] in ['+', '-']:
+						if token["value"] == '-':
+							token["value"] = '+'
+						else:
+							token["value"] = '-'	
+				lTokens.append(token)
+									
+	return lTokens, rTokens
 
-class EqautionCompatibility(object):
+class EquationCompatibility(object):
 	def __init__(self, lTokens, rTokens):
 		super(EquationCompatibility, self).__init__()
 		self.lTokens = lTokens
+		self.lVariables = []
+		self.lVariables.extend(get_level_variables(self.lTokens))
+		
 		self.rTokens = rTokens
-
-
-class Expression(object):
-	"""docstring for Expression"""
-	def __init__(self, tokens, variables):
-		super(Expression, self).__init__()
-		self.tokens = tokens
-		self.variables = variables
-
+		self.rVariables = []
+		self.rVariables.extend(get_level_variables(self.rTokens))
+		self.availableOperations = []
+		if check_solve_for(lTokens, rTokens):
+			self.availableOperations.append('solve')
+		self.availableOperations.extend(get_available_operations_equations(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
+		#print self.availableOperations
 	
+def find_solve_for(lTokens, rTokens=[], variables = []):	
+	for i, token in enumerate(lTokens):
+		if token["type"] == "variable":
+			for val in token["value"]:
+				if val not in variables:
+					variables.append(val)
+		elif token["type"] == "expression":
+			variables.extend(find_solve_for(token["tokens"]))
+	
+	for i, token in enumerate(rTokens):
+		if token["type"] == "variable":
+			for val in token["value"]:
+				if val not in variables:
+					variables.append(val)
+		elif token["type"] == "expression":
+			variables.extend(find_solve_for(token["tokens"], [], variables))
+	return variables
+
 class ExpressionCompatibility(object):
 	"""docstring for ExpressionCompatibility"""
 	def __init__(self, tokens):
@@ -78,15 +130,36 @@ class ExpressionCompatibility(object):
 		self.availableOperations = get_available_operations(self.variables, self.tokens)
 
 
+def check_solve_for(lTokens, rTokens):
+	for i, token in enumerate(lTokens):
+		if token["type"] == 'variable':
+			return True
+		elif token["type"] == 'expression':
+			if check_solve_for(token["tokens"]):
+				return True	
+
+	for i, token in enumerate(rTokens):
+		if token["type"] == 'variable':
+			return True
+		elif token["type"] == 'expression':
+			if check_solve_for(token["tokens"]):
+				return True	
+
 def tokens_to_string(tokens):
 	token_string = ''
 	for i, token in enumerate(tokens):
 		if token["type"] == 'constant':
 			if isinstance(token["value"], list):
 				for j, val in token["value"]:
-					token_string += (str(val) + '^{' + str(token["power"][j]) + '} ')
+					if token['power'][j] != 1:
+						token_string += (str(val) + '^{' + str(token["power"][j]) + '} ')
+					else:
+						token_string += str(val) 
 			elif is_number(token["value"]):
-				token_string += (str(token["value"]) + '^{' + str(token["power"]) + '} ') 		
+				if token["power"] != 1:
+					token_string += (str(token["value"]) + '^{' + str(token["power"]) + '} ') 		
+				else:
+					token_string += str(token["value"])	
 		elif token["type"] == 'variable':
 			if token["coefficient"] == 1:
 				pass
@@ -95,7 +168,10 @@ def tokens_to_string(tokens):
 			else:
 				token_string += str(token["coefficient"])	
 			for j, val in enumerate(token["value"]):
-				token_string += (str(val) + '^{' + str(token["power"][j]) + '} ')
+				if token["power"][j] != 1:
+					token_string += (str(val) + '^{' + str(token["power"][j]) + '} ')
+				else:
+					token_string += str(val)	
 		elif token["type"] == 'binary':
 			token_string += ' ' + str(token["value"]) + ' '
 		elif token["type"] == 'expression':
@@ -132,9 +208,67 @@ def remove_token(tokens, scope, scope_times=0):
 						break
 				elif token["scope"] == remScope[0:(scope_times+1)]:
 					token["tokens"] = remove_token(token["tokens"], scope, scope_times + 1)
-					break			
+					break
 
 	return tokens
+
+def simplify_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+	while len(availableOperations)>0:
+		if '/' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = division_equation(lTokens, rTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+		elif '*' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = multiplication_equation(lTokens, rTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+		elif '+' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = addition_equation(lTokens, rTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+		elif '-' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = subtraction_equation(lTokens, rTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+		lVariables = get_level_variables(lTokens)
+		rVariables = get_level_variables(rTokens)	
+		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)	
+
+	tokenToStringBuilder = copy.deepcopy(lTokens)
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)		
+	return lTokens, rTokens, availableOperations, token_string, animation
 
 def simplify(tokens):
 	tokens_orig = copy.deepcopy(tokens)
@@ -166,7 +300,104 @@ def simplify(tokens):
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation
 
+def addition_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '+' in availableOperations:
+		var, tok, rem, change = expression_addition(lVariables, lTokens)
+		lTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '+' in availableOperations:
+		var, tok, rem, change = expression_addition(rVariables, rTokens)
+		rTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
 
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+	while '+' in availableOperations:
+		lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange = equation_addition(lVariables, lTokens, rVariables, rTokens)
+		rTokens = change_token(remove_token(rTokens, rRemoveScopes), [rChange])
+		lTokens = change_token(remove_token(lTokens, lRemoveScopes), [lChange])	
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+
+	tokenToStringBuilder = copy.deepcopy(lTokens)
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	return	lTokens, rTokens, availableOperations, token_string, animation
+			
 def addition(tokens):
 	animation = [copy.deepcopy(tokens)]
 	variables = []
@@ -180,7 +411,106 @@ def addition(tokens):
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation
-		
+
+def subtraction_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '-' in availableOperations:
+		var, tok, rem, change = expression_subtraction(lVariables, lTokens)
+		lTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '-' in availableOperations:
+		var, tok, rem, change = expression_subtraction(rVariables, rTokens)
+		rTokens = change_token(remove_token(tok, rem), [change])
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
+
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+	while '-' in availableOperations:
+		lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange = equation_subtraction(lVariables, lTokens, rVariables, rTokens)
+		rTokens = change_token(remove_token(rTokens, rRemoveScopes), [rChange])
+		lTokens = change_token(remove_token(lTokens, lRemoveScopes), [lChange])	
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+
+
+	tokenToStringBuilder = copy.deepcopy(lTokens)
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	return	lTokens, rTokens, availableOperations, token_string, animation
+
 def subtraction(tokens):
 	animation = [copy.deepcopy(tokens)]
 	variables = []
@@ -194,6 +524,85 @@ def subtraction(tokens):
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)	
 	return tokens, availableOperations, token_string, animation
+
+def division_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '/' in availableOperations:
+		var, tok, rem = expression_division(lVariables, lTokens)
+		lTokens = remove_token(tok, rem)
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '/' in availableOperations:
+		var, tok, rem = expression_division(rVariables, rTokens)
+		rTokens = remove_token(tok, rem)
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
+
+	tokenToStringBuilder = copy.deepcopy(lTokens)
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	lVariables = get_level_variables(lTokens)
+	rVariables = get_level_variables(rTokens)
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+	return	lTokens, rTokens, availableOperations, token_string, animation
 
 def division(tokens):
 	animation = [copy.deepcopy(tokens)]
@@ -209,6 +618,84 @@ def division(tokens):
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation
 
+def multiplication_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	availableOperations = get_available_operations(lVariables, lTokens)
+	while '*' in availableOperations:
+		var, tok, rem = expression_multiplication(lVariables, lTokens)
+		lTokens = remove_token(tok, rem)
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		lVariables = get_level_variables(lTokens)
+		availableOperations = get_available_operations(lVariables, lTokens)
+	
+	availableOperations = get_available_operations(rVariables, rTokens)
+	while '*' in availableOperations:
+		var, tok, rem = expression_multiplication(rVariables, rTokens)
+		rTokens = remove_token(tok, rem)
+		animBuilder = copy.deepcopy(lTokens)
+		l = len(lTokens)
+		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
+		rVariables = get_level_variables(rTokens)
+		availableOperations = get_available_operations(rVariables, rTokens)
+
+	tokenToStringBuilder = copy.deepcopy(lTokens)
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)
+	lVariables = get_level_variables(lTokens)
+	rVariables = get_level_variables(rTokens)
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+	return	lTokens, rTokens, availableOperations, token_string, animation
 
 def multiplication(tokens):
 	animation = [copy.deepcopy(tokens)]
@@ -225,29 +712,151 @@ def multiplication(tokens):
 	return tokens, availableOperations, token_string, animation
 
 def change_token(tokens, variables, scope_times=0):
-	for changeVariable in variables:
-		for i, token in enumerate(tokens):
-			if token["type"] == 'constant':
-				if token["scope"] == changeVariable["scope"]:
-					if "coefficient" in changeVariable:
-						token["coefficient"] = changeVariable["coefficient"]
-					token["power"] = changeVariable["power"]
-					token["value"] = changeVariable["value"]
-					break
-			elif  token["type"] == 'variable':
-				if token["scope"] == changeVariable["scope"]:
-					token["coefficient"] = changeVariable["coefficient"]
-					token["power"] = changeVariable["power"]
-					token["value"] = changeVariable["value"]
-					break		
-			elif token["type"] == 'expression':
-				if scope_times + 1 == len(changeVariable["scope"]):
-					if token["scope"] == changeVariable["scope"]:
-						break
-				elif token["scope"] == changeVariable["scope"][0:(scope_times+1)]:
-					token["tokens"] = change_token(token["tokens"], scope, scope_times + 1)
-					break			
+	if len(variables) != 0:
+		if "scope" in variables[0]:
+			for changeVariable in variables:
+				for i, token in enumerate(tokens):
+					if token["type"] == 'constant':
+						if token["scope"] == changeVariable["scope"]:
+							if "coefficient" in changeVariable:
+								token["coefficient"] = changeVariable["coefficient"]
+							token["power"] = changeVariable["power"]
+							token["value"] = changeVariable["value"]
+							break
+					elif  token["type"] == 'variable':
+						if token["scope"] == changeVariable["scope"]:
+							token["coefficient"] = changeVariable["coefficient"]
+							token["power"] = changeVariable["power"]
+							token["value"] = changeVariable["value"]
+							break		
+					elif token["type"] == 'expression':
+						if scope_times + 1 == len(changeVariable["scope"]):
+							if token["scope"] == changeVariable["scope"]:
+								break
+						elif token["scope"] == changeVariable["scope"][0:(scope_times+1)]:
+							token["tokens"] = change_token(token["tokens"], scope, scope_times + 1)
+							break			
 	return tokens
+
+def define_scope_variable(variable, scope):
+	token = copy.deepcopy(variable)
+	local_scope = copy.deepcopy(scope)
+	if isinstance(token["value"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-1)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+
+	if isinstance(token["power"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-2)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+
+	return token
+
+def define_scope_constant(constant, scope):
+	token = copy.deepcopy(constant)
+	local_scope = copy.deepcopy(scope)
+	if isinstance(token["value"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-1)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+
+
+	if isinstance(token["power"], list):
+		for j, val in enumerate(token["value"]):
+			if val["type"] in ['binary', 'variable', 'constant', 'expression']:
+				local_scope_value = copy.deepcopy(local_scope)
+				local_scope_value.extend(-2)
+				local_scope_value.extend(j)
+				val["scope"] = local_scope_value
+	return token
+
+def define_scope(tokens, scope=[]):
+	i = 0
+	for token in tokens:
+		local_scope = copy.deepcopy(scope)
+		local_scope.extend(i)
+		token["scope"] = local_scope
+		if token["type"] == 'variable':
+			token = define_scope_variable(token, copy.deepcopy(local_scope))
+		elif token["type"] == 'constant':
+			token = define_scope_constant(token, copy.deepcopy(local_scope))
+		elif token["type"] == 'expression':
+			token["tokens"] = define_scope(token["tokens"], local_scope)
+		elif token["type"] == 'binary':
+			pass
+		i += 1	
+	return tokens				
+
+def equation_addition(lVariables, lTokens, rVariables, rTokens):
+	lRemoveScopes = []
+	rRemoveScopes = []
+	lChange = {}
+	rChange = {}
+	for i, variable in enumerate(lVariables):
+		if variable["type"] == "constant":
+			for j, val in enumerate(variable["value"]):
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
+					for variable2 in rVariables:
+						if variable2["type"] == 'constant':
+							if variable2["power"][0] == variable["power"][0]:		
+								for k, val2 in enumerate(variable2["value"]):
+									if  (variable2["before"][k] == '-' or (variable2["before"][k] == '' and variable2["value"][k] < 0)) and variable2["after"][k] in ['-', '+', '']:
+										if variable["before"][j] == '-':											
+											variable["value"][j] -= variable2["value"][k]
+										elif variable2["before"][k] == '' and variable2["value"][k] < 0:
+											variable["value"][j] -= variable2["value"][k]	
+										else:
+											variable["value"][j] += variable2["value"][k]
+										if variable["value"][j] == 0:
+											if variable["power"] == 0:
+												variable["value"] = 1
+												variable["power"] = 1
+											else:
+												lRemoveScopes.append(variable["scope"][j])
+												lRemoveScopes.append(variable["before_scope"][j])
+										else:
+											lChange["scope"] = variable["scope"][j]
+											lChange["power"] = variable["power"][j]
+											lChange["value"] = variable["value"][j]
+
+										rRemoveScopes.append(variable2["scope"][k])
+										rRemoveScopes.append(variable2["before_scope"][k])
+										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange
+
+		elif variable["type"] == "variable":
+			for j, pow1 in enumerate(variable["power"]):
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
+					for variable2 in rVariables:
+						if variable2["type"] == 'variable':
+							if variable2["power"][0] == variable["power"][0]:
+								for k, pow2 in enumerate(variable2["value"]):
+									if variable2["before"][k] == '-' and variable2["after"][k] in ['-', '+', '']:
+										if variable["before"][j] == '-':
+											variable["coefficient"][j] -= variable2["coefficient"][k]
+										else:
+											variable["coefficient"][j] += variable2["coefficient"][k]
+										if variable["coefficient"][j] == 0:
+											lRemoveScopes.append(variable["scope"][j])
+											lRemoveScopes.append(variable["before_scope"][j])
+										else:
+											lChange["scope"] = variable["scope"][j]
+											lChange["power"] = variable["power"][j]
+											lChange["value"] = variable["value"][j]
+											lChange["coefficient"] = variable["coefficient"][j]
+										rRemoveScopes.append(variable2["scope"][k])
+										rRemoveScopes.append(variable2["before_scope"][k])
+										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange
+	return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange										
 
 def expression_addition(variables, tokens):
 	removeScopes = []
@@ -267,7 +876,7 @@ def expression_addition(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '-' or variable["before"][const] == '':
+								if variable["before"][const] == '-':
 									variable["value"][const] -= variable["value"][constantAdd[i]]
 								else:
 									variable["value"][const] += variable["value"][constantAdd[i]]
@@ -275,6 +884,9 @@ def expression_addition(variables, tokens):
 									if variable["power"][const] == 0:
 										variable["value"][const] = 1
 										variable["power"][const] = 1
+										change["scope"] = variable["scope"][const]
+										change["power"] = variable["power"][const]
+										change["value"] = variable["value"][const]
 									else:
 										removeScopes.append(variable["scope"][const])
 										removeScopes.append(variable["before_scope"][const])
@@ -293,6 +905,9 @@ def expression_addition(variables, tokens):
 									if variable["power"][const] == 0:
 										variable["value"][const] = 1
 										variable["power"][const] = 1
+										change["scope"] = variable["scope"][const]
+										change["power"] = variable["power"][const]
+										change["value"] = variable["value"][const]
 									else:
 										removeScopes.append(variable["scope"][const])
 										removeScopes.append(variable["before_scope"][const])
@@ -315,6 +930,9 @@ def expression_addition(variables, tokens):
 										if variable["power"][const] == 0:
 											variable["value"][const] = 1
 											variable["power"][const] = 1
+											change["scope"] = variable["scope"][const]
+											change["power"] = variable["power"][const]
+											change["value"] = variable["value"][const]
 										else:
 											removeScopes.append(variable["scope"][const])
 											removeScopes.append(variable["before_scope"][const])
@@ -341,7 +959,7 @@ def expression_addition(variables, tokens):
 					while i < len(constantAdd):
 						for const in constant:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								if variable["before"][const] == '-' or variable["before"][const] == '':
+								if variable["before"][const] == '-':
 									variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
 								else:
 									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
@@ -358,13 +976,20 @@ def expression_addition(variables, tokens):
 								return variables, tokens, removeScopes, change
 						for const in constantAdd:
 							if variable["power"][constantAdd[i]] == variable["power"][const]:
-								variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
-								change["scope"] = variable["scope"][const]
-								change["power"] = variable["power"][const]
-								change["value"] = variable["value"]
-								change["coefficient"] = variable["coefficient"][const]
-								removeScopes.append(variable["scope"][constantAdd[i]])
+								if variable["before"][const] == '-':
+									variable["coefficient"][const] -= variable["coefficient"][constantAdd[i]]
+								else:
+									variable["coefficient"][const] += variable["coefficient"][constantAdd[i]]
+								if variable["coefficient"][const] == 0:
+									removeScopes.append(variable["scope"][const])
+									removeScopes.append(variable["before_scope"][const])
+								else:
+									change["scope"] = variable["scope"][const]
+									change["power"] = variable["power"][const]
+									change["value"] = variable["value"]
+									change["coefficient"] = variable["coefficient"][const]
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
+								removeScopes.append(variable["scope"][constantAdd[i]])
 								return variables, tokens, removeScopes, change		
 						i += 1	
 				elif len(constant) == 0 and len(constantAdd) > 1:
@@ -389,9 +1014,67 @@ def expression_addition(variables, tokens):
 
 		elif variable["type"] == "expression":
 			pass
-			
 
 	return variables, tokens, removeScopes, change					
+
+def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
+	lRemoveScopes = []
+	rRemoveScopes = []
+	lChange = {}
+	rChange = {}
+	for i, variable in enumerate(lVariables):
+		if variable["type"] == "constant":
+			for j, val in enumerate(variable["value"]):
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
+					for variable2 in rVariables:
+						if variable2["type"] == 'constant':
+							if variable2["power"][0] == variable["power"][0]:
+								for k, val2 in enumerate(variable2["value"]):
+									if variable2["before"][k] in ['+', ''] and variable2["after"][k] in ['-', '+', '']:
+										if variable["before"][j] == '-':
+											variable["value"][j] += variable2["value"][k]
+										else:
+											variable["value"][j] -= variable2["value"][k]
+										if variable["value"][j] == 0:
+											if variable["power"] == 0:
+												variable["value"] = 1
+												variable["power"] = 1
+											else:
+												lRemoveScopes.append(variable["scope"][j])
+												lRemoveScopes.append(variable["before_scope"][j])
+										else:
+											lChange["scope"] = variable["scope"][j]
+											lChange["power"] = variable["power"][j]
+											lChange["value"] = variable["value"][j]
+
+										rRemoveScopes.append(variable2["scope"][k])
+										rRemoveScopes.append(variable2["before_scope"][k])
+										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange											
+		elif variable["type"] == "variable":
+			for j, pow1 in enumerate(variable["power"]):
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
+					for variable2 in rVariables:
+						if variable2["type"] == 'variable':
+							if variable2["power"][0] == variable["power"][0]:
+								for k, pow2 in enumerate(variable2["value"]):
+									if variable2["before"][k] in ['+', ''] and variable2["after"][k] in ['-', '+', '']:
+										if variable["before"][j] == '-':
+											variable["coefficient"][j] += variable2["coefficient"][k]
+										else:
+											variable["coefficient"][j] -= variable2["coefficient"][k]
+										if variable["coefficient"][j] == 0:
+											lRemoveScopes.append(variable["scope"][j])
+											lRemoveScopes.append(variable["before_scope"][j])
+										else:
+											lChange["scope"] = variable["scope"][j]
+											lChange["power"] = variable["power"][j]
+											lChange["value"] = variable["value"][j]
+											lChange["coefficient"] = variable["coefficient"][j]
+										rRemoveScopes.append(variable2["scope"][k])
+										rRemoveScopes.append(variable2["before_scope"][k])
+										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange											
+	return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange										
+
 
 def expression_subtraction(variables, tokens):
 	removeScopes = []
@@ -470,7 +1153,6 @@ def expression_subtraction(variables, tokens):
 									return variables, tokens, removeScopes, change
 						i += 1	
 							
-
 		elif variable["type"] == "variable":
 			if len(variable["power"]) > 1:
 				constantAdd = []
@@ -555,11 +1237,10 @@ def multiply_variables(variable1, variable2, coeff):
 		found = False
 		for k, var2 in enumerate(variable2["value"]):
 			if var == var2:
-				if variable["power"][j] == variable2["power"][k]:
-					if is_number(variable["power"][j])  and is_number(variable2["power"][k]):
-						variable["power"][j] += variable2["power"][k]
-						found = True
-						break
+				if is_number(variable["power"][j])  and is_number(variable2["power"][k]):
+					variable["power"][j] += variable2["power"][k]
+					found = True
+					break
 		if not found:
 			variable["value"].append(variable2["value"][j])				
 			variable["power"].append(variable2["power"][j])	
@@ -568,8 +1249,6 @@ def multiply_variables(variable1, variable2, coeff):
 	#removeScopes.append(tokens[i]["scope"])
 	#removeScopes.append(tokens[i+1]["scope"])
 	return variable
-
-
 
 def multiply_constants(constant1, constant2, coeff):
 	no_1 = False
@@ -588,8 +1267,15 @@ def multiply_constants(constant1, constant2, coeff):
 	elif no_1 and not no_2:
 		constant["value"] = constant2["value"]
 		constant["power"] = constant2["power"]
-		constant["value"].append(constant1["value"])
-		constant["power"].append(constant1["power"])
+		done = False
+		for i, val in enumerate(constant["value"]):
+			if val == constant1["value"]:
+				constant["power"][i] += constant1["power"]
+				done = True
+				break
+		if not done:		
+			constant["value"].append(constant1["value"])
+			constant["power"].append(constant1["power"])
 		constant["value"].append(coeff)
 		constant["power"].append(1)
 		#removeScopes.append(tokens[i]["scope"])
@@ -597,8 +1283,15 @@ def multiply_constants(constant1, constant2, coeff):
 	elif not no_1 and no_2:	
 		constant["value"] = constant1["value"]
 		constant["power"] = constant1["power"]
-		constant["value"].append(constant2["value"])
-		constant["power"].append(constant2["power"])
+		done = False
+		for i, val in enumerate(constant["value"]):
+			if val == constant2["value"]:
+				constant["power"][i] += constant2["power"]
+				done = True
+				break
+		if not done:		
+			constant["value"].append(constant2["value"])
+			constant["power"].append(constant2["power"])
 		constant["value"].append(coeff)
 		constant["power"].append(1)
 		#removeScopes.append(tokens[i]["scope"])
@@ -606,10 +1299,17 @@ def multiply_constants(constant1, constant2, coeff):
 	elif not no_1 and not no_2:
 		constant["value"] = constant2["value"]
 		constant["power"] = constant2["power"]
-		for vals in constant1["value"]:
-			constant["value"].append(vals)
-		for pows in constant1["power"]:
-			constant["power"].append(pows)
+		for i, val in enumerate(constant1["value"]):
+			done = False
+			for j, val2 in enumerate(constant["value"]):
+				if val == val2:
+					constant["power"][j] += constant1["power"][i]
+					done = True
+					break
+			if not done:
+				constant["value"].append(val)
+				constant["power"].append(constant1["power"][i])	 
+
 		constant["value"].append(coeff)
 		constant["power"].append(1)	
 		#removeScopes.append(tokens[i]["scope"])
@@ -637,10 +1337,22 @@ def multiply_variable_constant(constant, variable, coeff):
 	return variable1
 
 def multiply_expression_constant(constant, expression, coeff):
-	pass
+	tokens = copy.deepcopy(expression)
+	tokens["coefficient"] *= (evaluate_constant(constant) * coeff)
+	return tokens
 
 def multiply_expression_variable(variable, expression, coeff):
-	pass
+	tokens = []
+	for token in expression["tokens"]:
+		if token["type"] == 'variable':
+			tokens.append(multiply_variables(variable, token, expression["coefficient"]))
+		elif token["type"] == 'constant':
+			tokens.append(multiply_variable_constant(token, variable, expression["coefficient"]))
+		elif token["type"] == 'expression':
+			tokens.append(multiply_expression_variable(variable, token, expression["coefficient"]))
+		elif token["type"] == 'binary':
+			tokens.append(token)
+	return tokens					
 
 def multiply_select(token1, token2, coeff=1):
 	if token1["type"] == "variable" and token2["type"] == "variable":
@@ -768,6 +1480,150 @@ def expression_multiplication(variables, tokens):
 
 	return variables, tokens, removeScopes
 
+def division_variables(variable1, variable2, coeff):
+	variable = copy.deepcopy(variable1)	
+	removeScopes = []
+	for j, var in enumerate(variable["value"]):
+		found = False
+		for k, var2 in enumerate(variable2["value"]):
+			if var == var2:
+				if is_number(variable["power"][j])  and is_number(variable2["power"][k]):
+					variable["power"][j] -= variable2["power"][k]
+					found = True
+					break
+		if not found:
+			variable["value"].append(variable2["value"][j])				
+			variable["power"].append(-variable2["power"][j])	
+	variable["coefficient"] /= variable2["coefficient"]
+	variable["coefficient"] *= coeff
+	#removeScopes.append(tokens[i]["scope"])
+	#removeScopes.append(tokens[i+1]["scope"])
+	return variable
+
+def division_constants(constant1, constant2, coeff):
+	no_1 = False
+	no_2 = False
+	removeScopes = []
+	constant = {}
+	if is_number(constant1["value"]):
+		no_1 = True
+	if is_number(constant2["value"]):
+		no_2 = True
+	if no_1 and no_2:
+		constant["value"] = (evaluate_constant(constant1) / evaluate_constant(constant2)) * coeff
+		constant["power"] = 1
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])
+	elif no_1 and not no_2:
+		constant["value"] = [constant1["value"]]
+		constant["power"] = [constant1["power"]]
+		for i, val in enumerate(constant2["value"]):
+			done = False
+			for j, val2 in enumerate(constant["value"]):
+				if val == val2:
+					constant["power"][j] -= constant2["power"][i]
+					done = True
+					break
+			if not done:
+				constant["value"].append(val)
+				constant["power"].append(-constant2["power"][i])
+
+		constant["value"].append(coeff)
+		constant["power"].append(1)
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])
+	elif not no_1 and no_2:	
+		constant["value"] = constant1["value"]
+		constant["power"] = constant1["power"]
+		done = False
+		for i, val in enumerate(constant["value"]):
+			if val == constant2["value"]:
+				constant["power"][i] -= constant2["power"]
+				done = True
+				break
+		if not done:
+			constant["value"].append(constant2["value"])
+			constant["power"].append(-constant2["power"])
+		constant["value"].append(coeff)
+		constant["power"].append(1)
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i+1]["scope"])
+	elif not no_1 and not no_2:
+		constant["value"] = constant1["value"]
+		constant["power"] = constant1["power"]
+		for i, val in enumerate(constant2["value"]):
+			done = False
+			for j, val2 in enumerate(constant["value"]):
+				if val == val2:
+					constant["power"][j] -= constant2["power"][i]
+					done = True
+					break
+			if not done:
+				constant["value"].append(val)
+				constant["power"].append(-constant2["power"][i])		 
+		constant["value"].append(coeff)
+		constant["power"].append(1)	
+		#removeScopes.append(tokens[i]["scope"])
+		#removeScopes.append(tokens[i-1]["scope"])	
+	
+	return constant
+
+def division_variable_constant(constant, variable, coeff):	
+	variable1 = copy.deepcopy(variable)
+
+	variable1["coefficient"] /=  evaluate_constant(constant)
+	variable1["coefficient"] *= coeff
+	#removeScopes.append(tokens[i]["scope"])
+	#removeScopes.append(tokens[i-1]["scope"])
+	return variable1
+
+def division_constant_variable(constant, variable, coeff):
+	variable1 = {}
+	variable1["coefficient"] = (evaluate_constant(constant)/ variable["coefficient"]) * coeff
+	variable1["value"] = []
+	variable1["power"] = []
+	for i, var in enumerate(variable):
+		variable1["value"].append(var)
+		variable1["power"].append(-variable["power"][i])
+	return variable1
+
+def division_expression_constant(constant, expression, coeff):
+	tokens = copy.deepcopy(expression)
+	tokens["coefficient"] /= (evaluate_constant(constant))
+	tokens["coefficient"] *= coeff
+	return tokens
+
+def division_constant_expression(constant, expression, coeff):
+	pass
+
+def division_expression_variable(variable, expression, coeff):
+	tokens = []
+	for token in expression["tokens"]:
+		if token["type"] == 'variable':
+			tokens.append(division_variables(token, variable, expression["coefficient"]))
+		elif token["type"] == 'constant':
+			tokens.append(division_constant_variable(token, variable, expression["coefficient"]))
+		elif token["type"] == 'expression':
+			tokens.append(division_expression_variable(variable, token, expression["coefficient"]))
+		elif token["type"] == 'binary':
+			tokens.append(token)
+	return tokens					
+
+def division_variable_expression(variable, expression, coeff):
+	pass	
+
+def division_select(token1, token2, coeff=1):
+	if token1["type"] == "variable" and token2["type"] == "variable":
+		return division_variables(token1, token2, coeff)
+	elif token1["type"] == "variable" and token2["type"] == "constant":
+		return division_variable_constant(token2, token1, coeff)
+	elif token1["type"]	== "constant" and token2["type"] == "variable":
+		return division_variable_constant(token1, token2, coeff)
+	elif token1["type"]	== "constant" and token2["type"] == "constant":
+		return division_constants(token1, token2, coeff)
+ 
+def division_expressions(expression1, expression2):
+	pass
 
 def expression_division(variables, tokens):
 	removeScopes = []
@@ -825,15 +1681,24 @@ def expression_division(variables, tokens):
 							found = False
 							for k, var2 in enumerate(tokens[i-1]["value"]):
 								if var == var2:
-									if tokens[i+1]["power"][j] == tokens[i-1]["power"][k]:
-										if is_number(tokens[i+1]["power"][j])  and is_number(tokens[i-1]["power"][k]):
-											tokens[i-1]["power"][k] -= tokens[i+1]["power"][j]
-											found = True
-											break
+									if is_number(tokens[i+1]["power"][j])  and is_number(tokens[i-1]["power"][k]):
+										tokens[i-1]["power"][k] -= tokens[i+1]["power"][j]
+										if tokens[i-1]["power"][k] == 0:
+											del tokens[i-1]["power"][k]
+											del tokens[i-1]["value"][k]
+										found = True
+										break
 							if not found:
 								tokens[i-1]["value"].append(tokens[i+1]["value"][j])				
 								tokens[i-1]["power"].append(-tokens[i+1]["power"][j])				
-
+							
+							if len(tokens[i-1]["value"]) == 0:
+								constant = {}
+								constant["type"] = 'constant'
+								constant["scope"] = tokens[i-1]["scope"]
+								constant["power"] = 1
+								constant["value"] = tokens[i-1]["coefficient"]
+								tokens[i-1] = constant
 							removeScopes.append(tokens[i]["scope"])
 							removeScopes.append(tokens[i+1]["scope"])
 							return variables, tokens, removeScopes
@@ -862,15 +1727,199 @@ def expression_division(variables, tokens):
 	return variables, tokens, removeScopes						
 
 def evaluate_constant(constant):
-	if is_number(constant["value"]):
-		return math.pow(constant["value"], constant["power"])
-	elif isinstance(constant["value"], list):
-		val = 1
-		if "coefficient" in constant:
-			val*= constant["coefficient"]
-		for i, c_val in enumerate(constant["value"]):
-			val *= math.pow(c_val, constant["power"][i])
-		return val		
+	if isinstance(constant, dict):	
+		if is_number(constant["value"]):
+			return math.pow(constant["value"], constant["power"])
+		elif isinstance(constant["value"], list):
+			val = 1
+			if "coefficient" in constant:
+				val*= constant["coefficient"]
+			for i, c_val in enumerate(constant["value"]):
+				val *= math.pow(c_val, constant["power"][i])
+			return val		
+	elif is_number(constant):
+		return constant						
+def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens):
+	operations = []
+	for i, token in enumerate(lTokens):
+		if token["type"] == 'binary':
+			if token["value"] in ['*', '/']:
+				prev = False
+				nxt = False
+				if i != 0:
+					if lTokens[i-1]["type"] in ["variable", "constant"]:
+						prev = True
+				if i+1 < len(lTokens):
+					if lTokens[i+1]["type"] in ["variable", "constant"]:
+						nxt = True	
+				if nxt and prev:
+					op = token["value"]
+					if not op in operations:
+						operations.append(op)
+
+	for i, token in enumerate(rTokens):
+		if token["type"] == 'binary':
+			if token["value"] in ['*', '/']:
+				prev = False
+				nxt = False
+				if i != 0:
+					if rTokens[i-1]["type"] in ["variable", "constant"]:
+						prev = True
+				if i+1 < len(rTokens):
+					if rTokens[i+1]["type"] in ["variable", "constant"]:
+						nxt = True	
+				if nxt and prev:
+					op = token["value"]
+					if not op in operations:
+						operations.append(op)
+
+	for i, variable in enumerate(lVariables):
+		if variable["type"] == "constant":
+			rCount = 0
+			for variable2 in rVariables:
+				if variable2["type"] == 'constant':
+					if variable2["power"][0] == variable["power"][0]: 
+						rCount += len(variable2["value"])
+						break
+			count = 0
+			opCount = 0
+			ops = []
+
+			if len(variable["value"]) > 1:
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						opCount += 1
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
+						count += 1			
+			else:
+				if variable["after"][0] in ['+','-',''] and variable["before"][0] in ['+', '-', '']:
+					count += 1			
+			
+			if (len(variable["value"]) > 0 and rCount > 0):
+				for k, variable2 in enumerate(rVariables):
+					if variable2["type"] == 'constant':
+						for l in xrange(len(variable2["value"])):
+							if variable2["after"][l] in ['+', '-', ''] and variable2["before"][l] in ['+', '-', '']:
+								count += 1
+								opCount += 1
+								tempOp = '+'
+								if variable2["before"][l] == '+' or (variable2["before"][l] == '' and get_num(variable2["value"][l]) > 0):
+									tempOp = '-'
+								else:
+									tempOp = '+'
+								if not (tempOp in ops):
+									ops.append(tempOp)
+
+			if count > 1 and opCount > 0:
+				for op in ops:
+					if not op in operations:
+						operations.append(op)
+
+		elif variable["type"] == "variable":
+			rCount = 0
+			for variable2  in rVariables:
+				if variable2["type"] == 'variable':
+					if variable2["value"] == variable["value"]:
+						if variable2["power"][0] == variable["power"][0]: 
+							rCount += len(variable2["value"])
+							break
+			count = 0
+			ops = []
+			power = []
+			scope = []
+			opCount = 0			
+			if len(variable["power"]) > 1:
+				for j in xrange(len(variable["power"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						opCount += 1						
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+							power.append(variable["power"][j])
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
+						count += 1
+			else:
+				if variable["after"][0] in ['+','-',''] and variable["before"][0] in ['+', '-', '']:
+					count += 1			
+
+			if len(variable["power"]) > 0 and rCount > 0:
+				for k, variable2 in enumerate(rVariables):
+					if variable2["type"] == 'variable':
+						if variable2["value"] == variable["value"] and variable2["power"][0] == variable["power"][0]:
+							for l in xrange(len(variable2["power"])):
+								if variable2["after"][l] in ['+','-',''] and variable2["before"][l] in ['+', '-', '']:
+									count += 1
+									opCount += 1
+									tempOp = '+'
+									if variable2["before"][l] == '+' or variable2["before"][l] == '':
+										tempOp = '-'
+									else:
+										tempOp = '+'		
+									if not (tempOp in ops):
+										ops.append(tempOp)
+										power.append(variable2["power"][l])
+
+			if count > 1 and opCount > 0:					
+				for i, op in enumerate(ops):
+					if not (op in operations):
+						operations.append(op)
+									
+
+		elif variable["type"] == "expression":
+			ops = get_available_operations(variable["value"], variable["tokens"])
+			for op in ops:
+				if not op in operations:
+					operations.append(op)
+
+	for i, variable in enumerate(rVariables):
+		if variable["type"] == "constant":
+			if len(variable["value"]) > 1:
+				count = 0
+				ops = []
+				for j in xrange(len(variable["value"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+				if count > 1:
+					for op in ops:
+						if not op in operations:
+							operations.append(op)			
+		elif variable["type"] == "variable":
+			if len(variable["power"]) > 1:
+				count = 0
+				ops = []
+				power = []
+				scope = []
+				opCount = 0
+				for j in xrange(len(variable["power"])):
+					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
+						count += 1
+						opCount += 1						
+						if not (variable["before"][j] in ops):
+							ops.append(variable["before"][j])
+							power.append(variable["power"][j])
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
+						count += 1
+
+				if count > 1 and opCount > 0:					
+					for i, op in enumerate(ops):
+						if not (op in operations):
+							operations.append(op)
+									
+
+		elif variable["type"] == "expression":
+			ops = get_available_operations(variable["value"], variable["tokens"])
+			for op in ops:
+				if not op in operations:
+					operations.append(op)
+
+								
+	return operations								
+
 
 def get_available_operations(variables, tokens):
 	operations = []
@@ -893,12 +1942,17 @@ def get_available_operations(variables, tokens):
 		if variable["type"] == "constant":
 			if len(variable["value"]) > 1:
 				count = 0
+				opCount = 0
 				ops = []
 				for j in xrange(len(variable["value"])):
 					if variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-']:
 						count += 1
+						opCount += 1
 						if not (variable["before"][j] in ops):
 							ops.append(variable["before"][j])
+					elif variable["after"][j] in ['+','-',''] and variable["before"][j] in ['+', '-', '']:
+						count += 1
+		
 				if count > 1:
 					for op in ops:
 						if not op in operations:
@@ -1006,6 +2060,9 @@ def get_level_variables(tokens):
 			skip = False
 			for var in variables:
 				if isinstance(var["value"], list) and is_number(var["value"][0]):
+					if isinstance(term["value"], list):
+						term["value"] = evaluate_constant(term)
+						term["power"] = 1	
 					if var["power"][0] == term["power"]:
 						var["value"].append(term["value"])
 						var["power"].append(term["power"])
@@ -1036,14 +2093,18 @@ def get_level_variables(tokens):
 			if not skip:
 				variable = {}
 				variable["type"] = "constant"
-				variable["value"] = [term["value"]]
 				variable["power"] = []
+				if isinstance(term["value"], list):
+					variable["value"] = [evaluate_constant(term)]
+					variable["power"].append(1)
+				else:
+					variable["value"] = [term["value"]]
+					variable["power"].append(term["power"])	
 				variable["scope"] = [term["scope"]]
 				variable["before"] = []
 				variable["before_scope"] = []
 				variable["after"] = []
 				variable["after_scope"] = []
-				variable["power"].append(term["power"])
 				if i != 0:
 					if tokens[i-1]["type"] == 'binary':
 						variable["before"].append(tokens[i-1]["value"])
@@ -1291,9 +2352,13 @@ def eval_expressions(variables):
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
+		availableOperations = equationCompatibile.availableOperations
+		if find_roots.preprocess_check_quadratic_roots(lTokens, rTokens):
+			availableOperations.append("find roots")
+		return availableOperations, "equation"
 	else:
 		expressionCompatible = ExpressionCompatibility(lTokens)
-		return expressionCompatible.availableOperations
+		return expressionCompatible.availableOperations, "expression"
 
 if __name__ == '__main__':
 			#check_types()

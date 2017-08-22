@@ -57,7 +57,10 @@ class WorkSpace(QWidget):
     equations =[('No equations stored', '')]
     equationListVbox = QVBoxLayout()
     tokens = []
+    lTokens = []
+    rTokens = []
     buttonSet = False
+    solutionType = ""
 
     def __init__(self):
         super(WorkSpace, self).__init__()
@@ -167,11 +170,17 @@ class WorkSpace(QWidget):
         self.tokens = tokenize.tokenizer(textSelected)
         #print self.tokens
         lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
-        operations = solve.check_types(lhs, rhs)
+        self.lTokens = lhs
+        self.rTokens = rhs
+        operations, self.solutionType = solve.check_types(lhs, rhs)
         if isinstance(operations, list):
         	opButtons = []
         	if len(operations) > 0:
-        		opButtons = ['Simplify']
+        		if len(operations) == 1:
+        			if operations[0] != 'solve':
+        				opButtons = ['Simplify']
+        		else:
+        			opButtons = ['Simplify']		
     		for operation in operations:
     			if operation == '+':
     				opButtons.append("Addition")
@@ -181,6 +190,11 @@ class WorkSpace(QWidget):
     				opButtons.append("Multiplication")
     			elif operation == '/':
     				opButtons.append("Division")
+    			elif operation == 'solve':
+    				opButtons.append("Solve For")
+    			elif operation == 'find roots':
+    				opButtons.append("Find Roots")
+
     		if self.buttonSet:
     			for i in reversed(range(self.solutionOptionsBox.count())): 
             			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
@@ -210,7 +224,11 @@ class WorkSpace(QWidget):
         if isinstance(operations, list):
         	opButtons = []
         	if len(operations) > 0:
-        		opButtons = ['Simplify']
+        		if len(operations) == 1:
+        			if operations[0] != 'solve':
+        				opButtons = ['Simplify']
+        		else:
+        			opButtons = ['Simplify']
     		for operation in operations:
     			if operation == '+':
     				opButtons.append("Addition")
@@ -220,6 +238,10 @@ class WorkSpace(QWidget):
     				opButtons.append("Multiplication")
     			elif operation == '/':
     				opButtons.append("Division")
+    			elif operation == 'solve':
+    				opButtons.append("Solve For")
+    			elif operations == 'find roots':
+    				opButtons.append("Find Roots")		
     		
     		for i in reversed(range(self.solutionOptionsBox.count())): 
         			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
@@ -230,6 +252,23 @@ class WorkSpace(QWidget):
 	                			self.solutionButtons[(i,j)].resize(100, 100)
 	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
 	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)	
+
+    def solveForButtons(self, variables):
+	if isinstance(variables, list):
+		varButtons = []
+		if len(variables) > 0:
+			for variable in variables:
+				varButtons.append(variable)
+			varButtons.append("Back")
+			for i in reversed(range(self.solutionOptionsBox.count())):
+				self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+			for i in xrange(int(len(varButtons)/3) + 1):
+				for j in range(3):
+					if len(varButtons) > (i * 3 + j):
+						self.solutionButtons[(i,j)] = QtGui.QPushButton(varButtons[i*3 + j])
+	                			self.solutionButtons[(i,j)].resize(100, 100)
+	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolveForPress(varButtons[i*3+j]))
+	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)
 
     def newEquation(self):
         self.textedit.setText("")    
@@ -338,35 +377,79 @@ class WorkSpace(QWidget):
 
     def onSolvePress(self, name):
 		def calluser():
+			availableOperations = []
+			token_string = ''
+			animation = []
 			if name == 'Addition':
-				self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.addition_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
-				self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.subtraction_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
-				self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.multiplication_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 			elif name == 'Division':
-				self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.division_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
 			elif name == 'Simplify':
-				self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
+				if self.solutionType == 'expression':
+					self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
+				else:
+					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.simplify_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)	
-					
+			elif name == 'Solve For':
+				lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
+				variables = solve.find_solve_for(lhs, rhs)
+				self.solveForButtons(variables)
+			elif name == 'Find Roots':
+				pass	
+
+		return calluser 
+
+    def onSolveForPress(self, name):
+		def calluser():
+			availableOperations = []
+			token_string = ''
+			animation = []
+			if name == 'Back':
+				textSelected = str(self.textedit.toPlainText())
+        			self.tokens = tokenize.tokenizer(textSelected)
+        			#print self.tokens
+        			lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
+        			operations, self.solutionType = solve.check_types(lhs, rhs)
+        			self.refreshButtons(operations)
+
+			else:
+				print name
+				self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.solve_for(self.lTokens, self.rTokens, name)
+				Popen(['python', 'animator.py', json.dumps(animation)])
+				self.refreshButtons(availableOperations)
+				self.textedit.setText(token_string)
 		return calluser 
 		
-
 
 class QCustomQWidget (QtGui.QWidget):
 
