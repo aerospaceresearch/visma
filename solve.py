@@ -83,7 +83,7 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
 						else:
 							token["value"] = '-'	
 				lTokens.append(token)
-									
+	rTokens = []								
 	return lTokens, rTokens
 
 class EquationCompatibility(object):
@@ -247,14 +247,18 @@ def simplify_equation(lToks, rToks):
 			lTokens, rTokens, availableOperations, token_string, anim = addition_equation(lTokens, rTokens)
 			animation.pop(len(animation)-1)
 			animation.extend(anim)
+		
 		elif '-' in availableOperations:
 			lTokens, rTokens, availableOperations, token_string, anim = subtraction_equation(lTokens, rTokens)
 			animation.pop(len(animation)-1)
 			animation.extend(anim)
+
 		lVariables = get_level_variables(lTokens)
 		rVariables = get_level_variables(rTokens)	
 		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)	
 
+	if len(rTokens) > 0:
+		lTokens, rTokens = move_rTokens_to_lTokens(lTokens, rTokens)
 	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
@@ -382,7 +386,7 @@ def addition_equation(lToks, rToks):
 		lVariables = get_level_variables(lTokens)
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
-
+	
 	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
@@ -2353,7 +2357,7 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
 		availableOperations = equationCompatibile.availableOperations
-		if find_roots.preprocess_check_quadratic_roots(lTokens, rTokens):
+		if find_roots.preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
 			availableOperations.append("find roots")
 		return availableOperations, "equation"
 	else:
