@@ -13,6 +13,7 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 #TODO: Fix brackets issue in brackets2 add power symbol check as well 
+import solve
 
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
@@ -441,7 +442,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 								power[-1] = get_token(varTerms, varSymTokens, tempScope)
 
 				else:
-					print varTerms, is_number(varTerms[0])
+					#print varTerms, is_number(varTerms[0])
 					if len(varTerms) == 1:
 						if is_variable(varTerms[0]):
 							power[-1] = varTerms[0]
@@ -1497,6 +1498,8 @@ def constant_conversion(tokens):
 				constantExpression = False
 			if constant:
 				token["type"] = "constant"
+				token["value"] = solve.evaluate_constant(token)
+				token["power"] = 1
 
 		elif token["type"] == "binary":
 			constantExpression = False

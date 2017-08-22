@@ -170,6 +170,8 @@ class WorkSpace(QWidget):
         self.tokens = tokenize.tokenizer(textSelected)
         #print self.tokens
         lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
+        self.lTokens = lhs
+        self.rTokens = rhs
         operations, self.solutionType = solve.check_types(lhs, rhs)
         if isinstance(operations, list):
         	opButtons = []
