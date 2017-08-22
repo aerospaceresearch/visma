@@ -191,7 +191,10 @@ class WorkSpace(QWidget):
     			elif operation == '/':
     				opButtons.append("Division")
     			elif operation == 'solve':
-    				opButtons.append("Solve For")	
+    				opButtons.append("Solve For")
+    			elif operation == 'find roots':
+    				opButtons.append("Find Roots")
+
     		if self.buttonSet:
     			for i in reversed(range(self.solutionOptionsBox.count())): 
             			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
@@ -236,7 +239,9 @@ class WorkSpace(QWidget):
     			elif operation == '/':
     				opButtons.append("Division")
     			elif operation == 'solve':
-    				opButtons.append("Solve For")	
+    				opButtons.append("Solve For")
+    			elif operations == 'find roots':
+    				opButtons.append("Find Roots")		
     		
     		for i in reversed(range(self.solutionOptionsBox.count())): 
         			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
@@ -419,6 +424,8 @@ class WorkSpace(QWidget):
 				lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
 				variables = solve.find_solve_for(lhs, rhs)
 				self.solveForButtons(variables)
+			elif name == 'Find Roots':
+				pass	
 
 		return calluser 
 

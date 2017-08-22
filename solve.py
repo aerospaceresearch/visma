@@ -10,6 +10,8 @@ Logic Description:
 
 import math
 import copy
+import integration
+import find_roots
 
 def is_number(term):
     if isinstance(term, int) or isinstance(term, float):
@@ -242,15 +244,18 @@ def simplify_equation(lToks, rToks):
 			animation.pop(len(animation)-1)
 			animation.extend(anim)
 		elif '+' in availableOperations:
-			lTokens, rTokens, availableOperations, token_string, anim = addition_equation(rTokens, lTokens)
+			lTokens, rTokens, availableOperations, token_string, anim = addition_equation(lTokens, rTokens)
 			animation.pop(len(animation)-1)
 			animation.extend(anim)
 		elif '-' in availableOperations:
-			lTokens, rTokens, availableOperations, token_string, anim = subtraction_equation(rTokens, lTokens)
+			lTokens, rTokens, availableOperations, token_string, anim = subtraction_equation(lTokens, rTokens)
 			animation.pop(len(animation)-1)
 			animation.extend(anim)
-			
-	tokenToStringBuilder = lTokens
+		lVariables = get_level_variables(lTokens)
+		rVariables = get_level_variables(rTokens)	
+		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)	
+
+	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
 	if len(rTokens) == 0:
@@ -331,7 +336,8 @@ def addition_equation(lToks, rToks):
 			zero["scope"] = [l+1]
 			animBuilder.append(zero)
 		else:
-			animBuilder.extend(rTokens)animation.append(copy.deepcopy(animBuilder))
+			animBuilder.extend(rTokens)
+		animation.append(copy.deepcopy(animBuilder))
 		lVariables = get_level_variables(lTokens)
 		availableOperations = get_available_operations(lVariables, lTokens)
 	
@@ -377,7 +383,7 @@ def addition_equation(lToks, rToks):
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 
-	tokenToStringBuilder = lTokens
+	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
 	if len(rTokens) == 0:
@@ -490,7 +496,7 @@ def subtraction_equation(lToks, rToks):
 		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 
 
-	tokenToStringBuilder = lTokens
+	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
 	if len(rTokens) == 0:
@@ -542,8 +548,8 @@ def division_equation(lToks, rToks):
 	rVariables.extend(get_level_variables(rTokens))
 	availableOperations = get_available_operations(lVariables, lTokens)
 	while '/' in availableOperations:
-		var, tok, rem, change = expression_division(lVariables, lTokens)
-		lTokens = change_token(remove_token(tok, rem), [change])
+		var, tok, rem = expression_division(lVariables, lTokens)
+		lTokens = remove_token(tok, rem)
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
@@ -562,8 +568,8 @@ def division_equation(lToks, rToks):
 	
 	availableOperations = get_available_operations(rVariables, rTokens)
 	while '/' in availableOperations:
-		var, tok, rem, change = expression_division(rVariables, rTokens)
-		rTokens = change_token(remove_token(tok, rem), [change])
+		var, tok, rem = expression_division(rVariables, rTokens)
+		rTokens = remove_token(tok, rem)
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
@@ -580,7 +586,7 @@ def division_equation(lToks, rToks):
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations(rVariables, rTokens)
 
-	tokenToStringBuilder = lTokens
+	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
 	if len(rTokens) == 0:
@@ -593,6 +599,9 @@ def division_equation(lToks, rToks):
 	else:
 		tokenToStringBuilder.extend(rTokens)
 	token_string = tokens_to_string(tokenToStringBuilder)
+	lVariables = get_level_variables(lTokens)
+	rVariables = get_level_variables(rTokens)
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 	return	lTokens, rTokens, availableOperations, token_string, animation
 
 def division(tokens):
@@ -632,8 +641,8 @@ def multiplication_equation(lToks, rToks):
 	rVariables.extend(get_level_variables(rTokens))
 	availableOperations = get_available_operations(lVariables, lTokens)
 	while '*' in availableOperations:
-		var, tok, rem, change = expression_multiplication(lVariables, lTokens)
-		lTokens = change_token(remove_token(tok, rem), [change])
+		var, tok, rem = expression_multiplication(lVariables, lTokens)
+		lTokens = remove_token(tok, rem)
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
@@ -652,8 +661,8 @@ def multiplication_equation(lToks, rToks):
 	
 	availableOperations = get_available_operations(rVariables, rTokens)
 	while '*' in availableOperations:
-		var, tok, rem, change = expression_multiplication(rVariables, rTokens)
-		rTokens = change_token(remove_token(tok, rem), [change])
+		var, tok, rem = expression_multiplication(rVariables, rTokens)
+		rTokens = remove_token(tok, rem)
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
@@ -670,7 +679,7 @@ def multiplication_equation(lToks, rToks):
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations(rVariables, rTokens)
 
-	tokenToStringBuilder = lTokens
+	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
 	if len(rTokens) == 0:
@@ -683,6 +692,9 @@ def multiplication_equation(lToks, rToks):
 	else:
 		tokenToStringBuilder.extend(rTokens)
 	token_string = tokens_to_string(tokenToStringBuilder)
+	lVariables = get_level_variables(lTokens)
+	rVariables = get_level_variables(rTokens)
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 	return	lTokens, rTokens, availableOperations, token_string, animation
 
 def multiplication(tokens):
@@ -1669,15 +1681,24 @@ def expression_division(variables, tokens):
 							found = False
 							for k, var2 in enumerate(tokens[i-1]["value"]):
 								if var == var2:
-									if tokens[i+1]["power"][j] == tokens[i-1]["power"][k]:
-										if is_number(tokens[i+1]["power"][j])  and is_number(tokens[i-1]["power"][k]):
-											tokens[i-1]["power"][k] -= tokens[i+1]["power"][j]
-											found = True
-											break
+									if is_number(tokens[i+1]["power"][j])  and is_number(tokens[i-1]["power"][k]):
+										tokens[i-1]["power"][k] -= tokens[i+1]["power"][j]
+										if tokens[i-1]["power"][k] == 0:
+											del tokens[i-1]["power"][k]
+											del tokens[i-1]["value"][k]
+										found = True
+										break
 							if not found:
 								tokens[i-1]["value"].append(tokens[i+1]["value"][j])				
 								tokens[i-1]["power"].append(-tokens[i+1]["power"][j])				
-
+							
+							if len(tokens[i-1]["value"]) == 0:
+								constant = {}
+								constant["type"] = 'constant'
+								constant["scope"] = tokens[i-1]["scope"]
+								constant["power"] = 1
+								constant["value"] = tokens[i-1]["coefficient"]
+								tokens[i-1] = constant
 							removeScopes.append(tokens[i]["scope"])
 							removeScopes.append(tokens[i+1]["scope"])
 							return variables, tokens, removeScopes
@@ -2331,7 +2352,10 @@ def eval_expressions(variables):
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens = []):
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
-		return equationCompatibile.availableOperations, "equation"
+		availableOperations = equationCompatibile.availableOperations
+		if find_roots.preprocess_check_quadratic_roots(lTokens, rTokens):
+			availableOperations.append("find roots")
+		return availableOperations, "equation"
 	else:
 		expressionCompatible = ExpressionCompatibility(lTokens)
 		return expressionCompatible.availableOperations, "expression"

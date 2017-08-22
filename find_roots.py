@@ -20,6 +20,10 @@ def highest_power(tokens, variable):
 						maxPow = token["power"][i]
 	return maxPow
 
+def preprocess_check_quadratic_roots(lTokens, rTokens):
+	lTokens, rTokens, avaiableOperations, token_string, animation = solve.simplify_equation(lTokens, rTokens)
+	return check_for_quadratic_roots(lTokens, rTokens)
+	
 def check_for_quadratic_roots(lTokens, rTokens):
 	lVariables = avaiable_variables(lTokens)
 	rVariables = avaiable_variables(rTokens)
