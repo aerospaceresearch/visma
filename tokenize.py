@@ -1498,6 +1498,7 @@ def constant_conversion(tokens):
 				constantExpression = False
 			if constant:
 				token["type"] = "constant"
+				token["scope"] = token["scope"]
 				token["value"] = solve.evaluate_constant(token)
 				token["power"] = 1
 
@@ -1541,7 +1542,7 @@ if __name__ == "__main__":
 	symTokens = tokenize_symbols(normalizedTerms)
 	terms, symTokens = check_negative_number(normalizedTerms, symTokens)
 	print terms
-	print symTokens
+	print	 symTokens
 	#print tokenizer()
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}

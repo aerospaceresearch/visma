@@ -206,9 +206,64 @@ def remove_token(tokens, scope, scope_times=0):
 						break
 				elif token["scope"] == remScope[0:(scope_times+1)]:
 					token["tokens"] = remove_token(token["tokens"], scope, scope_times + 1)
-					break			
+					break
 
 	return tokens
+
+def simplify_equation(lToks, rToks):
+	lTokens = copy.deepcopy(lToks)
+	rTokens = copy.deepcopy(rToks)
+	animation = []
+	lVariables = []
+	lVariables.extend(get_level_variables(lTokens))
+	rVariables = []
+	rVariables.extend(get_level_variables(rTokens))
+	animBuilder = lToks
+	l = len(lToks)
+	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
+	animation.append(copy.deepcopy(animBuilder))
+	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
+	while len(availableOperations)>0:
+		if '/' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = division_equation(lTokens, rTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+		elif '*' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = multiplication_equation(lTokens, rTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+		elif '+' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = addition_equation(rTokens, lTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+		elif '-' in availableOperations:
+			lTokens, rTokens, availableOperations, token_string, anim = subtraction_equation(rTokens, lTokens)
+			animation.pop(len(animation)-1)
+			animation.extend(anim)
+			
+	tokenToStringBuilder = lTokens
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	token_string = tokens_to_string(tokenToStringBuilder)		
+	return lTokens, rTokens, availableOperations, token_string, animation
 
 def simplify(tokens):
 	tokens_orig = copy.deepcopy(tokens)
@@ -247,7 +302,15 @@ def addition_equation(lToks, rToks):
 	animBuilder = lToks
 	l = len(lToks)
 	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	animBuilder.extend(rToks)
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
 	animation.append(copy.deepcopy(animBuilder))
 	lVariables = []
 	lVariables.extend(get_level_variables(lTokens))
@@ -260,8 +323,15 @@ def addition_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
-		animation.append(copy.deepcopy(animBuilder))
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)animation.append(copy.deepcopy(animBuilder))
 		lVariables = get_level_variables(lTokens)
 		availableOperations = get_available_operations(lVariables, lTokens)
 	
@@ -272,7 +342,15 @@ def addition_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations(rVariables, rTokens)
@@ -285,7 +363,15 @@ def addition_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		lVariables = get_level_variables(lTokens)
 		rVariables = get_level_variables(rTokens)
@@ -294,7 +380,15 @@ def addition_equation(lToks, rToks):
 	tokenToStringBuilder = lTokens
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	tokenToStringBuilder.extend(rTokens)
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
 	token_string = tokens_to_string(tokenToStringBuilder)
 	return	lTokens, rTokens, availableOperations, token_string, animation
 			
@@ -319,7 +413,15 @@ def subtraction_equation(lToks, rToks):
 	animBuilder = lToks
 	l = len(lToks)
 	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	animBuilder.extend(rToks)
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
 	animation.append(copy.deepcopy(animBuilder))
 	lVariables = []
 	lVariables.extend(get_level_variables(lTokens))
@@ -332,7 +434,15 @@ def subtraction_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		lVariables = get_level_variables(lTokens)
 		availableOperations = get_available_operations(lVariables, lTokens)
@@ -344,7 +454,15 @@ def subtraction_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations(rVariables, rTokens)
@@ -357,7 +475,15 @@ def subtraction_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		lVariables = get_level_variables(lTokens)
 		rVariables = get_level_variables(rTokens)
@@ -367,7 +493,15 @@ def subtraction_equation(lToks, rToks):
 	tokenToStringBuilder = lTokens
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	tokenToStringBuilder.extend(rTokens)
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
 	token_string = tokens_to_string(tokenToStringBuilder)
 	return	lTokens, rTokens, availableOperations, token_string, animation
 
@@ -392,7 +526,15 @@ def division_equation(lToks, rToks):
 	animBuilder = lToks
 	l = len(lToks)
 	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	animBuilder.extend(rToks)
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
 	animation.append(copy.deepcopy(animBuilder))
 	lVariables = []
 	lVariables.extend(get_level_variables(lTokens))
@@ -405,7 +547,15 @@ def division_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		lVariables = get_level_variables(lTokens)
 		availableOperations = get_available_operations(lVariables, lTokens)
@@ -417,7 +567,15 @@ def division_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations(rVariables, rTokens)
@@ -425,7 +583,15 @@ def division_equation(lToks, rToks):
 	tokenToStringBuilder = lTokens
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	tokenToStringBuilder.extend(rTokens)
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
 	token_string = tokens_to_string(tokenToStringBuilder)
 	return	lTokens, rTokens, availableOperations, token_string, animation
 
@@ -450,7 +616,15 @@ def multiplication_equation(lToks, rToks):
 	animBuilder = lToks
 	l = len(lToks)
 	animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	animBuilder.extend(rToks)
+	if len(rToks) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		animBuilder.append(zero)
+	else:
+		animBuilder.extend(rToks)
 	animation.append(copy.deepcopy(animBuilder))
 	lVariables = []
 	lVariables.extend(get_level_variables(lTokens))
@@ -463,7 +637,15 @@ def multiplication_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		lVariables = get_level_variables(lTokens)
 		availableOperations = get_available_operations(lVariables, lTokens)
@@ -475,7 +657,15 @@ def multiplication_equation(lToks, rToks):
 		animBuilder = copy.deepcopy(lTokens)
 		l = len(lTokens)
 		animBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-		animBuilder.extend(rTokens)
+		if len(rTokens) == 0:
+			zero = {}
+			zero["type"] = 'constant'
+			zero["value"] = 0
+			zero["power"] = 1
+			zero["scope"] = [l+1]
+			animBuilder.append(zero)
+		else:
+			animBuilder.extend(rTokens)
 		animation.append(copy.deepcopy(animBuilder))
 		rVariables = get_level_variables(rTokens)
 		availableOperations = get_available_operations(rVariables, rTokens)
@@ -483,7 +673,15 @@ def multiplication_equation(lToks, rToks):
 	tokenToStringBuilder = lTokens
 	l = len(lTokens)
 	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
-	tokenToStringBuilder.extend(rTokens)
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
 	token_string = tokens_to_string(tokenToStringBuilder)
 	return	lTokens, rTokens, availableOperations, token_string, animation
 
@@ -595,14 +793,16 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
 	for i, variable in enumerate(lVariables):
 		if variable["type"] == "constant":
 			for j, val in enumerate(variable["value"]):
-				if variable["before"][j] in ['-', '+'] and variable["after"][j] in ['+', '-','']:		
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
 					for variable2 in rVariables:
 						if variable2["type"] == 'constant':
-							if variable2["power"][0] == variable["power"][0]:
+							if variable2["power"][0] == variable["power"][0]:		
 								for k, val2 in enumerate(variable2["value"]):
-									if variable2["before"][k] == '-' and variable2["after"][k] in ['-', '+', '']:
+									if  (variable2["before"][k] == '-' or (variable2["before"][k] == '' and variable2["value"][k] < 0)) and variable2["after"][k] in ['-', '+', '']:
 										if variable["before"][j] == '-':											
 											variable["value"][j] -= variable2["value"][k]
+										elif variable2["before"][k] == '' and variable2["value"][k] < 0:
+											variable["value"][j] -= variable2["value"][k]	
 										else:
 											variable["value"][j] += variable2["value"][k]
 										if variable["value"][j] == 0:
@@ -619,10 +819,11 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
 
 										rRemoveScopes.append(variable2["scope"][k])
 										rRemoveScopes.append(variable2["before_scope"][k])
-										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange											
+										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange
+
 		elif variable["type"] == "variable":
 			for j, pow1 in enumerate(variable["power"]):
-				if variable["before"][j] in ['-', '+'] and variable["after"][j] in ['+', '-','']:		
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
 					for variable2 in rVariables:
 						if variable2["type"] == 'variable':
 							if variable2["power"][0] == variable["power"][0]:
@@ -812,7 +1013,7 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
 	for i, variable in enumerate(lVariables):
 		if variable["type"] == "constant":
 			for j, val in enumerate(variable["value"]):
-				if variable["before"][j] in ['-', '+'] and variable["after"][j] in ['+', '-','']:		
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
 					for variable2 in rVariables:
 						if variable2["type"] == 'constant':
 							if variable2["power"][0] == variable["power"][0]:
@@ -839,7 +1040,7 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
 										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange											
 		elif variable["type"] == "variable":
 			for j, pow1 in enumerate(variable["power"]):
-				if variable["before"][j] in ['-', '+'] and variable["after"][j] in ['+', '-','']:		
+				if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-','']:		
 					for variable2 in rVariables:
 						if variable2["type"] == 'variable':
 							if variable2["power"][0] == variable["power"][0]:
@@ -1873,12 +2074,11 @@ def get_level_variables(tokens):
 				variable["type"] = "constant"
 				variable["power"] = []
 				if isinstance(term["value"], list):
-					print term["value"]
 					variable["value"] = [evaluate_constant(term)]
 					variable["power"].append(1)
 				else:
 					variable["value"] = [term["value"]]
-					variable["power"].append(term["power"])
+					variable["power"].append(term["power"])	
 				variable["scope"] = [term["scope"]]
 				variable["before"] = []
 				variable["before_scope"] = []
