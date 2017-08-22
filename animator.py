@@ -127,7 +127,9 @@ def draw_scene():
             y += 50
             glutSwapBuffers()
 
-
+def calc_size():
+    pass
+    
 def render_variable(x, y, term, level=1, fontSize=24):
     glRasterPos(x, y)
     font.FaceSize(24)
