@@ -52,7 +52,7 @@ def check_for_quadratic_roots(lTokens, rTokens):
 	
 def get_roots(coeffs):
 	roots = []
-	if len(coeffs) = 3:
+	if len(coeffs) == 3:
 		d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
 		if d == 0:
 			roots.append(-(coeffs[1]/(2 * coeffs[2]))) 
