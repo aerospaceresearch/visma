@@ -235,7 +235,7 @@ def quadratic_roots(lTokens, rTokens):
 def find_quadratic_roots(lTokens, rTokens):
 	roots = []
 	if len(rTokens) > 0:
-		lTokens, rTokens = move_rTokens_to_lTokens(lTokens, rTokens)
+		lTokens, rTokens = solve.move_rTokens_to_lTokens(lTokens, rTokens)
 	coeffs = [0, 0, 0]
 	for i, token in enumerate(lTokens):
 		if token["type"] == 'constant':
@@ -249,7 +249,9 @@ def find_quadratic_roots(lTokens, rTokens):
 				if lTokens[i+1]["type"] not in ['*', '/']:
 					coeffs[0] += cons
 				else:
-					return roots	
+					return roots
+			else:
+				coeffs[0] += cons				
 		if token["type"] == 'variable':
 			if len(token["value"]) == 1:
 				var = token["coefficient"]
@@ -266,6 +268,11 @@ def find_quadratic_roots(lTokens, rTokens):
 							return roots	
 					else:
 						return roots
+				else:
+					if token["power"][0] == 1 or token["power"][0] == 2:
+						coeffs[int(token["power"][0])] += var
+					else:
+						return roots	
 			else:
 				return roots
 

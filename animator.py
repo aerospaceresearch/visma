@@ -65,7 +65,7 @@ def number_of_digits(number):
     if num < 0:
         l += 1
         num = 0 - num
-    while num > 1:
+    while num >= 1:
         num /= 10
         l += 1
     return l    
@@ -195,7 +195,8 @@ def calc_equation_size(string):
         if term["type"] == "variable":
             size += calc_variable_size(term)
         elif term["type"] == "constant":
-                size += 50
+                l = number_of_digits(term["value"])
+                size += (15 *l) + 20
         elif term["type"] == "binary":
             if len(term["value"])> 0:
                 size += 20
@@ -300,8 +301,9 @@ def render_equation(x, y, string, level=1, fontSize=24):
         elif term["type"] == "constant":
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
-                x += 50
                 font.Render(str(term["value"]))
+                l = number_of_digits(term["value"])
+                x += (25 * l) + 20
         elif term["type"] == "binary":
             if len(term["value"])> 0:
                 glRasterPos(x, y)
@@ -309,15 +311,23 @@ def render_equation(x, y, string, level=1, fontSize=24):
                 font.FaceSize(fontSize)
                 font.Render(term["value"].encode("utf-8"))
         elif term["type"] == "expression":
-            	glRasterPos(x, y)
-            	font.FaceSize(fontSize)
-        	font.Render('{')
-            	x += 15
-           	x, y = render_equation(x, y, term["tokens"], level+1)
-                font.FaceSize(fontSize)
-        	x += 15
-                font.Render('}')
-                x += 15 
+		glRasterPos(x, y)
+		font.FaceSize(fontSize)
+		font.Render('{')
+		x += 15
+		x, y = render_equation(x, y, term["tokens"], level+1)
+		font.FaceSize(fontSize)
+		x += 15
+		glRasterPos(x, y)
+		font.Render('}')
+       		x += 10
+        	glRasterPos(x, y+10)
+        	font.FaceSize(2 * fontSize /3)
+        	font.Render(str(term["power"]))
+        	l = number_of_digits(term["power"])
+        	x += (15*l)
+		x += 15
+        	glRasterPos(x, y) 
         elif term["type"] == "sqrt":
             if term["power"]["type"] == 'constant':
                 glRasterPos(x, y + 5)

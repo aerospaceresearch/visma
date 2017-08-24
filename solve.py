@@ -54,9 +54,18 @@ def is_variable(term):
 			x += 1
 		return True
 
+def is_equation(lTokens, rTokens):
+	if len(lTokens) > 0 and len(rTokens) == 1:
+		if rTokens[0]["type"] == 'constant':
+			if rTokens[0]["value"] == 0:
+				return True
+	return False
+
 def move_rTokens_to_lTokens(lTokens, rTokens):
 	if len(lTokens) == 0 and len(rTokens) > 0:
 		return rTokens, lTokens
+	elif is_equation(lTokens, rTokens):
+		return lTokens, rTokens	
 	elif len(lTokens) != 0:
 		for i, token in enumerate(rTokens):
 			if i == 0:
@@ -74,6 +83,25 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
 					binary["scope"] = copy.copy(token["scope"])
 					binary["scope"][-1] -= 1
 					lTokens.append(binary)
+					if token["type"] == 'constant':
+						if token["value"] < 0:
+							if lTokens[-1]["type"] == 'binary':
+								if lTokens[-1]["value"] == '-':
+									token["value"] *= -1
+									lTokens[-1]["value"] = '+'
+								elif lTokens[-1]["value"] == '+':
+									token["value"] *= -1
+									lTokens[-1]["value"] = '-'
+					elif token["type"] == 'variable':
+						if token["coefficient"] < 0:
+							if lTokens[-1]["type"] == 'binary':
+								if lTokens[-1]["value"] == '-':
+									token["coefficient"] *= -1
+									lTokens[-1]["value"] = '+'
+								elif lTokens[-1]["value"] == '+':
+									token["coefficient"] *= -1
+									lTokens[-1]["value"] = '-'
+					
 					lTokens.append(token)
 			else:
 				if token["type"] == 'binary':
@@ -81,7 +109,26 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
 						if token["value"] == '-':
 							token["value"] = '+'
 						else:
-							token["value"] = '-'	
+							token["value"] = '-'
+				if token["type"] == 'constant':
+					if token["value"] < 0:
+						if lTokens[-1]["type"] == 'binary':
+							if lTokens[-1]["value"] == '-':
+								token["value"] *= -1
+								lTokens[-1]["value"] = '+'
+							elif lTokens[-1]["value"] == '+':
+								token["value"] *= -1
+								lTokens[-1]["value"] = '-'
+				elif token["type"] == 'variable':
+					if token["coefficient"] < 0:
+						if lTokens[-1]["type"] == 'binary':
+							if lTokens[-1]["value"] == '-':
+								token["coefficient"] *= -1
+								lTokens[-1]["value"] = '+'
+							elif lTokens[-1]["value"] == '+':
+								token["coefficient"] *= -1
+								lTokens[-1]["value"] = '-'
+					
 				lTokens.append(token)
 	rTokens = []								
 	return lTokens, rTokens
@@ -178,6 +225,8 @@ def tokens_to_string(tokens):
 			token_string += ' { '
 			token_string += tokens_to_string(token["tokens"])
 			token_string += ' } '
+			if token["power"] != 1:
+				token_string += '^{' + str(token["power"]) + '} '
 		elif token["type"] == 'sqrt':
 			token_string += 'sqrt['
 			if term["power"]["type"] == 'constant':
@@ -276,7 +325,7 @@ def simplify_equation(lToks, rToks):
 		rVariables = get_level_variables(rTokens)	
 		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)	
 
-	if len(rTokens) > 0:
+	if len(rTokens) > 0 :
 		lTokens, rTokens = move_rTokens_to_lTokens(lTokens, rTokens)
 	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
@@ -2070,7 +2119,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 				for k, variable2 in enumerate(rVariables):
 					if variable2["type"] == 'constant':
 						for l in xrange(len(variable2["value"])):
-							if variable2["after"][l] in ['+', '-', ''] and variable2["before"][l] in ['+', '-', '']:
+							if variable2["after"][l] in ['+', '-', ''] and variable2["before"][l] in ['+', '-', ''] and variable2["value"][l] != 0:
 								count += 1
 								opCount += 1
 								tempOp = '+'
@@ -2621,6 +2670,7 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 	if len(rTokens) != 0:
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
 		availableOperations = equationCompatibile.availableOperations
+
 		if find_roots.preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
 			availableOperations.append("find roots")
 		return availableOperations, "equation"
