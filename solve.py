@@ -166,7 +166,7 @@ def tokens_to_string(tokens):
 			elif token["coefficient"] == -1:
 				token_string += ' -'
 			else:
-				token_string += str(token["coefficient"])	
+				token_string += str(token["coefficient"])		
 			for j, val in enumerate(token["value"]):
 				if token["power"][j] != 1:
 					token_string += (str(val) + '^{' + str(token["power"][j]) + '} ')
@@ -175,7 +175,26 @@ def tokens_to_string(tokens):
 		elif token["type"] == 'binary':
 			token_string += ' ' + str(token["value"]) + ' '
 		elif token["type"] == 'expression':
+			token_string += ' { '
 			token_string += tokens_to_string(token["tokens"])
+			token_string += ' } '
+		elif token["type"] == 'sqrt':
+			token_string += 'sqrt['
+			if term["power"]["type"] == 'constant':
+               			token_string += tokens_to_string([term["power"]])
+            		elif term["power"]["type"] == 'variable':
+                		token_string += tokens_to_string([term["power"]])
+            		elif term["power"]["type"] == 'expression':
+            			token_string += tokens_to_string(term["power"]["tokens"])   
+      			token_string += ']{'
+      			if term["expression"]["type"] == 'constant':
+      				token_string += tokens_to_string([term["expression"]])
+            		elif term["expression"]["type"] == 'variable':
+            			token_string += tokens_to_string([term["expression"]])
+            		elif term["expression"]["type"] == 'expression':
+            			token_string += tokens_to_string(term["expression"]["tokens"])
+
+			token_string += '} '	
 	return token_string					 		
 
 def test():

@@ -112,6 +112,7 @@ def draw_scene():
     x, y = -50, -100
     global first_time
     if not first_time:
+        first_time = True
         while i < len(string):
             glClear(GL_COLOR_BUFFER_BIT)
             i += 1
@@ -125,7 +126,6 @@ def draw_scene():
             y += 50
             glutSwapBuffers()
             time.sleep(2)
-        first_time = True
     else:
         while i < len(string):
             glClear(GL_COLOR_BUFFER_BIT)
@@ -200,8 +200,9 @@ def calc_equation_size(string):
             if len(term["value"])> 0:
                 size += 20
         elif term["type"] == "expression":
-            size += calc_equation_size(term)
-            size += 20     
+            size += 15
+            size += calc_equation_size(term["tokens"])
+            size += 15     
         elif term["type"] == "sqrt":
             if term["power"]["type"] == 'constant':
                 l = number_of_digits(term["power"]["value"])
@@ -210,13 +211,13 @@ def calc_equation_size(string):
                 size += calc_variable_size(term["power"])
             elif term["power"]["type"] == 'expression':
                 size += calc_equation_size(term["power"])
-            if term["eqn"]["type"] == 'constant':
+            if term["expression"]["type"] == 'constant':
                 x += 30
-                font.Render(term["eqn"]["value"])
-            elif term["eqn"]["type"] == 'variable':
-                size += calc_variable_size(term["eqn"])
-            elif term["eqn"]["type"] == 'expression':
-                size += calc_equation_size(term["eqn"])
+                font.Render(term["expression"]["value"])
+            elif term["expression"]["type"] == 'variable':
+                size += calc_variable_size(term["expression"])
+            elif term["expression"]["type"] == 'expression':
+                size += calc_equation_size(term["expression"])
                        
     return size
     
@@ -308,12 +309,15 @@ def render_equation(x, y, string, level=1, fontSize=24):
                 font.FaceSize(fontSize)
                 font.Render(term["value"].encode("utf-8"))
         elif term["type"] == "expression":
-        	font.FaceSize(fontSize)
+            	glRasterPos(x, y)
+            	font.FaceSize(fontSize)
         	font.Render('{')
-           	x, y = render_equation(x, y, term, level+1)
+            	x += 15
+           	x, y = render_equation(x, y, term["tokens"], level+1)
                 font.FaceSize(fontSize)
-        	font.Render('}')
-                x += 20 
+        	x += 15
+                font.Render('}')
+                x += 15 
         elif term["type"] == "sqrt":
             if term["power"]["type"] == 'constant':
                 glRasterPos(x, y + 5)
@@ -327,15 +331,15 @@ def render_equation(x, y, string, level=1, fontSize=24):
             glRasterPos(x, y)
             font.FaceSize(fontSize)
             font.Render(u"\u221A".encode("utf-8"))
-            if term["eqn"]["type"] == 'constant':
+            if term["expression"]["type"] == 'constant':
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
                 x += 30
-                font.Render(term["eqn"]["value"])
-            elif term["eqn"]["type"] == 'variable':
-                x, y = render_variable(x, y, term["eqn"], level+1, fontSize)
-            elif term["eqn"]["type"] == 'expression':
-                x, y = render_equation(x, y, term["eqn"], level+1, fontSize)
+                font.Render(term["expression"]["value"])
+            elif term["expression"]["type"] == 'variable':
+                x, y = render_variable(x, y, term["expression"], level+1, fontSize)
+            elif term["expression"]["type"] == 'expression':
+                x, y = render_equation(x, y, term["expression"], level+1, fontSize)
                        
     return x, y
 

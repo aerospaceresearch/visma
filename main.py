@@ -254,9 +254,9 @@ class WorkSpace(QWidget):
 	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
 	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)	
 
-	def clearButtons(self):
-		for i in reversed(range(self.solutionOptionsBox.count())): 
-			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+    def clearButtons(self):
+	for i in reversed(range(self.solutionOptionsBox.count())): 
+		self.solutionOptionsBox.itemAt(i).widget().setParent(None)
         	
 
     def solveForButtons(self, variables):

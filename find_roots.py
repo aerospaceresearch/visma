@@ -1,5 +1,6 @@
 import solve
 import math
+import copy
 
 def avaiable_variables(tokens):
 	variables = []
@@ -67,7 +68,7 @@ def get_roots(coeffs):
 	
 def quadratic_roots(lTokens, rTokens):
 	lTokens, rTokens, availableOperations, token_string, animation = solve.simplify_equation(lTokens, rTokens)
-	roots, variable = find_quadratic_roots(lTokens, rTokens)
+	roots, var = find_quadratic_roots(lTokens, rTokens)
 	if len(roots) == 1:		
 		tokens = []
 		expression = {}
@@ -76,20 +77,21 @@ def quadratic_roots(lTokens, rTokens):
 		expression["power"] = 2
  		variable = {}
 		variable["type"] = 'variable'
-		variable["value"] = variable
+		variable["value"] = var
 		variable["power"] = [1]
 		variable["coefficient"] = 1
 		tokens.append(variable)
 		binary = {}
 		binary["type"] = 'binary'
 		if roots[0] < 0:
+			roots[0] *= -1
 			binary["value"] = '+'
 		else:
 			binary["value"] = '-'	
 		tokens.append(binary)
 		constant = {}
 		constant["type"] = 'constant'
-		constant["value"] = roots[0]
+		constant["value"] = math.ceil(roots[0]*100)/100
 		constant["power"] = 1
 		tokens.append(constant)
 		expression["tokens"] = tokens
@@ -103,22 +105,24 @@ def quadratic_roots(lTokens, rTokens):
 		expression["power"] = 1
  		variable = {}
 		variable["type"] = 'variable'
-		variable["value"] = variable
+		variable["value"] = var
 		variable["power"] = [1]
 		variable["coefficient"] = 1
 		tokens.append(variable)
 		binary = {}
 		binary["type"] = 'binary'
 		if roots[0] < 0:
+			roots[0] *= -1
 			binary["value"] = '+'
 		else:
 			binary["value"] = '-'	
 		tokens.append(binary)
 		constant = {}
 		constant["type"] = 'constant'
-		constant["value"] = roots[0]
+		constant["value"] = math.ceil(roots[0]*100)/100
 		constant["power"] = 1
 		tokens.append(constant)
+		expression["tokens"] = tokens
 
 		tokens2 = []
 		expression2 = {}
@@ -127,33 +131,36 @@ def quadratic_roots(lTokens, rTokens):
 		expression2["power"] = 1
  		variable2 = {}
 		variable2["type"] = 'variable'
-		variable2["value"] = variable
+		variable2["value"] = var
 		variable2["power"] = [1]
 		variable2["coefficient"] = 1
 		tokens2.append(variable)
 		binary2 = {}
 		binary2["type"] = 'binary'
 		if roots[1] < 0:
+			roots[1] *= -1
 			binary2["value"] = '+'
 		else:
 			binary2["value"] = '-'	
-		tokens.append(binary2)
+		tokens2.append(binary2)
 		constant2 = {}
 		constant2["type"] = 'constant'
-		constant2["value"] = roots[1]
+		constant2["value"] = math.ceil(roots[1]*100)/100
 		constant2["power"] = 1
 		tokens2.append(constant2)
+		expression2["tokens"] = tokens2
 
 		binary3 = {}
 		binary3["type"] = 'binary'
 		binary3["value"] = '*'
-		lTokens = [expression, binary, expression2]
+		lTokens = [expression, binary3, expression2]
 	
 	elif len(roots) == 3:
 		sqrtPow = {}
 		sqrtPow["type"] = 'constant'
 		sqrtPow["value"] = 2
 		sqrtPow["power"] = 1
+		
 		tokens = []
 		expression = {}
 		expression["type"] = 'expression'
@@ -161,7 +168,7 @@ def quadratic_roots(lTokens, rTokens):
 		expression["power"] = 1
  		variable = {}
 		variable["type"] = 'variable'
-		variable["value"] = variable
+		variable["value"] = var
 		variable["power"] = [1]
 		variable["coefficient"] = 1
 		tokens.append(variable)
@@ -171,13 +178,14 @@ def quadratic_roots(lTokens, rTokens):
 		tokens.append(binary)
 		constant = {}
 		constant["type"] = 'constant'
-		constant["value"] = roots[1]
+		constant["value"] = math.ceil(roots[1]*100)/100
 		constant["power"] = 1
 		sqrt = {}
 		sqrt["type"] = 'sqrt'
 		sqrt["power"] = sqrtPow
 		sqrt["expression"] = constant 
-		tokens.append(constant)
+		tokens.append(sqrt)
+		expression["tokens"] = tokens
 
 		tokens2 = []
 		expression2 = {}
@@ -186,30 +194,43 @@ def quadratic_roots(lTokens, rTokens):
 		expression2["power"] = 1
  		variable2 = {}
 		variable2["type"] = 'variable'
-		variable2["value"] = variable
+		variable2["value"] = var
 		variable2["power"] = [1]
 		variable2["coefficient"] = 1
 		tokens2.append(variable)
 		binary2 = {}
 		binary2["type"] = 'binary'
 		binary2["value"] = '-'	
-		tokens.append(binary2)
-		constant2 = {}
-		constant2["type"] = 'constant'
-		constant2["value"] = roots[1]
-		constant2["power"] = 1
-		tokens2.append(constant2)
+		tokens2.append(binary2)
+		tokens2.append(sqrt)
+		expression2["tokens"] = tokens2
 
 		binary3 = {}
 		binary3["type"] = 'binary'
 		binary3["value"] = '*'
-		lTokens = [expression, binary, expression2]
+		lTokens = [expression, binary3, expression2]
 	
 	zero = {}
 	zero["type"] = 'constant'
 	zero["value"] = 0
 	zero["power"] = 1
 	rTokens = [zero] 
+
+	tokenToStringBuilder = copy.deepcopy(lTokens)
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	animation.append(copy.deepcopy(tokenToStringBuilder))	
+	token_string = solve.tokens_to_string(tokenToStringBuilder)
+	return lTokens, rTokens, [], token_string, animation
 
 def find_quadratic_roots(lTokens, rTokens):
 	roots = []
