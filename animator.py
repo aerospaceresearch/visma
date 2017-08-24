@@ -59,6 +59,17 @@ def is_number(term):
                 x += 1  
         return True
 
+def number_of_digits(number):
+    num = number
+    l = 0
+    if num < 0:
+        l += 1
+        num = 0 - num
+    while num > 1:
+        num /= 10
+        l += 1
+    return l    
+
 def get_num(term):
     return float(term)
 
@@ -98,7 +109,7 @@ def do_ortho():
 def draw_scene():
     glColor3f(1.0, 1.0, 1.0)
     i = 0
-    x, y = -50, 0
+    x, y = -50, -100
     global first_time
     if not first_time:
         while i < len(string):
@@ -107,7 +118,8 @@ def draw_scene():
             j = 0
             tempY = y
             while j < i:
-                render_equation(x, tempY, string[j])
+                l = calc_equation_size(string[j])
+                render_equation(-l/2, tempY, string[j])
                 tempY -= 50
                 j += 1
             y += 50
@@ -121,14 +133,92 @@ def draw_scene():
             j = 0
             tempY = y
             while j < i:
-                render_equation(x, tempY, string[j])
+                l = calc_equation_size(string[j])
+                render_equation(-l/2, tempY, string[j])
                 tempY -= 50
                 j += 1
             y += 50
             glutSwapBuffers()
 
-def calc_size():
-    pass
+def calc_variable_size(term):
+    size = 0
+    if term["coefficient"] == 1:
+        pass
+    elif term["coefficient"] < 0:
+        if term["coefficient"] == -1:
+            size += 20
+        else:
+            l = number_of_digits(term["coefficient"])  
+            size += (l * 15 + 20)
+    else:
+        l = number_of_digits(term["coefficient"])
+        size += (l *15 + 20)
+    if len(term["value"])> 0:
+        for j, val in enumerate(term["value"]):
+            if type(val) == dict:
+                if val["type"] == 'variable':
+                    size += render_variable(val)
+                elif val["type"] == 'expression':
+                    size += render_equation(val)        
+                else:
+                    pass    
+            if is_number(str(val)):
+                l = number_of_digits(val)
+                size += (15 * l)        
+            else:
+                size += 20
+            if type(term["power"][j]) == dict:
+                if term["power"][j]["type"] == 'variable':
+                    size += calc_variable_size(term["power"][j])
+                elif term["power"][j]["type"] == 'expression':
+                    size += calc_equation_size(term["power"][j])    
+                else:
+                    pass 
+            elif is_variable(str(term["power"][j])):
+                size += (15 * len(term["power"][j]) + 15)   
+            elif is_number(str(term["power"][j])):
+                if term["power"][j] == 1:
+                    size += 15
+                    pass
+                else:
+                    if is_number(term["power"][j]):
+                        l = number_of_digits(term["power"][j]) 
+                        size += (15 * l + 15)
+                    else:    
+                        size += (15 * len(term["power"][j]) + 15)                
+    return size
+
+
+def calc_equation_size(string):
+    size = 0
+    for i, term in enumerate(string):
+        if term["type"] == "variable":
+            size += calc_variable_size(term)
+        elif term["type"] == "constant":
+                size += 50
+        elif term["type"] == "binary":
+            if len(term["value"])> 0:
+                size += 20
+        elif term["type"] == "expression":
+            size += calc_equation_size(term)
+            size += 20     
+        elif term["type"] == "sqrt":
+            if term["power"]["type"] == 'constant':
+                l = number_of_digits(term["power"]["value"])
+                size += (15 * l)
+            elif term["power"]["type"] == 'variable':
+                size += calc_variable_size(term["power"])
+            elif term["power"]["type"] == 'expression':
+                size += calc_equation_size(term["power"])
+            if term["eqn"]["type"] == 'constant':
+                x += 30
+                font.Render(term["eqn"]["value"])
+            elif term["eqn"]["type"] == 'variable':
+                size += calc_variable_size(term["eqn"])
+            elif term["eqn"]["type"] == 'expression':
+                size += calc_equation_size(term["eqn"])
+                       
+    return size
     
 def render_variable(x, y, term, level=1, fontSize=24):
     glRasterPos(x, y)
@@ -140,11 +230,13 @@ def render_variable(x, y, term, level=1, fontSize=24):
             font.Render(str('-'))
             x += 20
         else:
-            font.Render(str(term["coefficient"]))    
-            x += 60
+            font.Render(str(term["coefficient"]))
+            l = number_of_digits(term["coefficient"])    
+            x += (l * 15 + 20)
     else:
         font.Render(str(term["coefficient"]))
-        x += 50
+        l = number_of_digits(term["coefficient"])
+        x += (l *15 + 20)
     if len(term["value"])> 0:
         for j, val in enumerate(term["value"]):
             if type(val) == dict:
@@ -160,8 +252,12 @@ def render_variable(x, y, term, level=1, fontSize=24):
                 if val in greek:
                     font.Render(str(val.encode('utf-8')))
                 else:
-                    font.Render(str(val)) 
-            x += 20
+                    font.Render(str(val))
+            if is_number(str(val)):
+                l = number_of_digits(val)
+                x += (15 * l)        
+            else:
+                x += 20
             if type(term["power"][j]) == dict:
                 if term["power"][j]["type"] == 'variable':
                     x, y = render_variable(x, y+10, term["power"][j], level + 1, 2*fontSize/3)
@@ -176,10 +272,10 @@ def render_variable(x, y, term, level=1, fontSize=24):
                     font.Render(str(term["power"][j].encode('utf-8')))
                 else:
                     font.Render(str(term["power"][j]))
-                x += 20   
+                x += (15 * len(term["power"][j]) + 15)   
             elif is_number(str(term["power"][j])):
                 if term["power"][j] == 1:
-                    x += 10
+                    x += 15
                     pass
                 else:
                     glRasterPos(x, y + 10)
@@ -188,8 +284,11 @@ def render_variable(x, y, term, level=1, fontSize=24):
                         font.Render(str(term["power"][j].encode('utf-8')))
                     else:
                         font.Render(str(term["power"][j]))
-                    x += 20           
-                    
+                    if is_number(term["power"][j]):
+                        l = number_of_digits(term["power"][j])
+                        x += (15 * l + 15)
+                    else:    
+                        x += (15 * len(term["power"][j]) + 15)                
     return x, y
 
 
@@ -200,7 +299,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
         elif term["type"] == "constant":
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
-                x += 40
+                x += 50
                 font.Render(str(term["value"]))
         elif term["type"] == "binary":
             if len(term["value"])> 0:
@@ -212,8 +311,9 @@ def render_equation(x, y, string, level=1, fontSize=24):
         	font.FaceSize(fontSize)
         	font.Render('{')
            	x, y = render_equation(x, y, term, level+1)
-            	font.FaceSize(fontSize)
-        	font.Render('}') 
+                font.FaceSize(fontSize)
+        	font.Render('}')
+                x += 20 
         elif term["type"] == "sqrt":
             if term["power"]["type"] == 'constant':
                 glRasterPos(x, y + 5)
@@ -221,7 +321,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
                 x += 30
                 font.Render(term["power"]["value"])
             elif term["power"]["type"] == 'variable':
-                x, y, = render_variable(x, y+5, term["power"], level+1, fontSize/2)
+                x, y = render_variable(x, y+5, term["power"], level+1, fontSize/2)
             elif term["power"]["type"] == 'expression':
                 x, y = render_equation(x, y+5, term["power"], level+1, fontSize/2)
             glRasterPos(x, y)
@@ -233,11 +333,10 @@ def render_equation(x, y, string, level=1, fontSize=24):
                 x += 30
                 font.Render(term["eqn"]["value"])
             elif term["eqn"]["type"] == 'variable':
-                x, y, = render_variable(x, y, term["eqn"], level+1, fontSize)
+                x, y = render_variable(x, y, term["eqn"], level+1, fontSize)
             elif term["eqn"]["type"] == 'expression':
                 x, y = render_equation(x, y, term["eqn"], level+1, fontSize)
                        
-                
     return x, y
 
 
