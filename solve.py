@@ -842,13 +842,16 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
 											lChange1["scope"] = variable["scope"][j]
 											lChange1["power"] = variable["power"][j]
 											lChange1["value"] = variable["value"][j]
-											if variable["value"][j] < 0 and variable["before"][j] == '-':
+											if variable["value"][j] < 0 and variable["before"][j] in ['-', '+']:
 												lChange1["value"] = -1 * lChange1["value"]
 												variable["value"][j] = -1 * variable["value"][j]
 												lChange2 = {}
 												lChange2["scope"] = variable["before_scope"][j]
 												lChange2["type"] = 'binary'
-												lChange2["value"] = '+'
+												if variable["before"][j] == '-':
+													lChange2["value"] = '+'
+												elif variable["before"][j] == '+':
+													lChange2["value"] = '-'
 												lChange.append(lChange2)
 											lChange.append(lChange1)
 											
@@ -877,13 +880,16 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
 											lChange1["power"] = variable["power"][j]
 											lChange1["value"] = variable["value"][j]
 											lChange1["coefficient"] = variable["coefficient"][j]
-											if variable["coefficient"][j] < 0 and variable["before"][j] == '-':
+											if variable["coefficient"][j] < 0 and variable["before"][j] in  ['-', '+']:
 												lChange1["coefficient"] = -1 * lChange1["coefficient"]
 												variable["coefficient"][j] = -1 * variable["coefficient"][j]
 												lChange2 = {}
 												lChange2["scope"] = variable["before_scope"][j]
 												lChange2["type"] = 'binary'
-												lChange2["value"] = '+'
+												if variable["before"][j] == '-':
+													lChange2["value"] = '+'
+												elif variable["before"][j] == '+':
+													lChange2["value"] = '-'
 												lChange.append(lChange2)
 											lChange.append(lChange1)
 
@@ -931,13 +937,16 @@ def expression_addition(variables, tokens):
 									change1["scope"] = variable["scope"][const]
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"][const]
-									if variable["value"][const] < 0 and variable["before"][const] == '-':
+									if variable["value"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["value"] = -1  * change1["value"]
 										variable["value"][const] = -1 * variable["value"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)	
 								removeScopes.append(variable["scope"][constantAdd[i]])
@@ -964,13 +973,16 @@ def expression_addition(variables, tokens):
 									change1["scope"] = variable["scope"][const]
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"][const]
-									if variable["value"][const] < 0 and variable["before"][const] == '-':
+									if variable["value"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["value"] = -1  * change1["value"]
 										variable["value"][const] = -1 * variable["value"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)
 								removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1001,13 +1013,16 @@ def expression_addition(variables, tokens):
 										change1["scope"] = variable["scope"][const]
 										change1["power"] = variable["power"][const]
 										change1["value"] = variable["value"][const]
-										if variable["value"][const] < 0 and variable["before"][const] == '-':
+										if variable["value"][const] < 0 and variable["before"][const] in ['-', '+']:
 											change1["value"] = -1  * change1["value"]
 											variable["value"][const] = -1 * variable["value"][const]
 											change2 = {}
 											change2["type"] = 'binary'
 											change2["scope"] = variable["before_scope"][const]
-											change2["value"] = '+'
+											if variable["before"][const] == '-':
+												change2["value"] = '+'
+											elif variable["before"][const] == '+':
+												change2["value"] = '-'
 											change.append(change2)
 										change.append(change1)
 									removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1042,13 +1057,16 @@ def expression_addition(variables, tokens):
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"]
 									change1["coefficient"] = variable["coefficient"][const]
-									if variable["coefficient"][const] < 0 and variable["before"][const] == '-':
+									if variable["coefficient"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["coefficient"] = -1  * change1["coefficient"]
 										variable["coefficient"][const] = -1 * variable["coefficient"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
@@ -1069,13 +1087,16 @@ def expression_addition(variables, tokens):
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"]
 									change1["coefficient"] = variable["coefficient"][const]
-									if variable["coefficient"][const] < 0 and variable["before"][const] == '-':
+									if variable["coefficient"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["coefficient"] = -1  * change1["coefficient"]
 										variable["coefficient"][const] = -1 * variable["coefficient"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)
 								removeScopes.append(variable["before_scope"][constantAdd[i]])
@@ -1098,13 +1119,16 @@ def expression_addition(variables, tokens):
 										change1["power"] = variable["power"][const]
 										change1["value"] = variable["value"]
 										change1["coefficient"] = variable["coefficient"][const]
-										if variable["coefficient"][const] < 0 and variable["before"][const] == '-':
+										if variable["coefficient"][const] < 0 and variable["before"][const] in ['-', '+']:
 											change1["coefficient"] = -1  * change1["coefficient"]
 											variable["coefficient"][const] = -1 * variable["coefficient"][const]
 											change2 = {}
 											change2["type"] = 'binary'
 											change2["scope"] = variable["before_scope"][const]
-											change2["value"] = '+'
+											if variable["before"][const] == '-':
+												change2["value"] = '+'
+											elif variable["before"][const] == '+':
+												change2["value"] = '-'
 											change.append(change2)
 										change.append(change1)
 									removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1152,13 +1176,16 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
 											lChange1["scope"] = variable["scope"][j]
 											lChange1["power"] = variable["power"][j]
 											lChange1["value"] = variable["value"][j]
-											if variable["value"][j] < 0 and variable["before"][j] == '-':
+											if variable["value"][j] < 0 and variable["before"][j] in ['-', '+']:
 												lChange1["value"] = -1 * lChange1["value"]
 												variable["value"][j] = -1 * variable["value"][j]
 												lChange2 = {}
 												lChange2["scope"] = variable["before_scope"][j]
 												lChange2["type"] = 'binary'
-												lChange2["value"] = '+'
+												if variable["before"][j] == '-':
+													lChange2["value"] = '+'
+												elif variable["before"][j] == '+':
+													lChange2["value"] = '-'
 												lChange.append(lChange2)
 											lChange.append(lChange1)
 
@@ -1186,13 +1213,16 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
 											lChange1["power"] = variable["power"][j]
 											lChange1["value"] = variable["value"][j]
 											lChange1["coefficient"] = variable["coefficient"][j]
-											if variable["coefficient"][j] < 0 and variable["before"][j] == '-':
+											if variable["coefficient"][j] < 0 and variable["before"][j] in ['-', '+']:
 												lChange1["coefficient"] = -1 * lChange1["coefficient"]
 												variable["coefficient"][j] = -1 * variable["coefficient"][j]
 												lChange2 = {}
 												lChange2["scope"] = variable["before_scope"][j]
 												lChange2["type"] = 'binary'
-												lChange2["value"] = '+'
+												if variable["before"][j] == '-':
+													lChange2["value"] = '+'
+												elif variable["before"][j] == '+':
+													lChange2["value"] = '-'
 												lChange.append(lChange2)
 											lChange.append(lChange1)
 
@@ -1241,13 +1271,16 @@ def expression_subtraction(variables, tokens):
 									change1["scope"] = variable["scope"][const]
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"][const]
-									if variable["value"][const] < 0 and variable["before"][const] == '-':
+									if variable["value"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["value"] = -1  * change1["value"]
 										variable["value"][const] = -1 * variable["value"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)	
 								removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1273,13 +1306,16 @@ def expression_subtraction(variables, tokens):
 									change1["scope"] = variable["scope"][const]
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"][const]
-									if variable["value"][const] < 0 and variable["before"][const] == '-':
+									if variable["value"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["value"] = -1  * change1["value"]
 										variable["value"][const] = -1 * variable["value"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)	
 								removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1310,13 +1346,16 @@ def expression_subtraction(variables, tokens):
 										change1["scope"] = variable["scope"][const]
 										change1["power"] = variable["power"][const]
 										change1["value"] = variable["value"][const]
-										if variable["value"][const] < 0 and variable["before"][const] == '-':
+										if variable["value"][const] < 0 and variable["before"][const] in ['-', '+']:
 											change1["value"] = -1  * change1["value"]
 											variable["value"][const] = -1 * variable["value"][const]
 											change2 = {}
 											change2["type"] = 'binary'
 											change2["scope"] = variable["before_scope"][const]
-											change2["value"] = '+'
+											if variable["before"][const] == '-':
+												change2["value"] = '+'
+											elif variable["before"][const] == '+':
+												change2["value"] = '-'
 											change.append(change2)
 										change.append(change1)	
 									removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1351,13 +1390,16 @@ def expression_subtraction(variables, tokens):
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"]
 									change1["coefficient"] = variable["coefficient"][const]
-									if variable["coefficient"][const] < 0 and variable["before"][const] == '-':
+									if variable["coefficient"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["coefficient"] = -1  * change1["coefficient"]
 										variable["coefficient"][const] = -1 * variable["coefficient"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)
 								removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1375,13 +1417,16 @@ def expression_subtraction(variables, tokens):
 									change1["power"] = variable["power"][const]
 									change1["value"] = variable["value"]
 									change1["coefficient"] = variable["coefficient"][const]
-									if variable["coefficient"][const] < 0 and variable["before"][const] == '-':
+									if variable["coefficient"][const] < 0 and variable["before"][const] in ['-', '+']:
 										change1["coefficient"] = -1  * change1["coefficient"]
 										variable["coefficient"][const] = -1 * variable["coefficient"][const]
 										change2 = {}
 										change2["type"] = 'binary'
 										change2["scope"] = variable["before_scope"][const]
-										change2["value"] = '+'
+										if variable["before"][const] == '-':
+											change2["value"] = '+'
+										elif variable["before"][const] == '+':
+											change2["value"] = '-'
 										change.append(change2)
 									change.append(change1)
 								removeScopes.append(variable["scope"][constantAdd[i]])
@@ -1404,14 +1449,17 @@ def expression_subtraction(variables, tokens):
 										change1["power"] = variable["power"][const]
 										change1["value"] = variable["value"]
 										change1["coefficient"] = variable["coefficient"][const]
-										if variable["coefficient"][const] < 0 and variable["before"][const] == '-':
+										if variable["coefficient"][const] < 0 and variable["before"][const] in ['-', '+']:
 											change1["coefficient"] = -1  * change1["coefficient"]
 											variable["coefficient"][const] = -1 * variable["coefficient"][const]
 											change2 = {}
 											change2["type"] = 'binary'
 											change2["scope"] = variable["before_scope"][const]
-											change2["value"] = '+'
-											change.append(change2)
+											if variable["before"][const] == '-':
+												change2["value"] = '+'
+											elif variable["before"][const] == '+':
+												change2["value"] = '-'	
+											change.append(change2)	
 										change.append(change1)
 									removeScopes.append(variable["scope"][constantAdd[i]])
 									removeScopes.append(variable["before_scope"][constantAdd[i]])

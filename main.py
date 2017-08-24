@@ -14,6 +14,7 @@ from PyQt4 import QtGui
 import tokenize
 import solve
 import animator
+import find_roots
 import json
 from subprocess import Popen
 
@@ -253,6 +254,11 @@ class WorkSpace(QWidget):
 	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
 	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)	
 
+	def clearButtons(self):
+		for i in reversed(range(self.solutionOptionsBox.count())): 
+			self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+        	
+
     def solveForButtons(self, variables):
 	if isinstance(variables, list):
 		varButtons = []
@@ -386,7 +392,10 @@ class WorkSpace(QWidget):
 				else:
 					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.addition_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
 				if self.solutionType == 'expression':
@@ -394,7 +403,10 @@ class WorkSpace(QWidget):
 				else:
 					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.subtraction_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
 				if self.solutionType == 'expression':
@@ -402,7 +414,10 @@ class WorkSpace(QWidget):
 				else:
 					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.multiplication_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)
 			elif name == 'Division':
 				if self.solutionType == 'expression':
@@ -410,7 +425,10 @@ class WorkSpace(QWidget):
 				else:
 					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.division_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)	
 			elif name == 'Simplify':
 				if self.solutionType == 'expression':
@@ -418,14 +436,23 @@ class WorkSpace(QWidget):
 				else:
 					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.simplify_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)	
 			elif name == 'Solve For':
 				lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
 				variables = solve.find_solve_for(lhs, rhs)
 				self.solveForButtons(variables)
 			elif name == 'Find Roots':
-				pass	
+				self.lTokens, self.rTokens, availableOperations, token_string, animation = find_roots.quadratic_roots(self.lTokens, self.rTokens)
+				Popen(['python', 'animator.py', json.dumps(animation)])
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
+				self.textedit.setText(token_string)		
 
 		return calluser 
 
