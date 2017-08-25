@@ -1379,7 +1379,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 					tempScope.append(level)
 					tempScope.append(1)
 					variable["scope"] = tempScope
-					operator["eqn"] =	variable	
+					operator["expression"] =	variable	
 				elif is_variable(terms[x-1]):
 					variable = {}
 					variable["type"] = "variable"
@@ -1391,20 +1391,20 @@ def get_token(terms, symTokens, scope=[], coeff=1):
 					tempScope.append(level)
 					tempScope.append(1)
 					variable["scope"] = tempScope
-					operator["eqn"] = variable
+					operator["expression"] = variable
 			else:
 				if binary == 0 and nSqrt == 0:
 					tempScope = []
 					tempScope.extend(scope)
 					tempScope.append(level)
 					tempScope.append(1)
-					operator["eqn"] = get_variable(varTerms, varSymTokens, tempScope)
+					operator["expression"] = get_variable(varTerms, varSymTokens, tempScope)
 				else:
 					tempScope = []
 					tempScope.extend(scope)
 					tempScope.append(level)
 					tempScope.append(1)
-					operator["eqn"] = get_token(varTerms, varSymTokens, tempScope)
+					operator["expression"] = get_token(varTerms, varSymTokens, tempScope)
 			level += 1
 			tokens.append(operator)		
 						
@@ -1535,6 +1535,7 @@ def get_lhs_rhs(tokens):
 	return lhs, rhs			
 
 if __name__ == "__main__":
+	'''
 	eqn = 'sqrt + sin(x) + sec - tan * cos / cot = cosec'
 	cleanEqn = remove_spaces(eqn) 
 	terms = get_terms(cleanEqn)
@@ -1543,7 +1544,8 @@ if __name__ == "__main__":
 	terms, symTokens = check_negative_number(normalizedTerms, symTokens)
 	print terms
 	print	 symTokens
-	#print tokenizer()
+	'''
+	print tokenizer('sqrt[x]{x+1}')
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}
 #x + 6.00 / 3 + 2 - 2x

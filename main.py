@@ -14,6 +14,7 @@ from PyQt4 import QtGui
 import tokenize
 import solve
 import animator
+import find_roots
 import json
 from subprocess import Popen
 
@@ -253,6 +254,11 @@ class WorkSpace(QWidget):
 	                			self.solutionButtons[(i,j)].clicked.connect(self.onSolvePress(opButtons[i*3+j]))
 	                			self.solutionOptionsBox.addWidget(self.solutionButtons[(i,j)], i, j)	
 
+    def clearButtons(self):
+	for i in reversed(range(self.solutionOptionsBox.count())): 
+		self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+        	
+
     def solveForButtons(self, variables):
 	if isinstance(variables, list):
 		varButtons = []
@@ -382,50 +388,71 @@ class WorkSpace(QWidget):
 			animation = []
 			if name == 'Addition':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation = solve.addition(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.addition(self.tokens)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.addition_equation(self.lTokens, self.rTokens)
-				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.addition_equation(self.lTokens, self.rTokens)
+				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation = solve.subtraction(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.subtraction(self.tokens)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.subtraction_equation(self.lTokens, self.rTokens)
-				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.subtraction_equation(self.lTokens, self.rTokens)
+				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation = solve.multiplication(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.multiplication(self.tokens)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.multiplication_equation(self.lTokens, self.rTokens)
-				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.multiplication_equation(self.lTokens, self.rTokens)
+				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)
 			elif name == 'Division':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation = solve.division(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.division(self.tokens)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.division_equation(self.lTokens, self.rTokens)
-				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.division_equation(self.lTokens, self.rTokens)
+				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)	
 			elif name == 'Simplify':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation = solve.simplify(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.simplify(self.tokens)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.simplify_equation(self.lTokens, self.rTokens)
-				Popen(['python', 'animator.py', json.dumps(animation)])
-				self.refreshButtons(availableOperations)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.simplify_equation(self.lTokens, self.rTokens)
+				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
 				self.textedit.setText(token_string)	
 			elif name == 'Solve For':
 				lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
 				variables = solve.find_solve_for(lhs, rhs)
 				self.solveForButtons(variables)
 			elif name == 'Find Roots':
-				pass	
+				self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = find_roots.quadratic_roots(self.lTokens, self.rTokens)
+				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
+				if len(availableOperations) == 0:
+					self.clearButtons()
+				else:
+					self.refreshButtons(availableOperations)	
+				self.textedit.setText(token_string)		
 
 		return calluser 
 
@@ -444,8 +471,8 @@ class WorkSpace(QWidget):
 
 			else:
 				print name
-				self.lTokens, self.rTokens, availableOperations, token_string, animation = solve.solve_for(self.lTokens, self.rTokens, name)
-				Popen(['python', 'animator.py', json.dumps(animation)])
+				self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.solve_for(self.lTokens, self.rTokens, name)
+				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
 				self.refreshButtons(availableOperations)
 				self.textedit.setText(token_string)
 		return calluser 

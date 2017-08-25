@@ -1,5 +1,6 @@
 import solve
 import math
+import copy
 
 def avaiable_variables(tokens):
 	variables = []
@@ -21,7 +22,7 @@ def highest_power(tokens, variable):
 	return maxPow
 
 def preprocess_check_quadratic_roots(lTokens, rTokens):
-	lTokens, rTokens, avaiableOperations, token_string, animation = solve.simplify_equation(lTokens, rTokens)
+	lTokens, rTokens, avaiableOperations, token_string, animation, comments = solve.simplify_equation(lTokens, rTokens)
 	return check_for_quadratic_roots(lTokens, rTokens)
 	
 def check_for_quadratic_roots(lTokens, rTokens):
@@ -61,15 +62,180 @@ def get_roots(coeffs):
  			roots.append(-(coeffs[1] + d)/(2*coeffs[2]))
  			roots.append(-(coeffs[1] - d)/(2*coeffs[2]))
 		else:
-			d = math.sqrt(-d)
-			imaginary = [-(coeffs[1]/(2 * coeffs[2])), d/(2 * coeffs[2])]
-			roots.append(imaginary)
+			imaginary = [-(coeffs[1]/(2 * coeffs[2])), d, (2 * coeffs[2])]
+			roots = imaginary
 	return roots
 	
+def quadratic_roots(lTokens, rTokens):
+	lTokens, rTokens, availableOperations, token_string, animation, comments = solve.simplify_equation(lTokens, rTokens)
+	roots, var = find_quadratic_roots(lTokens, rTokens)
+	if len(roots) == 1:		
+		tokens = []
+		expression = {}
+		expression["type"] = 'expression'
+		expression["coefficient"] = 1
+		expression["power"] = 2
+ 		variable = {}
+		variable["type"] = 'variable'
+		variable["value"] = var
+		variable["power"] = [1]
+		variable["coefficient"] = 1
+		tokens.append(variable)
+		binary = {}
+		binary["type"] = 'binary'
+		if roots[0] < 0:
+			roots[0] *= -1
+			binary["value"] = '+'
+		else:
+			binary["value"] = '-'	
+		tokens.append(binary)
+		constant = {}
+		constant["type"] = 'constant'
+		constant["value"] = math.ceil(roots[0]*100)/100
+		constant["power"] = 1
+		tokens.append(constant)
+		expression["tokens"] = tokens
+		lTokens = [expression]
+
+	elif len(roots) == 2:
+		tokens = []
+		expression = {}
+		expression["type"] = 'expression'
+		expression["coefficient"] = 1
+		expression["power"] = 1
+ 		variable = {}
+		variable["type"] = 'variable'
+		variable["value"] = var
+		variable["power"] = [1]
+		variable["coefficient"] = 1
+		tokens.append(variable)
+		binary = {}
+		binary["type"] = 'binary'
+		if roots[0] < 0:
+			roots[0] *= -1
+			binary["value"] = '+'
+		else:
+			binary["value"] = '-'	
+		tokens.append(binary)
+		constant = {}
+		constant["type"] = 'constant'
+		constant["value"] = math.ceil(roots[0]*100)/100
+		constant["power"] = 1
+		tokens.append(constant)
+		expression["tokens"] = tokens
+
+		tokens2 = []
+		expression2 = {}
+		expression2["type"] = 'expression'
+		expression2["coefficient"] = 1
+		expression2["power"] = 1
+ 		variable2 = {}
+		variable2["type"] = 'variable'
+		variable2["value"] = var
+		variable2["power"] = [1]
+		variable2["coefficient"] = 1
+		tokens2.append(variable)
+		binary2 = {}
+		binary2["type"] = 'binary'
+		if roots[1] < 0:
+			roots[1] *= -1
+			binary2["value"] = '+'
+		else:
+			binary2["value"] = '-'	
+		tokens2.append(binary2)
+		constant2 = {}
+		constant2["type"] = 'constant'
+		constant2["value"] = math.ceil(roots[1]*100)/100
+		constant2["power"] = 1
+		tokens2.append(constant2)
+		expression2["tokens"] = tokens2
+
+		binary3 = {}
+		binary3["type"] = 'binary'
+		binary3["value"] = '*'
+		lTokens = [expression, binary3, expression2]
+	
+	elif len(roots) == 3:
+		sqrtPow = {}
+		sqrtPow["type"] = 'constant'
+		sqrtPow["value"] = 2
+		sqrtPow["power"] = 1
+		
+		tokens = []
+		expression = {}
+		expression["type"] = 'expression'
+		expression["coefficient"] = 1
+		expression["power"] = 1
+ 		variable = {}
+		variable["type"] = 'variable'
+		variable["value"] = var
+		variable["power"] = [1]
+		variable["coefficient"] = 1
+		tokens.append(variable)
+		binary = {}
+		binary["type"] = 'binary'
+		binary["value"] = '+'
+		tokens.append(binary)
+		constant = {}
+		constant["type"] = 'constant'
+		constant["value"] = math.ceil(roots[1]*100)/100
+		constant["power"] = 1
+		sqrt = {}
+		sqrt["type"] = 'sqrt'
+		sqrt["power"] = sqrtPow
+		sqrt["expression"] = constant 
+		tokens.append(sqrt)
+		expression["tokens"] = tokens
+
+		tokens2 = []
+		expression2 = {}
+		expression2["type"] = 'expression'
+		expression2["coefficient"] = 1
+		expression2["power"] = 1
+ 		variable2 = {}
+		variable2["type"] = 'variable'
+		variable2["value"] = var
+		variable2["power"] = [1]
+		variable2["coefficient"] = 1
+		tokens2.append(variable)
+		binary2 = {}
+		binary2["type"] = 'binary'
+		binary2["value"] = '-'	
+		tokens2.append(binary2)
+		tokens2.append(sqrt)
+		expression2["tokens"] = tokens2
+
+		binary3 = {}
+		binary3["type"] = 'binary'
+		binary3["value"] = '*'
+		lTokens = [expression, binary3, expression2]
+	
+	zero = {}
+	zero["type"] = 'constant'
+	zero["value"] = 0
+	zero["power"] = 1
+	rTokens = [zero] 
+	comments.append([])
+	tokenToStringBuilder = copy.deepcopy(lTokens)
+	l = len(lTokens)
+	tokenToStringBuilder.append({'scope': [l], 'type': 'binary', 'value': '='})
+	if len(rTokens) == 0:
+		zero = {}
+		zero["type"] = 'constant'
+		zero["value"] = 0
+		zero["power"] = 1
+		zero["scope"] = [l+1]
+		tokenToStringBuilder.append(zero)
+	else:
+		tokenToStringBuilder.extend(rTokens)
+	animation.append(copy.deepcopy(tokenToStringBuilder))	
+	token_string = solve.tokens_to_string(tokenToStringBuilder)
+	return lTokens, rTokens, [], token_string, animation, comments
+
 def find_quadratic_roots(lTokens, rTokens):
 	roots = []
 	if len(rTokens) > 0:
-		lTokens, rTokens = move_rTokens_to_lTokens(lTokens, rTokens)
+		lTokens, rTokens = solve.move_rTokens_to_lTokens(lTokens, rTokens)
 	coeffs = [0, 0, 0]
 	for i, token in enumerate(lTokens):
 		if token["type"] == 'constant':
@@ -83,7 +249,9 @@ def find_quadratic_roots(lTokens, rTokens):
 				if lTokens[i+1]["type"] not in ['*', '/']:
 					coeffs[0] += cons
 				else:
-					return roots	
+					return roots
+			else:
+				coeffs[0] += cons				
 		if token["type"] == 'variable':
 			if len(token["value"]) == 1:
 				var = token["coefficient"]
@@ -95,11 +263,16 @@ def find_quadratic_roots(lTokens, rTokens):
 				if (i+1) < len(lTokens):
 					if lTokens[i+1]["type"] not in ['*', '/']:
 						if token["power"][0] == 1 or token["power"][0] == 2:
-							coeffs[token["power"][0]] += var
+							coeffs[int(token["power"][0])] += var
 						else:
 							return roots	
 					else:
 						return roots
+				else:
+					if token["power"][0] == 1 or token["power"][0] == 2:
+						coeffs[int(token["power"][0])] += var
+					else:
+						return roots	
 			else:
 				return roots
 
