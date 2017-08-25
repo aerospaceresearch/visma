@@ -509,6 +509,7 @@ def addition(tokens, direct=True):
 		var, tok, rem, change, com = expression_addition(variables, tokens)
 		tokens = change_token(remove_token(tok, rem), change)
 		animation.append(tokens)
+		comments.append(com)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
