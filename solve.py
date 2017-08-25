@@ -508,7 +508,7 @@ def addition(tokens, direct=True):
 	while '+' in availableOperations:
 		var, tok, rem, change, com = expression_addition(variables, tokens)
 		tokens = change_token(remove_token(tok, rem), change)
-		animation.append(tokens)
+		animation.append(copy.deepcopy(tokens))
 		comments.append(com)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
@@ -631,12 +631,12 @@ def subtraction(tokens, direct=True):
 	while '-' in availableOperations:
 		var, tok, rem, change, com = expression_subtraction(variables, tokens)
 		tokens = change_token(remove_token(tok, rem), change)
-		animation.append(tokens)
+		animation.append(copy.deepcopy(tokens))
 		comments.append(com)
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)	
-	return tokens, availableOperations, token_string, animation
+	return tokens, availableOperations, token_string, animation, comments
 
 def division_equation(lToks, rToks, direct=True):
 	lTokens = copy.deepcopy(lToks)
@@ -734,7 +734,7 @@ def division(tokens, direct=True):
 		var, tok, rem, com = expression_division(variables, tokens)
 		tokens = remove_token(tok, rem)
 		comments.append(com)
-		animation.append(tokens)
+		animation.append(copy.deepcopy(tokens))
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
@@ -836,7 +836,7 @@ def multiplication(tokens, direct=True):
 		var, tok, rem, com = expression_multiplication(variables, tokens)
 		tokens = remove_token(tok, rem)
 		comments.append(com)
-		animation.append(tokens)
+		animation.append(copy.deepcopy(tokens))
 		variables = get_level_variables(tokens)
 		availableOperations = get_available_operations(variables, tokens)
 	token_string = tokens_to_string(tokens)
