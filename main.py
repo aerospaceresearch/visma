@@ -436,8 +436,6 @@ class WorkSpace(QWidget):
 				else:
 					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.simplify_equation(self.lTokens, self.rTokens)
 				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
-				print comments, len(comments)
-				print len(animation)
 				if len(availableOperations) == 0:
 					self.clearButtons()
 				else:
