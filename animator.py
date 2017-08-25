@@ -22,7 +22,7 @@ import FTGL
 fontStyle = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"  
 font = FTGL.BitmapFont(fontStyle)
 width = 600
-height = 600
+height = 800
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
     
@@ -30,6 +30,7 @@ inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '
 inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
 
 string = []
+comments = []
 first_time = False
 
 def is_number(term):
@@ -109,7 +110,8 @@ def do_ortho():
 def draw_scene():
     glColor3f(1.0, 1.0, 1.0)
     i = 0
-    x, y = -50, -100
+    x, y = -50, -200
+    global comments
     global first_time
     if not first_time:
         first_time = True
@@ -119,11 +121,15 @@ def draw_scene():
             j = 0
             tempY = y
             while j < i:
+                for comment in comments[j]:
+                    l = len(comment)
+                    render_comment(-l * 5, tempY, comment)
+                    tempY -= 50
                 l = calc_equation_size(string[j])
                 render_equation(-l/2, tempY, string[j])
                 tempY -= 50
                 j += 1
-            y += 50
+            y += 50 + (len(comments[j-1]) * 30)
             glutSwapBuffers()
             time.sleep(2)
     else:
@@ -133,12 +139,22 @@ def draw_scene():
             j = 0
             tempY = y
             while j < i:
+                for comment in comments[j]:
+                    l = len(comment)
+                    render_comment(-l * 5, tempY, comment)
+                    tempY -= 50
                 l = calc_equation_size(string[j])
                 render_equation(-l/2, tempY, string[j])
                 tempY -= 50
                 j += 1
-            y += 50
+            y += 50 + (len(comments[j-1]) * 30)
             glutSwapBuffers()
+
+def render_comment(x, y, comment):
+    glRasterPos(x, y)
+    font.FaceSize(18)
+    font.Render(str(comment.encode('utf-8')))
+
 
 def calc_variable_size(term):
     size = 0
@@ -396,6 +412,8 @@ if __name__ == '__main__':
     '''
 
     tokens = sys.argv[1]
+    coms = sys.argv[2]
+    comments = json.loads(coms)
     #print tokens
     animate(json.loads(tokens))
     
