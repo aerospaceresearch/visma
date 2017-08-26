@@ -57,10 +57,10 @@ def get_roots(coeffs):
 		d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
 		if d == 0:
 			roots.append(-(coeffs[1]/(2 * coeffs[2]))) 
- 		elif d > 0:
- 			d = math.sqrt(d)
- 			roots.append(-(coeffs[1] + d)/(2*coeffs[2]))
- 			roots.append(-(coeffs[1] - d)/(2*coeffs[2]))
+		elif d > 0:
+			d = math.sqrt(d)
+			roots.append(-(coeffs[1] + d)/(2*coeffs[2]))
+			roots.append(-(coeffs[1] - d)/(2*coeffs[2]))
 		else:
 			imaginary = [-(coeffs[1]/(2 * coeffs[2])), d, (2 * coeffs[2])]
 			roots = imaginary
@@ -75,7 +75,7 @@ def quadratic_roots(lTokens, rTokens):
 		expression["type"] = 'expression'
 		expression["coefficient"] = 1
 		expression["power"] = 2
- 		variable = {}
+		variable = {}
 		variable["type"] = 'variable'
 		variable["value"] = var
 		variable["power"] = [1]
@@ -103,7 +103,7 @@ def quadratic_roots(lTokens, rTokens):
 		expression["type"] = 'expression'
 		expression["coefficient"] = 1
 		expression["power"] = 1
- 		variable = {}
+		variable = {}
 		variable["type"] = 'variable'
 		variable["value"] = var
 		variable["power"] = [1]
@@ -129,7 +129,7 @@ def quadratic_roots(lTokens, rTokens):
 		expression2["type"] = 'expression'
 		expression2["coefficient"] = 1
 		expression2["power"] = 1
- 		variable2 = {}
+		variable2 = {}
 		variable2["type"] = 'variable'
 		variable2["value"] = var
 		variable2["power"] = [1]
@@ -166,7 +166,7 @@ def quadratic_roots(lTokens, rTokens):
 		expression["type"] = 'expression'
 		expression["coefficient"] = 1
 		expression["power"] = 1
- 		variable = {}
+		variable = {}
 		variable["type"] = 'variable'
 		variable["value"] = var
 		variable["power"] = [1]
@@ -192,7 +192,7 @@ def quadratic_roots(lTokens, rTokens):
 		expression2["type"] = 'expression'
 		expression2["coefficient"] = 1
 		expression2["power"] = 1
- 		variable2 = {}
+		variable2 = {}
 		variable2["type"] = 'variable'
 		variable2["value"] = var
 		variable2["power"] = [1]

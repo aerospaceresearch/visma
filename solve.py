@@ -14,31 +14,31 @@ import integration
 import find_roots
 
 def is_number(term):
-    if isinstance(term, int) or isinstance(term, float):
-        return True
-    else:
-        x = 0
-        dot = 0
-        if term[0] == '-':
-            x += 1
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-            if x >= 2:
-                return True
-            else:
-                    return False
-        else:
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1  
-        return True
+	if isinstance(term, int) or isinstance(term, float):
+		return True
+	else:
+		x = 0
+		dot = 0
+		if term[0] == '-':
+			x += 1
+			while x < len(term):
+				if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+					return False
+				if term[x] == '.':
+					dot += 1
+				x += 1
+			if x >= 2:
+				return True
+			else:
+				return False
+		else:
+			while x < len(term):
+				if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+					return False
+				if term[x] == '.':
+					dot += 1
+				x += 1
+		return True
 
 def get_num(term):
 	return float(term)
@@ -238,18 +238,18 @@ def tokens_to_string(tokens):
 		elif token["type"] == 'sqrt':
 			token_string += 'sqrt['
 			if term["power"]["type"] == 'constant':
-               			token_string += tokens_to_string([term["power"]])
-            		elif term["power"]["type"] == 'variable':
-                		token_string += tokens_to_string([term["power"]])
-            		elif term["power"]["type"] == 'expression':
-            			token_string += tokens_to_string(term["power"]["tokens"])   
-      			token_string += ']{'
-      			if term["expression"]["type"] == 'constant':
-      				token_string += tokens_to_string([term["expression"]])
-            		elif term["expression"]["type"] == 'variable':
-            			token_string += tokens_to_string([term["expression"]])
-            		elif term["expression"]["type"] == 'expression':
-            			token_string += tokens_to_string(term["expression"]["tokens"])
+				token_string += tokens_to_string([term["power"]])
+			elif term["power"]["type"] == 'variable':
+				token_string += tokens_to_string([term["power"]])
+			elif term["power"]["type"] == 'expression':
+				token_string += tokens_to_string(term["power"]["tokens"])   
+			token_string += ']{'
+			if term["expression"]["type"] == 'constant':
+				token_string += tokens_to_string([term["expression"]])
+			elif term["expression"]["type"] == 'variable':
+				token_string += tokens_to_string([term["expression"]])
+			elif term["expression"]["type"] == 'expression':
+				token_string += tokens_to_string(term["expression"]["tokens"])
 
 			token_string += '} '	
 	return token_string					 		

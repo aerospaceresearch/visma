@@ -65,31 +65,31 @@ def is_variable(term):
 		return True
 
 def is_number(term):
-    if isinstance(term, int) or isinstance(term, float):
-        return True
-    else:
-        x = 0
-        dot = 0
-        if term[0] == '-':
-            x += 1
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-            if x >= 2:
-                return True
-            else:
-                    return False
-        else:
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1  
-        return True
+	if isinstance(term, int) or isinstance(term, float):
+		return True
+	else:
+		x = 0
+		dot = 0
+		if term[0] == '-':
+			x += 1
+			while x < len(term):
+				if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+					return False
+				if term[x] == '.':
+					dot += 1
+				x += 1
+			if x >= 2:
+				return True
+			else:
+				return False
+		else:
+			while x < len(term):
+				if (term[x] < '0' or term[x] > '9') and (dot!= 0 or term[x] != '.'):
+					return False
+				if term[x] == '.':
+					dot += 1
+				x += 1
+		return True
 
 def get_num(term):
 	return float(term)
