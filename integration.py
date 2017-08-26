@@ -2,14 +2,14 @@ import solve
 
 def integrate_variable(variable):
 	if len(variable["value"]) == 1:
-		if solve.is_number(variable["power"][0])
-		if variable["power"][0] != -1:
-			variable["power"][0] += 1
-			variable["coefficient"] /= variable["power"][0]
-			return variable
-		else:
-			#log
-			return variable
+		if solve.is_number(variable["power"][0]):
+			if variable["power"][0] != -1:
+				variable["power"][0] += 1
+				variable["coefficient"] /= variable["power"][0]
+				return variable
+			else:
+				#log
+				return variable
 	else:
 		tokens = []
 		for i in xrange(len(variable["value"])):
