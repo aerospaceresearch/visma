@@ -160,6 +160,12 @@ def get_terms(eqn):
 						continue 
 					terms.append(eqn[x])
 				
+				elif eqn[x] == 'e':
+					terms.append('exp')
+
+				elif eqn[x] == 'i':
+					terms.append('iota')
+				
 				elif eqn[x] == 't':
 					i = x
 					buf = eqn[x]
