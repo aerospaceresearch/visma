@@ -17,6 +17,7 @@ import animator
 import find_roots
 import json
 from subprocess import Popen
+import os
 
 class Window(QtGui.QMainWindow):
     
@@ -55,7 +56,21 @@ class WorkSpace(QWidget):
     solutionButtons = {}
     inputBox = QGridLayout()
     selectedCombo = "LaTeX"
-    equations =[('No equations stored', '')]
+    equations = []
+    try:
+	    with open('tmp/eqn-list.vis', 'r+') as fp:
+		    for line in fp:
+		        equations.insert(0, ('Equation No.' + str(len(equations) + 1), line))
+	    fp.close()
+    except IOError:
+    	if not os.path.exists('tmp'):
+	    	os.mkdir('tmp')
+        file = open('tmp/eqn-list.vis', 'w')
+        file.close()	
+
+    if len(equations) == 0:
+			equations =[('No equations stored', '')]
+	        
     equationListVbox = QVBoxLayout()
     tokens = []
     lTokens = []
@@ -170,6 +185,7 @@ class WorkSpace(QWidget):
         textSelected = str(self.textedit.toPlainText())
         self.tokens = tokenize.tokenizer(textSelected)
         #print self.tokens
+        self.addEquation()
         lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
@@ -294,8 +310,10 @@ class WorkSpace(QWidget):
             self.equations.append(("Equation No. " + str(len(self.equations) + 1), eqn))
 
         self.textedit.setText('')
+        file = open('tmp/eqn-list.vis', 'r+')
         self.myQListWidget = QtGui.QListWidget(self)     
         for index, name in self.equations:
+            file.write(name)
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(index)
             myQCustomQWidget.setTextDown(name)
@@ -303,13 +321,48 @@ class WorkSpace(QWidget):
             myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
             self.myQListWidget.addItem(myQListWidgetItem)
             self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
-        
+        file.close()
         self.myQListWidget.resize(400,300)
         
         self.myQListWidget.itemClicked.connect(self.Clicked)  
         self.equationListVbox.addWidget(self.myQListWidget)
         return self.equationListVbox
 
+    def addEquation(self):
+	eqn = unicode(self.textedit.toPlainText())
+        
+        for index, equation in self.equations:
+        	if equation == eqn:
+        		return self.equationListVbox
+
+        for i in reversed(range(self.equationListVbox.count())): 
+                self.equationListVbox.itemAt(i).widget().setParent(None)     
+        
+        if len(self.equations) ==  1:
+            index, name = self.equations[0]
+            if index == "No equations stored":
+                self.equations[0] = ("Equation No. 1", eqn)
+            else:
+                self.equations.append(("Equation No. 2", eqn))
+        else:
+            self.equations.append(("Equation No. " + str(len(self.equations) + 1), eqn))
+        file = open('tmp/eqn-list.vis', 'r+')
+        self.myQListWidget = QtGui.QListWidget(self)     
+        for index, name in self.equations:
+            file.write(name)
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setTextUp(index)
+            myQCustomQWidget.setTextDown(name)
+            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+            self.myQListWidget.addItem(myQListWidgetItem)
+            self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+        file.close()
+        self.myQListWidget.resize(400,300)
+        
+        self.myQListWidget.itemClicked.connect(self.Clicked)  
+        self.equationListVbox.addWidget(self.myQListWidget)
+        return self.equationListVbox
 
     def inputsLayout(self, loadList="LaTeX"):
         inputLayout = QHBoxLayout(self)
@@ -388,9 +441,9 @@ class WorkSpace(QWidget):
 			animation = []
 			if name == 'Addition':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation, comments = solve.addition(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.addition(self.tokens, True)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.addition_equation(self.lTokens, self.rTokens)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.addition_equation(self.lTokens, self.rTokens, True)
 				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
 				if len(availableOperations) == 0:
 					self.clearButtons()
@@ -399,9 +452,9 @@ class WorkSpace(QWidget):
 				self.textedit.setText(token_string)
 			elif name == 'Subtraction':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation, comments = solve.subtraction(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.subtraction(self.tokens, True)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.subtraction_equation(self.lTokens, self.rTokens)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.subtraction_equation(self.lTokens, self.rTokens, True)
 				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
 				if len(availableOperations) == 0:
 					self.clearButtons()
@@ -410,9 +463,9 @@ class WorkSpace(QWidget):
 				self.textedit.setText(token_string)
 			elif name == 'Multiplication':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation, comments = solve.multiplication(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.multiplication(self.tokens, True)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.multiplication_equation(self.lTokens, self.rTokens)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.multiplication_equation(self.lTokens, self.rTokens, True)
 				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
 				if len(availableOperations) == 0:
 					self.clearButtons()
@@ -421,9 +474,9 @@ class WorkSpace(QWidget):
 				self.textedit.setText(token_string)
 			elif name == 'Division':
 				if self.solutionType == 'expression':
-					self.tokens, availableOperations, token_string, animation, comments = solve.division(self.tokens)
+					self.tokens, availableOperations, token_string, animation, comments = solve.division(self.tokens, True)
 				else:
-					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.division_equation(self.lTokens, self.rTokens)
+					self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.division_equation(self.lTokens, self.rTokens, True)
 				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
 				if len(availableOperations) == 0:
 					self.clearButtons()

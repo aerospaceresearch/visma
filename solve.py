@@ -337,8 +337,9 @@ def simplify_equation(lToks, rToks):
 		rVariables = get_level_variables(rTokens)	
 		availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)	
 	
-	comments.append([])
+	moved = False
 	if len(rTokens) > 0 :
+		moved = True
 		lTokens, rTokens = move_rTokens_to_lTokens(lTokens, rTokens)
 	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
@@ -352,17 +353,18 @@ def simplify_equation(lToks, rToks):
 		tokenToStringBuilder.append(zero)
 	else:
 		tokenToStringBuilder.extend(rTokens)
-	animation.append(copy.deepcopy(tokenToStringBuilder))	
+	if moved:
+		animation.append(copy.deepcopy(tokenToStringBuilder))
+		comments.append(['Moving the rest of variables/constants to LHS'])
+		
 	token_string = tokens_to_string(tokenToStringBuilder)		
 	return lTokens, rTokens, availableOperations, token_string, animation, comments
 
-def simplify(tokens, direct=False):
+def simplify(tokens):
 	tokens_orig = copy.deepcopy(tokens)
 	animation = [tokens_orig]
 	variables = []
-	comments = []
-	if direct:
-		comments = [[]]
+	comments = [[]]
 	variables.extend(get_level_variables(tokens))
 	availableOperations = get_available_operations(variables, tokens)
 	while len(availableOperations)>0:
@@ -393,7 +395,7 @@ def simplify(tokens, direct=False):
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation, comments
 
-def addition_equation(lToks, rToks, direct=True):
+def addition_equation(lToks, rToks, direct=False):
 	lTokens = copy.deepcopy(lToks)
 	rTokens = copy.deepcopy(rToks)
 	comments = []
@@ -497,7 +499,7 @@ def addition_equation(lToks, rToks, direct=True):
 	token_string = tokens_to_string(tokenToStringBuilder)
 	return	lTokens, rTokens, availableOperations, token_string, animation, comments
 			
-def addition(tokens, direct=True):
+def addition(tokens, direct=False):
 	animation = [copy.deepcopy(tokens)]
 	variables = []
 	comments = []
@@ -515,7 +517,7 @@ def addition(tokens, direct=True):
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation, comments
 
-def subtraction_equation(lToks, rToks, direct=True):
+def subtraction_equation(lToks, rToks, direct=False):
 	lTokens = copy.deepcopy(lToks)
 	rTokens = copy.deepcopy(rToks)
 	comments = []
@@ -620,7 +622,7 @@ def subtraction_equation(lToks, rToks, direct=True):
 	token_string = tokens_to_string(tokenToStringBuilder)
 	return	lTokens, rTokens, availableOperations, token_string, animation, comments
 
-def subtraction(tokens, direct=True):
+def subtraction(tokens, direct=False):
 	animation = [copy.deepcopy(tokens)]
 	comments = []
 	if direct:
@@ -638,7 +640,7 @@ def subtraction(tokens, direct=True):
 	token_string = tokens_to_string(tokens)	
 	return tokens, availableOperations, token_string, animation, comments
 
-def division_equation(lToks, rToks, direct=True):
+def division_equation(lToks, rToks, direct=False):
 	lTokens = copy.deepcopy(lToks)
 	rTokens = copy.deepcopy(rToks)
 	animation = []
@@ -722,7 +724,7 @@ def division_equation(lToks, rToks, direct=True):
 	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 	return	lTokens, rTokens, availableOperations, token_string, animation, comments
 
-def division(tokens, direct=True):
+def division(tokens, direct=False):
 	animation = [copy.deepcopy(tokens)]
 	comments = []
 	if direct:
@@ -740,7 +742,7 @@ def division(tokens, direct=True):
 	token_string = tokens_to_string(tokens)
 	return tokens, availableOperations, token_string, animation, comments
 
-def multiplication_equation(lToks, rToks, direct=True):
+def multiplication_equation(lToks, rToks, direct=False):
 	lTokens = copy.deepcopy(lToks)
 	rTokens = copy.deepcopy(rToks)
 	comments = []
@@ -824,7 +826,7 @@ def multiplication_equation(lToks, rToks, direct=True):
 	availableOperations = get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 	return	lTokens, rTokens, availableOperations, token_string, animation, comments
 
-def multiplication(tokens, direct=True):
+def multiplication(tokens, direct=False):
 	animation = [copy.deepcopy(tokens)]
 	comments = []
 	if direct:
