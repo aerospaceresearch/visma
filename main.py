@@ -51,6 +51,7 @@ class WorkSpace(QWidget):
 
 	inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\sqrt[n]{}']
 	inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^{}', 'sqrt[n]{}']
+	mode = 'interaction'
 	buttons = {}
 	solutionOptionsBox = QGridLayout()
 	solutionButtons = {}
@@ -180,7 +181,14 @@ class WorkSpace(QWidget):
 	def interactionMode(self):
 		#cursor = self.textedit.textCursor()
 		#textSelected = cursor.selectedText()
-		textSelected = str(self.textedit.toPlainText())
+		cursor = self.textedit.textCursor()
+		interactionText = cursor.selectedText()
+		if str(interactionText) == '':
+			self.mode = 'normal'
+			textSelected = str(self.textedit.toPlainText())
+		else:
+			textSelected = str(interactionText)
+			self.mode = 'interaction'	
 		self.tokens = tokenize.tokenizer(textSelected)
 		#print self.tokens
 		self.addEquation()
@@ -448,7 +456,11 @@ class WorkSpace(QWidget):
 					self.clearButtons()
 				else:
 					self.refreshButtons(availableOperations)
-				self.textedit.setText(token_string)
+				if self.mode == 'normal':	
+					self.textedit.setText(token_string)
+				elif self.mode == 'interaction':
+					cursor = self.textedit.textCursor()
+					cursor.insertText(token_string)	
 			elif name == 'Subtraction':
 				if self.solutionType == 'expression':
 					self.tokens, availableOperations, token_string, animation, comments = solve.subtraction(self.tokens, True)
@@ -459,7 +471,11 @@ class WorkSpace(QWidget):
 					self.clearButtons()
 				else:
 					self.refreshButtons(availableOperations)
-				self.textedit.setText(token_string)
+				if self.mode == 'normal':
+					self.textedit.setText(token_string)
+				elif self.mode == 'interaction':
+					cursor = self.textedit.textCursor()
+					cursor.insertText(token_string)
 			elif name == 'Multiplication':
 				if self.solutionType == 'expression':
 					self.tokens, availableOperations, token_string, animation, comments = solve.multiplication(self.tokens, True)
@@ -470,7 +486,11 @@ class WorkSpace(QWidget):
 					self.clearButtons()
 				else:
 					self.refreshButtons(availableOperations)
-				self.textedit.setText(token_string)
+				if self.mode == 'normal':
+					self.textedit.setText(token_string)
+				elif self.mode == 'interaction':
+					cursor = self.textedit.textCursor()
+					cursor.insertText(token_string)	
 			elif name == 'Division':
 				if self.solutionType == 'expression':
 					self.tokens, availableOperations, token_string, animation, comments = solve.division(self.tokens, True)
@@ -481,7 +501,11 @@ class WorkSpace(QWidget):
 					self.clearButtons()
 				else:
 					self.refreshButtons(availableOperations)
-				self.textedit.setText(token_string)
+				if self.mode == 'normal':
+					self.textedit.setText(token_string)
+				elif self.mode == 'interaction':
+					cursor = self.textedit.textCursor()
+					cursor.insertText(token_string)					
 			elif name == 'Simplify':
 				if self.solutionType == 'expression':
 					self.tokens, availableOperations, token_string, animation, comments = solve.simplify(self.tokens)
@@ -492,7 +516,11 @@ class WorkSpace(QWidget):
 					self.clearButtons()
 				else:
 					self.refreshButtons(availableOperations)
-				self.textedit.setText(token_string)
+				if self.mode == 'normal':
+					self.textedit.setText(token_string)
+				elif self.mode == 'interaction':
+					cursor = self.textedit.textCursor()
+					cursor.insertText(token_string)	
 			elif name == 'Solve For':
 				lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
 				variables = solve.find_solve_for(lhs, rhs)
@@ -504,8 +532,11 @@ class WorkSpace(QWidget):
 					self.clearButtons()
 				else:
 					self.refreshButtons(availableOperations)
-				self.textedit.setText(token_string)
-
+				if self.mode == 'normal':
+					self.textedit.setText(token_string)
+				elif self.mode == 'interaction':
+					cursor = self.textedit.textCursor()
+					cursor.insertText(token_string)
 		return calluser
 
 	def onSolveForPress(self, name):
@@ -526,7 +557,12 @@ class WorkSpace(QWidget):
 				self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve.solve_for(self.lTokens, self.rTokens, name)
 				Popen(['python', 'animator.py', json.dumps(animation), json.dumps(comments)])
 				self.refreshButtons(availableOperations)
-				self.textedit.setText(token_string)
+				if self.mode == 'normal':
+					self.textedit.setText(token_string)
+				elif self.mode == 'interaction':
+					cursor = self.textedit.textCursor()
+					cursor.insertText(token_string)
+						
 		return calluser
 
 
