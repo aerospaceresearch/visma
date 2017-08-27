@@ -14,6 +14,7 @@ Logic Description:
 """
 #TODO: Fix brackets issue in brackets2 add power symbol check as well 
 import solve
+import copy
 
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
@@ -321,7 +322,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 						varSymTokens.append(symTokens[x])
 						x += 1
 					else: 
-						break
+						break		
 				if x+1 < len(terms):	
 					if terms[x+1] == '^':
 						x += 2
@@ -347,7 +348,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 								varSymTokens2.append(symTokens[x])
 								x += 1
 							else:
-								break
+								break		
 						if len(varTerms2) == 1:
 							if is_variable(terms[x-1]):
 								variable = 	{}
@@ -739,7 +740,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 
 	variable["scope"] = scope
 	variable["value"] = value
-	variable["power"] = power
+	variable["power"] = copy.deepcopy(power)
 	variable["coefficient"] = coefficient
 	return variable
 
@@ -1552,6 +1553,7 @@ if __name__ == "__main__":
 	print	 symTokens
 	'''
 	print tokenizer('2x^{2}^3 y^{4} + 4')
+	
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}
 #x + 6.00 / 3 + 2 - 2x
