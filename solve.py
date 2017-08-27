@@ -237,19 +237,19 @@ def tokens_to_string(tokens):
 				token_string += '^{' + str(token["power"]) + '} '
 		elif token["type"] == 'sqrt':
 			token_string += 'sqrt['
-			if term["power"]["type"] == 'constant':
-				token_string += tokens_to_string([term["power"]])
-			elif term["power"]["type"] == 'variable':
-				token_string += tokens_to_string([term["power"]])
-			elif term["power"]["type"] == 'expression':
-				token_string += tokens_to_string(term["power"]["tokens"])   
+			if token["power"]["type"] == 'constant':
+				token_string += tokens_to_string([token["power"]])
+			elif token["power"]["type"] == 'variable':
+				token_string += tokens_to_string([token["power"]])
+			elif token["power"]["type"] == 'expression':
+				token_string += tokens_to_string(token["power"]["tokens"])   
 			token_string += ']{'
-			if term["expression"]["type"] == 'constant':
-				token_string += tokens_to_string([term["expression"]])
-			elif term["expression"]["type"] == 'variable':
-				token_string += tokens_to_string([term["expression"]])
-			elif term["expression"]["type"] == 'expression':
-				token_string += tokens_to_string(term["expression"]["tokens"])
+			if token["expression"]["type"] == 'constant':
+				token_string += tokens_to_string([token["expression"]])
+			elif token["expression"]["type"] == 'variable':
+				token_string += tokens_to_string([token["expression"]])
+			elif token["expression"]["type"] == 'expression':
+				token_string += tokens_to_string(token["expression"]["tokens"])
 
 			token_string += '} '	
 	return token_string					 		
