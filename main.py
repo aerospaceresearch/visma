@@ -308,7 +308,9 @@ class WorkSpace(QWidget):
 		self.textedit.setText('')
 		file = open('tmp/eqn-list.vis', 'r+')
 		self.myQListWidget = QtGui.QListWidget(self)
-		for index, name in self.equations:
+		for i, index, name in enumerate(self.equations):
+			if i != 0:
+				file.write("\n")
 			file.write(name)
 			myQCustomQWidget = QCustomQWidget()
 			myQCustomQWidget.setTextUp(index)
@@ -343,7 +345,9 @@ class WorkSpace(QWidget):
 			self.equations.append(("Equation No. " + str(len(self.equations) + 1), eqn))
 		file = open('tmp/eqn-list.vis', 'r+')
 		self.myQListWidget = QtGui.QListWidget(self)
-		for index, name in self.equations:
+		for i, index, name in enumerate(self.equations):
+			if i != 0:
+				file.write("\n")
 			file.write(name)
 			myQCustomQWidget = QCustomQWidget()
 			myQCustomQWidget.setTextUp(index)

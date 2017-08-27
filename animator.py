@@ -21,7 +21,7 @@ import FTGL
 
 fontStyle = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"
 font = FTGL.BitmapFont(fontStyle)
-width = 600
+width = 800
 height = 800
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
@@ -211,7 +211,10 @@ def calc_equation_size(string):
 			size += calc_variable_size(term)
 		elif term["type"] == "constant":
 			l = number_of_digits(term["value"])
-			size += (15 *l) + 20
+			if l == 0:
+				size += 50
+			else:	
+				size += (15 *l) + 20
 		elif term["type"] == "binary":
 			if len(term["value"])> 0:
 				size += 20
@@ -222,13 +225,15 @@ def calc_equation_size(string):
 		elif term["type"] == "sqrt":
 			if term["power"]["type"] == 'constant':
 				l = number_of_digits(term["power"]["value"])
-				size += (15 * l)
+				size += (7 * l + 10)
 			elif term["power"]["type"] == 'variable':
 				size += calc_variable_size(term["power"])
 			elif term["power"]["type"] == 'expression':
 				size += calc_equation_size(term["power"])
+			size += 25	
 			if term["expression"]["type"] == 'constant':
-				x += 30
+				l = number_of_digits(term["expression"]["value"])
+				size += (20 + 15 * l)
 			elif term["expression"]["type"] == 'variable':
 				size += calc_variable_size(term["expression"])
 			elif term["expression"]["type"] == 'expression':
@@ -315,7 +320,10 @@ def render_equation(x, y, string, level=1, fontSize=24):
 			font.FaceSize(fontSize)
 			font.Render(str(term["value"]))
 			l = number_of_digits(term["value"])
-			x += (25 * l) + 20
+			if l == 0:
+				x += 50
+			else:	
+				x += (25 * l) + 25
 		elif term["type"] == "binary":
 			if len(term["value"])> 0:
 				glRasterPos(x, y)
@@ -344,20 +352,22 @@ def render_equation(x, y, string, level=1, fontSize=24):
 			if term["power"]["type"] == 'constant':
 				glRasterPos(x, y + 5)
 				font.FaceSize(fontSize/2)
-				x += 30
-				font.Render(term["power"]["value"])
+				font.Render(str(term["power"]["value"]))
+				l = number_of_digits(term["power"]["value"])
+				x += (10 + l * 7)
 			elif term["power"]["type"] == 'variable':
 				x, y = render_variable(x, y+5, term["power"], level+1, fontSize/2)
 			elif term["power"]["type"] == 'expression':
 				x, y = render_equation(x, y+5, term["power"], level+1, fontSize/2)
 			glRasterPos(x, y)
 			font.FaceSize(fontSize)
+			x += 25
 			font.Render(u"\u221A".encode("utf-8"))
 			if term["expression"]["type"] == 'constant':
 				glRasterPos(x, y)
 				font.FaceSize(fontSize)
-				x += 30
-				font.Render(term["expression"]["value"])
+				font.Render(str(term["expression"]["value"]))
+				x += (30 + 15 * l)
 			elif term["expression"]["type"] == 'variable':
 				x, y = render_variable(x, y, term["expression"], level+1, fontSize)
 			elif term["expression"]["type"] == 'expression':

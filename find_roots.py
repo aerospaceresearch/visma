@@ -161,6 +161,28 @@ def quadratic_roots(lTokens, rTokens):
 		sqrtPow["value"] = 2
 		sqrtPow["power"] = 1
 		
+		binary4 = {}
+		binary4["type"] = 'binary'
+		if roots[0] < 0:
+			roots[0] *= -1
+			binary4["value"] = '+'
+		else:
+			binary4["value"] = '-'
+		
+		constant3 = {}
+		constant3["type"] = 'constant'
+		constant3["value"] = roots[0]
+		constant3["power"] = 1
+
+		binary5 = {}
+		binary5["type"] = 'binary'
+		binary5["value"] = '*'
+
+		constant2 = {}
+		constant2["type"] = 'constant'
+		constant2["value"] = 1/roots[2]
+		constant2["power"] = 1
+
 		tokens = []
 		expression = {}
 		expression["type"] = 'expression'
@@ -172,10 +194,14 @@ def quadratic_roots(lTokens, rTokens):
 		variable["power"] = [1]
 		variable["coefficient"] = 1
 		tokens.append(variable)
+		tokens.append(binary4)
+		tokens.append(constant3)
 		binary = {}
 		binary["type"] = 'binary'
 		binary["value"] = '+'
 		tokens.append(binary)
+		tokens.append(constant2)
+		tokens.append(binary5)
 		constant = {}
 		constant["type"] = 'constant'
 		constant["value"] = math.ceil(roots[1]*100)/100
@@ -198,10 +224,14 @@ def quadratic_roots(lTokens, rTokens):
 		variable2["power"] = [1]
 		variable2["coefficient"] = 1
 		tokens2.append(variable)
+		tokens2.append(binary4)
+		tokens2.append(constant3)
 		binary2 = {}
 		binary2["type"] = 'binary'
 		binary2["value"] = '-'	
 		tokens2.append(binary2)
+		tokens2.append(constant2)
+		tokens2.append(binary5)
 		tokens2.append(sqrt)
 		expression2["tokens"] = tokens2
 
