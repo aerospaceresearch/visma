@@ -49,8 +49,11 @@ class Window(QtGui.QMainWindow):
 
 class WorkSpace(QWidget):
 
-	inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\sqrt[n]{}']
-	inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^{}', 'sqrt[n]{}']
+	#inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\sqrt[n]{}']
+	#inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^{}', 'sqrt[n]{}']
+	inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
+	inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
+
 	mode = 'interaction'
 	buttons = {}
 	solutionOptionsBox = QGridLayout()
@@ -316,7 +319,8 @@ class WorkSpace(QWidget):
 		self.textedit.setText('')
 		file = open('tmp/eqn-list.vis', 'r+')
 		self.myQListWidget = QtGui.QListWidget(self)
-		for i, index, name in enumerate(self.equations):
+		i = 0 
+		for index, name in self.equations:
 			if i != 0:
 				file.write("\n")
 			file.write(name)
@@ -327,6 +331,7 @@ class WorkSpace(QWidget):
 			myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
 			self.myQListWidget.addItem(myQListWidgetItem)
 			self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+			i += 1
 		file.close()
 		self.myQListWidget.resize(400,300)
 
@@ -353,7 +358,8 @@ class WorkSpace(QWidget):
 			self.equations.append(("Equation No. " + str(len(self.equations) + 1), eqn))
 		file = open('tmp/eqn-list.vis', 'r+')
 		self.myQListWidget = QtGui.QListWidget(self)
-		for i, index, name in enumerate(self.equations):
+		i = 0
+		for index, name in self.equations:
 			if i != 0:
 				file.write("\n")
 			file.write(name)
@@ -364,6 +370,7 @@ class WorkSpace(QWidget):
 			myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
 			self.myQListWidget.addItem(myQListWidgetItem)
 			self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+			i += 1
 		file.close()
 		self.myQListWidget.resize(400,300)
 
