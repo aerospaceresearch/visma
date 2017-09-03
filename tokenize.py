@@ -12,7 +12,7 @@ Note: Please try to maintain proper documentation
 -4 -> sqrt power
 Logic Description:
 """
-#TODO: Fix brackets issue in brackets2 add power symbol check as well 
+#TODO: add token formation for tan, sin, cos, cot, sec, cosec and log
 import solve
 import copy
 

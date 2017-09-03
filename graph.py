@@ -1,3 +1,13 @@
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module aims to create a 3D graph with X, Y and Z axis, using OpenGL and then plot the equation of line or plane on it.
+    In the next stage of development, it can be provided with a rotation, translation and scaling feature.
+    This module is just a rough implementation for now, and can be (and most probably will be) completely changed according to need.  
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *

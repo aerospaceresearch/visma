@@ -4,6 +4,10 @@ Other Authors:
 Owner: AerospaceResearch.net
 About: This module aims to create a sort of middleware module to call other modules which can handle/solve different types of equations and 
 	expressions.
+	This module is also responsible for performing tasks like simplification of equations/expressions, and individual functions like, addition, subtraction, 
+	multiplication and division in an equation/expression.
+	Communicates with find_roots module, to check if roots of the equation can be found.
+
 Note: Please try to maintain proper documentation
 Logic Description:
 """

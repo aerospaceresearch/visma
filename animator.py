@@ -6,6 +6,8 @@ Other Authors:
 Owner: AerospaceResearch.net
 About: This module is aimed at creating a one function call animator. The developer will only need to make a function call with the list of
 	equations that were achieved while solving the problem, and this module will do the rest.
+	The module is invoked as a subprocess from main.py, when animation event is triggered. It takes json format which are passed as program arguements, and converts 
+	them from json format to list and dict format in python.
 Note: Please try to maintain proper documentation
 Logic Description:
 """
@@ -34,6 +36,7 @@ comments = []
 first_time = False
 
 def is_number(term):
+
 	if isinstance(term, int) or isinstance(term, float):
 		return True
 	else:
