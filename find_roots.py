@@ -1,3 +1,13 @@
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: This module is aimed at first checking if quadratic roots can be found for the given equation, and then in the next step find the quadratic roots and 
+	display them.
+
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
 import solve
 import math
 import copy

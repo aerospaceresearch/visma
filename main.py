@@ -2,7 +2,10 @@
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
 Other Authors: 
 Owner: AerospaceResearch.net
-About: This module is created to handle the GUI of the project, this module interacts with all the other modules on occurence of some event.
+About: This module is created to handle the GUI of the project, this module interacts with solve initially to check for all the available functions, and then according
+	to the event selected by the user, it interacts with solve, or find_roots module.
+	Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the 
+	json format as arguements.
 Note: Please try to maintain proper documentation
 Logic Description:
 """
@@ -13,7 +16,6 @@ from PyQt4.QtCore import *
 from PyQt4 import QtGui
 import tokenize
 import solve
-import animator
 import find_roots
 import json
 from subprocess import Popen

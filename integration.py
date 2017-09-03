@@ -1,3 +1,11 @@
+"""
+Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
+Other Authors: 
+Owner: AerospaceResearch.net
+About: Module is still under development. It aims at integrating the input, will only take care of simple cases in starting.
+Note: Please try to maintain proper documentation
+Logic Description:
+"""
 import solve
 
 def integrate_variable(variable):
