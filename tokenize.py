@@ -1554,7 +1554,7 @@ if __name__ == "__main__":
 	print terms
 	print	 symTokens
 	'''
-	print tokenizer('2x^{2}^3 y^{4} + 4')
+	print tokenizer('2x  + 3 y^{4} + 4')
 	
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}
