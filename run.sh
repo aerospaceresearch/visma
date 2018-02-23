@@ -9,19 +9,19 @@ dist_name=$(lsb_release -a);
 
 for (( i=0; i<=$(( $dist_count -1 )); i++ ))
 do
-   if [ $(echo "$dist_name" | grep -c "${distributions[$i]}") -gt 0 ]; then
-      usable_mgr=${distpackagemgrs[$i]}
-      echo "Found Distribution ${distributions[$i]}, will use ${packagemgr[usable_mgr]}"
+    if [ $(echo "$dist_name" | grep -c "${distributions[$i]}") -gt 0 ]; then
+        usable_mgr=${distpackagemgrs[$i]}
+        echo "Found Distribution ${distributions[$i]}, will use ${packagemgr[usable_mgr]}"
     fi
 done
 
 if [ $usable_mgr == "-1" ]; then
-  echo "Err: Linux distibution unknown, will use apt-get"
-  usable_mgr="0"
+    echo "Err: Linux distibution unknown, will use apt-get"
+    usable_mgr="0"
 fi
 
 case $usable_mgr in
-  "0")
+    "0")
     echo "-- apt-get install --"
 
     sudo apt-get install python2.7-dev python-pip
@@ -30,7 +30,7 @@ case $usable_mgr in
     sudo apt install libftgl-dev ftgl-dev
 
     ;;
-  "1")
+    "1")
     echo "-- pacman installation --"
 
     sudo pacman -S python2 python-pip
