@@ -8,6 +8,8 @@ About: This module is aimed at first checking if quadratic roots can be found fo
 Note: Please try to maintain proper documentation
 Logic Description:
 """
+
+from __future__ import division
 import solve
 import math
 import copy
