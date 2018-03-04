@@ -74,7 +74,7 @@ def get_roots(coeffs):
 			roots.append(-(coeffs[1] + d)/(2*coeffs[2]))
 			roots.append(-(coeffs[1] - d)/(2*coeffs[2]))
 		else:
-			imaginary = [-(coeffs[1]/(2 * coeffs[2])), d, (2 * coeffs[2])]
+			imaginary = [-(coeffs[1]/(2 * coeffs[2])), -1, (math.sqrt(-d))/(2 * coeffs[2])]
 			roots = imaginary
 	return roots
 
@@ -192,7 +192,7 @@ def quadratic_roots(lTokens, rTokens):
 
 		constant2 = {}
 		constant2["type"] = 'constant'
-		constant2["value"] = 1/roots[2]
+		constant2["value"] = roots[2]
 		constant2["power"] = 1
 
 		tokens = []
