@@ -1,8 +1,8 @@
 """
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors: 
+Other Authors:
 Owner: AerospaceResearch.net
-About: This module is aimed at first checking if quadratic roots can be found for the given equation, and then in the next step find the quadratic roots and 
+About: This module is aimed at first checking if quadratic roots can be found for the given equation, and then in the next step find the quadratic roots and
 	display them.
 
 Note: Please try to maintain proper documentation
@@ -20,7 +20,7 @@ def avaiable_variables(tokens):
 				if val not in variables:
 					variables.append(val)
 	return variables
-					
+
 def highest_power(tokens, variable):
 	maxPow = 0
 	for token in tokens:
@@ -34,7 +34,7 @@ def highest_power(tokens, variable):
 def preprocess_check_quadratic_roots(lTokens, rTokens):
 	lTokens, rTokens, avaiableOperations, token_string, animation, comments = solve.simplify_equation(lTokens, rTokens)
 	return check_for_quadratic_roots(lTokens, rTokens)
-	
+
 def check_for_quadratic_roots(lTokens, rTokens):
 	lVariables = avaiable_variables(lTokens)
 	rVariables = avaiable_variables(rTokens)
@@ -46,11 +46,11 @@ def check_for_quadratic_roots(lTokens, rTokens):
 		if token["type"] == 'binary':
 			if token["value"] in ['*', '/']:
 				return False
-				
+
 	if len(lVariables) == 1 and len(rVariables) == 1:
 		if lVariables[0] == rVariables[0]:
 			if highest_power(lTokens, lVariables[0]) == 2 or highest_power(rTokens, rVariables[0]) == 2:
-				return True 
+				return True
 	elif len(lVariables) == 1 and len(rVariables) == 0:
 		if highest_power(lTokens, lVariables[0]) == 2:
 			return True
@@ -58,15 +58,15 @@ def check_for_quadratic_roots(lTokens, rTokens):
 	elif len(lVariables) == 0 and len(rVariables) == 1:
 		if highest_power(lTokens, lVariables[0]) == 2:
 			return True
-	
+
 	return False
-	
+
 def get_roots(coeffs):
 	roots = []
 	if len(coeffs) == 3:
 		d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
 		if d == 0:
-			roots.append(-(coeffs[1]/(2 * coeffs[2]))) 
+			roots.append(-(coeffs[1]/(2 * coeffs[2])))
 		elif d > 0:
 			d = math.sqrt(d)
 			roots.append(-(coeffs[1] + d)/(2*coeffs[2]))
@@ -75,11 +75,11 @@ def get_roots(coeffs):
 			imaginary = [-(coeffs[1]/(2 * coeffs[2])), d, (2 * coeffs[2])]
 			roots = imaginary
 	return roots
-	
+
 def quadratic_roots(lTokens, rTokens):
 	lTokens, rTokens, availableOperations, token_string, animation, comments = solve.simplify_equation(lTokens, rTokens)
 	roots, var = find_quadratic_roots(lTokens, rTokens)
-	if len(roots) == 1:		
+	if len(roots) == 1:
 		tokens = []
 		expression = {}
 		expression["type"] = 'expression'
@@ -97,7 +97,7 @@ def quadratic_roots(lTokens, rTokens):
 			roots[0] *= -1
 			binary["value"] = '+'
 		else:
-			binary["value"] = '-'	
+			binary["value"] = '-'
 		tokens.append(binary)
 		constant = {}
 		constant["type"] = 'constant'
@@ -125,7 +125,7 @@ def quadratic_roots(lTokens, rTokens):
 			roots[0] *= -1
 			binary["value"] = '+'
 		else:
-			binary["value"] = '-'	
+			binary["value"] = '-'
 		tokens.append(binary)
 		constant = {}
 		constant["type"] = 'constant'
@@ -151,7 +151,7 @@ def quadratic_roots(lTokens, rTokens):
 			roots[1] *= -1
 			binary2["value"] = '+'
 		else:
-			binary2["value"] = '-'	
+			binary2["value"] = '-'
 		tokens2.append(binary2)
 		constant2 = {}
 		constant2["type"] = 'constant'
@@ -164,13 +164,13 @@ def quadratic_roots(lTokens, rTokens):
 		binary3["type"] = 'binary'
 		binary3["value"] = '*'
 		lTokens = [expression, binary3, expression2]
-	
+
 	elif len(roots) == 3:
 		sqrtPow = {}
 		sqrtPow["type"] = 'constant'
 		sqrtPow["value"] = 2
 		sqrtPow["power"] = 1
-		
+
 		binary4 = {}
 		binary4["type"] = 'binary'
 		if roots[0] < 0:
@@ -178,7 +178,7 @@ def quadratic_roots(lTokens, rTokens):
 			binary4["value"] = '+'
 		else:
 			binary4["value"] = '-'
-		
+
 		constant3 = {}
 		constant3["type"] = 'constant'
 		constant3["value"] = roots[0]
@@ -219,7 +219,7 @@ def quadratic_roots(lTokens, rTokens):
 		sqrt = {}
 		sqrt["type"] = 'sqrt'
 		sqrt["power"] = sqrtPow
-		sqrt["expression"] = constant 
+		sqrt["expression"] = constant
 		tokens.append(sqrt)
 		expression["tokens"] = tokens
 
@@ -238,7 +238,7 @@ def quadratic_roots(lTokens, rTokens):
 		tokens2.append(constant3)
 		binary2 = {}
 		binary2["type"] = 'binary'
-		binary2["value"] = '-'	
+		binary2["value"] = '-'
 		tokens2.append(binary2)
 		tokens2.append(constant2)
 		tokens2.append(binary5)
@@ -249,12 +249,12 @@ def quadratic_roots(lTokens, rTokens):
 		binary3["type"] = 'binary'
 		binary3["value"] = '*'
 		lTokens = [expression, binary3, expression2]
-	
+
 	zero = {}
 	zero["type"] = 'constant'
 	zero["value"] = 0
 	zero["power"] = 1
-	rTokens = [zero] 
+	rTokens = [zero]
 	comments.append([])
 	tokenToStringBuilder = copy.deepcopy(lTokens)
 	l = len(lTokens)
@@ -268,7 +268,7 @@ def quadratic_roots(lTokens, rTokens):
 		tokenToStringBuilder.append(zero)
 	else:
 		tokenToStringBuilder.extend(rTokens)
-	animation.append(copy.deepcopy(tokenToStringBuilder))	
+	animation.append(copy.deepcopy(tokenToStringBuilder))
 	token_string = solve.tokens_to_string(tokenToStringBuilder)
 	return lTokens, rTokens, [], token_string, animation, comments
 
@@ -291,7 +291,7 @@ def find_quadratic_roots(lTokens, rTokens):
 				else:
 					return roots
 			else:
-				coeffs[0] += cons				
+				coeffs[0] += cons
 		if token["type"] == 'variable':
 			if len(token["value"]) == 1:
 				var = token["coefficient"]
@@ -305,18 +305,18 @@ def find_quadratic_roots(lTokens, rTokens):
 						if token["power"][0] == 1 or token["power"][0] == 2:
 							coeffs[int(token["power"][0])] += var
 						else:
-							return roots	
+							return roots
 					else:
 						return roots
 				else:
 					if token["power"][0] == 1 or token["power"][0] == 2:
 						coeffs[int(token["power"][0])] += var
 					else:
-						return roots	
+						return roots
 			else:
 				return roots
 
-	return get_roots(coeffs), avaiable_variables(lTokens)				
+	return get_roots(coeffs), avaiable_variables(lTokens)
 
 if __name__ == '__main__':
 	pass
