@@ -14,6 +14,8 @@ import solve
 import math
 import copy
 
+ROUND_OFF = 3
+
 def avaiable_variables(tokens):
 	variables = []
 	for token in tokens:
@@ -103,7 +105,7 @@ def quadratic_roots(lTokens, rTokens):
 		tokens.append(binary)
 		constant = {}
 		constant["type"] = 'constant'
-		constant["value"] = math.ceil(roots[0]*100)/100
+		constant["value"] = round(roots[0],ROUND_OFF)
 		constant["power"] = 1
 		tokens.append(constant)
 		expression["tokens"] = tokens
@@ -131,7 +133,7 @@ def quadratic_roots(lTokens, rTokens):
 		tokens.append(binary)
 		constant = {}
 		constant["type"] = 'constant'
-		constant["value"] = math.ceil(roots[0]*100)/100
+		constant["value"] = round(roots[0],ROUND_OFF)
 		constant["power"] = 1
 		tokens.append(constant)
 		expression["tokens"] = tokens
@@ -157,7 +159,7 @@ def quadratic_roots(lTokens, rTokens):
 		tokens2.append(binary2)
 		constant2 = {}
 		constant2["type"] = 'constant'
-		constant2["value"] = math.ceil(roots[1]*100)/100
+		constant2["value"] = round(roots[1],ROUND_OFF)
 		constant2["power"] = 1
 		tokens2.append(constant2)
 		expression2["tokens"] = tokens2
@@ -183,7 +185,7 @@ def quadratic_roots(lTokens, rTokens):
 
 		constant3 = {}
 		constant3["type"] = 'constant'
-		constant3["value"] = roots[0]
+		constant3["value"] = round(roots[0],ROUND_OFF)
 		constant3["power"] = 1
 
 		binary5 = {}
@@ -192,7 +194,7 @@ def quadratic_roots(lTokens, rTokens):
 
 		constant2 = {}
 		constant2["type"] = 'constant'
-		constant2["value"] = roots[2]
+		constant2["value"] = round(roots[2],ROUND_OFF)
 		constant2["power"] = 1
 
 		tokens = []
@@ -216,7 +218,7 @@ def quadratic_roots(lTokens, rTokens):
 		tokens.append(binary5)
 		constant = {}
 		constant["type"] = 'constant'
-		constant["value"] = math.ceil(roots[1]*100)/100
+		constant["value"] = round(roots[1],ROUND_OFF)
 		constant["power"] = 1
 		sqrt = {}
 		sqrt["type"] = 'sqrt'
