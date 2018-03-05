@@ -24,10 +24,11 @@ case $usable_mgr in
     "0")
     echo "-- apt-get install --"
 
-    sudo apt-get install python2.7-dev python-pip
-    sudo apt-get install libxext-dev python-qt4 qt4-dev-tools build-essential
-    sudo apt-get install freeglut3-dev libboost-python-dev
-    sudo apt install libftgl-dev ftgl-dev
+    sudo apt-get install python2.7-dev python-pip -y
+    sudo apt-get install libxext-dev python-qt4 qt4-dev-tools build-essential -y
+    sudo apt-get install freeglut3-dev libboost-python-dev -y
+    sudo apt install libftgl-dev ftgl-dev -y
+    sudo apt install python-opengl
 
     ;;
     "1")
@@ -37,12 +38,13 @@ case $usable_mgr in
     sudo pacman -S libxext python2-pyqt4 base-devel
     sudo pacman -S freeglut boost
     sudo pacman -S ftgl
+    sudo pacman -S python-opengl
 
     ;;
 esac
 
-sudo pip install simplejson
-sudo pip install pyopengl
+sudo pip2 install simplejson
+#sudo pip install pyopengl
 
 git clone https://github.com/umlaeute/pyftgl.git
 cd pyftgl
