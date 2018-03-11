@@ -1,10 +1,10 @@
 """
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors: 
+Other Authors:
 Owner: AerospaceResearch.net
 About: This module is created to handle the GUI of the project, this module interacts with solve initially to check for all the available functions, and then according
 	to the event selected by the user, it interacts with solve, or find_roots module.
-	Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the 
+	Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the
 	json format as arguements.
 Note: Please try to maintain proper documentation
 Logic Description:
@@ -51,8 +51,8 @@ class Window(QtGui.QMainWindow):
 
 class WorkSpace(QWidget):
 
-	#inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^{}', '\\sqrt[n]{}']
-	#inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^{}', 'sqrt[n]{}']
+	#inputLaTeX = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '\\times', '\\div',  '=', 'x', 'y', 'z', '\\alpha', '\\beta', '\\gamma', '\\pi', '^{}', '\\sqrt[n]{}']
+	#inputGreek = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '*', '/', '=', 'x', 'y', 'z', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '^{}', 'sqrt[n]{}']
 	inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 	inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
@@ -66,7 +66,9 @@ class WorkSpace(QWidget):
 	try:
 		with open('tmp/eqn-list.vis', 'r+') as fp:
 			for line in fp:
-				equations.insert(0, ('Equation No.' + str(len(equations) + 1), line))
+				if not line.isspace():
+					fp.write(line)
+					equations.insert(0, ('Equation No.' + str(len(equations) + 1), line))
 			fp.close()
 	except IOError:
 		if not os.path.exists('tmp'):
@@ -193,7 +195,7 @@ class WorkSpace(QWidget):
 			textSelected = str(self.textedit.toPlainText())
 		else:
 			textSelected = str(interactionText)
-			self.mode = 'interaction'	
+			self.mode = 'interaction'
 		self.tokens = tokenize.tokenizer(textSelected)
 		#print self.tokens
 		self.addEquation()
@@ -321,7 +323,7 @@ class WorkSpace(QWidget):
 		self.textedit.setText('')
 		file = open('tmp/eqn-list.vis', 'r+')
 		self.myQListWidget = QtGui.QListWidget(self)
-		i = 0 
+		i = 0
 		for index, name in self.equations:
 			if i != 0:
 				file.write("\n")
@@ -465,11 +467,11 @@ class WorkSpace(QWidget):
 					self.clearButtons()
 				else:
 					self.refreshButtons(availableOperations)
-				if self.mode == 'normal':	
+				if self.mode == 'normal':
 					self.textedit.setText(token_string)
 				elif self.mode == 'interaction':
 					cursor = self.textedit.textCursor()
-					cursor.insertText(token_string)	
+					cursor.insertText(token_string)
 			elif name == 'Subtraction':
 				if self.solutionType == 'expression':
 					self.tokens, availableOperations, token_string, animation, comments = solve.subtraction(self.tokens, True)
@@ -499,7 +501,7 @@ class WorkSpace(QWidget):
 					self.textedit.setText(token_string)
 				elif self.mode == 'interaction':
 					cursor = self.textedit.textCursor()
-					cursor.insertText(token_string)	
+					cursor.insertText(token_string)
 			elif name == 'Division':
 				if self.solutionType == 'expression':
 					self.tokens, availableOperations, token_string, animation, comments = solve.division(self.tokens, True)
@@ -514,7 +516,7 @@ class WorkSpace(QWidget):
 					self.textedit.setText(token_string)
 				elif self.mode == 'interaction':
 					cursor = self.textedit.textCursor()
-					cursor.insertText(token_string)					
+					cursor.insertText(token_string)
 			elif name == 'Simplify':
 				if self.solutionType == 'expression':
 					self.tokens, availableOperations, token_string, animation, comments = solve.simplify(self.tokens)
@@ -529,7 +531,7 @@ class WorkSpace(QWidget):
 					self.textedit.setText(token_string)
 				elif self.mode == 'interaction':
 					cursor = self.textedit.textCursor()
-					cursor.insertText(token_string)	
+					cursor.insertText(token_string)
 			elif name == 'Solve For':
 				lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
 				variables = solve.find_solve_for(lhs, rhs)
@@ -571,7 +573,7 @@ class WorkSpace(QWidget):
 				elif self.mode == 'interaction':
 					cursor = self.textedit.textCursor()
 					cursor.insertText(token_string)
-						
+
 		return calluser
 
 
