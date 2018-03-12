@@ -12,8 +12,7 @@ from __future__ import division
 import solve
 import math
 import copy
-
-ROUND_OFF = 3
+from vismaconfig import *
 
 def avaiable_variables(tokens):
 	variables = []
