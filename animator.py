@@ -2,11 +2,11 @@
 
 """
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors: 
+Other Authors:
 Owner: AerospaceResearch.net
 About: This module is aimed at creating a one function call animator. The developer will only need to make a function call with the list of
 	equations that were achieved while solving the problem, and this module will do the rest.
-	The module is invoked as a subprocess from main.py, when animation event is triggered. It takes json format which are passed as program arguements, and converts 
+	The module is invoked as a subprocess from main.py, when animation event is triggered. It takes json format which are passed as program arguements, and converts
 	them from json format to list and dict format in python.
 Note: Please try to maintain proper documentation
 Logic Description:
@@ -216,7 +216,7 @@ def calc_equation_size(string):
 			l = number_of_digits(term["value"])
 			if l == 0:
 				size += 50
-			else:	
+			else:
 				size += (15 *l) + 20
 		elif term["type"] == "binary":
 			if len(term["value"])> 0:
@@ -233,7 +233,7 @@ def calc_equation_size(string):
 				size += calc_variable_size(term["power"])
 			elif term["power"]["type"] == 'expression':
 				size += calc_equation_size(term["power"])
-			size += 25	
+			size += 25
 			if term["expression"]["type"] == 'constant':
 				l = number_of_digits(term["expression"]["value"])
 				size += (20 + 15 * l)
@@ -325,7 +325,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
 			l = number_of_digits(term["value"])
 			if l == 0:
 				x += 50
-			else:	
+			else:
 				x += (25 * l) + 25
 		elif term["type"] == "binary":
 			if len(term["value"])> 0:
@@ -418,4 +418,3 @@ if __name__ == '__main__':
 	#print tokens
 	animate(json.loads(tokens))
 	#main()
-

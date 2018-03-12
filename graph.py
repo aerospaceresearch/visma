@@ -1,10 +1,10 @@
 """
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors: 
+Other Authors:
 Owner: AerospaceResearch.net
 About: This module aims to create a 3D graph with X, Y and Z axis, using OpenGL and then plot the equation of line or plane on it.
     In the next stage of development, it can be provided with a rotation, translation and scaling feature.
-    This module is just a rough implementation for now, and can be (and most probably will be) completely changed according to need.  
+    This module is just a rough implementation for now, and can be (and most probably will be) completely changed according to need.
 Note: Please try to maintain proper documentation
 Logic Description:
 """
@@ -68,7 +68,7 @@ def scenemodel():
     for edge in edges:
         for vertex in edge:
             if col == 0:
-                glColor(1.0, 0, 0) 
+                glColor(1.0, 0, 0)
             elif col == 1:
                 glColor(0, 1.0, 0)
             else:
@@ -79,15 +79,15 @@ def scenemodel():
         if val % 2 == 0:
             col += 1
     glEnd()
-    
+
 
 
 #--------
 # VIEWER
 #--------
 
-def printHelp(): 
-    print ("""\n\n    
+def printHelp():
+    print ("""\n\n
          -------------------------------------------------------------------\n
          Left Mousebutton       - move eye position (+ Shift for third axis)\n
          Middle Mousebutton     - translate the scene\n
@@ -146,7 +146,7 @@ def reshape(width, height):
     g_Width = width
     g_Height = height
     glViewport(0, 0, g_Width, g_Height)
-    
+
 
 def polarView():
     glTranslatef( yTrans/100., 0.0, 0.0 )
@@ -154,7 +154,7 @@ def polarView():
     glRotatef( -zRotate, 0.0, 0.0, 1.0)
     glRotatef( -xRotate, 1.0, 0.0, 0.0)
     glRotatef( -yRotate, .0, 1.0, 0.0)
-   
+
 
 def keyboard(key, x, y):
     global zTr, yTr, xTr
@@ -197,7 +197,7 @@ def motion(x, y):
     else:
         print ("unknown action\n", action)
     xStart = x
-    yStart = y 
+    yStart = y
     glutPostRedisplay()
 
 
@@ -208,7 +208,7 @@ if __name__=="__main__":
     # GLUT Window Initialization
     glutInit()
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB| GLUT_DEPTH)      # zBuffer
-    glutInitWindowSize (g_Width,g_Height) 
+    glutInitWindowSize (g_Width,g_Height)
     glutInitWindowPosition (0 + 4, g_Height // 4)
     glutCreateWindow ("VisMa")
     glClearColor(1.0, 1.0, 1.0, 0.0)
@@ -216,7 +216,7 @@ if __name__=="__main__":
     init ()
     # Register callbacks
     glutReshapeFunc(reshape)
-    glutDisplayFunc(display)    
+    glutDisplayFunc(display)
     glutMouseFunc(mouse)
     glutMotionFunc(motion)
     glutKeyboardFunc(keyboard)

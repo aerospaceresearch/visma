@@ -1,6 +1,6 @@
 """
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors: 
+Other Authors:
 Owner: AerospaceResearch.net
 About: Module is still under development. It aims at integrating the input, will only take care of simple cases in starting.
 Note: Please try to maintain proper documentation
@@ -45,7 +45,7 @@ def trigonometry(variable):
 			variable["power"] = 1
 			variable["type"] = 'tan'
 			return variable
-	return variable				
+	return variable
 
 def integrate_constant(constant, var):
 	variable = {}
@@ -63,6 +63,6 @@ def integrate(lTokens, rTokens):
 	integratedLTokens = integrate_tokens(lTokens)
 	integratedRTokens = integrate_tokens(rTokens)
 
-	
+
 if __name__ == '__main__':
 	pass
