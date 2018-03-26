@@ -24,7 +24,7 @@ greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
-words = ['tan', 'sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot']
+words = ['tan', 'sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot', 'sinh', 'cosh']
 
 def check_equation(terms, symTokens):
 	brackets = 0
@@ -133,9 +133,14 @@ def get_terms(eqn):
 						if i < len(eqn):
 							buf += eqn[i]
 					if buf == "sin":
-						terms.append(buf)
-						x = i + 1
-						continue 
+						if buf + eqn[i+1] == "sinh":
+							terms.append(buf + eqn[i+1])
+							x = i + 2
+							continue
+						else:
+							terms.append(buf)
+							x = i + 1
+							continue 
 					
 					i = x
 					buf = eqn[x]
@@ -201,9 +206,14 @@ def get_terms(eqn):
 						if i < len(eqn):
 							buf += eqn[i]
 					if buf == "cos":
-						terms.append(buf)
-						x = i + 1
-						continue 
+						if buf + eqn[i+1] == "cosh":
+							terms.append(buf + eqn[i+1])
+							x = i + 2
+							continue
+						else:
+							terms.append(buf)
+							x = i + 1
+							continue
 					
 					i = x
 					buf = eqn[x]
@@ -1554,7 +1564,7 @@ if __name__ == "__main__":
 	print terms
 	print	 symTokens
 	'''
-	print tokenizer('2x  + 3 y^{4} + 4')
+	print tokenizer('2x^{2}^3 y^{4} + 4')
 	
 #-xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 #x+y=2^-{x+y}

@@ -36,9 +36,15 @@ def trigonometry(variable):
 	if variable["type"] == 'cos':
 		variable["type"] = 'sin'
 		return variable
+	elif variable["type"] == 'cosh':
+		variable["type"] = 'sinh'
+		return variable
 	elif variable["type"] == 'sin':
 		variable["type"] = 'cos'
 		variable["coefficient"] *= -1
+		return variable
+	elif variable["type"] == 'sinh':
+		variable["type"] = 'cosh'
 		return variable
 	elif variable["type"] == 'sec':
 		if variable["power"] == 2:
