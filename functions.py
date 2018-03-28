@@ -117,7 +117,7 @@ class Sine(Function):
 		self.__class__ = Cosine
 
 	def integrate(self):
-		self.coefficient *= -1
+		self.coefficient = -1
 		self.__class__ = Cosine
 
 	def calculate(self, input):
@@ -168,10 +168,36 @@ class Tangent(Function):
 		self.__class__ = Secant
 
 	def integrate(self):
-		self.__class__ = Sine
+		###
 
 	def calculate(self, input):
 		return coefficient*((math.tan(input))**power)
+
+
+class Cotangent(Function):
+
+	def __init__(self, arg):
+		super().__init__()
+		self.value = 'cot'
+
+    def set(args):
+		super().set()
+
+	def inverse(self,RHS):
+		super().inverse()
+		self.__class__ = ArcCot
+
+	def differentiate(self):
+        super().differentiate()
+        self.coefficient = -1
+		self.power = 2
+		self.__class__ = Cosecant
+
+	def integrate(self):
+        ###
+
+	def calculate(self, input):
+		return coefficient*((math.cot(input))**power)
 
 ##################################
 # Inverse Trignometric Functions #
@@ -208,6 +234,7 @@ class Logarithm(Function):
         self.__class__ = operand.__class__
 
 	def integrate(self,d):
+        ###
         # call by_parts method from calculus.py
 
 	def calculate(self, input):
@@ -230,6 +257,7 @@ class Exponential(Function):
         super().differentiate()
 
 	def integrate(self,d):
+        ###
 
 	def calculate(self, input):
 		return self.coefficient*((math.exp(input)))
