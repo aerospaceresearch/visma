@@ -48,7 +48,6 @@ class Window(QtGui.QMainWindow):
 		self.setWindowTitle('VisMa')
 		self.show()
 
-
 class WorkSpace(QWidget):
 
 	#inputLaTeX = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '\\times', '\\div',  '=', 'x', 'y', 'z', '\\alpha', '\\beta', '\\gamma', '\\pi', '^{}', '\\sqrt[n]{}']
@@ -575,7 +574,6 @@ class WorkSpace(QWidget):
 					cursor.insertText(token_string)
 
 		return calluser
-
 
 class QCustomQWidget (QtGui.QWidget):
 

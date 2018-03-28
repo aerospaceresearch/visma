@@ -88,7 +88,7 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
 					else:
 						tempToken["value"] = '-'
 					lTokens.append(tempToken)
-				else:	
+				else:
 					binary = {}
 					binary["type"] = 'binary'
 					binary["value"] = '-'
@@ -1376,7 +1376,6 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
 										return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
 	return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
 
-
 def expression_subtraction(variables, tokens):
 	removeScopes = []
 	change = []
@@ -2330,7 +2329,6 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 
 
 	return operations
-
 
 def get_available_operations(variables, tokens):
 	operations = []
