@@ -1,11 +1,10 @@
+import functions
+
 ###################
 # Differentiation #
 ###################
 
 # following is for differentiating functions within functions like func1(func2(func3))
-# TODO: Find workaround for differentiating func1(func2+func3)
-
-import functions
 
 def differentiation(func):
 
@@ -43,3 +42,5 @@ def differentiation(func):
 
 # The differentiated function is the product of all functions in funclist
 return funclist[]
+
+# TODO: Find workaround for differentiating func1(func2+func3)
