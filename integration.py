@@ -17,6 +17,8 @@ def integrate_variable(variable):
 				return variable
 			else:
 				#log
+				variable["type"]='log'
+				variable["power"]=1
 				return variable
 	else:
 		tokens = []
