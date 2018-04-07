@@ -14,38 +14,38 @@ following is for differentiating functions within functions like func1(func2(fun
 
 def differentiation(funclist):
 
-    difffunc = []
+	difffunc = []
 
-    for func in funclist:
+	for func in funclist:
 
-        while(func.__class__ != Variable):
+		while(func.__class__ != Variable):
 
-            func.coefficient *= func.power
-            func.power -= 1
-            if(func.power == 0):
-                const = func
-                const.value = 1
-                const.differentiate()
-                difffunc.append(const)
-            else:
-                difffunc.append(func)
+			func.coefficient *= func.power
+			func.power -= 1
+			if(func.power == 0):
+				const = func
+				const.value = 1
+				const.differentiate()
+				difffunc.append(const)
+			else:
+				difffunc.append(func)
 
-            func.differentiate()
-            difffunc.append(func)
+			func.differentiate()
+			difffunc.append(func)
 
-            # TODO: Send each of these steps to animator
-            '''
-            animator code
-            '''
+			# TODO: Send each of these steps to animator
+			'''
+			animator code
+			'''
 
-            func = func.operand
+			func = func.operand
 
-            if(func.__class__ == Constant):
-                func.value = 0
-                func.coefficient = 1
-                func.power = 1
-                difffunc = [func]
-                break
+			if(func.__class__ == Constant):
+				func.value = 0
+				func.coefficient = 1
+				func.power = 1
+				difffunc = [func]
+				break
 
 
 # The differentiated function list has been generated in difffunc

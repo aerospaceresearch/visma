@@ -2,16 +2,15 @@
 # TODO: Add exponential, logarithmic, trigonometric and hyperbolic functions
 # TODO: Fix method arguments
 
-
 class Function(object):
 
-    def __init__(self, args):
-        self.id = ""
-        self.scope = []
-    	self.coefficient = []
+	def __init__(self, args):
+		self.id = ""
+		self.scope = []
+		self.coefficient = []
 		self.power = []
 		self.operand = []
-    	self.operator = []
+		self.operator = []
 
 	def set(operand=None, operator=None, power=None, coefficient=None, scope=None):
 		if operand != None:
@@ -25,20 +24,19 @@ class Function(object):
 		if scope != None:
 			self.scope = scope
 
-    def inverse(self, RHS):
-        RHS.coefficient = (RHS.coefficient /
-                           self.coefficient)**(1 / self.power)
+	def inverse(self, RHS):
+		RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
 		RHS.power /= self.power
 		self.operand = RHS
 		self.coefficient = 1
 		self.power = 1
 
-    def differentiate(self):
-        self.power = 1
-        self.coefficient = 1
+	def differentiate(self):
+		self.power = 1
+		self.coefficient = 1
 
-    def level(self):
-        return (int((len(self.id))/2))
+	def level(self):
+		return (int((len(self.id))/2))
 
 
 ##########################
@@ -51,23 +49,23 @@ class Variable(Function):
 		super().__init__()
 		self.value = []
 
-    def set(args):
+	def set(args):
 		super().set()
 
-    def inverse(self,RHS):
+	def inverse(self,RHS):
 		self.operand = RHS.operand
 		self.coefficient = (RHS.coefficient/self.coefficient)**(1/self.power)
 		self.power = RHS.power/self.power
 		self.__class__ = RHS.__class__
 
 	def differentiate(self):
-        super().differentiate()
+		super().differentiate()
 		self.value = 1
 		self.__class__ = Constant
 
 	def integrate(self):
 		if self.power == -1:
-            self.power = 1
+			self.power = 1
 			self.__class__ = Logarithm
 		else:
 			self.coefficient /= power+1
@@ -83,20 +81,20 @@ class Constant(Function):
 		super().__init__()
 		self.value = []
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
 
 	def differentiate(self):
-        super().differentiate()
+		super().differentiate()
 		self.value = 0
 
 	def integrate(self,d):
 		self.power = 1:
-        self.coefficient = (self.value)**(self.power)
+		self.coefficient = (self.value)**(self.power)
 		self.__class__ = Variable
-        self.value = intwrt.value
+		self.value = intwrt.value
 
 	def calculate(self, input):
 		return self.coefficient*((self.value**(self.power)))
@@ -112,7 +110,7 @@ class Sine(Function):
 		super().__init__()
 		self.value = 'sin'
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
@@ -120,7 +118,7 @@ class Sine(Function):
 		self.__class__ = ArcSine
 
 	def differentiate(self):
-        super().differentiate()
+		super().differentiate()
 		self.__class__ = Cosine
 
 	def integrate(self):
@@ -137,7 +135,7 @@ class Cosine(Function):
 		super().__init__()
 		self.value = 'cos'
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
@@ -145,8 +143,8 @@ class Cosine(Function):
 		self.__class__ = ArcCosine
 
 	def differentiate(self):
-        super().differentiate()
-        self.coefficient = -1
+		super().differentiate()
+		self.coefficient = -1
 		self.__class__ = Sine
 
 	def integrate(self):
@@ -162,7 +160,7 @@ class Tangent(Function):
 		super().__init__()
 		self.value = 'tan'
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
@@ -170,7 +168,7 @@ class Tangent(Function):
 		self.__class__ = ArcTangent
 
 	def differentiate(self):
-        super().differentiate()
+		super().differentiate()
 		self.power = 2
 		self.__class__ = Secant
 
@@ -187,7 +185,7 @@ class Cotangent(Function):
 		super().__init__()
 		self.value = 'cot'
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
@@ -195,13 +193,13 @@ class Cotangent(Function):
 		self.__class__ = ArcCot
 
 	def differentiate(self):
-        super().differentiate()
-        self.coefficient = -1
+		super().differentiate()
+		self.coefficient = -1
 		self.power = 2
 		self.__class__ = Cosecant
 
 	def integrate(self):
-        ###
+		###
 
 	def calculate(self, input):
 		return coefficient*((math.cot(input))**power)
@@ -213,7 +211,7 @@ class Secant(Function):
 		super().__init__()
 		self.value = 'cot'
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
@@ -221,11 +219,11 @@ class Secant(Function):
 		self.__class__ = ArcSec
 
 	def differentiate(self):
-        super().differentiate()
+		super().differentiate()
 
 
 	def integrate(self):
-        ###
+		###
 
 	def calculate(self, input):
 		return coefficient*((math.cot(input))**power)
@@ -252,20 +250,20 @@ class Logarithm(Function):
 		super().__init__()
 		self.value = []
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
-        super().inverse()
+		super().inverse()
 
 	def differentiate(self):
-        super().differentiate()
-        self.power = -1
-        self.__class__ = operand.__class__
+		super().differentiate()
+		self.power = -1
+		self.__class__ = operand.__class__
 
 	def integrate(self,d):
-        ###
-        # call by_parts method from calculus.py
+		###
+		# call by_parts method from calculus.py
 
 	def calculate(self, input):
 		return self.coefficient*((math.log(input,self.base)))
@@ -277,17 +275,17 @@ class Exponential(Function):
 		super().__init__()
 		self.value = []
 
-    def set(args):
+	def set(args):
 		super().set()
 
 	def inverse(self,RHS):
-        super().inverse()
+		super().inverse()
 
 	def differentiate(self):
-        super().differentiate()
+		super().differentiate()
 
 	def integrate(self,d):
-        ###
+		###
 
 	def calculate(self, input):
 		return self.coefficient*((math.exp(input)))
