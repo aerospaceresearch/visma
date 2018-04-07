@@ -2,9 +2,11 @@
 # TODO: Add exponential, logarithmic, trigonometric and hyperbolic functions
 # TODO: Fix method arguments
 
+
 class Function(object):
 
-    def __init__(self, arg):
+    def __init__(self, args):
+        self.id = ""
         self.scope = []
     	self.coefficient = []
 		self.power = []
@@ -23,8 +25,9 @@ class Function(object):
 		if scope != None:
 			self.scope = scope
 
-    def inverse(self,RHS):
-        RHS.coefficient = (RHS.coefficient/self.coefficient)**(1/self.power)
+    def inverse(self, RHS):
+        RHS.coefficient = (RHS.coefficient /
+                           self.coefficient)**(1 / self.power)
 		RHS.power /= self.power
 		self.operand = RHS
 		self.coefficient = 1
@@ -33,6 +36,9 @@ class Function(object):
     def differentiate(self):
         self.power = 1
         self.coefficient = 1
+
+    def level(self):
+        return (int((len(self.id))/2))
 
 
 ##########################
@@ -48,7 +54,7 @@ class Variable(Function):
     def set(args):
 		super().set()
 
-	def inverse(self,RHS):
+    def inverse(self,RHS):
 		self.operand = RHS.operand
 		self.coefficient = (RHS.coefficient/self.coefficient)**(1/self.power)
 		self.power = RHS.power/self.power
@@ -90,6 +96,7 @@ class Constant(Function):
 		self.power = 1:
         self.coefficient = (self.value)**(self.power)
 		self.__class__ = Variable
+        self.value = intwrt.value
 
 	def calculate(self, input):
 		return self.coefficient*((self.value**(self.power)))
@@ -199,6 +206,30 @@ class Cotangent(Function):
 	def calculate(self, input):
 		return coefficient*((math.cot(input))**power)
 
+### incomplete ###
+class Secant(Function):
+
+	def __init__(self, arg):
+		super().__init__()
+		self.value = 'cot'
+
+    def set(args):
+		super().set()
+
+	def inverse(self,RHS):
+		super().inverse()
+		self.__class__ = ArcSec
+
+	def differentiate(self):
+        super().differentiate()
+
+
+	def integrate(self):
+        ###
+
+	def calculate(self, input):
+		return coefficient*((math.cot(input))**power)
+
 ##################################
 # Inverse Trignometric Functions #
 ##################################
@@ -220,7 +251,6 @@ class Logarithm(Function):
 	def __init__(self, arg):
 		super().__init__()
 		self.value = []
-        self.base = []
 
     def set(args):
 		super().set()
@@ -263,10 +293,8 @@ class Exponential(Function):
 		return self.coefficient*((math.exp(input)))
 
 
-# TODO: Create a mixed function class
 ###################
 # Mixed Functions #
 ###################
 # For example: sec(x)*tan(x) or sin(x)*log(x) or e^(x)*cot(x)
-
-class Mixed(Function):
+# Will be taken care by function 'ID'ing/tokening module

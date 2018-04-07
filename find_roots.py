@@ -12,7 +12,7 @@ from __future__ import division
 import solve
 import math
 import copy
-from vismaconfig import *
+from config import *
 
 def avaiable_variables(tokens):
 	variables = []
