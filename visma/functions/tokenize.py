@@ -11,8 +11,9 @@ Note: Please try to maintain proper documentation
 -4 -> sqrt power
 Logic Description:
 """
+
 #TODO: add token formation for tan, sin, cos, cot, sec, cosec and log
-import solve
+import visma.simplify.solve
 import copy
 
 symbols = ['+', '-', '*', '/', '{', '}', '[',']', '^', '=']
@@ -1508,7 +1509,7 @@ def constant_conversion(tokens):
 			if constant:
 				token["type"] = "constant"
 				token["scope"] = token["scope"]
-				token["value"] = solve.evaluate_constant(token)
+				token["value"] = visma.simplify.solve.evaluate_constant(token)
 				token["power"] = 1
 
 		elif token["type"] == "binary":

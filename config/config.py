@@ -2,7 +2,7 @@ import math
 import cmath
 
 #config
-ROUND_OFF = 3
+ROUND_OFF = 2
 INPUT_TYPE = "Greek"
 
 #constants

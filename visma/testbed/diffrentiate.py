@@ -1,8 +1,4 @@
-#####################
-# Rules of Calculus #
-#####################
-
-import functions
+import visma.testbed.functions
 
 ###################
 # Differentiation #
