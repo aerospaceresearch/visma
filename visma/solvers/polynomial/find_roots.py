@@ -9,11 +9,10 @@ Logic Description:
 """
 
 from __future__ import division
-import solve
+import visma.simplify.solve
 import math
 import copy
-
-ROUND_OFF = 3
+from config.config import *
 
 def avaiable_variables(tokens):
 	variables = []
@@ -35,7 +34,7 @@ def highest_power(tokens, variable):
 	return maxPow
 
 def preprocess_check_quadratic_roots(lTokens, rTokens):
-	lTokens, rTokens, avaiableOperations, token_string, animation, comments = solve.simplify_equation(lTokens, rTokens)
+	lTokens, rTokens, avaiableOperations, token_string, animation, comments = visma.simplify.solve.simplify_equation(lTokens, rTokens)
 	return check_for_quadratic_roots(lTokens, rTokens)
 
 def check_for_quadratic_roots(lTokens, rTokens):
@@ -80,7 +79,7 @@ def get_roots(coeffs):
 	return roots
 
 def quadratic_roots(lTokens, rTokens):
-	lTokens, rTokens, availableOperations, token_string, animation, comments = solve.simplify_equation(lTokens, rTokens)
+	lTokens, rTokens, availableOperations, token_string, animation, comments = visma.simplify.solve.simplify_equation(lTokens, rTokens)
 	roots, var = find_quadratic_roots(lTokens, rTokens)
 	if len(roots) == 1:
 		tokens = []
@@ -272,17 +271,17 @@ def quadratic_roots(lTokens, rTokens):
 	else:
 		tokenToStringBuilder.extend(rTokens)
 	animation.append(copy.deepcopy(tokenToStringBuilder))
-	token_string = solve.tokens_to_string(tokenToStringBuilder)
+	token_string = visma.simplify.solve.tokens_to_string(tokenToStringBuilder)
 	return lTokens, rTokens, [], token_string, animation, comments
 
 def find_quadratic_roots(lTokens, rTokens):
 	roots = []
 	if len(rTokens) > 0:
-		lTokens, rTokens = solve.move_rTokens_to_lTokens(lTokens, rTokens)
+		lTokens, rTokens = visma.simplify.solve.move_rTokens_to_lTokens(lTokens, rTokens)
 	coeffs = [0, 0, 0]
 	for i, token in enumerate(lTokens):
 		if token["type"] == 'constant':
-			cons = solve.evaluate_constant(token)
+			cons = visma.simplify.solve.evaluate_constant(token)
 			if i != 0:
 				if lTokens[i-1]["type"] == 'binary':
 					if lTokens[i-1]["value"] in ['-', '+']:

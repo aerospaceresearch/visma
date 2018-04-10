@@ -1,16 +1,17 @@
 """
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors: 
+Other Authors:
 Owner: AerospaceResearch.net
 About: Module is still under development. It aims at integrating the input, will only take care of simple cases in starting.
 Note: Please try to maintain proper documentation
 Logic Description:
 """
-import solve
+
+import visma.simplify.solve
 
 def integrate_variable(variable):
 	if len(variable["value"]) == 1:
-		if solve.is_number(variable["power"][0]):
+		if visma.simplify.solve.is_number(variable["power"][0]):
 			if variable["power"][0] != -1:
 				variable["power"][0] += 1
 				variable["coefficient"] /= variable["power"][0]
@@ -45,12 +46,12 @@ def trigonometry(variable):
 			variable["power"] = 1
 			variable["type"] = 'tan'
 			return variable
-	return variable				
+	return variable
 
 def integrate_constant(constant, var):
 	variable = {}
 	variable["scope"] = constant["scope"]
-	variable["coefficient"] = solve.evaluate_constant(constant)
+	variable["coefficient"] = visma.simplify.solve.evaluate_constant(constant)
 	variable["value"] = [var]
 	variable["power"] = [1]
 	return variable
@@ -63,6 +64,6 @@ def integrate(lTokens, rTokens):
 	integratedLTokens = integrate_tokens(lTokens)
 	integratedRTokens = integrate_tokens(rTokens)
 
-	
+
 if __name__ == '__main__':
 	pass

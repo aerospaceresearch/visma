@@ -12,7 +12,7 @@ class Constant(BaseTypes):
 		super(Constant, self).__init__()
 		self.coefficient = 1
 		self.power = []
-	
+
 	def set_values(value=None, power=None, coefficient=None, scope=None):
 		if value != None:
 			self.value = value
@@ -54,7 +54,7 @@ class Constant(BaseTypes):
 						self.power[i].__repr__()
 					elif self.power[i] == 0:
 						self.power[i] = 1
-						self.value[i] = 1	
+						self.value[i] = 1
 					elif self.power[i] != 1:
 						print('^' +self.power, end=' ')
 					else:
@@ -72,7 +72,7 @@ class Variable(BaseTypes):
 		super(Variable, self).__init__()
 		self.coefficient = 1
 		self.power = []
-	
+
 	def set_values(value=None, power=None, coefficient=None, scope=None):
 		if value != None:
 			self.value = value
@@ -104,7 +104,7 @@ class Variable(BaseTypes):
 						print('^' +self.power, end=' ')
 					else:
 						print(' ')
-			
+
 
 class Operations(BaseTypes):
 	"""docstring for Operations"""
@@ -119,4 +119,3 @@ class Operations(BaseTypes):
 			self.type = type
 		if scope != None:
 			self.scope = scope
-	
