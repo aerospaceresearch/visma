@@ -14,8 +14,8 @@ Logic Description:
 
 import math
 import copy
-import integration
-import find_roots
+import visma.calculus.integration
+import visma.solvers.polynomial.find_roots
 
 def is_number(term):
 	if isinstance(term, int) or isinstance(term, float):
@@ -2763,7 +2763,7 @@ def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'p
 		equationCompatibile = EquationCompatibility(lTokens, rTokens)
 		availableOperations = equationCompatibile.availableOperations
 
-		if find_roots.preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
+		if visma.solvers.polynomial.find_roots.preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
 			availableOperations.append("find roots")
 		return availableOperations, "equation"
 	else:
