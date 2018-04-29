@@ -14,6 +14,8 @@ import math
 import copy
 from config.config import *
 
+# FIXME: Extend to polynomials of all degrees
+
 
 def avaiable_variables(tokens):
     variables = []

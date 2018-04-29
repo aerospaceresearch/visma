@@ -8,6 +8,8 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 
+# TODO: Use LaTeX rendered output in animator
+
 import sys
 import time
 from OpenGL.GL import *

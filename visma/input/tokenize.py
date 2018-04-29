@@ -12,7 +12,7 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 
-# TODO: add token formation for tan, sin, cos, cot, sec, cosec and log
+# TODO: Add token formation for tan, sin, cos, cot, sec, cosec and log
 import visma.simplify.solve
 import copy
 
@@ -21,10 +21,13 @@ greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 # inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
 # inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
+# TODO: Add latex input support
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
 words = ['tan', 'sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot']
+
+# FIXME: Make '()' default brackets instead of '{}'
 
 
 def check_equation(terms, symTokens):
@@ -37,19 +40,24 @@ def check_equation(terms, symTokens):
             brackets -= 1
             if brackets < 0:
                 return False
+        # TODO: logger.log("Too many '}'")
         elif term == '[':
             sqrBrackets += 1
         elif term == ']':
             sqrBrackets -= 1
             if sqrBrackets < 0:
                 return False
+        # TODO: logger.log("Too many ']'")
         elif term == '^':
             if symTokens[i + 1] == 'binary':
                 return False
+        # TODO: logger.log("Check around '^'")
         elif is_variable(term) or is_number(term):
             if i + 1 < len(terms):
                 if terms[i + 1] == '{':
                     return False
+
+    # TODO: Make check for more than one 'equal to'(=) sign
 
     if len(terms) != 0:
         i = len(terms) - 1

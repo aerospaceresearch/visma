@@ -19,6 +19,8 @@ import json
 from subprocess import Popen
 import os
 
+# TODO: Revamp GUI
+
 
 class Window(QtGui.QMainWindow):
 
@@ -45,7 +47,7 @@ class Window(QtGui.QMainWindow):
         workSpace = WorkSpace()
         self.setCentralWidget(workSpace)
         self.setGeometry(300, 300, 1280, 720)
-        self.setWindowTitle('VisMa')
+        self.setWindowTitle('VisMa - Visual Math')
         self.show()
 
 
@@ -63,6 +65,9 @@ class WorkSpace(QWidget):
     inputBox = QGridLayout()
     selectedCombo = "LaTeX"
     equations = []
+
+    # TODO: Add function for adding custom equation lists
+
     try:
         with open('temp/eqn-list.vis', 'r+') as fp:
             for line in fp:
@@ -186,7 +191,6 @@ class WorkSpace(QWidget):
         return vbox
 
     def interactionMode(self):
-        # cursor = self.textedit.textCursor()
         # textSelected = cursor.selectedText()
         cursor = self.textedit.textCursor()
         interactionText = cursor.selectedText()

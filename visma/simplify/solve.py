@@ -1161,7 +1161,7 @@ def expression_addition(variables, tokens):
                                     variable["scope"][constantAdd[i]])
                                 removeScopes.append(
                                     variable["before_scope"][constantAdd[i]])
-                                # TODO re-evaluate variable and tokens?
+                                # TODO: Re-evaluate variable and tokens
                                 return variables, tokens, removeScopes, change, comments
                         for const in constantAdd:
                             if variable["power"][constantAdd[i]] == variable["power"][const]:

@@ -46,4 +46,4 @@ def differentiation(funclist):
 
         return difffunc
 
-# TODO: Find workaround for differentiating func1(func2+func3)
+# FIXME: Find workaround for differentiating func1(func2+func3)

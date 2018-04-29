@@ -1,0 +1,20 @@
+[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value'
+: '='}, {'scope': [2], 'type': 'constant', 'value': 0.0, 'power': 1}]
+[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}]
+
+[{'scope': [0], 'type': 'constant', 'value': 1.0, 'power': 1}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2],
+ 'type': 'constant', 'value': 2.0, 'power': 1}]
+[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [2.0], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'valu
+e': '+'}, {'coefficient': 1, 'scope': [2], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [3], 'type': 'binary'
+, 'value': '+'}, {'coefficient': 1, 'scope': [4], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [5], 'type': '
+binary', 'value': '+'}, {'scope': [6], 'type': 'constant', 'value': 1.0, 'power': 1}]
+[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [2.0], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'valu
+e': '+'}, {'coefficient': 2.0, 'scope': [2], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [3], 'type': 'binar
+y', 'value': '+'}, {'scope': [4], 'type': 'constant', 'value': 1.0, 'power': 1}]
+[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [2.0], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'valu
+e': '+'}, {'coefficient': 2.0, 'scope': [2], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [3], 'type': 'binar
+y', 'value': '+'}, {'scope': [4], 'type': 'constant', 'value': 1.0, 'power': 1}]
+[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [2.0], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'valu
+e': '+'}, {'coefficient': 2.0, 'scope': [2], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [3], 'type': 'binar
+y', 'value': '+'}, {'scope': [4], 'type': 'constant', 'value': 1.0, 'power': 1}, {'scope': [5], 'type': 'binary', 'value': '=
+'}, {'scope': [6], 'type': 'constant', 'value': 0.0, 'power': 1}]

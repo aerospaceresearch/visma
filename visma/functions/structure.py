@@ -1,6 +1,6 @@
 # This module contains classes for all functions
 # TODO: Add exponential, logarithmic, trigonometric and hyperbolic functions
-# TODO: Fix method arguments
+# FIXME: Fix method arguments
 
 
 class Function(object):
