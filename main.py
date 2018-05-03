@@ -2,7 +2,7 @@
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
 Other Authors:
 Owner: AerospaceResearch.net
-About: This module is created to handle the GUI of the project, this module interacts with solve initially to check for all the available functions, and then according	to the event selected by the user, it interacts with solve, or find_roots module.
+About: This module is created to handle the GUI of the project, this module interacts with solve initially to check for all the available functions, and then according	to the event selected by the user, it interacts with solve, or polynomial roots module.
 Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the	json format as arguements.
 Note: Please try to maintain proper documentation
 Logic Description:
@@ -12,9 +12,9 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
-import visma.input.tokenize as tokenize
-import visma.simplify.solve
-import visma.solvers.polynomial.find_roots
+import visma.input.tokenize as ViInTo
+import visma.solvers.solve as ViSoSo
+import visma.solvers.polynomial.roots as ViSoPoRo
 import json
 from subprocess import Popen
 import os
@@ -30,7 +30,7 @@ class Window(QtGui.QMainWindow):
 
     def initUI(self):
         exitAction = QtGui.QAction(QtGui.QIcon(
-            'resources/exit.png'), 'Exit', self)
+            'assets/exit.png'), 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
@@ -170,8 +170,8 @@ class WorkSpace(QWidget):
         topButtonSplitter.addWidget(interactionModeWidget)
         permanentButtons = QWidget(self)
         documentButtonsLayout = QHBoxLayout()
-        newButton = PicButton(QPixmap("resources/new.png"))
-        saveButton = PicButton(QPixmap("resources/save.png"))
+        newButton = PicButton(QPixmap("assets/new.png"))
+        saveButton = PicButton(QPixmap("assets/save.png"))
         newButton.setToolTip('Add New Equation')
         saveButton.setToolTip('Save Equation')
         documentButtonsLayout.addWidget(newButton)
@@ -200,13 +200,13 @@ class WorkSpace(QWidget):
         else:
             textSelected = str(interactionText)
             self.mode = 'interaction'
-        self.tokens = tokenize.tokenizer(textSelected)
+        self.tokens = ViInTo.tokenizer(textSelected)
         # print self.tokens
         self.addEquation()
-        lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
+        lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
-        operations, self.solutionType = visma.simplify.solve.check_types(
+        operations, self.solutionType = ViSoSo.check_types(
             lhs, rhs)
         if isinstance(operations, list):
             opButtons = []
@@ -488,12 +488,12 @@ class WorkSpace(QWidget):
             animation = []
             if name == 'Addition':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = visma.simplify.solve.addition(
+                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.addition(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = visma.simplify.solve.addition_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.addition_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/stepbystep/animator.py',
+                Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:
                     self.clearButtons()
@@ -506,12 +506,12 @@ class WorkSpace(QWidget):
                     cursor.insertText(token_string)
             elif name == 'Subtraction':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = visma.simplify.solve.subtraction(
+                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = visma.simplify.solve.subtraction_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/stepbystep/animator.py',
+                Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:
                     self.clearButtons()
@@ -524,12 +524,12 @@ class WorkSpace(QWidget):
                     cursor.insertText(token_string)
             elif name == 'Multiplication':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = visma.simplify.solve.multiplication(
+                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = visma.simplify.solve.multiplication_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/stepbystep/animator.py',
+                Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:
                     self.clearButtons()
@@ -542,12 +542,12 @@ class WorkSpace(QWidget):
                     cursor.insertText(token_string)
             elif name == 'Division':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = visma.simplify.solve.division(
+                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.division(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = visma.simplify.solve.division_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.division_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/stepbystep/animator.py',
+                Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:
                     self.clearButtons()
@@ -560,12 +560,12 @@ class WorkSpace(QWidget):
                     cursor.insertText(token_string)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = visma.simplify.solve.simplify(
+                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(
                         self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = visma.simplify.solve.simplify_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(
                         self.lTokens, self.rTokens)
-                Popen(['python', 'visma/stepbystep/animator.py',
+                Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:
                     self.clearButtons()
@@ -577,13 +577,13 @@ class WorkSpace(QWidget):
                     cursor = self.textedit.textCursor()
                     cursor.insertText(token_string)
             elif name == 'Solve For':
-                lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
-                variables = visma.simplify.solve.find_solve_for(lhs, rhs)
+                lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
+                variables = ViSoSo.find_solve_for(lhs, rhs)
                 self.solveForButtons(variables)
             elif name == 'Find Roots':
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = visma.solvers.polynomial.find_roots.quadratic_roots(
+                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(
                     self.lTokens, self.rTokens)
-                Popen(['python', 'visma/stepbystep/animator.py',
+                Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:
                     self.clearButtons()
@@ -603,18 +603,18 @@ class WorkSpace(QWidget):
             animation = []
             if name == 'Back':
                 textSelected = str(self.textedit.toPlainText())
-                self.tokens = tokenize.tokenizer(textSelected)
+                self.tokens = ViInTo.tokenizer(textSelected)
                 # print self.tokens
-                lhs, rhs = tokenize.get_lhs_rhs(self.tokens)
-                operations, self.solutionType = visma.simplify.solve.check_types(
+                lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
+                operations, self.solutionType = ViSoSo.check_types(
                     lhs, rhs)
                 self.refreshButtons(operations)
 
             else:
                 print(name)
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = visma.simplify.solve.solve_for(
+                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.solve_for(
                     self.lTokens, self.rTokens, name)
-                Popen(['python', 'visma/stepbystep/animator.py',
+                Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 self.refreshButtons(availableOperations)
                 if self.mode == 'normal':

@@ -7,12 +7,12 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 
-import visma.simplify.solve
+import visma.solvers.solve as ViSoSo
 
 
 def integrate_variable(variable):
     if len(variable["value"]) == 1:
-        if visma.simplify.solve.is_number(variable["power"][0]):
+        if ViSoSo.is_number(variable["power"][0]):
             if variable["power"][0] != -1:
                 variable["power"][0] += 1
                 variable["coefficient"] /= variable["power"][0]
@@ -54,7 +54,7 @@ def trigonometry(variable):
 def integrate_constant(constant, var):
     variable = {}
     variable["scope"] = constant["scope"]
-    variable["coefficient"] = visma.simplify.solve.evaluate_constant(constant)
+    variable["coefficient"] = ViSoSo.evaluate_constant(constant)
     variable["value"] = [var]
     variable["power"] = [1]
     return variable

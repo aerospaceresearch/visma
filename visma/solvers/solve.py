@@ -4,15 +4,13 @@ Other Authors:
 Owner: AerospaceResearch.net
 About: This module aims to create a sort of middleware module to call other modules which can handle/solve different types of equations and expressions.
 This module is also responsible for performing tasks like simplification of equations/expressions, and individual functions like, addition, subtraction, multiplication and division in an equation/expression.
-Communicates with find_roots module, to check if roots of the equation can be found.
+Communicates with polynomial roots module, to check if roots of the equation can be found.
 Note: Please try to maintain proper documentation
 Logic Description:
 """
 
 import math
 import copy
-import visma.calculus.integration
-import visma.solvers.polynomial.find_roots
 
 
 def is_number(term):
@@ -2994,11 +2992,15 @@ def eval_expressions(variables):
 
 
 def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens=[]):
+
+    # used import here instead in beginning to avoid circular dependency problems
+    import visma.solvers.polynomial.roots as ViSoPoRo
+
     if len(rTokens) != 0:
         equationCompatibile = EquationCompatibility(lTokens, rTokens)
         availableOperations = equationCompatibile.availableOperations
 
-        if visma.solvers.polynomial.find_roots.preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
+        if ViSoPoRo.preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
             availableOperations.append("find roots")
         return availableOperations, "equation"
     else:

@@ -13,7 +13,7 @@ Logic Description:
 """
 
 # TODO: Add token formation for tan, sin, cos, cot, sec, cosec and log
-import visma.simplify.solve
+import visma.solvers.solve as ViSoSo
 import copy
 
 symbols = ['+', '-', '*', '/', '{', '}', '[', ']', '^', '=']
@@ -1576,7 +1576,7 @@ def constant_conversion(tokens):
             if constant:
                 token["type"] = "constant"
                 token["scope"] = token["scope"]
-                token["value"] = visma.simplify.solve.evaluate_constant(token)
+                token["value"] = ViSoSo.evaluate_constant(token)
                 token["power"] = 1
 
         elif token["type"] == "binary":
