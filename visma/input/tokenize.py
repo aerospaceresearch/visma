@@ -686,8 +686,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
                                     variable["coefficient"] = coeff
                                     power[-1] = variable
                                 elif is_number(terms[x - 1]):
-                                    power[-1] *= (coeff *
-                                                  get_num(terms[x - 1]))
+                                    power[-1] *= (coeff * get_num(terms[x - 1]))
                             else:
                                 if binary == 0 and nSqrt == 0:
                                     tempScope = []

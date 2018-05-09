@@ -1,6 +1,7 @@
-# VisMa
+# **VisMa** - VisualMath
 
-[![Build Status](https://travis-ci.org/8hantanu/VisMa.svg?branch=master)](https://travis-ci.org/8hantanu/VisMa)
+[![Build Status](https://img.shields.io/travis/8hantanu/VisMa.svg?style=for-the-badge)](https://travis-ci.org/8hantanu/VisMa)
+[![Codacy Badge](https://img.shields.io/codacy/grade/d8523777601e464ca7ede4ad85892c34.svg?style=for-the-badge)](https://www.codacy.com/app/8hantanu/VisMa?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=8hantanu/VisMa&amp;utm_campaign=Badge_Grade)
 
 A visual equation solver, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
 
@@ -25,3 +26,18 @@ For every subsequent launch, you can use:
 ```
 python main.py
 ```
+
+## Download:
+![Github All Releases](https://img.shields.io/github/downloads/8hantanu/VisMa/total.svg?style=for-the-badge)
+![GitHub repo size in bytes](https://img.shields.io/github/repo-size/8hantanu/VisMa.svg?style=for-the-badge)
+
+## Contribute:
+![GitHub pull requests](https://img.shields.io/github/issues-pr/aerospaceresearch/visma.svg?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/aerospaceresearch/visma.svg?style=for-the-badge)
+
+## Docs:
+![Read the Docs](https://img.shields.io/readthedocs/visma.svg?style=for-the-badge)
+![Gitter](https://img.shields.io/gitter/room/aerospaceresearch/visma.svg?style=for-the-badge)
+
+## License:
+[![License: GPL v3](https://img.shields.io/github/license/aerospaceresearch/VisMa.svg?style=for-the-badge)](https://github.com/aerospaceresearch/VisMa/blob/master/LICENSE)
