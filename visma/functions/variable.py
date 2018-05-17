@@ -1,4 +1,5 @@
-from visma.functions.structure import *
+from visma.functions import *
+
 
 ##########################
 # Variable and Constants #

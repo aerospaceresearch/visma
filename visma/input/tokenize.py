@@ -13,10 +13,9 @@ Logic Description:
 """
 
 # TODO: Add token formation for tan, sin, cos, cot, sec, cosec and log
-import visma.solvers.solve as ViSoSo
 import copy
 
-symbols = ['+', '-', '*', '/', '{', '}', '[', ']', '^', '=']
+symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 # inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
@@ -26,44 +25,6 @@ inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
 words = ['tan', 'sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot']
-
-# FIXME: Make '()' default brackets instead of '{}'
-
-
-def check_equation(terms, symTokens):
-    brackets = 0
-    sqrBrackets = 0
-    for i, term in enumerate(terms):
-        if term == '{':
-            brackets += 1
-        elif term == '}':
-            brackets -= 1
-            if brackets < 0:
-                return False
-        # TODO: logger.log("Too many '}'")
-        elif term == '[':
-            sqrBrackets += 1
-        elif term == ']':
-            sqrBrackets -= 1
-            if sqrBrackets < 0:
-                return False
-        # TODO: logger.log("Too many ']'")
-        elif term == '^':
-            if symTokens[i + 1] == 'binary':
-                return False
-        # TODO: logger.log("Check around '^'")
-        elif is_variable(term) or is_number(term):
-            if i + 1 < len(terms):
-                if terms[i + 1] == '{':
-                    return False
-
-    # TODO: Make check for more than one 'equal to'(=) sign
-
-    if len(terms) != 0:
-        i = len(terms) - 1
-        if symTokens[i] == 'binary' or symTokens[i] == 'unary' or brackets != 0 or sqrBrackets != 0:
-            return False
-    return True
 
 
 def is_variable(term):
@@ -116,8 +77,7 @@ def remove_spaces(eqn):
     while x < len(eqn):
         if eqn[x] == ' ':
             while (x + 1 < len(eqn) and eqn[x + 1] == ' '):
-                if (eqn[x + 1] == ' '):
-                    x += 1
+                x += 1
         cleanEqn += eqn[x]
         x += 1
     return cleanEqn
@@ -265,9 +225,6 @@ def get_terms(eqn):
         elif eqn[x] in symbols:
             terms.append(eqn[x])
             x += 1
-        elif eqn[x] in ['(', ')']:
-            terms.append(eqn[x])
-            x += 1
         else:
             x += 1
     return terms
@@ -318,7 +275,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
 
         elif terms[x] == '^':
             x += 1
-            if terms[x] == '{':
+            if terms[x] == '(':
                 x += 1
                 binary = 0
                 nSqrt = 0
@@ -326,13 +283,13 @@ def get_variable(terms, symTokens, scope, coeff=1):
                 varSymTokens = []
                 brackets = 0
                 while x < len(terms):
-                    if terms[x] != '}' or brackets != 0:
+                    if terms[x] != ')' or brackets != 0:
                         if symTokens[x] == 'binary':
                             if brackets == 0:
                                 binary += 1
-                        elif terms[x] == '{':
+                        elif terms[x] == '(':
                             brackets += 1
-                        elif terms[x] == '}':
+                        elif terms[x] == ')':
                             brackets -= 1
                         elif symTokens[x] == 'sqrt':
                             if brackets == 0:
@@ -356,9 +313,9 @@ def get_variable(terms, symTokens, scope, coeff=1):
                                 if symTokens[x] == 'binary':
                                     if brackets2 == 0:
                                         binary2 += 1
-                                elif terms[x] == '{':
+                                elif terms[x] == '(':
                                     brackets2 += 1
-                                elif terms[x] == '}':
+                                elif terms[x] == ')':
                                     brackets2 -= 1
                                 elif symTokens[x] == 'sqrt':
                                     if nSqrt2 == 0:
@@ -505,9 +462,9 @@ def get_variable(terms, symTokens, scope, coeff=1):
                         binary = 0
                         while x < len(terms):
                             if symTokens[x] != "binary" or brackets != 0:
-                                if terms[x] == '{':
+                                if terms[x] == '(':
                                     brackets += 1
-                                elif terms[x] == '}':
+                                elif terms[x] == ')':
                                     brackets -= 1
                                 elif symTokens[x] == 'binary':
                                     if brackets == 0:
@@ -551,7 +508,7 @@ def get_variable(terms, symTokens, scope, coeff=1):
                 if terms[x] == '-':
                     coeff = -1
                 x += 1
-                if terms[x] == '{':
+                if terms[x] == '(':
                     x += 1
                     binary = 0
                     varTerms = []
@@ -559,13 +516,13 @@ def get_variable(terms, symTokens, scope, coeff=1):
                     brackets = 0
                     nSqrt = 0
                     while x < len(terms):
-                        if terms[x] != '}' or brackets != 0:
+                        if terms[x] != ')' or brackets != 0:
                             if symTokens[x] == 'binary':
                                 if brackets == 0:
                                     binary += 1
-                            if terms[x] == '{':
+                            if terms[x] == '(':
                                 brackets += 1
-                            elif terms[x] == '}':
+                            elif terms[x] == ')':
                                 brackets -= 1
                             elif symTokens[x] == 'sqrt':
                                 if brackets == 0:
@@ -589,9 +546,9 @@ def get_variable(terms, symTokens, scope, coeff=1):
                                     if symTokens[x] == 'binary':
                                         if brackets2 == 0:
                                             binary2 += 1
-                                    elif terms[x] == '{':
+                                    elif terms[x] == '(':
                                         brackets2 += 1
-                                    elif terms[x] == '}':
+                                    elif terms[x] == ')':
                                         brackets2 -= 1
                                     elif symTokens[x] == 'sqrt':
                                         if nSqrt2 == 0:
@@ -737,9 +694,9 @@ def get_variable(terms, symTokens, scope, coeff=1):
                             nSqrt = 0
                             while x < len(terms):
                                 if symTokens[x] != "binary" or brackets != 0:
-                                    if terms[x] == '{':
+                                    if terms[x] == '(':
                                         brackets += 1
-                                    elif terms[x] == '}':
+                                    elif terms[x] == ')':
                                         brackets -= 1
                                     elif symTokens[x] == 'binary':
                                         if brackets == 0:
@@ -800,9 +757,9 @@ def get_token(terms, symTokens, scope=[], coeff=1):
             binary = 0
             while x < len(terms):
                 if symTokens[x] != 'binary' or brackets != 0:
-                    if terms[x] == '{':
+                    if terms[x] == '(':
                         brackets += 1
-                    elif terms[x] == '}':
+                    elif terms[x] == ')':
                         brackets -= 1
                     elif symTokens[x] == 'sqrt':
                         if brackets == 0:
@@ -835,9 +792,9 @@ def get_token(terms, symTokens, scope=[], coeff=1):
                     varSymTokens = []
                     while x < len(terms):
                         if symTokens[x] != 'binary' or brackets != 0:
-                            if terms[x] == '}':
+                            if terms[x] == ')':
                                 brackets += 1
-                            elif terms[x] == '{':
+                            elif terms[x] == '(':
                                 brackets -= 1
                             elif symTokens == 'sqrt':
                                 nSqrt += 1
@@ -896,7 +853,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
             operator["scope"] = tempScope
             level += 1
             tokens.append(operator)
-        elif terms[x] == '{':
+        elif terms[x] == '(':
             x += 1
             binary = 0
             varTerms = []
@@ -904,13 +861,13 @@ def get_token(terms, symTokens, scope=[], coeff=1):
             brackets = 0
             nSqrt = 0
             while x < len(terms):
-                if terms[x] != '}' or brackets != 0:
+                if terms[x] != ')' or brackets != 0:
                     if symTokens[x] == 'binary':
                         if brackets == 0:
                             binary += 1
-                    if terms[x] == '{':
+                    if terms[x] == '(':
                         brackets += 1
-                    elif terms[x] == '}':
+                    elif terms[x] == ')':
                         brackets -= 1
                     elif symTokens[x] == 'sqrt':
                         if brackets == 0:
@@ -934,9 +891,9 @@ def get_token(terms, symTokens, scope=[], coeff=1):
                             if symTokens[x] == 'binary':
                                 if brackets2 == 0:
                                     binary2 += 1
-                            elif terms[x] == '{':
+                            elif terms[x] == '(':
                                 brackets2 += 1
-                            elif terms[x] == '}':
+                            elif terms[x] == ')':
                                 brackets2 -= 1
                             elif symTokens[x] == 'sqrt':
                                 if nSqrt2 == 0:
@@ -1075,7 +1032,7 @@ def get_token(terms, symTokens, scope=[], coeff=1):
             if terms[x] == '-':
                 coeff *= -1
             x += 1
-            if terms[x] == '{':
+            if terms[x] == '(':
                 x += 1
                 binary = 0
                 varTerms = []
@@ -1083,13 +1040,13 @@ def get_token(terms, symTokens, scope=[], coeff=1):
                 brackets = 0
                 nSqrt = 0
                 while x < len(terms):
-                    if terms[x] != '}' or brackets != 0:
+                    if terms[x] != ')' or brackets != 0:
                         if symTokens[x] == 'binary':
                             if brackets == 0:
                                 binary += 1
-                        if terms[x] == '{':
+                        if terms[x] == '(':
                             brackets += 1
-                        elif terms[x] == '}':
+                        elif terms[x] == ')':
                             brackets -= 1
                         elif symTokens[x] == 'sqrt':
                             if brackets == 0:
@@ -1113,9 +1070,9 @@ def get_token(terms, symTokens, scope=[], coeff=1):
                                 if symTokens[x] == 'binary':
                                     if brackets2 == 0:
                                         binary2 += 1
-                                elif terms[x] == '{':
+                                elif terms[x] == '(':
                                     brackets2 += 1
-                                elif terms[x] == '}':
+                                elif terms[x] == ')':
                                     brackets2 -= 1
                                 elif symTokens[x] == 'sqrt':
                                     if nSqrt2 == 0:
@@ -1258,9 +1215,9 @@ def get_token(terms, symTokens, scope=[], coeff=1):
                 nSqrt = 0
                 while x < len(terms):
                     if symTokens[x] != 'binary' or brackets != 0:
-                        if terms[x] == '{':
+                        if terms[x] == '(':
                             brackets += 1
-                        elif terms[x] == '}':
+                        elif terms[x] == ')':
                             brackets -= 1
                         elif symTokens[x] == 'sqrt':
                             nSqrt += 1
@@ -1298,9 +1255,9 @@ def get_token(terms, symTokens, scope=[], coeff=1):
                         nSqrt = 0
                         while x < len(terms):
                             if symTokens[x] != 'binary' or brackets != 0:
-                                if terms[x] == '}':
+                                if terms[x] == ')':
                                     brackets += 1
-                                elif terms[x] == '{':
+                                elif terms[x] == '(':
                                     brackets -= 1
                                 elif symTokens[x] == 'sqrt':
                                     nSqrt += 1
@@ -1359,9 +1316,9 @@ def get_token(terms, symTokens, scope=[], coeff=1):
             varSymTokens = []
             while x < len(terms):
                 if terms[x] != ']' or sqrBrackets != 0 or brackets != 0:
-                    if terms[x] == '{':
+                    if terms[x] == '(':
                         brackets += 1
-                    elif terms[x] == '}':
+                    elif terms[x] == ')':
                         brackets -= 1
                     elif symTokens[x] == 'binary':
                         binary += 1
@@ -1424,10 +1381,10 @@ def get_token(terms, symTokens, scope=[], coeff=1):
             varTerms = []
             varSymTokens = []
             while x < len(terms):
-                if terms[x] != '}' or brackets != 0:
-                    if terms[x] == '{':
+                if terms[x] != ')' or brackets != 0:
+                    if terms[x] == '(':
                         brackets += 1
-                    elif terms[x] == '}':
+                    elif terms[x] == ')':
                         brackets -= 1
                     elif symTokens[x] == 'binary':
                         if brackets == 0:
@@ -1494,14 +1451,14 @@ def tokenize_symbols(terms):
         symTokens.append('')
         if term in symbols:
             if term == '*' or term == '/':
-                if (is_variable(terms[i - 1]) or is_number(terms[i - 1]) or terms[i - 1] == '}') and (is_variable(terms[i + 1]) or is_number(terms[i + 1]) or terms[i + 1] == '{' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (is_variable(terms[i + 2]) or is_number(terms[i + 2])))):
+                if (is_variable(terms[i - 1]) or is_number(terms[i - 1]) or terms[i - 1] == ')') and (is_variable(terms[i + 1]) or is_number(terms[i + 1]) or terms[i + 1] == '(' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (is_variable(terms[i + 2]) or is_number(terms[i + 2])))):
                     symTokens[-1] = "binary"
             elif term == '+' or term == '-':
                 if i == 0:
                     symTokens[-1] = "unary"
-                elif terms[i - 1] in ['-', '+', '*', '/', '=', '^', '{']:
+                elif terms[i - 1] in ['-', '+', '*', '/', '=', '^', '(']:
                     symTokens[-1] = "unary"
-                elif (is_variable(terms[i - 1]) or is_number(terms[i - 1]) or terms[i - 1] == '}' or terms[i - 1] == ')') and (is_variable(terms[i + 1]) or is_number(terms[i + 1]) or terms[i + 1] == '{' or terms[i + 1] in words or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (is_variable(terms[i + 2]) or is_number(terms[i + 2]) or terms[i + 2] in words))):
+                elif (is_variable(terms[i - 1]) or is_number(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ')') and (is_variable(terms[i + 1]) or is_number(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] in words or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (is_variable(terms[i + 2]) or is_number(terms[i + 2]) or terms[i + 2] in words))):
                     symTokens[-1] = "binary"
                 else:
                     # pass
@@ -1516,12 +1473,47 @@ def tokenize_symbols(terms):
 def check_negative_number(terms, symTokens):
     for i, symToken in enumerate(symTokens):
         if symToken == 'unary':
-            if i + 1 < len(terms):
-                if is_number(terms[i + 1]):
-                    terms[i + 1] = terms[i] + terms[i + 1]
+            if is_number(terms[i + 1]) and i + 1 < len(terms):
+                terms[i + 1] = terms[i] + terms[i + 1]
             terms.pop(i)
             symTokens.pop(i)
     return terms, symTokens
+
+
+def check_equation(terms, symTokens):
+    brackets = 0
+    sqrBrackets = 0
+    for i, term in enumerate(terms):
+        if term == '(':
+            brackets += 1
+        elif term == ')':
+            brackets -= 1
+            if brackets < 0:
+                return False
+        # TODO: logger.log("Too many ')'")
+        elif term == '[':
+            sqrBrackets += 1
+        elif term == ']':
+            sqrBrackets -= 1
+            if sqrBrackets < 0:
+                return False
+        # TODO: logger.log("Too many ']'")
+        elif term == '^':
+            if symTokens[i + 1] == 'binary':
+                return False
+        # TODO: logger.log("Check around '^'")
+        elif is_variable(term) or is_number(term):
+            if i + 1 < len(terms):
+                if terms[i + 1] == '(':
+                    return False
+
+    # TODO: Make check for more than one 'equal to'(=) sign
+
+    if len(terms) != 0:
+        i = len(terms) - 1
+        if symTokens[i] == 'binary' or symTokens[i] == 'unary' or brackets != 0 or sqrBrackets != 0:
+            return False
+    return True
 
 
 def clean(eqn):
@@ -1564,6 +1556,21 @@ def constant_variable(variable):
     return constant
 
 
+def evaluate_constant(constant):
+    if isinstance(constant, dict):
+        if is_number(constant["value"]):
+            return math.pow(constant["value"], constant["power"])
+        elif isinstance(constant["value"], list):
+            val = 1
+            if "coefficient" in constant:
+                val *= constant["coefficient"]
+            for i, c_val in enumerate(constant["value"]):
+                val *= math.pow(c_val, constant["power"][i])
+            return val
+    elif is_number(constant):
+        return constant
+
+
 def constant_conversion(tokens):
     constantExpression = True
     for token in tokens:
@@ -1575,7 +1582,7 @@ def constant_conversion(tokens):
             if constant:
                 token["type"] = "constant"
                 token["scope"] = token["scope"]
-                token["value"] = ViSoSo.evaluate_constant(token)
+                token["value"] = evaluate_constant(token)
                 token["power"] = 1
 
         elif token["type"] == "binary":

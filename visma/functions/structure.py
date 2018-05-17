@@ -5,11 +5,11 @@
 
 class Function(object):
 
-    def __init__(self, args):
+    def __init__(self, id, scope, coefficient, power, operand, operator):
         self.id = ""
         self.scope = []
-        self.coefficient = []
-        self.power = []
+        self.coefficient = None
+        self.power = None
         self.operand = []
         self.operator = []
 

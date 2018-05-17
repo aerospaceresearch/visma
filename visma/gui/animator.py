@@ -346,13 +346,13 @@ def render_equation(x, y, string, level=1, fontSize=24):
         elif term["type"] == "expression":
             glRasterPos(x, y)
             font.FaceSize(fontSize)
-            font.Render('{')
+            font.Render('(')
             x += 15
             x, y = render_equation(x, y, term["tokens"], level + 1)
             font.FaceSize(fontSize)
             x += 15
             glRasterPos(x, y)
-            font.Render('}')
+            font.Render(')')
             x += 10
             glRasterPos(x, y + 10)
             font.FaceSize(2 * fontSize / 3)
