@@ -11,50 +11,7 @@ Logic Description:
 
 import math
 import copy
-
-
-def is_number(term):
-    if isinstance(term, int) or isinstance(term, float):
-        return True
-    else:
-        x = 0
-        dot = 0
-        if term[0] == '-':
-            x += 1
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-            if x >= 2:
-                return True
-            else:
-                return False
-        else:
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-        return True
-
-
-def get_num(term):
-    return float(term)
-
-
-def is_variable(term):
-    if term in greek:
-        return True
-    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
-        x = 0
-        while x < len(term):
-            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
-                return False
-            x += 1
-        return True
+from visma.input.tokenize import is_variable, is_number, get_num
 
 
 def get_variable_string(variable, power):
