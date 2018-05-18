@@ -8,11 +8,11 @@ from visma.functions import *
 
 class Variable(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = []
 
-    def set(args):
+    def set(self, id, scope, coefficient, power, operand, operator, value):
         super().set()
 
     def inverse(self, RHS):
@@ -56,7 +56,7 @@ class Constant(Function):
         super().differentiate()
         self.value = 0
 
-    def integrate(self, d):
+    def integrate(self, intwrt):
         self.power = 1
         self.coefficient = (self.value)**(self.power)
         self.__class__ = Variable

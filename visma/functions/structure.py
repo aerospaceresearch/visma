@@ -13,7 +13,7 @@ class Function(object):
         self.operand = []
         self.operator = []
 
-    def set(operand=None, operator=None, power=None, coefficient=None, scope=None):
+    def set(self, operand=None, operator=None, power=None, coefficient=None, scope=None):
         if operand is not None:
             self.operand = operand
         if operator is not None:

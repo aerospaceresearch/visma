@@ -11,7 +11,7 @@ Logic Description:
 
 import math
 import copy
-from visma.input.tokenize import is_variable, is_number, get_num
+from visma.input.tokenize import is_number, get_num
 
 
 def get_variable_string(variable, power):

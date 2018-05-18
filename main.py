@@ -3,7 +3,7 @@ Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
 Other Authors:
 Owner: AerospaceResearch.net
 About: This module is created to handle the GUI of the project, this module interacts with solve initially to check for all the available functions, and then according	to the event selected by the user, it interacts with solve, or polynomial roots module.
-Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the	json format as arguements.
+Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the json format as arguments.
 Note: Please try to maintain proper documentation
 Logic Description:
 """
