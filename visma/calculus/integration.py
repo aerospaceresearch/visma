@@ -50,12 +50,21 @@ def trigonometry(variable):
 			variable["power"] = 1
 			variable["type"] = 'tan'
 			return variable
-	elif variable["type"]=='cosec':
+  elif variable["type"]=='cosec':
 		if variable["power"] == 2:
 			variable["power"]=1
 			variable["type"] = 'cot'
 			variable["coefficient"] *= -1
-	return variable
+	    return variable
+
+
+def hyperbolic(variable):
+	if variable["type"] == 'sinh':
+		variable["type"] = 'cosh'
+		return variable
+	elif variable["type"] == 'cosh':
+		variable["type"] = 'sinh'
+		return variable
 
 
 def integrate_constant(constant, var):

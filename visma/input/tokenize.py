@@ -24,7 +24,7 @@ constants = [u'\u03C0', 'e', 'i']
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
-words = ['tan', 'sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot']
+words = ['tan', 'sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot', 'sinh', 'cosh']
 
 
 def is_variable(term):
@@ -107,9 +107,14 @@ def get_terms(eqn):
                     if i < len(eqn):
                         buf += eqn[i]
                 if buf == "sin":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
+                    if buf + eqn[i+1] == "sinh":
+                        terms.append(buf + eqn[i+1])
+                        x = i + 2
+                        continue
+                    else:
+                        terms.append(buf)
+                        x = i + 1
+                        continue
 
                 i = x
                 buf = eqn[x]
@@ -175,10 +180,15 @@ def get_terms(eqn):
                     if i < len(eqn):
                         buf += eqn[i]
                 if buf == "cos":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
+                    if buf + eqn[i+1] == "cosh":
+                        terms.append(buf + eqn[i+1])
+                        x = i + 2
+                        continue
+                    else:
+                        terms.append(buf)
+                        x = i + 1
+                        continue
+                        
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("ot"):
