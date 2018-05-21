@@ -3,6 +3,8 @@
 [![Build Status](https://img.shields.io/travis/8hantanu/VisMa.svg?style=for-the-badge)](https://travis-ci.org/8hantanu/VisMa)
 [![Codacy Badge](https://img.shields.io/codacy/grade/d8523777601e464ca7ede4ad85892c34.svg?style=for-the-badge)](https://www.codacy.com/app/8hantanu/VisMa?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=8hantanu/VisMa&amp;utm_campaign=Badge_Grade)
 
+![VisMa](/visweb/images/bannertop.png)
+
 A visual equation solver, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
 
 Project Idea: https://summerofcode.withgoogle.com/projects/#6347577401278464

@@ -12,12 +12,12 @@ from __future__ import division
 import visma.solvers.solve as ViSoSo
 import math
 import copy
-from config.config import *
+from config.config import ROUND_OFF
 
 # FIXME: Extend to polynomials of all degrees
 
 
-def avaiable_variables(tokens):
+def available_variables(tokens):
     variables = []
     for token in tokens:
         if token["type"] == 'variable':
@@ -39,14 +39,13 @@ def highest_power(tokens, variable):
 
 
 def preprocess_check_quadratic_roots(lTokens, rTokens):
-    lTokens, rTokens, avaiableOperations, token_string, animation, comments = ViSoSo.simplify_equation(
-        lTokens, rTokens)
+    lTokens, rTokens, avaiableOperations, token_string, animation, comments = ViSoSo.simplify_equation(lTokens, rTokens)
     return check_for_quadratic_roots(lTokens, rTokens)
 
 
 def check_for_quadratic_roots(lTokens, rTokens):
-    lVariables = avaiable_variables(lTokens)
-    rVariables = avaiable_variables(rTokens)
+    lVariables = available_variables(lTokens)
+    rVariables = available_variables(rTokens)
     for token in lTokens:
         if token["type"] == 'binary':
             if token["value"] in ['*', '/']:
@@ -331,7 +330,7 @@ def find_quadratic_roots(lTokens, rTokens):
             else:
                 return roots
 
-    return get_roots(coeffs), avaiable_variables(lTokens)
+    return get_roots(coeffs), available_variables(lTokens)
 
 
 if __name__ == '__main__':

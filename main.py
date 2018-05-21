@@ -3,7 +3,7 @@ Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
 Other Authors:
 Owner: AerospaceResearch.net
 About: This module is created to handle the GUI of the project, this module interacts with solve initially to check for all the available functions, and then according	to the event selected by the user, it interacts with solve, or polynomial roots module.
-Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the	json format as arguements.
+Invokes animator module as a seperate subprocess using Popen, and passes the equations/expressions to be animated and comments which go along with them in the json format as arguments.
 Note: Please try to maintain proper documentation
 Logic Description:
 """
@@ -560,11 +560,9 @@ class WorkSpace(QWidget):
                     cursor.insertText(token_string)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(
-                        self.tokens)
+                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(
-                        self.lTokens, self.rTokens)
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(self.lTokens, self.rTokens)
                 Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:

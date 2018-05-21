@@ -1,13 +1,13 @@
 ###############
-# ID printing #
+# Token ID printing #
 ###############
 
 '''
-Following is a list of random IDs (func.id property of func class) of a functions generated during calculations/simplifications
+Following is a list of random IDs (func.tid property of func class) of a functions generated during calculations/simplifications
 Only + and * are used as binary operations, the - and / will be taken care by func.coefficient and func.power respectively.
 '''
 
-# TODO: Use this ID in func.scope
+# TODO: Use this Token ID in func.scope
 
 random = ['a0', 'b0', 'b0a2', 'b0a1', 'b0a3',
           'b0b0', 'a0b0', 'a0a1', 'a0a2', 'a0a2a0', 'a0a3', 'c1', 'c2']

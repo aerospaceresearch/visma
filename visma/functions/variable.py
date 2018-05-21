@@ -1,4 +1,5 @@
-from visma.functions.structure import *
+from visma.functions import Function
+
 
 ##########################
 # Variable and Constants #
@@ -7,12 +8,12 @@ from visma.functions.structure import *
 
 class Variable(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = []
 
-    def set(args):
-        super().set()
+    def setprop(self, tid, scope, coefficient, power, operand, operator, value):
+        super().setprop(args)
 
     def inverse(self, RHS):
         self.operand = RHS.operand
@@ -34,8 +35,8 @@ class Variable(Function):
             self.coefficient /= power + 1
             self.power += 1
 
-    def calculate(self, input):
-        return self.coefficient * ((input**(self.power)))
+    def calculate(self, val):
+        return self.coefficient * ((val**(self.power)))
 
 
 class Constant(Function):
@@ -44,8 +45,8 @@ class Constant(Function):
         super().__init__()
         self.value = []
 
-    def set(args):
-        super().set()
+    def setprop(self, args):
+        super().setprop(args)
 
     def inverse(self, RHS):
         """
@@ -55,11 +56,11 @@ class Constant(Function):
         super().differentiate()
         self.value = 0
 
-    def integrate(self, d):
+    def integrate(self, intwrt):
         self.power = 1
         self.coefficient = (self.value)**(self.power)
         self.__class__ = Variable
         self.value = intwrt.value
 
-    def calculate(self, input):
+    def calculate(self):
         return self.coefficient * ((self.value**(self.power)))

@@ -5,15 +5,15 @@
 
 class Function(object):
 
-    def __init__(self, args):
-        self.id = ""
+    def __init__(self, tid, scope, coefficient, power, operand, operator):
+        self.tid = ""
         self.scope = []
-        self.coefficient = []
-        self.power = []
+        self.coefficient = None
+        self.power = None
         self.operand = []
         self.operator = []
 
-    def set(operand=None, operator=None, power=None, coefficient=None, scope=None):
+    def setprop(self, operand=None, operator=None, power=None, coefficient=None, scope=None):
         if operand is not None:
             self.operand = operand
         if operator is not None:
@@ -38,11 +38,11 @@ class Function(object):
         self.coefficient = 1
 
     def level(self):
-        return (int((len(self.id)) / 2))
+        return (int((len(self.tid)) / 2))
 
 
 ###################
 # Mixed Functions #
 ###################
 # For example: sec(x)*tan(x) or sin(x)*log(x) or e^(x)*cot(x)
-# Will be taken care by function 'ID'ing/tokening module
+# Will be taken care by function 'Token ID'ing/tokening module
