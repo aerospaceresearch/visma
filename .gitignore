@@ -1,3 +1,4 @@
 *.pyc
 temp
-tmp
+visweb
+.idea
