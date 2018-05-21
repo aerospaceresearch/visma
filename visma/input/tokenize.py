@@ -188,7 +188,7 @@ def get_terms(eqn):
                         terms.append(buf)
                         x = i + 1
                         continue
-                        
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("ot"):

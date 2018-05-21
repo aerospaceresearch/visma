@@ -2387,7 +2387,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
                     count += 1
 
             if len(variable["power"]) > 0 and rCount > 0:
-                for k, variable2 in enumerate(rVariables):
+                for variable2 in rVariables:
                     if variable2["type"] == 'variable':
                         if variable2["value"] == variable["value"] and variable2["power"][0] == variable["power"][0]:
                             for l in xrange(len(variable2["power"])):
@@ -2853,8 +2853,10 @@ def eval_expressions(variables):
     return True
 
 
-def check_types(lTokens=[{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}], rTokens=None):
+def check_types(lTokens=None, rTokens=None):
 
+    if lTokens is None:
+        lTokens = [{'coefficient': 1, 'scope': [0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1], 'type': 'binary', 'value': '+'}, {'scope': [2], 'type': 'constant', 'power': 1, 'value': 6}, {'scope': [3], 'type': 'binary', 'value': '/'}, {'scope': [4], 'type': 'constant', 'power': 1, 'value': 3}, {'scope': [5], 'type': 'binary', 'value': '-'}, {'coefficient': 2, 'scope': [6], 'type': 'variable', 'power': [1], 'value': ['x']}]
     if rTokens is None:
         rTokens = []
 
