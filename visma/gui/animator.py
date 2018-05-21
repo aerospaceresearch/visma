@@ -103,11 +103,9 @@ def do_ortho():
     aspect = float(w) / float(h)
     if w <= h:
         aspect = float(h) / float(w)
-        glOrtho(-size, size, -size * aspect,
-                size * aspect, -100000.0, 100000.0)
+        glOrtho(-size, size, -size * aspect, size * aspect, -100000.0, 100000.0)
     else:
-        glOrtho(-size * aspect, size * aspect, -
-                size, size, -100000.0, 100000.0)
+        glOrtho(-size * aspect, size * aspect, -size, size, -100000.0, 100000.0)
     glScaled(aspect, aspect, 1.0)
 
     glMatrixMode(GL_MODELVIEW)
@@ -117,7 +115,8 @@ def do_ortho():
 def draw_scene():
     glColor3f(1.0, 1.0, 1.0)
     i = 0
-    x, y = -50, -200
+    # x = -50
+    y = -200
     global comments
     global first_time
     if not first_time:
@@ -179,7 +178,7 @@ def calc_variable_size(term):
         size += (nod * 15 + 20)
     if len(term["value"]) > 0:
         for j, val in enumerate(term["value"]):
-            if type(val) == dict:
+            if isinstance(val, dict):
                 if val["type"] == 'variable':
                     size += render_variable(val)
                 elif val["type"] == 'expression':
@@ -191,7 +190,7 @@ def calc_variable_size(term):
                 size += (15 * nod)
             else:
                 size += 20
-            if type(term["power"][j]) == dict:
+            if isinstance(term["power"][j], dict):
                 if term["power"][j]["type"] == 'variable':
                     size += calc_variable_size(term["power"][j])
                 elif term["power"][j]["type"] == 'expression':
@@ -203,7 +202,6 @@ def calc_variable_size(term):
             elif is_number(str(term["power"][j])):
                 if term["power"][j] == 1:
                     size += 15
-                    pass
                 else:
                     if is_number(term["power"][j]):
                         nod = number_of_digits(term["power"][j])
@@ -215,7 +213,7 @@ def calc_variable_size(term):
 
 def calc_equation_size(string):
     size = 0
-    for i, term in enumerate(string):
+    for term in string:
         if term["type"] == "variable":
             size += calc_variable_size(term)
         elif term["type"] == "constant":
@@ -400,7 +398,8 @@ def on_display():
 
 
 def on_reshape(w, h):
-    width, height = w, h
+    width = w
+    height = h
 
 
 def on_key(key, x, y):

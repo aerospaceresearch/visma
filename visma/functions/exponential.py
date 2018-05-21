@@ -1,4 +1,5 @@
-from visma.functions.structure import *
+from visma.functions.structure import Function
+import math
 
 #########################
 # Exponential Functions #
@@ -11,11 +12,11 @@ class Logarithm(Function):
         super().__init__()
         self.value = []
 
-    def set(args):
-        super().set()
+    def setprop(args):
+        super().setprop(args)
 
     def inverse(self, RHS):
-        super().inverse()
+        super().inverse(RHS)
 
     def differentiate(self):
         super().differentiate()
@@ -26,8 +27,8 @@ class Logarithm(Function):
         """
         """
 
-    def calculate(self, input):
-        return self.coefficient * ((math.log(input, self.base)))
+    def calculate(self, val):
+        return self.coefficient * ((math.log(val, self.base)))
 
 
 class Exponential(Function):
@@ -36,11 +37,11 @@ class Exponential(Function):
         super().__init__()
         self.value = []
 
-    def set(args):
-        super().set()
+    def setprop(args):
+        super().setprop(args)
 
     def inverse(self, RHS):
-        super().inverse()
+        super().inverse(RHS)
 
     def differentiate(self):
         super().differentiate()
@@ -49,5 +50,5 @@ class Exponential(Function):
         """
         """
 
-    def calculate(self, input):
-        return self.coefficient * ((math.exp(input)))
+    def calculate(self, val):
+        return self.coefficient * ((math.exp(val)))

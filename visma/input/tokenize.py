@@ -742,7 +742,9 @@ def get_variable(terms, symTokens, scope, coeff=1):
     return variable
 
 
-def get_token(terms, symTokens, scope=[], coeff=1):
+def get_token(terms, symTokens, scope=None, coeff=1):
+    if scope is None:
+        scope = []
     eqn = {}
     eqn["type"] = "expression"
     tokens = []

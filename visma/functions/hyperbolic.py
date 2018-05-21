@@ -1,5 +1,5 @@
-from visma.functions.structure import *
-
+from visma.functions.structure import Function
+import math
 ########################
 # Hyberbolic Functions #
 ########################
@@ -11,11 +11,11 @@ class Sinh(Function):
         super().__init__()
         self.value = 'sinh'
 
-    def set(args):
-        super().set()
+    def setprop(args):
+        super().setprop(args)
 
     def inverse(self, RHS):
-        super().inverse()
+        super().inverse(RHS)
         self.__class__ = ArcSinh
 
     def differentiate(self):
@@ -25,8 +25,8 @@ class Sinh(Function):
     def integrate(self):
         self.__class__ = Cosh
 
-    def calculate(self, input):
-        return coefficient * ((math.sin(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.sin(val))**self.power)
 
 
 class Cosh(Function):
@@ -35,11 +35,11 @@ class Cosh(Function):
         super().__init__()
         self.value = 'cosh'
 
-    def set(args):
-        super().set()
+    def setprop(args):
+        super().setprop(args)
 
     def inverse(self, RHS):
-        super().inverse()
+        super().inverse(RHS)
         self.__class__ = ArcCosine
 
     def differentiate(self):
@@ -49,8 +49,8 @@ class Cosh(Function):
     def integrate(self):
         self.__class__ = Sinh
 
-    def calculate(self, input):
-        return coefficient * ((math.cos(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.cos(val))**self.power)
 
 
 ################################

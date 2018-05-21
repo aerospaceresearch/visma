@@ -61,13 +61,14 @@ def integrate_constant(constant, var):
 
 
 def integrate_tokens(tokens):
-    for token in tokens:
+    # for token in tokens:
         pass
 
 
 def integrate(lTokens, rTokens):
     integratedLTokens = integrate_tokens(lTokens)
     integratedRTokens = integrate_tokens(rTokens)
+    return integratedLTokens, integratedRTokens
 
 
 if __name__ == '__main__':

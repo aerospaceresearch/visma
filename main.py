@@ -560,11 +560,9 @@ class WorkSpace(QWidget):
                     cursor.insertText(token_string)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(
-                        self.tokens)
+                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(
-                        self.lTokens, self.rTokens)
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(self.lTokens, self.rTokens)
                 Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])
                 if len(availableOperations) == 0:
