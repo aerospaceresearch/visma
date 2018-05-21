@@ -38,79 +38,48 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
         return lTokens, rTokens
     elif len(lTokens) != 0:
         for i, token in enumerate(rTokens):
-            if i == 0:
-                if token["type"] == 'binary':
-                    tempToken = copy.deepcopy(token)
+            if i == 0 and token["type"] != 'binary':
+                binary = {}
+                binary["type"] = 'binary'
+                binary["value"] = '-'
+                binary["scope"] = copy.copy(token["scope"])
+                binary["scope"][-1] -= 1
+                lTokens.append(binary)
+            if token["type"] == 'binary':
+                if token["value"] in ['+', '-']:
                     if token["value"] == '-':
-                        tempToken["value"] = '+'
+                        token["value"] = '+'
                     else:
-                        tempToken["value"] = '-'
-                    lTokens.append(tempToken)
-                else:
-                    binary = {}
-                    binary["type"] = 'binary'
-                    binary["value"] = '-'
-                    binary["scope"] = copy.copy(token["scope"])
-                    binary["scope"][-1] -= 1
-                    lTokens.append(binary)
-                    if token["type"] == 'constant':
-                        if token["value"] < 0:
-                            if lTokens[-1]["type"] == 'binary':
-                                if lTokens[-1]["value"] == '-':
-                                    token["value"] *= -1
-                                    lTokens[-1]["value"] = '+'
-                                elif lTokens[-1]["value"] == '+':
-                                    token["value"] *= -1
-                                    lTokens[-1]["value"] = '-'
-                    elif token["type"] == 'variable':
-                        if token["coefficient"] < 0:
-                            if lTokens[-1]["type"] == 'binary':
-                                if lTokens[-1]["value"] == '-':
-                                    token["coefficient"] *= -1
-                                    lTokens[-1]["value"] = '+'
-                                elif lTokens[-1]["value"] == '+':
-                                    token["coefficient"] *= -1
-                                    lTokens[-1]["value"] = '-'
-
-                    lTokens.append(token)
-            else:
-                if token["type"] == 'binary':
-                    if token["value"] in ['+', '-']:
-                        if token["value"] == '-':
-                            token["value"] = '+'
-                        else:
-                            token["value"] = '-'
-                if token["type"] == 'constant':
-                    if token["value"] < 0:
-                        if lTokens[-1]["type"] == 'binary':
-                            if lTokens[-1]["value"] == '-':
-                                token["value"] *= -1
-                                lTokens[-1]["value"] = '+'
-                            elif lTokens[-1]["value"] == '+':
-                                token["value"] *= -1
-                                lTokens[-1]["value"] = '-'
-                elif token["type"] == 'variable':
-                    if token["coefficient"] < 0:
-                        if lTokens[-1]["type"] == 'binary':
-                            if lTokens[-1]["value"] == '-':
-                                token["coefficient"] *= -1
-                                lTokens[-1]["value"] = '+'
-                            elif lTokens[-1]["value"] == '+':
-                                token["coefficient"] *= -1
-                                lTokens[-1]["value"] = '-'
-
-                lTokens.append(token)
+                        token["value"] = '-'
+            elif token["type"] == 'constant':
+                if token["value"] < 0:
+                    if lTokens[-1]["type"] == 'binary':
+                        if lTokens[-1]["value"] == '-':
+                            token["value"] *= -1
+                            lTokens[-1]["value"] = '+'
+                        elif lTokens[-1]["value"] == '+':
+                            token["value"] *= -1
+                            lTokens[-1]["value"] = '-'
+            elif token["type"] == 'variable':
+                if token["coefficient"] < 0:
+                    if lTokens[-1]["type"] == 'binary':
+                        if lTokens[-1]["value"] == '-':
+                            token["coefficient"] *= -1
+                            lTokens[-1]["value"] = '+'
+                        elif lTokens[-1]["value"] == '+':
+                            token["coefficient"] *= -1
+                            lTokens[-1]["value"] = '-'
+            lTokens.append(token)
     rTokens = []
     return lTokens, rTokens
 
 
 class EquationCompatibility(object):
+
     def __init__(self, lTokens, rTokens):
-        super(EquationCompatibility, self).__init__()
         self.lTokens = lTokens
         self.lVariables = []
         self.lVariables.extend(get_level_variables(self.lTokens))
-
         self.rTokens = rTokens
         self.rVariables = []
         self.rVariables.extend(get_level_variables(self.rTokens))
@@ -149,8 +118,7 @@ class ExpressionCompatibility(object):
         self.tokens = tokens
         self.variables = []
         self.variables.extend(get_level_variables(self.tokens))
-        self.availableOperations = get_available_operations(
-            self.variables, self.tokens)
+        self.availableOperations = get_available_operations(self.variables, self.tokens)
 
 
 def check_solve_for(lTokens, rTokens):
@@ -2589,26 +2557,15 @@ def get_level_variables(tokens):
                         var["power"].append(term["power"])
                         var["scope"].append(term["scope"])
                         var["coefficient"].append(term["coefficient"])
-                        if i != 0:
-                            if tokens[i - 1]["type"] == 'binary':
-                                var["before"].append(tokens[i - 1]["value"])
-                                var["before_scope"].append(
-                                    tokens[i - 1]["scope"])
-                            else:
-                                var["before"].append('')
-                                var["before_scope"].append('')
+                        if i != 0 and tokens[i - 1]["type"] == 'binary':
+                            var["before"].append(tokens[i - 1]["value"])
+                            var["before_scope"].append(tokens[i - 1]["scope"])
                         else:
                             var["before"].append('')
                             var["before_scope"].append('')
-
-                        if i + 1 < len(tokens):
-                            if tokens[i + 1]["type"] == 'binary':
-                                var["after"].append(tokens[i + 1]["value"])
-                                var["after_scope"].append(
-                                    tokens[i + 1]["scope"])
-                            else:
-                                var["after"].append('')
-                                var["after_scope"].append('')
+                        if i + 1 < len(tokens) and tokens[i + 1]["type"] == 'binary':
+                            var["after"].append(tokens[i + 1]["value"])
+                            var["after_scope"].append(tokens[i + 1]["scope"])
                         else:
                             var["after"].append('')
                             var["after_scope"].append('')
@@ -2627,24 +2584,15 @@ def get_level_variables(tokens):
                 variable["after_scope"] = []
                 variable["power"].append(term["power"])
                 variable["coefficient"].append(term["coefficient"])
-                if i != 0:
-                    if tokens[i - 1]["type"] == 'binary':
-                        variable["before"].append(tokens[i - 1]["value"])
-                        variable["before_scope"].append(tokens[i - 1]["scope"])
-                    else:
-                        variable["before"].append('')
-                        variable["before_scope"].append('')
+                if i != 0 and tokens[i - 1]["type"] == 'binary':
+                    variable["before"].append(tokens[i - 1]["value"])
+                    variable["before_scope"].append(tokens[i - 1]["scope"])
                 else:
                     variable["before"].append('')
                     variable["before_scope"].append('')
-
-                if i + 1 < len(tokens):
-                    if tokens[i + 1]["type"] == 'binary':
-                        variable["after"].append(tokens[i + 1]["value"])
-                        variable["after_scope"].append(tokens[i + 1]["scope"])
-                    else:
-                        variable["after"].append('')
-                        variable["after_scope"].append('')
+                if i + 1 < len(tokens) and tokens[i + 1]["type"] == 'binary':
+                    variable["after"].append(tokens[i + 1]["value"])
+                    variable["after_scope"].append(tokens[i + 1]["scope"])
                 else:
                     variable["after"].append('')
                     variable["after_scope"].append('')
@@ -2660,26 +2608,15 @@ def get_level_variables(tokens):
                         var["value"].append(term["value"])
                         var["power"].append(term["power"])
                         var["scope"].append(term["scope"])
-                        if i != 0:
-                            if tokens[i - 1]["type"] == 'binary':
-                                var["before"].append(tokens[i - 1]["value"])
-                                var["before_scope"].append(
-                                    tokens[i - 1]["scope"])
-                            else:
-                                var["before"].append('')
-                                var["before_scope"].append('')
+                        if i != 0 and tokens[i - 1]["type"] == 'binary':
+                            var["before"].append(tokens[i - 1]["value"])
+                            var["before_scope"].append(tokens[i - 1]["scope"])
                         else:
                             var["before"].append('')
                             var["before_scope"].append('')
-
-                        if i + 1 < len(tokens):
-                            if tokens[i + 1]["type"] == 'binary':
-                                var["after"].append(tokens[i + 1]["value"])
-                                var["after_scope"].append(
-                                    tokens[i + 1]["scope"])
-                            else:
-                                var["after"].append('')
-                                var["after_scope"].append('')
+                        if i + 1 < len(tokens) and tokens[i + 1]["type"] == 'binary':
+                            var["after"].append(tokens[i + 1]["value"])
+                            var["after_scope"].append(tokens[i + 1]["scope"])
                         else:
                             var["after"].append('')
                             var["after_scope"].append('')
@@ -2700,24 +2637,15 @@ def get_level_variables(tokens):
                 variable["before_scope"] = []
                 variable["after"] = []
                 variable["after_scope"] = []
-                if i != 0:
-                    if tokens[i - 1]["type"] == 'binary':
-                        variable["before"].append(tokens[i - 1]["value"])
-                        variable["before_scope"].append(tokens[i - 1]["scope"])
-                    else:
-                        variable["before"].append('')
-                        variable["before_scope"].append('')
+                if i != 0 and tokens[i - 1]["type"] == 'binary':
+                    variable["before"].append(tokens[i - 1]["value"])
+                    variable["before_scope"].append(tokens[i - 1]["scope"])
                 else:
                     variable["before"].append('')
                     variable["before_scope"].append('')
-
-                if i + 1 < len(tokens):
-                    if tokens[i + 1]["type"] == 'binary':
-                        variable["after"].append(tokens[i + 1]["value"])
-                        variable["after_scope"].append(tokens[i + 1]["scope"])
-                    else:
-                        variable["after"].append('')
-                        variable["after_scope"].append('')
+                if i + 1 < len(tokens) and tokens[i + 1]["type"] == 'binary':
+                    variable["after"].append(tokens[i + 1]["value"])
+                    variable["after_scope"].append(tokens[i + 1]["scope"])
                 else:
                     variable["after"].append('')
                     variable["after_scope"].append('')

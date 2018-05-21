@@ -9,7 +9,7 @@ if [ $(uname -s) == "Linux" ]; then
 
   dist_name=$(lsb_release -a);
 
-  for (( i=0; i<=$(( $dist_count -1 )); i++ ))
+  for (( i=0; i<=$(( dist_count -1 )); i++ ))
   do
       if [ $(echo "$dist_name" | grep -c "${distributions[$i]}") -gt 0 ]; then
           usable_mgr=${distpackagemgrs[$i]}
