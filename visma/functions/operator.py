@@ -26,7 +26,7 @@ class Binary(Operator):
     def __init__(self):
         super().__init__()
 
-    def setprop(self):
+    def setprop(self, args):
         super().setprop(args)
 
     def level(self):
@@ -38,7 +38,7 @@ class Unary(Operator):
     def __init__(self):
         super().__init__()
 
-    def setprop(self):
+    def setprop(self, args):
         super().setprop(args)
 
     def level(self):

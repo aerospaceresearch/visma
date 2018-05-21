@@ -143,7 +143,7 @@ def check_solve_for(lTokens, rTokens):
 
 def tokens_to_string(tokens):
     token_string = ''
-    for i, token in enumerate(tokens):
+    for token in tokens:
         if token["type"] == 'constant':
             if isinstance(token["value"], list):
                 for j, val in token["value"]:
@@ -1325,7 +1325,7 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
     lChange = []
     rChange = []
     comments = []
-    for i, variable in enumerate(lVariables):
+    for variable in lVariables:
         if variable["type"] == "constant":
             for j, val in enumerate(variable["value"]):
                 if variable["before"][j] in ['-', '+', ''] and variable["after"][j] in ['+', '-', '']:
@@ -2827,7 +2827,7 @@ def eval_expressions(variables):
                 match = False
                 for i, v in enumerate(var):
                     if isinstance(v["value"], list) and is_number(v["value"][0]):
-                        for j, p in enumerate(varPowers[i]):
+                        for p in varPowers[i]:
                             if variable["power"] == p:
                                 return False
                         varPowers[i].append(variable["power"])

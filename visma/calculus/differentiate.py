@@ -7,7 +7,7 @@ from visma.functions import *
 # following is for differentiating functions within functions like func1(func2(func3))
 
 
-def differentiation(funclist):
+def differentiate_tokens(funclist):
 
     difffunc = []
 

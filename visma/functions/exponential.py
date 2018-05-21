@@ -12,7 +12,7 @@ class Logarithm(Function):
         super().__init__()
         self.value = []
 
-    def setprop(args):
+    def setprop(self, args):
         super().setprop(args)
 
     def inverse(self, RHS):
@@ -37,7 +37,7 @@ class Exponential(Function):
         super().__init__()
         self.value = []
 
-    def setprop(args):
+    def setprop(self, args):
         super().setprop(args)
 
     def inverse(self, RHS):

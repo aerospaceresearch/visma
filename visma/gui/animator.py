@@ -267,7 +267,7 @@ def render_variable(x, y, term, level=1, fontSize=24):
         x += (nod * 15 + 20)
     if len(term["value"]) > 0:
         for j, val in enumerate(term["value"]):
-            if type(val) == dict:
+            if isinstance(val, dict):
                 if val["type"] == 'variable':
                     x, y = render_variable(x, y, val, level + 1)
                 elif val["type"] == 'expression':
@@ -286,15 +286,13 @@ def render_variable(x, y, term, level=1, fontSize=24):
                 x += (15 * nod)
             else:
                 x += 20
-            if type(term["power"][j]) == dict:
+            if isinstance(term["power"][j], dict):
                 if term["power"][j]["type"] == 'variable':
                     x, y = render_variable(
                         x, y + 10, term["power"][j], level + 1, 2 * fontSize / 3)
                 elif term["power"][j]["type"] == 'expression':
                     x, y = render_equation(
                         x, y + 10, term["power"][j], level + 1, 2 * fontSize / 3)
-                else:
-                    pass
             elif is_variable(str(term["power"][j])):
                 glRasterPos(x, y + 10)
                 font.FaceSize(2 * fontSize / 3)
@@ -306,7 +304,6 @@ def render_variable(x, y, term, level=1, fontSize=24):
             elif is_number(str(term["power"][j])):
                 if term["power"][j] == 1:
                     x += 15
-                    pass
                 else:
                     glRasterPos(x, y + 10)
                     font.FaceSize(2 * fontSize / 3)
@@ -323,7 +320,7 @@ def render_variable(x, y, term, level=1, fontSize=24):
 
 
 def render_equation(x, y, string, level=1, fontSize=24):
-    for i, term in enumerate(string):
+    for term in string:
         if term["type"] == "variable":
             x, y = render_variable(x, y, term)
         elif term["type"] == "constant":

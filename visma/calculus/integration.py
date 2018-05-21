@@ -62,7 +62,8 @@ def integrate_constant(constant, var):
 
 def integrate_tokens(tokens):
     # for token in tokens:
-        pass
+    # logic
+    return tokens
 
 
 def integrate(lTokens, rTokens):

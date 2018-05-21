@@ -157,7 +157,7 @@ def polarView():
 
 
 def keyboard(key, x, y):
-    global xTr, yTr # , zTr
+    global xTr, yTr, zTr
     if(key == 'r'):
         resetView()
     if(key == 'q'):
