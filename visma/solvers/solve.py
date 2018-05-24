@@ -86,8 +86,7 @@ class EquationCompatibility(object):
         self.availableOperations = []
         if check_solve_for(lTokens, rTokens):
             self.availableOperations.append('solve')
-        self.availableOperations.extend(get_available_operations_equations(
-            self.lVariables, self.lTokens, self.rVariables, self.rTokens))
+        self.availableOperations.extend(get_available_operations_equations(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
         # print self.availableOperations
 
 

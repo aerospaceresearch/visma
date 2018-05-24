@@ -32,7 +32,7 @@ for func in random:
         final.append('(')
         openbrac += 1
     elif(levelold > level):
-        for i in range(0, levelold - level):
+        for i in xrange(0, levelold - level):
             final.append(')')
             closebrac += 1
         if(func[2 * level + 1] <= '1'):
@@ -50,7 +50,7 @@ for func in random:
 
 # FIXME: Find a way to handle functions in exponentials Ex: f1^(f2+f3)
 
-for i in range(0, openbrac - closebrac):
+for i in xrange(0, openbrac - closebrac):
     final.append(')')
 
 for func in final:

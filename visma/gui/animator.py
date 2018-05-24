@@ -20,8 +20,8 @@ import FTGL
 
 fontStyle = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"
 font = FTGL.BitmapFont(fontStyle)
-width = 800
-height = 800
+width = 720
+height = 720
 symbols = ['+', '-', '*', '/', '{', '}', '[', ']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 

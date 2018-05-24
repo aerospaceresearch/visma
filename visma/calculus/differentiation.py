@@ -18,7 +18,7 @@ def differntiate_variable(variable):
                 return variable
     else:
         tokens = []
-        for i in range(len(variable["value"])):
+        for i in xrange(len(variable["value"])):
             if i != 0:
                 binary = {}
                 binary["type"] = 'binary'

@@ -5,9 +5,10 @@
 
 class Function(object):
 
-    def __init__(self, tid, scope, coefficient, power, operand, operator):
+    def __init__(self):
         self.tid = ""
         self.scope = []
+        self.value = None
         self.coefficient = None
         self.power = None
         self.operand = []
@@ -46,3 +47,22 @@ class Function(object):
 ###################
 # For example: sec(x)*tan(x) or sin(x)*log(x) or e^(x)*cot(x)
 # Will be taken care by function 'Token ID'ing/tokening module
+
+class Expression(object):
+
+    def __init__(self):
+        self.tid = ""
+        self.scope = []
+        self.tokens = None
+
+    def setprop(self, tid=None, scope=None, tokens=None):
+        if tid is not None:
+            self.tid = tid
+        if scope is not None:
+            self.scope = scope
+        else:
+            self.scope = []
+        if tokens is not None:
+            self.tokens = tokens
+        else:
+            self.tokens = []
