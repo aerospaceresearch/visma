@@ -12,8 +12,8 @@ class Variable(Function):
         super().__init__()
         self.value = []
 
-    def setprop(self, tid, scope, coefficient, power, operand, operator, value):
-        super().setprop(args)
+    def set(self, tid, scope, coefficient, power, operand, operator, value):
+        super().set(args)
 
     def inverse(self, RHS):
         self.operand = RHS.operand
@@ -45,8 +45,8 @@ class Constant(Function):
         super().__init__()
         self.value = []
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         """

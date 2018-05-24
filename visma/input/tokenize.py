@@ -1501,7 +1501,7 @@ def check_equation(terms, symTokens):
                 return False
         # TODO: logger.log("Inappropriate number of equator(=,<,>)")
         elif term == ';':
-            equator = 0
+            equators = 0
     if len(terms) != 0:
         i = len(terms) - 1
         if symTokens[i] == 'binary' or symTokens[i] == 'unary' or brackets != 0 or sqrBrackets != 0:

@@ -9,7 +9,7 @@ class Operator(object):
         self.scope = []
         self.value = None
 
-    def setprop(self, tid=None, scope=None, value=None):
+    def set(self, tid=None, scope=None, value=None):
         if tid is not None:
             self.tid = tid
         if scope is not None:
@@ -26,8 +26,8 @@ class Binary(Operator):
     def __init__(self):
         super().__init__()
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def level(self):
         super.level()
@@ -38,8 +38,8 @@ class Unary(Operator):
     def __init__(self):
         super().__init__()
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def level(self):
         super.level()

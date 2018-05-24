@@ -54,8 +54,9 @@ def trigonometry(variable):
 
 
 def differentiate_tokens(tokens):
-    for token in tokens:
-        pass
+    # for token in tokens:
+    # logic
+    return tokens
 
 
 def differentiate(lTokens, rTokens):

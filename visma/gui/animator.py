@@ -357,33 +357,37 @@ def render_equation(x, y, string, level=1, fontSize=24):
             x += 15
             glRasterPos(x, y)
         elif term["type"] == "sqrt":
-            if term["power"]["type"] == 'constant':
-                glRasterPos(x, y + 5)
-                font.FaceSize(fontSize / 2)
-                font.Render(str(term["power"]["value"]))
-                nod = number_of_digits(term["power"]["value"])
-                x += (10 + nod * 7)
-            elif term["power"]["type"] == 'variable':
-                x, y = render_variable(
-                    x, y + 5, term["power"], level + 1, fontSize / 2)
-            elif term["power"]["type"] == 'expression':
-                x, y = render_equation(
-                    x, y + 5, term["power"], level + 1, fontSize / 2)
-            glRasterPos(x, y)
-            font.FaceSize(fontSize)
-            x += 25
-            font.Render(u"\u221A".encode("utf-8"))
-            if term["expression"]["type"] == 'constant':
+            if term["expression"]["type"] == 'constant' and term["expression"]["value"] == -1:
+                iota = {'type': 'variable', 'coefficient': 1, 'value': ['i'], 'power': [1]}
+                x, y = render_variable(x, y, iota)
+            else:
+                if term["power"]["type"] == 'constant':
+                    glRasterPos(x, y + 5)
+                    font.FaceSize(fontSize / 2)
+                    font.Render(str(term["power"]["value"]))
+                    nod = number_of_digits(term["power"]["value"])
+                    x += (10 + nod * 7)
+                elif term["power"]["type"] == 'variable':
+                    x, y = render_variable(
+                        x, y + 5, term["power"], level + 1, fontSize / 2)
+                elif term["power"]["type"] == 'expression':
+                    x, y = render_equation(
+                        x, y + 5, term["power"], level + 1, fontSize / 2)
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
-                font.Render(str(term["expression"]["value"]))
-                x += (30 + 15 * nod)
-            elif term["expression"]["type"] == 'variable':
-                x, y = render_variable(
-                    x, y, term["expression"], level + 1, fontSize)
-            elif term["expression"]["type"] == 'expression':
-                x, y = render_equation(
-                    x, y, term["expression"], level + 1, fontSize)
+                x += 25
+                font.Render(u"\u221A".encode("utf-8"))
+                if term["expression"]["type"] == 'constant':
+                    glRasterPos(x, y)
+                    font.FaceSize(fontSize)
+                    font.Render(str(term["expression"]["value"]))
+                    x += (30 + 15 * nod)
+                elif term["expression"]["type"] == 'variable':
+                    x, y = render_variable(
+                        x, y, term["expression"], level + 1, fontSize)
+                elif term["expression"]["type"] == 'expression':
+                    x, y = render_equation(
+                        x, y, term["expression"], level + 1, fontSize)
 
     return x, y
 

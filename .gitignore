@@ -1,4 +1,4 @@
 *.pyc
-temp
-visweb
 .idea
+local
+visweb

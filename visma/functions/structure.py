@@ -14,7 +14,7 @@ class Function(object):
         self.operand = []
         self.operator = []
 
-    def setprop(self, operand=None, operator=None, power=None, coefficient=None, scope=None):
+    def set(self, operand=None, operator=None, power=None, coefficient=None, scope=None):
         if operand is not None:
             self.operand = operand
         if operator is not None:
@@ -55,7 +55,7 @@ class Expression(object):
         self.scope = []
         self.tokens = None
 
-    def setprop(self, tid=None, scope=None, tokens=None):
+    def set(self, tid=None, scope=None, tokens=None):
         if tid is not None:
             self.tid = tid
         if scope is not None:

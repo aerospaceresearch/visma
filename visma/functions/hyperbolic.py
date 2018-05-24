@@ -11,8 +11,8 @@ class Sinh(Function):
         super().__init__()
         self.value = 'sinh'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)
@@ -35,8 +35,8 @@ class Cosh(Function):
         super().__init__()
         self.value = 'cosh'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)

@@ -29,8 +29,8 @@ class Window(QtGui.QMainWindow):
         self.initUI()
 
     def initUI(self):
-        exitAction = QtGui.QAction(QtGui.QIcon(
-            'assets/exit.png'), 'Exit', self)
+        # exitAction = QtGui.QAction(QtGui.QIcon('assets/exit.png'), 'Exit', self)
+        exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
@@ -67,11 +67,11 @@ class WorkSpace(QWidget):
     solutionOptionsBox = QGridLayout()
     solutionButtons = {}
     inputBox = QGridLayout()
-    selectedCombo = "LaTeX"
+    selectedCombo = "Greek"
     equations = []
 
     try:
-        with open('temp/eqn-list.vis', 'r+') as fp:
+        with open('local/eqn-list.vis', 'r+') as fp:
             for line in fp:
                 if not line.isspace():
                     fp.write(line)
@@ -79,9 +79,9 @@ class WorkSpace(QWidget):
                         0, ('Equation No.' + str(len(equations) + 1), line))
             fp.close()
     except IOError:
-        if not os.path.exists('temp'):
-            os.mkdir('temp')
-        file = open('temp/eqn-list.vis', 'w')
+        if not os.path.exists('local'):
+            os.mkdir('local')
+        file = open('local/eqn-list.vis', 'w')
         file.close()
 
     if len(equations) == 0:
@@ -101,9 +101,9 @@ class WorkSpace(QWidget):
     def initUI(self):
         hbox = QHBoxLayout(self)
 
-        eqautionList = QWidget()
-        eqautionList.setLayout(self.equationsLayout())
-        eqautionList.setStatusTip("Track of old equations")
+        equationList = QWidget()
+        equationList.setLayout(self.equationsLayout())
+        equationList.setStatusTip("Track of old equations")
 
         inputList = QWidget()
         inputList.setLayout(self.inputsLayout())
@@ -125,7 +125,7 @@ class WorkSpace(QWidget):
         splitter2.setSizes([800, 400])
 
         splitter3 = QSplitter(Qt.Horizontal)
-        splitter3.addWidget(eqautionList)
+        splitter3.addWidget(equationList)
         splitter3.addWidget(splitter2)
         splitter3.setSizes([400, 1200])
 
@@ -163,7 +163,7 @@ class WorkSpace(QWidget):
 
         interactionModeWidget = QWidget(self)
         interactionModeLayout = QVBoxLayout()
-        interactionModeButton = QPushButton("Interaction Mode")
+        interactionModeButton = QPushButton("VisMa")
         interactionModeButton.resize(30, 70)
         interactionModeButton.clicked.connect(self.interactionMode)
         interactionModeLayout.addWidget(interactionModeButton)
@@ -341,7 +341,7 @@ class WorkSpace(QWidget):
                 ("Equation No. " + str(len(self.equations) + 1), eqn))
 
         self.textedit.setText('')
-        file = open('temp/eqn-list.vis', 'r+')
+        file = open('local/eqn-list.vis', 'r+')
         self.myQListWidget = QtGui.QListWidget(self)
         i = 0
         for index, name in self.equations:
@@ -382,7 +382,7 @@ class WorkSpace(QWidget):
         else:
             self.equations.append(
                 ("Equation No. " + str(len(self.equations) + 1), eqn))
-        file = open('temp/eqn-list.vis', 'r+')
+        file = open('local/eqn-list.vis', 'r+')
         self.myQListWidget = QtGui.QListWidget(self)
         i = 0
         for index, name in self.equations:
