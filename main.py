@@ -18,6 +18,7 @@ import visma.solvers.polynomial.roots as ViSoPoRo
 import json
 from subprocess import Popen
 import os
+import visma.gui.plotter as ViGuPl
 
 # TODO: Revamp GUI
 
@@ -495,17 +496,6 @@ class WorkSpace(QWidget):
                 else:
                     self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.addition_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Subtraction':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction(
@@ -513,17 +503,6 @@ class WorkSpace(QWidget):
                 else:
                     self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Multiplication':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication(
@@ -531,17 +510,6 @@ class WorkSpace(QWidget):
                 else:
                     self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Division':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, animation, comments = ViSoSo.division(
@@ -549,33 +517,11 @@ class WorkSpace(QWidget):
                 else:
                     self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.division_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(self.tokens)
                 else:
                     self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(self.lTokens, self.rTokens)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Solve For':
                 lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
                 variables = ViSoSo.find_solve_for(lhs, rhs)
@@ -583,17 +529,19 @@ class WorkSpace(QWidget):
             elif name == 'Find Roots':
                 self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(
                     self.lTokens, self.rTokens)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
+
+            Popen(['python', 'visma/gui/animator.py',
+                   json.dumps(animation), json.dumps(comments)])
+            if len(availableOperations) == 0:
+                self.clearButtons()
+            else:
+                self.refreshButtons(availableOperations)
+            if self.mode == 'normal':
+                self.textedit.setText(token_string)
+            elif self.mode == 'interaction':
+                cursor = self.textedit.textCursor()
+                cursor.insertText(token_string)
+            ViGuPl.plotthis(token_string)
         return calluser
 
     def onSolveForPress(self, name):

@@ -1614,6 +1614,24 @@ def get_lhs_rhs(tokens):
     return lhs, rhs
 
 
+def get_variables_value(tokens):
+    variableDict = {}
+    for token in tokens:
+        if token['type'] == 'variable':
+            variableDict[token['value'][0]] = None
+    return variableDict
+
+
+def check_result_type(result):
+    if '=' in result:
+        eqtype = 'equation'
+    elif '<' in result or ">" in result:
+        eqtype = 'inequality'
+    else:
+        eqtype = 'expression'
+    return eqtype
+
+
 if __name__ == "__main__":
     '''
     eqn = 'sqrt + sin(x) + sec - tan * cos / cot = cosec'
@@ -1625,7 +1643,8 @@ if __name__ == "__main__":
     print terms
     print	 symTokens
     '''
-    print(tokenizer('2x  + 3 y^{4} + 4'))
+
+    print(get_lhs_rhs(tokenizer('0.2x^(2.0) + y^3 + 4z + 7.0x - 34.0 = 0')))
 
 # -xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 # x+y=2^-{x+y}
