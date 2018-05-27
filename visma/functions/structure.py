@@ -49,12 +49,36 @@ class Function(object):
 # For example: sec(x)*tan(x) or sin(x)*log(x) or e^(x)*cot(x)
 # Will be taken care by function 'Token ID'ing/tokening module
 
-class Expression(object):
+class Expression(Function):
+    """Class for expression type
+    """
 
     def __init__(self):
-        self.scope = None
+        super(Expression, self).__init__()
         self.tokens = None
-        self.tid = None
+        self.type = 'Expression'
+
+    def set(self, scope=None, tokens=None, tid=None):
+        if tid is not None:
+            self.tid = tid
+        if scope is not None:
+            self.scope = scope
+        else:
+            self.scope = []
+        if tokens is not None:
+            self.tokens = tokens
+        else:
+            self.tokens = []
+
+
+class Equation(Function):
+    """Class for equation type
+    """
+
+    def __init__(self):
+        super(Equation, self).__init__()
+        self.tokens = None
+        self.type = 'Equation'
 
     def set(self, scope=None, tokens=None, tid=None):
         if tid is not None:

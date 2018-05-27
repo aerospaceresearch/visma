@@ -8,6 +8,7 @@ class Operator(object):
         self.tid = None
         self.scope = None
         self.value = None
+        self.type = None
 
     def set(self, scope=None, value=None, tid=None):
         if scope is not None:
@@ -22,24 +23,29 @@ class Operator(object):
 
 
 class Binary(Operator):
+    """Class for binary operator
+    """
 
     def __init__(self):
         super(Binary, self).__init__()
-
-    def set(self, scope=None, value=None, tid=None):
-        super(Binary, self).set(scope, value, tid)
-
-    def level(self):
-        super(Binary, self).level()
+        self.type = 'Binary'
 
 
 class Unary(Operator):
+    """Class for unary operator
+    """
 
     def __init__(self):
         super(Unary, self).__init__()
+        self.type = 'Unary'
 
-    def set(self, scope=None, value=None, tid=None):
-        super(Unary, self).set(scope, value, tid)
 
-    def level(self):
-        super(Unary, self).level()
+class Sqrt(Operator):
+    """Class for sqrt operator
+    """
+
+    def __init__(self):
+        super(Sqrt, self).__init__()
+        self.power = None
+        self.expression = None
+        self.type = 'Sqrt'

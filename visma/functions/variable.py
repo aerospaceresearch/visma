@@ -1,4 +1,4 @@
-from visma.functions import Function
+from visma.functions.structure import Function
 from visma.functions.exponential import Logarithm
 
 ##########################
@@ -7,9 +7,12 @@ from visma.functions.exponential import Logarithm
 
 
 class Variable(Function):
+    """Class for variable type
+    """
 
     def __init__(self):
         super(Variable, self).__init__()
+        self.type = 'Variable'
 
     def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
         super(Variable, self).set(value, power, coefficient, scope, operand, operator)
@@ -39,9 +42,12 @@ class Variable(Function):
 
 
 class Constant(Function):
+    """Class for constant type
+    """
 
     def __init__(self):
         super(Constant, self).__init__()
+        self.type = 'Constant'
 
     def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
         super().set(value, power, coefficient, scope, operand, operator)
