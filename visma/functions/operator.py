@@ -4,18 +4,18 @@
 
 class Operator(object):
 
-    def __init__(self, tid, scope, value):
-        self.tid = ""
-        self.scope = []
+    def __init__(self):
+        self.tid = None
+        self.scope = None
         self.value = None
 
-    def set(self, tid=None, scope=None, value=None):
-        if tid is not None:
-            self.tid = tid
+    def set(self, scope=None, value=None, tid=None):
         if scope is not None:
             self.scope = scope
         if value is not None:
             self.value = value
+        if tid is not None:
+            self.tid = tid
 
     def level(self):
         return (int((len(self.tid)) / 2))
@@ -24,22 +24,22 @@ class Operator(object):
 class Binary(Operator):
 
     def __init__(self):
-        super().__init__()
+        super(Binary, self).__init__()
 
-    def set(self, args):
-        super().set(args)
+    def set(self, scope=None, value=None, tid=None):
+        super(Binary, self).set(scope, value, tid)
 
     def level(self):
-        super.level()
+        super(Binary, self).level()
 
 
 class Unary(Operator):
 
     def __init__(self):
-        super().__init__()
+        super(Unary, self).__init__()
 
-    def set(self, args):
-        super().set(args)
+    def set(self, scope=None, value=None, tid=None):
+        super(Unary, self).set(scope, value, tid)
 
     def level(self):
-        super.level()
+        super(Unary, self).level()

@@ -6,29 +6,30 @@
 class Function(object):
 
     def __init__(self):
-        self.tid = ""
-        self.scope = []
+        self.tid = None
+        self.scope = None
         self.value = None
         self.coefficient = None
         self.power = None
-        self.operand = []
-        self.operator = []
+        self.operand = None
+        self.operator = None
 
-    def set(self, operand=None, operator=None, power=None, coefficient=None, scope=None):
-        if operand is not None:
-            self.operand = operand
-        if operator is not None:
-            self.operand = operator
+    def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
+        if value is not None:
+            self.value = value
         if power is not None:
             self.power = power
         if coefficient is not None:
             self.coefficient = coefficient
         if scope is not None:
             self.scope = scope
+        if operand is not None:
+            self.operand = operand
+        if operator is not None:
+            self.operator = operator
 
     def inverse(self, RHS):
-        RHS.coefficient = (RHS.coefficient /
-                           self.coefficient)**(1 / self.power)
+        RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
         RHS.power /= self.power
         self.operand = RHS
         self.coefficient = 1
@@ -51,11 +52,11 @@ class Function(object):
 class Expression(object):
 
     def __init__(self):
-        self.tid = ""
-        self.scope = []
+        self.scope = None
         self.tokens = None
+        self.tid = None
 
-    def set(self, tid=None, scope=None, tokens=None):
+    def set(self, scope=None, tokens=None, tid=None):
         if tid is not None:
             self.tid = tid
         if scope is not None:
