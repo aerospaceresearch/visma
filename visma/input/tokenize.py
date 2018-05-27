@@ -1622,16 +1622,6 @@ def get_variables_value(tokens):
     return variableDict
 
 
-def check_result_type(result):
-    if '=' in result:
-        eqtype = 'equation'
-    elif '<' in result or ">" in result:
-        eqtype = 'inequality'
-    else:
-        eqtype = 'expression'
-    return eqtype
-
-
 if __name__ == "__main__":
     '''
     eqn = 'sqrt + sin(x) + sec - tan * cos / cot = cosec'
