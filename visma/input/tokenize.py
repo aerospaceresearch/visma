@@ -1543,7 +1543,6 @@ def evaluate_constant(constant):
 
 def constant_conversion(tokens):
     constantExpression = True
-    print tokens
     for token in tokens:
         if token.__class__ == Variable():
             constant = True
@@ -1608,7 +1607,7 @@ if __name__ == "__main__":
     symTokens = tokenize_symbols(normalizedTerms)
     terms, symTokens = check_negative_number(normalizedTerms, symTokens)
     print terms
-    print	 symTokens
+    print symTokens
     '''
 
     print(get_lhs_rhs(tokenizer('0.2x^(2.0) + y^3 + 4z + 7.0x - 34.0 = 0')))

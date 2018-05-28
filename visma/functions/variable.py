@@ -14,7 +14,6 @@ class Variable(Function):
         super(Variable, self).__init__()
         self.type = 'Variable'
 
-
     def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
         super(Variable, self).set(value, power, coefficient, scope, operand, operator)
 

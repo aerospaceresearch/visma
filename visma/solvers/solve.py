@@ -47,7 +47,7 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
                 binary.scope = copy.copy(token.scope)
                 binary.scope[-1] -= 1
                 lTokens.append(binary)
-            if token._class__ == Binary:
+            if token.__class__ == Binary:
                 if token.value in ['+', '-']:
                     if token.value == '-':
                         token.value = '+'
@@ -1749,7 +1749,7 @@ def multiply_variables(variable1, variable2, coeff):
     variable.power.extend(variable1.power)
     if is_number(variable1.coefficient):
         variable.coefficient = float(variable1.coefficient)
-    elif isinstance(variable1.coefficient, dict):
+    elif isinstance(variable1.coefficient, Function):
         variable.coefficient = evaluate_constant(variable1.coefficient)
     else:
         variable.coefficient = variable1.coefficient
@@ -1847,7 +1847,7 @@ def multiply_variable_constant(constant, variable, coeff):
     variable1.power.extend(variable.power)
     if is_number(variable.coefficient):
         variable1.coefficient = float(variable.coefficient)
-    elif isinstance(variable.coefficient, dict):
+    elif isinstance(variable.coefficient, Function):
         variable1.coefficient = evaluate_constant(variable.coefficient)
     else:
         variable.coefficient = variable1.coefficient
@@ -1930,7 +1930,6 @@ def multiply_expressions(expression1, expression2):
                         tokens.append(binary)
                     tokens.append(multiply_select(token1, token2, coeff))
                     # print tokens
-    print(tokens)
 
 
 def expression_multiplication(variables, tokens):
@@ -2291,7 +2290,7 @@ def expression_division(variables, tokens):
 
 
 def evaluate_constant(constant):
-    if isinstance(constant, dict):
+    if isinstance(constant, Function):
         if is_number(constant.value):
             return math.pow(constant.value, constant.power)
         elif isinstance(constant.value, list):
