@@ -13,7 +13,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
 import visma.input.tokenize as ViInTo
-import visma.solvers.solve as ViSoSo
+from visma.solvers.solve import check_types, find_solve_for, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
 import visma.solvers.polynomial.roots as ViSoPoRo
 import json
 from subprocess import Popen
@@ -209,7 +209,7 @@ class WorkSpace(QWidget):
         lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
-        operations, self.solutionType = ViSoSo.check_types(
+        operations, self.solutionType = check_types(
             lhs, rhs)
         if isinstance(operations, list):
             opButtons = []
@@ -491,40 +491,40 @@ class WorkSpace(QWidget):
             animation = []
             if name == 'Addition':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.addition(
+                    self.tokens, availableOperations, token_string, animation, comments = addition(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.addition_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = addition_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Subtraction':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction(
+                    self.tokens, availableOperations, token_string, animation, comments = subtraction(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = subtraction_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Multiplication':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication(
+                    self.tokens, availableOperations, token_string, animation, comments = multiplication(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = multiplication_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Division':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.division(
+                    self.tokens, availableOperations, token_string, animation, comments = division(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.division_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = division_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(self.tokens)
+                    self.tokens, availableOperations, token_string, animation, comments = simplify(self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(self.lTokens, self.rTokens)
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = simplify_equation(self.lTokens, self.rTokens)
             elif name == 'Solve For':
                 lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
-                variables = ViSoSo.find_solve_for(lhs, rhs)
+                variables = find_solve_for(lhs, rhs)
                 self.solveForButtons(variables)
             elif name == 'Find Roots':
                 self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(
@@ -554,13 +554,14 @@ class WorkSpace(QWidget):
                 self.tokens = ViInTo.tokenizer(textSelected)
                 # print self.tokens
                 lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
-                operations, self.solutionType = ViSoSo.check_types(
+                operations, self.solutionType = check_types(
                     lhs, rhs)
                 self.refreshButtons(operations)
 
             else:
                 print(name)
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.solve_for(
+                # CHECKME: No solve_for function in any module. Supposed to be in solve.py module
+                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve_for(
                     self.lTokens, self.rTokens, name)
                 Popen(['python', 'visma/gui/animator.py',
                        json.dumps(animation), json.dumps(comments)])

@@ -13,6 +13,10 @@ class Function(object):
         self.power = None
         self.operand = None
         self.operator = None
+        self.before = None
+        self.after = None
+        self.beforeScope = None
+        self.afterScope = None
 
     def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
         if value is not None:

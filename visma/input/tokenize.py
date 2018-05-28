@@ -1543,6 +1543,7 @@ def evaluate_constant(constant):
 
 def constant_conversion(tokens):
     constantExpression = True
+    print tokens
     for token in tokens:
         if token.__class__ == Variable():
             constant = True

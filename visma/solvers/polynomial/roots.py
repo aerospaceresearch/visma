@@ -9,9 +9,9 @@ Logic Description:
 """
 
 from __future__ import division
-import visma.solvers.solve as ViSoSo
 import math
 import copy
+from visma.solvers.solve import simplify_equation, tokens_to_string, move_rTokens_to_lTokens, evaluate_constant
 from config.config import ROUND_OFF
 
 # FIXME: Extend to polynomials of all degrees
@@ -39,7 +39,7 @@ def highest_power(tokens, variable):
 
 
 def preprocess_check_quadratic_roots(lTokens, rTokens):
-    lTokens, rTokens, avaiableOperations, token_string, animation, comments = ViSoSo.simplify_equation(lTokens, rTokens)
+    lTokens, rTokens, avaiableOperations, token_string, animation, comments = simplify_equation(lTokens, rTokens)
     return check_for_quadratic_roots(lTokens, rTokens)
 
 
@@ -88,7 +88,7 @@ def get_roots(coeffs):
 
 
 def quadratic_roots(lTokens, rTokens):
-    lTokens, rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(
+    lTokens, rTokens, availableOperations, token_string, animation, comments = simplify_equation(
         lTokens, rTokens)
     roots, var = find_quadratic_roots(lTokens, rTokens)
     if len(roots) == 1:
@@ -281,19 +281,19 @@ def quadratic_roots(lTokens, rTokens):
     else:
         tokenToStringBuilder.extend(rTokens)
     animation.append(copy.deepcopy(tokenToStringBuilder))
-    token_string = ViSoSo.tokens_to_string(tokenToStringBuilder)
+    token_string = tokens_to_string(tokenToStringBuilder)
     return lTokens, rTokens, [], token_string, animation, comments
 
 
 def find_quadratic_roots(lTokens, rTokens):
     roots = []
     if len(rTokens) > 0:
-        lTokens, rTokens = ViSoSo.move_rTokens_to_lTokens(
+        lTokens, rTokens = move_rTokens_to_lTokens(
             lTokens, rTokens)
     coeffs = [0, 0, 0]
     for i, token in enumerate(lTokens):
         if token["type"] == 'constant':
-            cons = ViSoSo.evaluate_constant(token)
+            cons = evaluate_constant(token)
             if i != 0:
                 if lTokens[i - 1]["type"] == 'binary':
                     if lTokens[i - 1]["value"] in ['-', '+']:
