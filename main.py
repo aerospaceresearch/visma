@@ -18,7 +18,7 @@ import visma.solvers.polynomial.roots as ViSoPoRo
 import json
 from subprocess import Popen
 import os
-import visma.gui.plotter as ViGuPl
+# from visma.gui.plotter import plotthis
 
 # TODO: Revamp GUI
 
@@ -527,10 +527,8 @@ class WorkSpace(QWidget):
                 variables = find_solve_for(lhs, rhs)
                 self.solveForButtons(variables)
             elif name == 'Find Roots':
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(
-                    self.lTokens, self.rTokens)
-
-            # Popen(['python', 'visma/gui/animator.py', json.dumps(animation), json.dumps(comments)])
+                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
+            Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:
@@ -540,7 +538,7 @@ class WorkSpace(QWidget):
             elif self.mode == 'interaction':
                 cursor = self.textedit.textCursor()
                 cursor.insertText(token_string)
-            ViGuPl.plotthis(token_string)
+            # plotthis(token_string)
         return calluser
 
     def onSolveForPress(self, name):
@@ -561,7 +559,7 @@ class WorkSpace(QWidget):
                 # CHECKME: No solve_for function in any module. Supposed to be in solve.py module
                 self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve_for(
                     self.lTokens, self.rTokens, name)
-                Popen(['python', 'visma/gui/animator.py', json.dumps(animation), json.dumps(comments)])
+                Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
                 self.refreshButtons(availableOperations)
                 if self.mode == 'normal':
                     self.textedit.setText(token_string)

@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from visma.functions.variable import Variable, Constant
+from visma.functions.operator import Binary
 from visma.input.tokenize import tokenizer, get_variables_value, get_lhs_rhs
 
 # TODO: Use matplotlib to plot graphs(use openGL if possible)
@@ -19,24 +21,24 @@ def plot(varDict, lhstok, rhstok):
     RHS = 0
     coeff = 1
     for token in lhstok:
-        if token['type'] == 'variable':
-            LHS += coeff*token['coefficient']*((varDict[token['value'][0]])**token['power'][0])
-        elif token['type'] == 'constant':
-            LHS += coeff*token['value']
-        elif token['type'] == 'binary':
-            if token['value'] == '+':
+        if token.__class__ == Variable:
+            LHS += coeff*token.coefficient*((varDict[token.value[0]])**token.power[0])
+        elif token.__class__ == Constant:
+            LHS += coeff*token.value
+        elif token.__class__ == Binary:
+            if token.value == '+':
                 coeff = 1
-            elif token['value'] == '-':
+            elif token.value == '-':
                 coeff = -1
     for token in rhstok:
-        if token['type'] == 'variable':
-            RHS += coeff*token['coefficient']*((varDict[token['value'][0]])**token['power'][0])
-        elif token['type'] == 'constant':
-            RHS += coeff*token['value']
-        elif token['type'] == 'binary':
-            if token['value'] == '+':
+        if token.__class__ == Variable:
+            RHS += coeff*token.coefficient*((varDict[token.value[0]])**token.power[0])
+        elif token.__class__ == Constant:
+            RHS += coeff*token.value
+        elif token.__class__ == Binary:
+            if token.value == '+':
                 coeff = 1
-            elif token['value'] == '-':
+            elif token.value == '-':
                 coeff = -1
     if rhstok == []:
         RHS += varDict['y']

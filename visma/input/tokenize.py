@@ -1558,7 +1558,7 @@ def constant_conversion(tokens):
             constantExpression = False
 
         elif token.__class__ == Expression:
-            result, token = constant_conversion(token.__tokens__)
+            result, token = constant_conversion(token.tokens)
             if not result:
                 constantExpression = False
     return constantExpression, tokens
