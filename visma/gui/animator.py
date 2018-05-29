@@ -20,8 +20,8 @@ import FTGL
 
 fontStyle = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf"
 font = FTGL.BitmapFont(fontStyle)
-width = 800
-height = 800
+width = 720
+height = 720
 symbols = ['+', '-', '*', '/', '{', '}', '[', ']', '^', '=']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0']
 
@@ -137,7 +137,7 @@ def draw_scene():
                 j += 1
             y += 50 + (len(comments[j - 1]) * 30)
             glutSwapBuffers()
-            time.sleep(2)
+            time.sleep(1)
     else:
         while i < len(string):
             glClear(GL_COLOR_BUFFER_BIT)
@@ -159,7 +159,7 @@ def draw_scene():
 
 def render_comment(x, y, comment):
     glRasterPos(x, y)
-    font.FaceSize(18)
+    font.FaceSize(20)
     font.Render(str(comment.encode('utf-8')))
 
 
@@ -357,33 +357,37 @@ def render_equation(x, y, string, level=1, fontSize=24):
             x += 15
             glRasterPos(x, y)
         elif term["type"] == "sqrt":
-            if term["power"]["type"] == 'constant':
-                glRasterPos(x, y + 5)
-                font.FaceSize(fontSize / 2)
-                font.Render(str(term["power"]["value"]))
-                nod = number_of_digits(term["power"]["value"])
-                x += (10 + nod * 7)
-            elif term["power"]["type"] == 'variable':
-                x, y = render_variable(
-                    x, y + 5, term["power"], level + 1, fontSize / 2)
-            elif term["power"]["type"] == 'expression':
-                x, y = render_equation(
-                    x, y + 5, term["power"], level + 1, fontSize / 2)
-            glRasterPos(x, y)
-            font.FaceSize(fontSize)
-            x += 25
-            font.Render(u"\u221A".encode("utf-8"))
-            if term["expression"]["type"] == 'constant':
+            if term["expression"]["type"] == 'constant' and term["expression"]["value"] == -1:
+                iota = {'type': 'variable', 'coefficient': 1, 'value': ['i'], 'power': [1]}
+                x, y = render_variable(x, y, iota)
+            else:
+                if term["power"]["type"] == 'constant':
+                    glRasterPos(x, y + 5)
+                    font.FaceSize(fontSize / 2)
+                    font.Render(str(term["power"]["value"]))
+                    nod = number_of_digits(term["power"]["value"])
+                    x += (10 + nod * 7)
+                elif term["power"]["type"] == 'variable':
+                    x, y = render_variable(
+                        x, y + 5, term["power"], level + 1, fontSize / 2)
+                elif term["power"]["type"] == 'expression':
+                    x, y = render_equation(
+                        x, y + 5, term["power"], level + 1, fontSize / 2)
                 glRasterPos(x, y)
                 font.FaceSize(fontSize)
-                font.Render(str(term["expression"]["value"]))
-                x += (30 + 15 * nod)
-            elif term["expression"]["type"] == 'variable':
-                x, y = render_variable(
-                    x, y, term["expression"], level + 1, fontSize)
-            elif term["expression"]["type"] == 'expression':
-                x, y = render_equation(
-                    x, y, term["expression"], level + 1, fontSize)
+                x += 25
+                font.Render(u"\u221A".encode("utf-8"))
+                if term["expression"]["type"] == 'constant':
+                    glRasterPos(x, y)
+                    font.FaceSize(fontSize)
+                    font.Render(str(term["expression"]["value"]))
+                    x += (30 + 15 * nod)
+                elif term["expression"]["type"] == 'variable':
+                    x, y = render_variable(
+                        x, y, term["expression"], level + 1, fontSize)
+                elif term["expression"]["type"] == 'expression':
+                    x, y = render_equation(
+                        x, y, term["expression"], level + 1, fontSize)
 
     return x, y
 
@@ -409,7 +413,7 @@ def main():
     glutInitWindowSize(width, height)
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
-    glutCreateWindow("Equation")
+    glutCreateWindow("Step-by-step solution")
     glClearColor(0.0, 0.0, 0.0, 0.0)
     font.FaceSize(24, 72)
 
@@ -429,6 +433,5 @@ if __name__ == '__main__':
     tokens = sys.argv[1]
     coms = sys.argv[2]
     comments = json.loads(coms)
-    # print tokens
     animate(json.loads(tokens))
     # main()

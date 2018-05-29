@@ -63,6 +63,6 @@ python setup.py build
 sudo python setup.py install
 cd ..
 rm -rf pyftgl
-mkdir temp
-chmod -R 777 temp
+mkdir local
+chmod -R 777 local
 python main.py

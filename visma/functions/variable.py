@@ -1,5 +1,5 @@
-from visma.functions import Function
-
+from visma.functions.structure import Function
+from visma.functions.exponential import Logarithm
 
 ##########################
 # Variable and Constants #
@@ -7,13 +7,15 @@ from visma.functions import Function
 
 
 class Variable(Function):
+    """Class for variable type
+    """
 
     def __init__(self):
-        super().__init__()
-        self.value = []
+        super(Variable, self).__init__()
+        self.type = 'Variable'
 
-    def setprop(self, tid, scope, coefficient, power, operand, operator, value):
-        super().setprop(args)
+    def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
+        super(Variable, self).set(value, power, coefficient, scope, operand, operator)
 
     def inverse(self, RHS):
         self.operand = RHS.operand
@@ -23,7 +25,7 @@ class Variable(Function):
         self.__class__ = RHS.__class__
 
     def differentiate(self):
-        super().differentiate()
+        super(Variable, self).differentiate()
         self.value = 1
         self.__class__ = Constant
 
@@ -32,7 +34,7 @@ class Variable(Function):
             self.power = 1
             self.__class__ = Logarithm
         else:
-            self.coefficient /= power + 1
+            self.coefficient /= self.power + 1
             self.power += 1
 
     def calculate(self, val):
@@ -40,20 +42,22 @@ class Variable(Function):
 
 
 class Constant(Function):
+    """Class for constant type
+    """
 
-    def __init__(self, arg):
-        super().__init__()
-        self.value = []
+    def __init__(self):
+        super(Constant, self).__init__()
+        self.type = 'Constant'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
+        super().set(value, power, coefficient, scope, operand, operator)
 
     def inverse(self, RHS):
         """
         """
 
     def differentiate(self):
-        super().differentiate()
+        super(Constant, self).differentiate()
         self.value = 0
 
     def integrate(self, intwrt):

@@ -15,7 +15,7 @@ class Constant(BaseTypes):
         self.coefficient = 1
         self.power = []
 
-    def set_values(value=None, power=None, coefficient=None, scope=None):
+    def set_values(self, value=None, power=None, coefficient=None, scope=None):
         if value is not None:
             self.value = value
         if power is not None:
@@ -74,7 +74,7 @@ class Variable(BaseTypes):
         self.coefficient = 1
         self.power = []
 
-    def set_values(value=None, power=None, coefficient=None, scope=None):
+    def set_values(self, value=None, power=None, coefficient=None, scope=None):
         if value is not None:
             self.value = value
         if power is not None:
@@ -114,7 +114,7 @@ class Operations(BaseTypes):
         super(Operations, self).__init__()
         self.type = None
 
-    def set_values(value=None, type=None, scope=None):
+    def set_values(self, value=None, type=None, scope=None):
         if value is not None:
             self.value = value
         if type is not None:

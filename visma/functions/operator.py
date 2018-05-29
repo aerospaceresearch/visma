@@ -4,42 +4,48 @@
 
 class Operator(object):
 
-    def __init__(self, tid, scope, value):
-        self.tid = ""
-        self.scope = []
+    def __init__(self):
+        self.tid = None
+        self.scope = None
         self.value = None
+        self.type = None
 
-    def setprop(self, tid=None, scope=None, value=None):
-        if tid is not None:
-            self.tid = tid
+    def set(self, scope=None, value=None, tid=None):
         if scope is not None:
             self.scope = scope
         if value is not None:
             self.value = value
+        if tid is not None:
+            self.tid = tid
 
     def level(self):
         return (int((len(self.tid)) / 2))
 
 
 class Binary(Operator):
+    """Class for binary operator
+    """
 
     def __init__(self):
-        super().__init__()
-
-    def setprop(self, args):
-        super().setprop(args)
-
-    def level(self):
-        super.level()
+        super(Binary, self).__init__()
+        self.type = 'Binary'
 
 
 class Unary(Operator):
+    """Class for unary operator
+    """
 
     def __init__(self):
-        super().__init__()
+        super(Unary, self).__init__()
+        self.type = 'Unary'
 
-    def setprop(self, args):
-        super().setprop(args)
 
-    def level(self):
-        super.level()
+class Sqrt(Operator):
+    """Class for sqrt operator
+    """
+
+    def __init__(self):
+        super(Sqrt, self).__init__()
+        self.power = None
+        self.expression = None
+        self.type = 'Sqrt'

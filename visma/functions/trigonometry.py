@@ -12,8 +12,8 @@ class Sine(Function):
         super().__init__()
         self.value = 'sin'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)
@@ -37,8 +37,8 @@ class Cosine(Function):
         super().__init__()
         self.value = 'cos'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)
@@ -62,8 +62,8 @@ class Tangent(Function):
         super().__init__()
         self.value = 'tan'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)
@@ -88,8 +88,8 @@ class Cotangent(Function):
         super().__init__()
         self.value = 'cot'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)
@@ -117,8 +117,8 @@ class Secant(Function):
         super().__init__()
         self.value = 'cot'
 
-    def setprop(self, args):
-        super().setprop(args)
+    def set(self, args):
+        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)

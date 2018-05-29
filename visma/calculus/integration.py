@@ -8,6 +8,7 @@ Logic Description:
 """
 
 import visma.solvers.solve as ViSoSo
+import copy
 
 
 def integrate_variable(variable):
@@ -18,9 +19,8 @@ def integrate_variable(variable):
                 variable["coefficient"] /= variable["power"][0]
                 return variable
             else:
-                #log
-                variable["type"]='log'
-                variable["power"]=1
+                variable["type"] = 'log'
+                variable["power"] = 1
                 return variable
     else:
         tokens = []
@@ -38,33 +38,33 @@ def integrate_variable(variable):
 
 
 def trigonometry(variable):
-	if variable["type"] == 'cos':
-		variable["type"] = 'sin'
-		return variable
-	elif variable["type"] == 'sin':
-		variable["type"] = 'cos'
-		variable["coefficient"] *= -1
-		return variable
-	elif variable["type"] == 'sec':
-		if variable["power"] == 2:
-			variable["power"] = 1
-			variable["type"] = 'tan'
-			return variable
-  elif variable["type"]=='cosec':
-		if variable["power"] == 2:
-			variable["power"]=1
-			variable["type"] = 'cot'
-			variable["coefficient"] *= -1
-	    return variable
+    if variable["type"] == 'cos':
+        variable["type"] = 'sin'
+        return variable
+    elif variable["type"] == 'sin':
+        variable["type"] = 'cos'
+        variable["coefficient"] *= -1
+        return variable
+    elif variable["type"] == 'sec':
+        if variable["power"] == 2:
+            variable["power"] = 1
+            variable["type"] = 'tan'
+            return variable
+    elif variable["type"] == 'cosec':
+        if variable["power"] == 2:
+            variable["power"] = 1
+            variable["type"] = 'cot'
+            variable["coefficient"] *= -1
+        return variable
 
 
 def hyperbolic(variable):
-	if variable["type"] == 'sinh':
-		variable["type"] = 'cosh'
-		return variable
-	elif variable["type"] == 'cosh':
-		variable["type"] = 'sinh'
-		return variable
+    if variable["type"] == 'sinh':
+        variable["type"] = 'cosh'
+        return variable
+    elif variable["type"] == 'cosh':
+        variable["type"] = 'sinh'
+        return variable
 
 
 def integrate_constant(constant, var):

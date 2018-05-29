@@ -13,11 +13,12 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
 import visma.input.tokenize as ViInTo
-import visma.solvers.solve as ViSoSo
+from visma.solvers.solve import check_types, find_solve_for, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
 import visma.solvers.polynomial.roots as ViSoPoRo
 import json
 from subprocess import Popen
 import os
+# from visma.gui.plotter import plotthis
 
 # TODO: Revamp GUI
 
@@ -29,8 +30,8 @@ class Window(QtGui.QMainWindow):
         self.initUI()
 
     def initUI(self):
-        exitAction = QtGui.QAction(QtGui.QIcon(
-            'assets/exit.png'), 'Exit', self)
+        # exitAction = QtGui.QAction(QtGui.QIcon('assets/exit.png'), 'Exit', self)
+        exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
@@ -40,6 +41,12 @@ class Window(QtGui.QMainWindow):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
+        # TODO: Add function for adding custom equation lists
+        # fileMenu.addAction(addEqList)
+        configMenu = menubar.addMenu('&Config')
+        #
+        helpMenu = menubar.addMenu('&Help')
+        #
 
         toolbar = self.addToolBar('Exit')
         toolbar.addAction(exitAction)
@@ -53,23 +60,19 @@ class Window(QtGui.QMainWindow):
 
 class WorkSpace(QWidget):
 
-    # inputLaTeX = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '\\times', '\\div',  '=', 'x', 'y', 'z', '\\alpha', '\\beta', '\\gamma', '\\pi', '^{}', '\\sqrt[n]{}']
-    # inputGreek = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '*', '/', '=', 'x', 'y', 'z', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '^{}', 'sqrt[n]{}']
-    inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
-    inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
+    inputLaTeX = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '\\times', '\\div',  '=', 'x', 'y', 'z', '\\alpha', '\\beta', '\\gamma', '\\pi', '^{}', '\\sqrt[n]{}']
+    inputGreek = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '*', '/', '=', 'x', 'y', 'z', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '^{}', 'sqrt[n]{}']
 
     mode = 'interaction'
     buttons = {}
     solutionOptionsBox = QGridLayout()
     solutionButtons = {}
     inputBox = QGridLayout()
-    selectedCombo = "LaTeX"
+    selectedCombo = "Greek"
     equations = []
 
-    # TODO: Add function for adding custom equation lists
-
     try:
-        with open('temp/eqn-list.vis', 'r+') as fp:
+        with open('local/eqn-list.vis', 'r+') as fp:
             for line in fp:
                 if not line.isspace():
                     fp.write(line)
@@ -77,9 +80,9 @@ class WorkSpace(QWidget):
                         0, ('Equation No.' + str(len(equations) + 1), line))
             fp.close()
     except IOError:
-        if not os.path.exists('temp'):
-            os.mkdir('temp')
-        file = open('temp/eqn-list.vis', 'w')
+        if not os.path.exists('local'):
+            os.mkdir('local')
+        file = open('local/eqn-list.vis', 'w')
         file.close()
 
     if len(equations) == 0:
@@ -99,9 +102,9 @@ class WorkSpace(QWidget):
     def initUI(self):
         hbox = QHBoxLayout(self)
 
-        eqautionList = QWidget()
-        eqautionList.setLayout(self.equationsLayout())
-        eqautionList.setStatusTip("Track of old equations")
+        equationList = QWidget()
+        equationList.setLayout(self.equationsLayout())
+        equationList.setStatusTip("Track of old equations")
 
         inputList = QWidget()
         inputList.setLayout(self.inputsLayout())
@@ -123,7 +126,7 @@ class WorkSpace(QWidget):
         splitter2.setSizes([800, 400])
 
         splitter3 = QSplitter(Qt.Horizontal)
-        splitter3.addWidget(eqautionList)
+        splitter3.addWidget(equationList)
         splitter3.addWidget(splitter2)
         splitter3.setSizes([400, 1200])
 
@@ -161,7 +164,7 @@ class WorkSpace(QWidget):
 
         interactionModeWidget = QWidget(self)
         interactionModeLayout = QVBoxLayout()
-        interactionModeButton = QPushButton("Interaction Mode")
+        interactionModeButton = QPushButton("VisMa")
         interactionModeButton.resize(30, 70)
         interactionModeButton.clicked.connect(self.interactionMode)
         interactionModeLayout.addWidget(interactionModeButton)
@@ -201,12 +204,12 @@ class WorkSpace(QWidget):
             textSelected = str(interactionText)
             self.mode = 'interaction'
         self.tokens = ViInTo.tokenizer(textSelected)
-        # print self.tokens
+        # DBP: print self.tokens
         self.addEquation()
         lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
-        operations, self.solutionType = ViSoSo.check_types(
+        operations, self.solutionType = check_types(
             lhs, rhs)
         if isinstance(operations, list):
             opButtons = []
@@ -231,10 +234,10 @@ class WorkSpace(QWidget):
                     opButtons.append("Find Roots")
 
             if self.buttonSet:
-                for i in reversed(range(self.solutionOptionsBox.count())):
+                for i in reversed(xrange(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
                 for i in xrange(int(len(opButtons) / 3) + 1):
-                    for j in range(3):
+                    for j in xrange(3):
                         if len(opButtons) > (i * 3 + j):
                             self.solutionButtons[(i, j)] = QtGui.QPushButton(
                                 opButtons[i * 3 + j])
@@ -247,7 +250,7 @@ class WorkSpace(QWidget):
                 self.bottomButton.setParent(None)
                 self.solutionWidget = QWidget()
                 for i in xrange(int(len(opButtons) / 3) + 1):
-                    for j in range(3):
+                    for j in xrange(3):
                         if len(opButtons) > (i * 3 + j):
                             self.solutionButtons[(i, j)] = QtGui.QPushButton(
                                 opButtons[i * 3 + j])
@@ -283,10 +286,10 @@ class WorkSpace(QWidget):
                     opButtons.append("Solve For")
                 elif operations == 'find roots':
                     opButtons.append("Find Roots")
-            for i in reversed(range(self.solutionOptionsBox.count())):
+            for i in reversed(xrange(self.solutionOptionsBox.count())):
                 self.solutionOptionsBox.itemAt(i).widget().setParent(None)
             for i in xrange(int(len(opButtons) / 3) + 1):
-                for j in range(3):
+                for j in xrange(3):
                     if len(opButtons) > (i * 3 + j):
                         self.solutionButtons[(i, j)] = QtGui.QPushButton(
                             opButtons[i * 3 + j])
@@ -297,7 +300,7 @@ class WorkSpace(QWidget):
                             self.solutionButtons[(i, j)], i, j)
 
     def clearButtons(self):
-        for i in reversed(range(self.solutionOptionsBox.count())):
+        for i in reversed(xrange(self.solutionOptionsBox.count())):
             self.solutionOptionsBox.itemAt(i).widget().setParent(None)
 
     def solveForButtons(self, variables):
@@ -307,10 +310,10 @@ class WorkSpace(QWidget):
                 for variable in variables:
                     varButtons.append(variable)
                 varButtons.append("Back")
-                for i in reversed(range(self.solutionOptionsBox.count())):
+                for i in reversed(xrange(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
                 for i in xrange(int(len(varButtons) / 3) + 1):
-                    for j in range(3):
+                    for j in xrange(3):
                         if len(varButtons) > (i * 3 + j):
                             self.solutionButtons[(i, j)] = QtGui.QPushButton(
                                 varButtons[i * 3 + j])
@@ -324,7 +327,7 @@ class WorkSpace(QWidget):
         self.textedit.setText("")
 
     def saveEquation(self):
-        for i in reversed(range(self.equationListVbox.count())):
+        for i in reversed(xrange(self.equationListVbox.count())):
             self.equationListVbox.itemAt(i).widget().setParent(None)
 
         eqn = unicode(self.textedit.toPlainText())
@@ -339,7 +342,7 @@ class WorkSpace(QWidget):
                 ("Equation No. " + str(len(self.equations) + 1), eqn))
 
         self.textedit.setText('')
-        file = open('temp/eqn-list.vis', 'r+')
+        file = open('local/eqn-list.vis', 'r+')
         self.myQListWidget = QtGui.QListWidget(self)
         i = 0
         for index, name in self.equations:
@@ -368,7 +371,7 @@ class WorkSpace(QWidget):
             if equation == eqn:
                 return self.equationListVbox
 
-        for i in reversed(range(self.equationListVbox.count())):
+        for i in reversed(xrange(self.equationListVbox.count())):
             self.equationListVbox.itemAt(i).widget().setParent(None)
 
         if len(self.equations) == 1:
@@ -380,7 +383,7 @@ class WorkSpace(QWidget):
         else:
             self.equations.append(
                 ("Equation No. " + str(len(self.equations) + 1), eqn))
-        file = open('temp/eqn-list.vis', 'r+')
+        file = open('local/eqn-list.vis', 'r+')
         self.myQListWidget = QtGui.QListWidget(self)
         i = 0
         for index, name in self.equations:
@@ -403,7 +406,7 @@ class WorkSpace(QWidget):
         self.equationListVbox.addWidget(self.myQListWidget)
         return self.equationListVbox
 
-    def inputsLayout(self, loadList="LaTeX"):
+    def inputsLayout(self, loadList="Greek"):
         inputLayout = QHBoxLayout(self)
         blank = QFrame()
 
@@ -411,8 +414,8 @@ class WorkSpace(QWidget):
         comboLabel.setText("Input Type:")
 
         combo = QtGui.QComboBox(self)
-        combo.addItem("LaTeX")
         combo.addItem("Greek")
+        combo.addItem("LaTeX")
         combo.resize(10, 10)
         combo.activated[str].connect(self.onActivated)
 
@@ -426,8 +429,8 @@ class WorkSpace(QWidget):
         inputSplitter = QSplitter(Qt.Vertical)
         inputWidget = QWidget()
         self.selectedCombo = str(loadList)
-        for i in range(10):
-            for j in range(3):
+        for i in xrange(10):
+            for j in xrange(3):
                 if str(loadList) in "Greek":
                     if (i * 3 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtGui.QPushButton(
@@ -453,11 +456,11 @@ class WorkSpace(QWidget):
         return inputLayout
 
     def onActivated(self, text):
-        for i in reversed(range(self.inputBox.count())):
+        for i in reversed(xrange(self.inputBox.count())):
             self.inputBox.itemAt(i).widget().setParent(None)
 
-        for i in range(10):
-            for j in range(3):
+        for i in xrange(10):
+            for j in xrange(3):
                 if str(text) in "Greek":
                     if (i * 3 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtGui.QPushButton(
@@ -488,110 +491,54 @@ class WorkSpace(QWidget):
             animation = []
             if name == 'Addition':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.addition(
+                    self.tokens, availableOperations, token_string, animation, comments = addition(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.addition_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = addition_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Subtraction':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction(
+                    self.tokens, availableOperations, token_string, animation, comments = subtraction(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.subtraction_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = subtraction_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Multiplication':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication(
+                    self.tokens, availableOperations, token_string, animation, comments = multiplication(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.multiplication_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = multiplication_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Division':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.division(
+                    self.tokens, availableOperations, token_string, animation, comments = division(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.division_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = division_equation(
                         self.lTokens, self.rTokens, True)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = ViSoSo.simplify(self.tokens)
+                    self.tokens, availableOperations, token_string, animation, comments = simplify(self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.simplify_equation(self.lTokens, self.rTokens)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
+                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = simplify_equation(self.lTokens, self.rTokens)
             elif name == 'Solve For':
                 lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
-                variables = ViSoSo.find_solve_for(lhs, rhs)
+                variables = find_solve_for(lhs, rhs)
                 self.solveForButtons(variables)
             elif name == 'Find Roots':
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(
-                    self.lTokens, self.rTokens)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
-                if len(availableOperations) == 0:
-                    self.clearButtons()
-                else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
+                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
+            Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
+            if len(availableOperations) == 0:
+                self.clearButtons()
+            else:
+                self.refreshButtons(availableOperations)
+            if self.mode == 'normal':
+                self.textedit.setText(token_string)
+            elif self.mode == 'interaction':
+                cursor = self.textedit.textCursor()
+                cursor.insertText(token_string)
+            # plotthis(token_string)
         return calluser
 
     def onSolveForPress(self, name):
@@ -604,16 +551,15 @@ class WorkSpace(QWidget):
                 self.tokens = ViInTo.tokenizer(textSelected)
                 # print self.tokens
                 lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
-                operations, self.solutionType = ViSoSo.check_types(
+                operations, self.solutionType = check_types(
                     lhs, rhs)
                 self.refreshButtons(operations)
 
             else:
-                print(name)
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoSo.solve_for(
+                # CHECKME: No solve_for function in any module. Supposed to be in solve.py module
+                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve_for(
                     self.lTokens, self.rTokens, name)
-                Popen(['python', 'visma/gui/animator.py',
-                       json.dumps(animation), json.dumps(comments)])
+                Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
                 self.refreshButtons(availableOperations)
                 if self.mode == 'normal':
                     self.textedit.setText(token_string)
