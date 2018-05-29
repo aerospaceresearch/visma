@@ -137,7 +137,7 @@ def draw_scene():
                 j += 1
             y += 50 + (len(comments[j - 1]) * 30)
             glutSwapBuffers()
-            time.sleep(2)
+            time.sleep(1)
     else:
         while i < len(string):
             glClear(GL_COLOR_BUFFER_BIT)
@@ -159,7 +159,7 @@ def draw_scene():
 
 def render_comment(x, y, comment):
     glRasterPos(x, y)
-    font.FaceSize(18)
+    font.FaceSize(20)
     font.Render(str(comment.encode('utf-8')))
 
 
@@ -413,7 +413,7 @@ def main():
     glutInitWindowSize(width, height)
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
-    glutCreateWindow("Equation")
+    glutCreateWindow("Step-by-step solution")
     glClearColor(0.0, 0.0, 0.0, 0.0)
     font.FaceSize(24, 72)
 
@@ -433,6 +433,5 @@ if __name__ == '__main__':
     tokens = sys.argv[1]
     coms = sys.argv[2]
     comments = json.loads(coms)
-    # print tokens
     animate(json.loads(tokens))
     # main()
