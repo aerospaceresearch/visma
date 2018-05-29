@@ -47,10 +47,6 @@ class Window(QtGui.QMainWindow):
         #
         helpMenu = menubar.addMenu('&Help')
         #
-
-        toolbar = self.addToolBar('Exit')
-        toolbar.addAction(exitAction)
-
         workSpace = WorkSpace()
         self.setCentralWidget(workSpace)
         self.setGeometry(300, 300, 1280, 720)
@@ -106,31 +102,51 @@ class WorkSpace(QWidget):
         equationList.setLayout(self.equationsLayout())
         equationList.setStatusTip("Track of old equations")
 
+
         inputList = QWidget()
         inputList.setLayout(self.inputsLayout())
         inputList.setStatusTip("Input characters")
 
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
+        buttonSpace.setFixedHeight(300)
 
         self.textedit = QTextEdit()
+        self.textedit.setFixedHeight(70)
         self.textedit.textChanged.connect(self.textChangeTrigger)
-        splitter1 = QSplitter(Qt.Vertical)
-        splitter1.addWidget(self.textedit)
-        splitter1.addWidget(buttonSpace)
-        splitter1.setSizes([600, 400])
 
-        splitter2 = QSplitter(Qt.Horizontal)
-        splitter2.addWidget(splitter1)
-        splitter2.addWidget(inputList)
-        splitter2.setSizes([800, 400])
+        splitter5 = QSplitter(Qt.Horizontal)
+        # splitter5.addWidget(inputList)
+        # splitter5.addWidget(splitter5)
 
-        splitter3 = QSplitter(Qt.Horizontal)
-        splitter3.addWidget(equationList)
-        splitter3.addWidget(splitter2)
-        splitter3.setSizes([400, 1200])
+        splitter4 = QSplitter(Qt.Vertical)
+        splitter4.addWidget(inputList)
+        splitter4.addWidget(splitter5)
 
-        hbox.addWidget(splitter3)
+        splitter3 = QSplitter(Qt.Vertical)
+        splitter3.addWidget(self.textedit)
+        splitter3.addWidget(splitter4)
+
+        splitter2 = QSplitter(Qt.Vertical)
+        splitter2.addWidget(buttonSpace)
+        splitter2.addWidget(equationList)
+        splitter2.setFixedWidth(250)
+
+        splitter1 = QSplitter(Qt.Horizontal)
+        splitter1.addWidget(splitter3)
+        splitter1.addWidget(splitter2)
+
+        # splitter1.addWidget(self.textedit)
+        # splitter1.addWidget(buttonSpace)
+
+        # splitter2.addWidget(splitter1)
+        # splitter2.addWidget(inputList)
+
+        # splitter3 = QSplitter(Qt.Horizontal)
+        # splitter3.addWidget(equationList)
+        # splitter3.addWidget(splitter2)
+
+        hbox.addWidget(splitter1)
         self.setLayout(hbox)
 
     def textChangeTrigger(self):
@@ -164,14 +180,17 @@ class WorkSpace(QWidget):
 
         interactionModeWidget = QWidget(self)
         interactionModeLayout = QVBoxLayout()
-        interactionModeButton = QPushButton("VisMa")
-        interactionModeButton.resize(30, 70)
+        vismaButton = PicButton(QPixmap("assets/vismabtn.png"))
+        vismaButton.setFixedSize(137,50)
+        interactionModeButton = vismaButton
+
         interactionModeButton.clicked.connect(self.interactionMode)
         interactionModeLayout.addWidget(interactionModeButton)
         interactionModeWidget.setLayout(interactionModeLayout)
         topButtonSplitter = QSplitter(Qt.Horizontal)
         topButtonSplitter.addWidget(interactionModeWidget)
         permanentButtons = QWidget(self)
+        """
         documentButtonsLayout = QHBoxLayout()
         newButton = PicButton(QPixmap("assets/new.png"))
         saveButton = PicButton(QPixmap("assets/save.png"))
@@ -182,6 +201,7 @@ class WorkSpace(QWidget):
         newButton.clicked.connect(self.newEquation)
         saveButton.clicked.connect(self.saveEquation)
         permanentButtons.setLayout(documentButtonsLayout)
+        """
         topButtonSplitter.addWidget(permanentButtons)
         topButtonSplitter.setSizes([10000, 2])
 
@@ -237,7 +257,7 @@ class WorkSpace(QWidget):
                 for i in reversed(xrange(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
                 for i in xrange(int(len(opButtons) / 3) + 1):
-                    for j in xrange(3):
+                    for j in xrange(2):
                         if len(opButtons) > (i * 3 + j):
                             self.solutionButtons[(i, j)] = QtGui.QPushButton(
                                 opButtons[i * 3 + j])
@@ -429,8 +449,8 @@ class WorkSpace(QWidget):
         inputSplitter = QSplitter(Qt.Vertical)
         inputWidget = QWidget()
         self.selectedCombo = str(loadList)
-        for i in xrange(10):
-            for j in xrange(3):
+        for i in xrange(4):
+            for j in xrange(10):
                 if str(loadList) in "Greek":
                     if (i * 3 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtGui.QPushButton(
