@@ -18,6 +18,13 @@ import visma.solvers.polynomial.roots as ViSoPoRo
 import json
 from subprocess import Popen
 import os
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+
+import random
 # from visma.gui.plotter import plotthis
 
 # TODO: Revamp GUI
@@ -56,8 +63,9 @@ class Window(QtGui.QMainWindow):
 
 class WorkSpace(QWidget):
 
-    inputLaTeX = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '\\times', '\\div',  '=', 'x', 'y', 'z', '\\alpha', '\\beta', '\\gamma', '\\pi', '^{}', '\\sqrt[n]{}']
-    inputGreek = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '+', '-', '*', '/', '=', 'x', 'y', 'z', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '^{}', 'sqrt[n]{}']
+    inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', '\\alpha', '\\beta', '\\gamma', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'e', '^', 'i' ,'\\pi', '.', '0', '=', '<', '>']
+    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', u'\u03B1', u'\u03B2', u'\u03B3', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'e', '^', 'i' , u'\u03C0', '.', '0', '=', '<', '>']
+
 
     mode = 'interaction'
     buttons = {}
@@ -101,23 +109,49 @@ class WorkSpace(QWidget):
         equationList = QWidget()
         equationList.setLayout(self.equationsLayout())
         equationList.setStatusTip("Track of old equations")
-
+        equationList.setFixedWidth(300)
 
         inputList = QWidget()
         inputList.setLayout(self.inputsLayout())
         inputList.setStatusTip("Input characters")
+        inputList.setFixedHeight(200)
 
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
-        buttonSpace.setFixedHeight(300)
+        buttonSpace.setFixedWidth(300)
+
+
+        plotFig = QWidget()
+        plotFig.setLayout(self.plotFigure())
+
+        stepsFig = QWidget()
+        stepsFig.setLayout(self.stepsFigure())
 
         self.textedit = QTextEdit()
-        self.textedit.setFixedHeight(70)
         self.textedit.textChanged.connect(self.textChangeTrigger)
+        self.textedit.setFixedHeight(70)
 
+        splitter4 = QSplitter(Qt.Vertical)
+        splitter4.addWidget(self.textedit)
+        splitter4.addWidget(inputList)
+
+        splitter3 = QSplitter(Qt.Horizontal)
+        splitter3.addWidget(splitter4)
+        splitter3.addWidget(buttonSpace)
+
+        splitter2 = QSplitter(Qt.Horizontal)
+        splitter2.addWidget(stepsFig)
+        splitter2.addWidget(plotFig)
+        splitter2.addWidget(equationList)
+
+        splitter1 = QSplitter(Qt.Vertical)
+        splitter1.addWidget(splitter3)
+        splitter1.addWidget(splitter2)
+
+        """ Other layout option
         splitter5 = QSplitter(Qt.Horizontal)
-        # splitter5.addWidget(inputList)
-        # splitter5.addWidget(splitter5)
+        splitter5.addWidget(stepsFig)
+        splitter5.addWidget(plotFig)
 
         splitter4 = QSplitter(Qt.Vertical)
         splitter4.addWidget(inputList)
@@ -130,21 +164,12 @@ class WorkSpace(QWidget):
         splitter2 = QSplitter(Qt.Vertical)
         splitter2.addWidget(buttonSpace)
         splitter2.addWidget(equationList)
-        splitter2.setFixedWidth(250)
+        splitter2.setFixedWidth(300)
 
         splitter1 = QSplitter(Qt.Horizontal)
         splitter1.addWidget(splitter3)
         splitter1.addWidget(splitter2)
-
-        # splitter1.addWidget(self.textedit)
-        # splitter1.addWidget(buttonSpace)
-
-        # splitter2.addWidget(splitter1)
-        # splitter2.addWidget(inputList)
-
-        # splitter3 = QSplitter(Qt.Horizontal)
-        # splitter3.addWidget(equationList)
-        # splitter3.addWidget(splitter2)
+        """
 
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
@@ -168,8 +193,63 @@ class WorkSpace(QWidget):
         self.myQListWidget.resize(400, 300)
 
         self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.equationListVbox.addWidget(QLabel("<h3>Equation History</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
         return self.equationListVbox
+
+    def plotFigure(self):
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.button = QtGui.QPushButton('Plot')
+        self.button.clicked.connect(self.plot)
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(QLabel("<h3>Plotter</h3>"))
+        layout.addWidget(self.canvas)
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.button)
+        return layout
+
+    def plot(self):
+        data = [random.random() for i in range(10)]
+        ax = self.figure.add_subplot(111)
+        ax.clear()
+        varDict = {}
+        delta = 0.1
+        xrange = np.arange(-20, 20.0, delta)
+        yrange = np.arange(-20, 20.0, delta)
+        varDict['X'], varDict['Y'] = np.meshgrid(xrange, yrange)
+        LHS = 0
+        LHS += varDict['X']**2
+        LHS -= varDict['Y']
+        RHS = 0
+        ax.contour(varDict['X'], varDict['Y'], (LHS - RHS), [0])
+        ax.grid()
+        self.canvas.draw()
+
+    def stepsFigure(self):
+        self.stpsfigure = Figure()
+        self.stpscanvas = FigureCanvas(self.stpsfigure)
+        self.stpsfigure.clear()
+        self.stpsbutton = QtGui.QPushButton('Show steps')
+        self.stpsbutton.clicked.connect(self.showSteps)
+
+        stpslayout = QtGui.QVBoxLayout()
+        stpslayout.addWidget(QLabel("<h3>Step-by-step solution</h3>"))
+        stpslayout.addWidget(self.stpscanvas)
+        stpslayout.addWidget(self.stpsbutton)
+        return stpslayout
+
+    def showSteps(self, mathText=r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$'):
+        text = self.stpsfigure.suptitle(
+            mathText,
+            x=0.0,
+            y=1.0,
+            horizontalalignment='left',
+            verticalalignment='top',
+            size=qApp.font().pointSize()*2)
+        self.stpscanvas.draw()
 
     def Clicked(self, item):
         index, name = self.equations[self.myQListWidget.currentRow()]
@@ -269,14 +349,14 @@ class WorkSpace(QWidget):
             else:
                 self.bottomButton.setParent(None)
                 self.solutionWidget = QWidget()
-                for i in xrange(int(len(opButtons) / 3) + 1):
-                    for j in xrange(3):
-                        if len(opButtons) > (i * 3 + j):
+                for i in xrange(int(len(opButtons) / 2) + 1):
+                    for j in xrange(2):
+                        if len(opButtons) > (i * 2 + j):
                             self.solutionButtons[(i, j)] = QtGui.QPushButton(
-                                opButtons[i * 3 + j])
+                                opButtons[i * 2 + j])
                             self.solutionButtons[(i, j)].resize(100, 100)
                             self.solutionButtons[(i, j)].clicked.connect(
-                                self.onSolvePress(opButtons[i * 3 + j]))
+                                self.onSolvePress(opButtons[i * 2 + j]))
                             self.solutionOptionsBox.addWidget(
                                 self.solutionButtons[(i, j)], i, j)
                 self.solutionWidget.setLayout(self.solutionOptionsBox)
@@ -308,14 +388,14 @@ class WorkSpace(QWidget):
                     opButtons.append("Find Roots")
             for i in reversed(xrange(self.solutionOptionsBox.count())):
                 self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-            for i in xrange(int(len(opButtons) / 3) + 1):
-                for j in xrange(3):
-                    if len(opButtons) > (i * 3 + j):
+            for i in xrange(int(len(opButtons) / 2) + 1):
+                for j in xrange(2):
+                    if len(opButtons) > (i * 2 + j):
                         self.solutionButtons[(i, j)] = QtGui.QPushButton(
-                            opButtons[i * 3 + j])
+                            opButtons[i * 2 + j])
                         self.solutionButtons[(i, j)].resize(100, 100)
                         self.solutionButtons[(i, j)].clicked.connect(
-                            self.onSolvePress(opButtons[i * 3 + j]))
+                            self.onSolvePress(opButtons[i * 2 + j]))
                         self.solutionOptionsBox.addWidget(
                             self.solutionButtons[(i, j)], i, j)
 
@@ -332,14 +412,14 @@ class WorkSpace(QWidget):
                 varButtons.append("Back")
                 for i in reversed(xrange(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-                for i in xrange(int(len(varButtons) / 3) + 1):
-                    for j in xrange(3):
-                        if len(varButtons) > (i * 3 + j):
+                for i in xrange(int(len(varButtons) / 2) + 1):
+                    for j in xrange(2):
+                        if len(varButtons) > (i * 2 + j):
                             self.solutionButtons[(i, j)] = QtGui.QPushButton(
-                                varButtons[i * 3 + j])
+                                varButtons[i * 2 + j])
                             self.solutionButtons[(i, j)].resize(100, 100)
                             self.solutionButtons[(i, j)].clicked.connect(
-                                self.onSolveForPress(varButtons[i * 3 + j]))
+                                self.onSolveForPress(varButtons[i * 2 + j]))
                             self.solutionOptionsBox.addWidget(
                                 self.solutionButtons[(i, j)], i, j)
 
@@ -432,11 +512,12 @@ class WorkSpace(QWidget):
 
         comboLabel = QtGui.QLabel()
         comboLabel.setText("Input Type:")
+        comboLabel.setFixedSize(100, 30)
 
         combo = QtGui.QComboBox(self)
         combo.addItem("Greek")
         combo.addItem("LaTeX")
-        combo.resize(10, 10)
+        combo.setFixedSize(100, 30)
         combo.activated[str].connect(self.onActivated)
 
         inputTypeSplitter = QSplitter(Qt.Horizontal)
@@ -452,20 +533,20 @@ class WorkSpace(QWidget):
         for i in xrange(4):
             for j in xrange(10):
                 if str(loadList) in "Greek":
-                    if (i * 3 + j) < len(self.inputGreek):
+                    if (i * 10 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtGui.QPushButton(
-                            self.inputGreek[i * 3 + j])
+                            self.inputGreek[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
-                            self.onInputPress(self.inputGreek[i * 3 + j]))
+                            self.onInputPress(self.inputGreek[i * 10 + j]))
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
                 elif str(loadList) in "LaTeX":
-                    if (i * 3 + j) < len(self.inputLaTeX):
+                    if (i * 10 + j) < len(self.inputLaTeX):
                         self.buttons[(i, j)] = QtGui.QPushButton(
-                            self.inputLaTeX[i * 3 + j])
+                            self.inputLaTeX[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
-                            self.onInputPress(self.inputLaTeX[i * 3 + j]))
+                            self.onInputPress(self.inputLaTeX[i * 10 + j]))
                         # (self.inputLaTeX[i * 3 + j])
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
         inputWidget.setLayout(self.inputBox)
@@ -479,23 +560,23 @@ class WorkSpace(QWidget):
         for i in reversed(xrange(self.inputBox.count())):
             self.inputBox.itemAt(i).widget().setParent(None)
 
-        for i in xrange(10):
-            for j in xrange(3):
+        for i in xrange(4):
+            for j in xrange(10):
                 if str(text) in "Greek":
-                    if (i * 3 + j) < len(self.inputGreek):
+                    if (i * 10 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtGui.QPushButton(
-                            self.inputGreek[i * 3 + j])
+                            self.inputGreek[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
-                            self.onInputPress(self.inputGreek[i * 3 + j]))
+                            self.onInputPress(self.inputGreek[i * 10 + j]))
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
                 elif str(text) in "LaTeX":
-                    if (i * 3 + j) < len(self.inputLaTeX):
+                    if (i * 10 + j) < len(self.inputLaTeX):
                         self.buttons[(i, j)] = QtGui.QPushButton(
-                            self.inputLaTeX[i * 3 + j])
+                            self.inputLaTeX[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
-                            self.onInputPress(self.inputLaTeX[i * 3 + j]))
+                            self.onInputPress(self.inputLaTeX[i * 10 + j]))
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
         self.selectedCombo = str(text)
 
