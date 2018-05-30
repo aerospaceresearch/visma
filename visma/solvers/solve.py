@@ -2790,6 +2790,7 @@ def eval_expressions(variables):
         elif variable.__class__ == Variable:
             prev = False
             nxt = False
+            # CHECKME: Undefined i and tokens
             if i != 0:
                 if tokens[i - 1].__class__ == Binary:
                     if tokens[i - 1].value in ['-', '+']:

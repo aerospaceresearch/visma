@@ -19,7 +19,6 @@ import json
 from subprocess import Popen
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
@@ -63,9 +62,8 @@ class Window(QtGui.QMainWindow):
 
 class WorkSpace(QWidget):
 
-    inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', '\\alpha', '\\beta', '\\gamma', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'e', '^', 'i' ,'\\pi', '.', '0', '=', '<', '>']
-    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', u'\u03B1', u'\u03B2', u'\u03B3', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'e', '^', 'i' , u'\u03C0', '.', '0', '=', '<', '>']
-
+    inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', '\\alpha', '\\beta',  '\\gamma', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'e', '^', 'i', '\\pi', '.', '0', '=', '<', '>']
+    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', u'\u03B1', u'\u03B2', u'\u03B3', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'e', '^', 'i', u'\u03C0', '.', '0', '=', '<', '>']
 
     mode = 'interaction'
     buttons = {}
@@ -119,17 +117,20 @@ class WorkSpace(QWidget):
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
         buttonSpace.setFixedWidth(300)
-
+        buttonSpace.setStatusTip("Interact")
 
         plotFig = QWidget()
         plotFig.setLayout(self.plotFigure())
+        plotFig.setStatusTip("Graph plot")
 
         stepsFig = QWidget()
         stepsFig.setLayout(self.stepsFigure())
+        stepsFig.setStatusTip("Step-by-step solver")
 
         self.textedit = QTextEdit()
         self.textedit.textChanged.connect(self.textChangeTrigger)
         self.textedit.setFixedHeight(70)
+        self.textedit.setStatusTip("Input equation")
 
         splitter4 = QSplitter(Qt.Vertical)
         splitter4.addWidget(self.textedit)
@@ -189,9 +190,7 @@ class WorkSpace(QWidget):
             self.myQListWidget.addItem(myQListWidgetItem)
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
-
         self.myQListWidget.resize(400, 300)
-
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(QLabel("<h3>Equation History</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
@@ -200,10 +199,13 @@ class WorkSpace(QWidget):
     def plotFigure(self):
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
+
+        class NavigationCustomToolbar(NavigationToolbar):
+            toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
+
+        self.toolbar = NavigationCustomToolbar(self.canvas, self)
         self.button = QtGui.QPushButton('Plot')
         self.button.clicked.connect(self.plot)
-
         layout = QtGui.QVBoxLayout()
         layout.addWidget(QLabel("<h3>Plotter</h3>"))
         layout.addWidget(self.canvas)
@@ -221,7 +223,7 @@ class WorkSpace(QWidget):
         yrange = np.arange(-20, 20.0, delta)
         varDict['X'], varDict['Y'] = np.meshgrid(xrange, yrange)
         LHS = 0
-        LHS += varDict['X']**2
+        LHS += varDict['X']**2 - 10
         LHS -= varDict['Y']
         RHS = 0
         ax.contour(varDict['X'], varDict['Y'], (LHS - RHS), [0])
@@ -243,12 +245,12 @@ class WorkSpace(QWidget):
 
     def showSteps(self, mathText=r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$'):
         text = self.stpsfigure.suptitle(
-            mathText,
+            r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$',
             x=0.0,
             y=1.0,
             horizontalalignment='left',
             verticalalignment='top',
-            size=qApp.font().pointSize()*2)
+            size=qApp.font().pointSize()*1.5)
         self.stpscanvas.draw()
 
     def Clicked(self, item):
@@ -258,15 +260,15 @@ class WorkSpace(QWidget):
     def buttonsLayout(self):
         vbox = QVBoxLayout()
 
-        interactionModeWidget = QWidget(self)
         interactionModeLayout = QVBoxLayout()
-        vismaButton = PicButton(QPixmap("assets/vismabtn.png"))
-        vismaButton.setFixedSize(137,50)
+        vismaButton = QtGui.QPushButton('VisMa')
         interactionModeButton = vismaButton
 
         interactionModeButton.clicked.connect(self.interactionMode)
         interactionModeLayout.addWidget(interactionModeButton)
+        interactionModeWidget = QWidget(self)
         interactionModeWidget.setLayout(interactionModeLayout)
+        interactionModeWidget.setFixedSize(275, 50)
         topButtonSplitter = QSplitter(Qt.Horizontal)
         topButtonSplitter.addWidget(interactionModeWidget)
         permanentButtons = QWidget(self)
@@ -283,13 +285,11 @@ class WorkSpace(QWidget):
         permanentButtons.setLayout(documentButtonsLayout)
         """
         topButtonSplitter.addWidget(permanentButtons)
-        topButtonSplitter.setSizes([10000, 2])
 
         self.bottomButton = QFrame()
         self.buttonSplitter = QSplitter(Qt.Vertical)
         self.buttonSplitter.addWidget(topButtonSplitter)
         self.buttonSplitter.addWidget(self.bottomButton)
-        self.buttonSplitter.setSizes([1, 1000])
         vbox.addWidget(self.buttonSplitter)
         return vbox
 
@@ -336,14 +336,14 @@ class WorkSpace(QWidget):
             if self.buttonSet:
                 for i in reversed(xrange(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-                for i in xrange(int(len(opButtons) / 3) + 1):
+                for i in xrange(int(len(opButtons) / 2) + 1):
                     for j in xrange(2):
-                        if len(opButtons) > (i * 3 + j):
+                        if len(opButtons) > (i * 2 + j):
                             self.solutionButtons[(i, j)] = QtGui.QPushButton(
-                                opButtons[i * 3 + j])
+                                opButtons[i * 2 + j])
                             self.solutionButtons[(i, j)].resize(100, 100)
                             self.solutionButtons[(i, j)].clicked.connect(
-                                self.onSolvePress(opButtons[i * 3 + j]))
+                                self.onSolvePress(opButtons[i * 2 + j]))
                             self.solutionOptionsBox.addWidget(
                                 self.solutionButtons[(i, j)], i, j)
             else:
@@ -362,7 +362,6 @@ class WorkSpace(QWidget):
                 self.solutionWidget.setLayout(self.solutionOptionsBox)
                 self.buttonSplitter.addWidget(self.solutionWidget)
                 self.buttonSet = True
-                self.buttonSplitter.setSizes([1, 1000])
 
     def refreshButtons(self, operations):
         if isinstance(operations, list):
@@ -503,6 +502,7 @@ class WorkSpace(QWidget):
         self.myQListWidget.resize(400, 300)
 
         self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.equationListVbox.addWidget(QLabel("<h3>Equation History</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
         return self.equationListVbox
 
@@ -685,10 +685,10 @@ class QCustomQWidget (QtGui.QWidget):
         self.setLayout(self.allQHBoxLayout)
         # setStyleSheet
         self.textUpQLabel.setStyleSheet('''
-        color: rgb(0, 0, 255);
+        color: rgb(200, 0, 0);
         ''')
         self.textDownQLabel.setStyleSheet('''
-        color: rgb(255, 0, 0);
+        color: rgb(0, 0, 0);
         ''')
 
     def setTextUp(self, text):
