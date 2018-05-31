@@ -9,6 +9,7 @@ A visual equation solver, which aims to help in grasping how mathematical equati
 
 Project Idea: https://summerofcode.withgoogle.com/projects/#6347577401278464
 
+
 ## Installation
 To run the program for the first time, open your terminal, and navigate to the folder containing these files, and type:
 
@@ -26,9 +27,11 @@ For every subsequent launch, you can use:
 python main.py
 ```
 
+
 ## Download:
 ![Github All Releases](https://img.shields.io/github/downloads/8hantanu/VisMa/total.svg?style=for-the-badge)
 ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/8hantanu/VisMa.svg?style=for-the-badge)
+
 
 ## Docs:
 Project Resources such as mock-up and planning document: https://goo.gl/imySCH
@@ -39,6 +42,12 @@ Project Resources such as mock-up and planning document: https://goo.gl/imySCH
 [![Github Wiki](https://img.shields.io/badge/wiki-VisMa-pink.svg?style=for-the-badge)](https://github.com/aerospaceresearch/VisMa/wiki)
 ![Read the Docs](https://img.shields.io/readthedocs/visma.svg?style=for-the-badge)
 [![Gitter](https://img.shields.io/gitter/room/aerospaceresearch/visma.svg?style=for-the-badge)](https://gitter.im/aerospaceresearch/VisMa)
+
+
+## Demo
+
+![VisMa](/assets/demo.gif)
+
 
 ## Contribute:
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/VisMa/pulls)

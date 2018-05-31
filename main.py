@@ -15,8 +15,8 @@ from PyQt4 import QtGui
 import visma.input.tokenize as ViInTo
 from visma.solvers.solve import check_types, find_solve_for, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
 import visma.solvers.polynomial.roots as ViSoPoRo
+from visma.testbed.parser import resultLatex
 import json
-from subprocess import Popen
 import os
 import numpy as np
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -171,7 +171,6 @@ class WorkSpace(QWidget):
         splitter1.addWidget(splitter3)
         splitter1.addWidget(splitter2)
         """
-
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
 
@@ -243,13 +242,9 @@ class WorkSpace(QWidget):
         stpslayout.addWidget(self.stpsbutton)
         return stpslayout
 
-    def showSteps(self, mathText=r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$'):
-        text = self.stpsfigure.suptitle(
-            r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$',
-            x=0.0,
-            y=1.0,
-            horizontalalignment='left',
-            verticalalignment='top',
+    def showSteps(self):
+        text = self.stpsfigure.suptitle(theResult,
+            x=0.0, y=1.0, horizontalalignment='left', verticalalignment='top',
             size=qApp.font().pointSize()*1.5)
         self.stpscanvas.draw()
 
@@ -552,7 +547,6 @@ class WorkSpace(QWidget):
         inputWidget.setLayout(self.inputBox)
         inputSplitter.addWidget(topSplitter)
         inputSplitter.addWidget(inputWidget)
-        inputSplitter.setSizes([10, 1000])
         inputLayout.addWidget(inputSplitter)
         return inputLayout
 
@@ -629,7 +623,10 @@ class WorkSpace(QWidget):
                 self.solveForButtons(variables)
             elif name == 'Find Roots':
                 self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
-            Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
+            # Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
+            # finalSteps = tokensToLatex(name, animation, comments)
+            global theResult
+            theResult = resultLatex(name, animation, comments)
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:
@@ -660,7 +657,7 @@ class WorkSpace(QWidget):
                 # CHECKME: No solve_for function in any module. Supposed to be in solve.py module
                 self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve_for(
                     self.lTokens, self.rTokens, name)
-                Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
+                # Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
                 self.refreshButtons(availableOperations)
                 if self.mode == 'normal':
                     self.textedit.setText(token_string)
@@ -685,7 +682,7 @@ class QCustomQWidget (QtGui.QWidget):
         self.setLayout(self.allQHBoxLayout)
         # setStyleSheet
         self.textUpQLabel.setStyleSheet('''
-        color: rgb(200, 0, 0);
+        color: rgb(255, 0, 0);
         ''')
         self.textDownQLabel.setStyleSheet('''
         color: rgb(0, 0, 0);
