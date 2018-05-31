@@ -16,7 +16,6 @@ import visma.input.tokenize as ViInTo
 from visma.solvers.solve import check_types, find_solve_for, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
 import visma.solvers.polynomial.roots as ViSoPoRo
 from visma.testbed.parser import resultLatex
-import json
 import os
 import numpy as np
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -244,8 +243,10 @@ class WorkSpace(QWidget):
 
     def showSteps(self):
         text = self.stpsfigure.suptitle(theResult,
-            x=0.0, y=1.0, horizontalalignment='left', verticalalignment='top',
-            size=qApp.font().pointSize()*1.5)
+                                        x=0.0, y=1.0,
+                                        horizontalalignment='left',
+                                        verticalalignment='top',
+                                        size=qApp.font().pointSize()*1.5)
         self.stpscanvas.draw()
 
     def Clicked(self, item):

@@ -1,6 +1,7 @@
-from visma.functions.structure import Function, Expression
+from visma.functions.structure import Expression
 from visma.functions.variable import Variable, Constant
 from visma.functions.operator import Binary, Sqrt
+
 
 def resultLatex(operation, equations, comments):
 
@@ -43,6 +44,5 @@ def tokensToLatex(eqTokens):
             if token.expression.value == -1:
                 eqLatex += "\iota "
             else:
-                eqLatex += "\sqrt { { (" + tokensToLatex(token.expression)
-                + ") }^" + str(token.expression.power) + " }"
+                eqLatex += "\sqrt { { (" + tokensToLatex(token.expression) + ") }^" + str(token.expression.power) + " }"
     return eqLatex

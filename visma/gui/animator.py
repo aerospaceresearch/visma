@@ -361,7 +361,7 @@ def render_equation(x, y, string, level=1, fontSize=24):
                 iota = Variable()
                 iota.coefficient = 1
                 iota.value = ['i']
-                iota.power =  [1]
+                iota.power = [1]
                 x, y = render_variable(x, y, iota)
             else:
                 if term.power.__class__ == Constant:
