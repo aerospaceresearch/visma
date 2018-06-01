@@ -12,10 +12,10 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
-import visma.input.tokenize as ViInTo
+import visma.io.tokenize as ViInTo
 from visma.solvers.solve import check_types, find_solve_for, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
 import visma.solvers.polynomial.roots as ViSoPoRo
-from visma.testbed.parser import resultLatex
+from visma.io.parser import resultLatex
 import os
 import numpy as np
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas

@@ -14,7 +14,7 @@ import copy
 from visma.functions.structure import Function, Expression
 from visma.functions.variable import Variable, Constant
 from visma.functions.operator import Binary, Sqrt
-from visma.input.tokenize import is_number, get_num
+from visma.io.tokenize import is_number, get_num
 
 
 def get_variable_string(variable, power):
@@ -886,7 +886,7 @@ def change_token(tokens, variables, scope_times=0):
                                 break
                         elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
                             token.tokens = change_token(
-                                token.tokens, scope, scope_times + 1)
+                                token.tokens, token.scope, scope_times + 1)
                             break
     return tokens
 
@@ -2783,29 +2783,29 @@ def extract_expression(variable):
 def eval_expressions(variables):
     var = []
     varPowers = []
-    for variable in variables:
+    for i, variable in enumerate(variables):
         if variable.__class__ == Expression:
             if eval_expressions(variable.tokens):
                 return False
         elif variable.__class__ == Variable:
             prev = False
             nxt = False
-            # CHECKME: Undefined i and tokens
+            # CHECKME: Undefined i and tokens. Which tokens ?
             if i != 0:
-                if tokens[i - 1].__class__ == Binary:
-                    if tokens[i - 1].value in ['-', '+']:
+                if variable[i - 1].__class__ == Binary:
+                    if variable[i - 1].value in ['-', '+']:
                         prev = True
                 else:
-                    print(tokens[i - 1])
+                    print(variable[i - 1])
             else:
                 prev = True
 
-            if i + 1 < len(tokens):
-                if tokens[i + 1].__class__ == Binary:
-                    if tokens[i + 1].value in ['-', '+']:
+            if i + 1 < len(variable):
+                if variable[i + 1].__class__ == Binary:
+                    if variable[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
-                    print(tokens[i + 1])
+                    print(variable[i + 1])
             else:
                 nxt = True
             if nxt and prev:
@@ -2825,20 +2825,20 @@ def eval_expressions(variables):
             prev = False
             nxt = False
             if i != 0:
-                if tokens[i - 1].__class__ == Binary:
-                    if tokens[i - 1].value in ['-', '+']:
+                if variable[i - 1].__class__ == Binary:
+                    if variable[i - 1].value in ['-', '+']:
                         prev = True
                 else:
-                    print(tokens[i - 1])
+                    print(variable[i - 1])
             else:
                 prev = True
 
-            if i + 1 < len(tokens):
-                if tokens[i + 1].__class__ == Binary:
-                    if tokens[i + 1].value in ['-', '+']:
+            if i + 1 < len(variable):
+                if variable[i + 1].__class__ == Binary:
+                    if variable[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
-                    print(tokens[i + 1])
+                    print(variable[i + 1])
             else:
                 nxt = True
             if nxt and prev:

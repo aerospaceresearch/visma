@@ -8,8 +8,7 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 
-# TODO: Use LaTeX rendered output in animator
-
+"""
 import sys
 import time
 from OpenGL.GL import *
@@ -438,3 +437,4 @@ if __name__ == '__main__':
     comments = json.loads(coms)
     animate(json.loads(tokens))
     # main()
+"""

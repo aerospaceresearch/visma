@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from visma.functions.variable import Variable, Constant
 from visma.functions.operator import Binary
-from visma.input.tokenize import tokenizer, get_variables_value, get_lhs_rhs
+from visma.io.tokenize import tokenizer, get_variables_value, get_lhs_rhs
 
 # TODO: Use matplotlib to plot graphs(use openGL if possible)
 
