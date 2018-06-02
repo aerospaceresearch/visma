@@ -1610,7 +1610,7 @@ if __name__ == "__main__":
     print symTokens
     '''
 
-    print(get_lhs_rhs(tokenizer('0.2x^(2.0) + y^3 + 4z + 7.0x - 34.0 = 0')))
+    print(get_lhs_rhs(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
 
 # -xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 # x+y=2^-{x+y}
