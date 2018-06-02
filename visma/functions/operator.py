@@ -10,14 +10,6 @@ class Operator(object):
         self.value = None
         self.type = None
 
-    def set(self, scope=None, value=None, tid=None):
-        if scope is not None:
-            self.scope = scope
-        if value is not None:
-            self.value = value
-        if tid is not None:
-            self.tid = tid
-
     def level(self):
         return (int((len(self.tid)) / 2))
 

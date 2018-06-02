@@ -1,5 +1,6 @@
 from visma.functions.structure import Expression
-from visma.functions.variable import Variable, Constant
+from visma.functions.constant import Constant
+from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 
 

@@ -12,7 +12,8 @@ Logic Description:
 import math
 import copy
 from visma.functions.structure import Function, Expression
-from visma.functions.variable import Variable, Constant
+from visma.functions.constant import Constant, Zero
+from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.io.tokenize import is_number, get_num
 
@@ -250,9 +251,7 @@ def simplify_equation(lToks, rToks):
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
-        zero = Constant()
-        zero.value = 0
-        zero.power = 1
+        zero = Zero()
         zero.scope = [l + 1]
         animBuilder.append(zero)
     else:
@@ -302,9 +301,7 @@ def simplify_equation(lToks, rToks):
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
-        zero = Constant()
-        zero.value = 0
-        zero.power = 1
+        zero = Zero()
         zero.scope = [l + 1]
         tokenToStringBuilder.append(zero)
     else:
@@ -371,9 +368,7 @@ def addition_equation(lToks, rToks, direct=False):
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
-        zero = Constant()
-        zero.value = 0
-        zero.power = 1
+        zero = Zero()
         zero.scope = [l + 1]
         animBuilder.append(zero)
     else:
@@ -395,9 +390,7 @@ def addition_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
-            zero.value = 0
-            zero.power = 1
+            zero = Zero()
             zero.scope = [l + 1]
             animBuilder.append(zero)
         else:
@@ -418,9 +411,7 @@ def addition_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
-            zero.value = 0
-            zero.power = 1
+            zero = Zero()
             zero.scope = [l + 1]
             animBuilder.append(zero)
         else:
@@ -444,9 +435,7 @@ def addition_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
-            zero.value = 0
-            zero.power = 1
+            zero = Zero()
             zero.scope = [l + 1]
             animBuilder.append(zero)
         else:
@@ -464,9 +453,7 @@ def addition_equation(lToks, rToks, direct=False):
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
-        zero = Constant()
-        zero.value = 0
-        zero.power = 1
+        zero = Zero()
         zero.scope = [l + 1]
         tokenToStringBuilder.append(zero)
     else:
@@ -508,9 +495,7 @@ def subtraction_equation(lToks, rToks, direct=False):
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
-        zero = Constant()
-        zero.value = 0
-        zero.power = 1
+        zero = Zero()
         zero.scope = [l + 1]
         animBuilder.append(zero)
     else:
@@ -533,9 +518,7 @@ def subtraction_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
-            zero.value = 0
-            zero.power = 1
+            zero = Zero()
             zero.scope = [l + 1]
             animBuilder.append(zero)
         else:
@@ -557,9 +540,7 @@ def subtraction_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
-            zero.value = 0
-            zero.power = 1
+            zero = Zero()
             zero.scope = [l + 1]
             animBuilder.append(zero)
         else:
@@ -583,7 +564,7 @@ def subtraction_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
+            zero = Zero()
             zero.value = 0
             zero.power = 1
             zero.scope = [l + 1]
@@ -604,8 +585,6 @@ def subtraction_equation(lToks, rToks, direct=False):
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
         zero = Constant()
-        zero.value = 0
-        zero.power = 1
         zero.scope = [l + 1]
         tokenToStringBuilder.append(zero)
     else:
@@ -647,7 +626,7 @@ def division_equation(lToks, rToks, direct=False):
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
-        zero = Constant()
+        zero = Zero()
         zero.value = 0
         zero.power = 1
         zero.scope = [l + 1]
@@ -672,8 +651,6 @@ def division_equation(lToks, rToks, direct=False):
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
             zero = Constant()
-            zero.value = 0
-            zero.power = 1
             zero.scope = [l + 1]
             animBuilder.append(zero)
         else:
@@ -694,7 +671,7 @@ def division_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
+            zero = Zero()
             zero.value = 0
             zero.power = 1
             zero.scope = [l + 1]
@@ -713,8 +690,6 @@ def division_equation(lToks, rToks, direct=False):
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
         zero = Constant()
-        zero.value = 0
-        zero.power = 1
         zero.scope = [l + 1]
         tokenToStringBuilder.append(zero)
     else:
@@ -760,7 +735,7 @@ def multiplication_equation(lToks, rToks, direct=False):
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
-        zero = Constant()
+        zero = Zero()
         zero.value = 0
         zero.power = 1
         zero.scope = [l + 1]
@@ -785,8 +760,6 @@ def multiplication_equation(lToks, rToks, direct=False):
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
             zero = Constant()
-            zero.value = 0
-            zero.power = 1
             zero.scope = [l + 1]
             animBuilder.append(zero)
         else:
@@ -807,7 +780,7 @@ def multiplication_equation(lToks, rToks, direct=False):
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
-            zero = Constant()
+            zero = Zero()
             zero.value = 0
             zero.power = 1
             zero.scope = [l + 1]
@@ -826,8 +799,6 @@ def multiplication_equation(lToks, rToks, direct=False):
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
         zero = Constant()
-        zero.value = 0
-        zero.power = 1
         zero.scope = [l + 1]
         tokenToStringBuilder.append(zero)
     else:

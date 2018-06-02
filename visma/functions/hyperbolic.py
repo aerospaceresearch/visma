@@ -11,9 +11,6 @@ class Sinh(Function):
         super().__init__()
         self.value = 'sinh'
 
-    def set(self, args):
-        super().set(args)
-
     def inverse(self, RHS):
         super().inverse(RHS)
         self.__class__ = ArcSinh
@@ -34,9 +31,6 @@ class Cosh(Function):
     def __init__(self, arg):
         super().__init__()
         self.value = 'cosh'
-
-    def set(self, args):
-        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)

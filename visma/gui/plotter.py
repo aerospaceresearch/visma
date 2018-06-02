@@ -1,11 +1,15 @@
 from visma.io.tokenize import get_lhs_rhs
 import numpy as np
-from visma.functions.variable import Variable, Constant
+from visma.functions.variable import Variable
+from visma.functions.constant import Constant
 from visma.functions.operator import Binary
 from visma.solvers.solve import is_equation
 
 
 def plotThis(equationTokens):
+
+    # FIXME: Quite basic right now. Need fix for multi-variables
+
     LHStok, RHStok = get_lhs_rhs(equationTokens)
 
     varDict = {}
@@ -18,7 +22,7 @@ def plotThis(equationTokens):
     coeff = 1
     for token in LHStok:
         if token.__class__ == Variable:
-            LHS += coeff*token.coefficient*(varDict['x']**token.power[0])
+            LHS += coeff*token.coefficient*(varDict[token.value[0]]**token.power[0])
         elif token.__class__ == Binary and token.value == '-':
             coeff = -1
         elif token.__class__ == Constant:

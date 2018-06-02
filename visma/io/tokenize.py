@@ -16,7 +16,8 @@ Logic Description:
 import math
 import copy
 from visma.functions.structure import Function, Equation, Expression
-from visma.functions.variable import Variable, Constant
+from visma.functions.constant import Constant
+from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 
 symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=']

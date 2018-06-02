@@ -18,20 +18,6 @@ class Function(object):
         self.beforeScope = None
         self.afterScope = None
 
-    def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
-        if value is not None:
-            self.value = value
-        if power is not None:
-            self.power = power
-        if coefficient is not None:
-            self.coefficient = coefficient
-        if scope is not None:
-            self.scope = scope
-        if operand is not None:
-            self.operand = operand
-        if operator is not None:
-            self.operator = operator
-
     def inverse(self, RHS):
         RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
         RHS.power /= self.power
@@ -62,18 +48,6 @@ class Expression(Function):
         self.tokens = None
         self.type = 'Expression'
 
-    def set(self, scope=None, tokens=None, tid=None):
-        if tid is not None:
-            self.tid = tid
-        if scope is not None:
-            self.scope = scope
-        else:
-            self.scope = []
-        if tokens is not None:
-            self.tokens = tokens
-        else:
-            self.tokens = []
-
 
 class Equation(Function):
     """Class for equation type
@@ -83,15 +57,3 @@ class Equation(Function):
         super(Equation, self).__init__()
         self.tokens = None
         self.type = 'Equation'
-
-    def set(self, scope=None, tokens=None, tid=None):
-        if tid is not None:
-            self.tid = tid
-        if scope is not None:
-            self.scope = scope
-        else:
-            self.scope = []
-        if tokens is not None:
-            self.tokens = tokens
-        else:
-            self.tokens = []

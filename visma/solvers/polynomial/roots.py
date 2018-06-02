@@ -12,7 +12,8 @@ from __future__ import division
 import math
 import copy
 from visma.functions.structure import Expression
-from visma.functions.variable import Variable, Constant
+from visma.functions.constant import Constant
+from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.solvers.solve import simplify_equation, tokens_to_string, move_rTokens_to_lTokens, evaluate_constant
 from config.config import ROUND_OFF
@@ -238,9 +239,7 @@ def quadratic_roots(lTokens, rTokens):
         binary3.value = '*'
         lTokens = [expression, binary3, expression2]
 
-    zero = Constant()
-    zero.value = 0
-    zero.power = 1
+    zero = Zero()
     rTokens = [zero]
     comments.append([])
     tokenToStringBuilder = copy.deepcopy(lTokens)
@@ -250,9 +249,7 @@ def quadratic_roots(lTokens, rTokens):
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
-        zero = Constant()
-        zero.value = 0
-        zero.power = 1
+        zero = Zero()
         zero.scope = [tokLen + 1]
         tokenToStringBuilder.append(zero)
     else:

@@ -12,9 +12,6 @@ class Logarithm(Function):
         super().__init__()
         self.value = []
 
-    def set(self, args):
-        super().set(args)
-
     def inverse(self, RHS):
         super().inverse(RHS)
 
@@ -36,9 +33,6 @@ class Exponential(Function):
     def __init__(self, arg):
         super().__init__()
         self.value = []
-
-    def set(self, args):
-        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)
