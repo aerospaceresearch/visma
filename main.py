@@ -9,20 +9,19 @@ Logic Description:
 """
 
 import sys
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt4.QtGui import QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QLabel, QFrame, QApplication, QAbstractButton, qApp, QPainter
+from PyQt4.QtCore import Qt
 from PyQt4 import QtGui
-import visma.io.tokenize as ViInTo
+from visma.io.tokenize import tokenizer, get_lhs_rhs
 from visma.solvers.solve import check_types, find_solve_for, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
 import visma.solvers.polynomial.roots as ViSoPoRo
 from visma.io.parser import resultLatex
 import os
-import numpy as np
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+from visma.gui.plotter import plotThis
 
-import random
 # from visma.gui.plotter import plotthis
 
 # TODO: Revamp GUI
@@ -148,28 +147,6 @@ class WorkSpace(QWidget):
         splitter1.addWidget(splitter3)
         splitter1.addWidget(splitter2)
 
-        """ Other layout option
-        splitter5 = QSplitter(Qt.Horizontal)
-        splitter5.addWidget(stepsFig)
-        splitter5.addWidget(plotFig)
-
-        splitter4 = QSplitter(Qt.Vertical)
-        splitter4.addWidget(inputList)
-        splitter4.addWidget(splitter5)
-
-        splitter3 = QSplitter(Qt.Vertical)
-        splitter3.addWidget(self.textedit)
-        splitter3.addWidget(splitter4)
-
-        splitter2 = QSplitter(Qt.Vertical)
-        splitter2.addWidget(buttonSpace)
-        splitter2.addWidget(equationList)
-        splitter2.setFixedWidth(300)
-
-        splitter1 = QSplitter(Qt.Horizontal)
-        splitter1.addWidget(splitter3)
-        splitter1.addWidget(splitter2)
-        """
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
 
@@ -212,19 +189,10 @@ class WorkSpace(QWidget):
         return layout
 
     def plot(self):
-        data = [random.random() for i in range(10)]
         ax = self.figure.add_subplot(111)
         ax.clear()
-        varDict = {}
-        delta = 0.1
-        xrange = np.arange(-20, 20.0, delta)
-        yrange = np.arange(-20, 20.0, delta)
-        varDict['X'], varDict['Y'] = np.meshgrid(xrange, yrange)
-        LHS = 0
-        LHS += varDict['X']**2 - 10
-        LHS -= varDict['Y']
-        RHS = 0
-        ax.contour(varDict['X'], varDict['Y'], (LHS - RHS), [0])
+        x, y, LHS, RHS = plotThis(equationTokens[-1])
+        ax.contour(x, y, (LHS - RHS), [0])
         ax.grid()
         self.canvas.draw()
 
@@ -299,10 +267,10 @@ class WorkSpace(QWidget):
         else:
             textSelected = str(interactionText)
             self.mode = 'interaction'
-        self.tokens = ViInTo.tokenizer(textSelected)
+        self.tokens = tokenizer(textSelected)
         # DBP: print self.tokens
         self.addEquation()
-        lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
+        lhs, rhs = get_lhs_rhs(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
         operations, self.solutionType = check_types(
@@ -584,50 +552,51 @@ class WorkSpace(QWidget):
         def calluser():
             availableOperations = []
             token_string = ''
-            animation = []
+            global equationTokens
+            equationTokens = []
             if name == 'Addition':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = addition(
+                    self.tokens, availableOperations, token_string, equationTokens, comments = addition(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = addition_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = addition_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Subtraction':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = subtraction(
+                    self.tokens, availableOperations, token_string, equationTokens, comments = subtraction(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = subtraction_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = subtraction_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Multiplication':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = multiplication(
+                    self.tokens, availableOperations, token_string, equationTokens, comments = multiplication(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = multiplication_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = multiplication_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Division':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = division(
+                    self.tokens, availableOperations, token_string, equationTokens, comments = division(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = division_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = division_equation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
-                    self.tokens, availableOperations, token_string, animation, comments = simplify(self.tokens)
+                    self.tokens, availableOperations, token_string, equationTokens, comments = simplify(self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = simplify_equation(self.lTokens, self.rTokens)
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = simplify_equation(self.lTokens, self.rTokens)
             elif name == 'Solve For':
-                lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
+                lhs, rhs = get_lhs_rhs(self.tokens)
                 variables = find_solve_for(lhs, rhs)
                 self.solveForButtons(variables)
             elif name == 'Find Roots':
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
-            # Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
-            # finalSteps = tokensToLatex(name, animation, comments)
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
+            # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
+            # finalSteps = tokensToLatex(name, equationTokens, comments)
             global theResult
-            theResult = resultLatex(name, animation, comments)
+            theResult = resultLatex(name, equationTokens, comments)
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:
@@ -644,21 +613,21 @@ class WorkSpace(QWidget):
         def calluser():
             availableOperations = []
             token_string = ''
-            animation = []
+            equationTokens = []
             if name == 'Back':
                 textSelected = str(self.textedit.toPlainText())
-                self.tokens = ViInTo.tokenizer(textSelected)
+                self.tokens = tokenizer(textSelected)
                 # print self.tokens
-                lhs, rhs = ViInTo.get_lhs_rhs(self.tokens)
+                lhs, rhs = get_lhs_rhs(self.tokens)
                 operations, self.solutionType = check_types(
                     lhs, rhs)
                 self.refreshButtons(operations)
 
             else:
                 # CHECKME: No solve_for function in any module. Supposed to be in solve.py module
-                self.lTokens, self.rTokens, availableOperations, token_string, animation, comments = solve_for(
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solve_for(
                     self.lTokens, self.rTokens, name)
-                # Popen(['python', 'visma/gui/animator.py', json.dumps(animation, default=lambda o: o.__dict__), json.dumps(comments)])
+                # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
                 self.refreshButtons(availableOperations)
                 if self.mode == 'normal':
                     self.textedit.setText(token_string)
