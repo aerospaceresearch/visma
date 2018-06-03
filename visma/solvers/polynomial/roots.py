@@ -12,7 +12,7 @@ from __future__ import division
 import math
 import copy
 from visma.functions.structure import Expression
-from visma.functions.constant import Constant
+from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.solvers.solve import simplify_equation, tokens_to_string, move_rTokens_to_lTokens, evaluate_constant
@@ -266,7 +266,7 @@ def find_quadratic_roots(lTokens, rTokens):
             lTokens, rTokens)
     coeffs = [0, 0, 0]
     for i, token in enumerate(lTokens):
-        if token.__class__ == Constant:
+        if isinstance(token, Constant):
             cons = evaluate_constant(token)
             if i != 0:
                 if lTokens[i - 1].__class__ == Binary:
