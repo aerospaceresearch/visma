@@ -24,7 +24,7 @@ from config.config import ROUND_OFF
 def available_variables(tokens):
     variables = []
     for token in tokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             for val in token.value:
                 if val not in variables:
                     variables.append(val)
@@ -34,7 +34,7 @@ def available_variables(tokens):
 def highest_power(tokens, variable):
     maxPow = 0
     for token in tokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             for i, val in enumerate(token.value):
                 if val == variable:
                     if token.power[i] > maxPow:
@@ -51,11 +51,11 @@ def check_for_quadratic_roots(lTokens, rTokens):
     lVariables = available_variables(lTokens)
     rVariables = available_variables(rTokens)
     for token in lTokens:
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*', '/']:
                 return False
     for token in rTokens:
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*', '/']:
                 return False
 
@@ -269,7 +269,7 @@ def find_quadratic_roots(lTokens, rTokens):
         if isinstance(token, Constant):
             cons = evaluate_constant(token)
             if i != 0:
-                if lTokens[i - 1].__class__ == Binary:
+                if isinstance(lTokens[i - 1], Binary):
                     if lTokens[i - 1].value in ['-', '+']:
                         if lTokens[i - 1].value == '-':
                             cons *= -1
@@ -280,11 +280,11 @@ def find_quadratic_roots(lTokens, rTokens):
                     return roots
             else:
                 coeffs[0] += cons
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             if len(token.value) == 1:
                 var = token.coefficient
                 if i != 0:
-                    if lTokens[i - 1].__class__ == Binary:
+                    if isinstance(lTokens[i - 1], Binary):
                         if lTokens[i - 1].value in ['-', '+']:
                             if lTokens[i - 1].value == '-':
                                 var *= -1

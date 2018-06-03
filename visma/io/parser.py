@@ -25,23 +25,23 @@ def resultLatex(operation, equations, comments):
 def tokensToLatex(eqTokens):
     eqLatex = ""
     for token in eqTokens:
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             eqLatex += str(token.value)
-        elif token.__class__ == Constant:
+        elif isinstance(token, Constant):
             eqLatex += str(token.value)
-        elif token.__class__ == Variable:
+        elif isinstance(token, Variable):
             if token.coefficient != 1:
                 eqLatex += str(token.coefficient)
             eqLatex += "{" + token.value[0] + " }"
             if token.power != [1]:
                 eqLatex += "^{" + str(token.power[0]) + " }"
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             if token.coefficient != 1:
                 eqLatex += str(token.coefficient) + "*"
             eqLatex += "{ (" + tokensToLatex(token.tokens) + ") }"
             if token.power != 1:
                 eqLatex += "^{" + str(token.power) + " }"
-        elif token.__class__ == Sqrt:
+        elif isinstance(token, Sqrt):
             if token.expression.value == -1:
                 eqLatex += "\iota "
             else:

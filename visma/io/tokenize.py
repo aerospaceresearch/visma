@@ -1502,11 +1502,11 @@ def constant_variable(variable):
 
     for var in variable.value:
         if isinstance(var, Function):
-            if var.__class__ == Expression:
+            if isinstance(var, Expression):
                 result, token = constant_conversion(var.tokens)
                 if not result:
                     constant = False
-            elif var.__class__ == Variable:
+            elif isinstance(var, Variable):
                 if not constant_variable(var):
                     constant = False
         elif not is_number(var):
@@ -1514,11 +1514,11 @@ def constant_variable(variable):
 
     for p in variable.power:
         if isinstance(p, Function):
-            if p.__class__ == Expression:
+            if isinstance(p, Expression):
                 result, token = constant_conversion(p.tokens)
                 if not result:
                     constant = False
-            elif p.__class__ == Variable:
+            elif isinstance(p, Variable):
                 if not constant_variable(p):
                     constant = False
         elif not is_number(p):
@@ -1545,7 +1545,7 @@ def evaluate_constant(constant):
 def constant_conversion(tokens):
     constantExpression = True
     for token in tokens:
-        if token.__class__ == Variable():
+        if isinstance(token, Variable):
             constant = True
             if not constant_variable(token):
                 constant = False
@@ -1555,10 +1555,10 @@ def constant_conversion(tokens):
                 token.value = evaluate_constant(token)
                 token.power = 1
 
-        elif token.__class__ == Binary:
+        elif isinstance(token, Binary):
             constantExpression = False
 
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             result, token = constant_conversion(token.tokens)
             if not result:
                 constantExpression = False
@@ -1577,7 +1577,7 @@ def get_lhs_rhs(tokens):
     if not isinstance(tokens, list):
         return False, False
     for token in tokens:
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value == '=':
                 eqn = True
             elif not eqn:
@@ -1594,7 +1594,7 @@ def get_lhs_rhs(tokens):
 def get_variables_value(tokens):
     variableDict = {}
     for token in tokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             variableDict[token.value[0]] = None
     return variableDict
 

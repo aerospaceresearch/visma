@@ -32,7 +32,7 @@ def differentiate_tokens(funclist):
 
             func = func.operand
 
-            if(func.__class__ == Constant):
+            if isinstance(func, Constant):
                 func.value = 0
                 func.coefficient = 1
                 func.power = 1

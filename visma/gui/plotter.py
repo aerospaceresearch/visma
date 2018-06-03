@@ -21,11 +21,11 @@ def plotThis(equationTokens):
     LHS = 0
     coeff = 1
     for token in LHStok:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             LHS += coeff*token.coefficient*(varDict[token.value[0]]**token.power[0])
-        elif token.__class__ == Binary and token.value == '-':
+        elif isinstance(token, Binary) and token.value == '-':
             coeff = -1
-        elif token.__class__ == Constant:
+        elif isinstance(token, Constant):
             LHS += coeff*token.value
     RHS = varDict['y']
     if(is_equation(LHStok, RHStok)):

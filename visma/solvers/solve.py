@@ -48,7 +48,7 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
                 binary.scope = copy.copy(token.scope)
                 binary.scope[-1] -= 1
                 lTokens.append(binary)
-            if token.__class__ == Binary:
+            if isinstance(token, Binary):
                 if token.value in ['+', '-']:
                     if token.value == '-':
                         token.value = '+'
@@ -56,16 +56,16 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
                         token.value = '-'
             elif isinstance(token, Constant):
                 if token.value < 0:
-                    if lTokens[-1].__class__ == Binary:
+                    if isinstance(lTokens[-1], Binary):
                         if lTokens[-1].value == '-':
                             token.value *= -1
                             lTokens[-1].value = '+'
                         elif lTokens[-1].value == '+':
                             token.value *= -1
                             lTokens[-1].value = '-'
-            elif token.__class__ == Variable:
+            elif isinstance(token, Variable):
                 if token.coefficient < 0:
-                    if lTokens[-1].__class__ == Binary:
+                    if isinstance(lTokens[-1], Binary):
                         if lTokens[-1].value == '-':
                             token.coefficient *= -1
                             lTokens[-1].value = '+'
@@ -99,19 +99,19 @@ def find_solve_for(lTokens, rTokens=None, variables=None):
     if variables is None:
         variables = []
     for token in lTokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             for val in token.value:
                 if val not in variables:
                     variables.append(val)
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             variables.extend(find_solve_for(token.tokens))
 
     for token in rTokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             for val in token.value:
                 if val not in variables:
                     variables.append(val)
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             variables.extend(find_solve_for(token.tokens, [], variables))
     return variables
 
@@ -129,16 +129,16 @@ class ExpressionCompatibility(object):
 
 def check_solve_for(lTokens, rTokens):
     for token in lTokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             return True
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             if check_solve_for(token.tokens):
                 return True
 
     for token in rTokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             return True
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             if check_solve_for(token.tokens):
                 return True
 
@@ -158,7 +158,7 @@ def tokens_to_string(tokens):
                     token_string += (str(token.value) + '^(' + str(token.power) + ') ')
                 else:
                     token_string += str(token.value)
-        elif token.__class__ == Variable:
+        elif isinstance(token, Variable):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
@@ -170,28 +170,28 @@ def tokens_to_string(tokens):
                     token_string += (str(val) + '^(' + str(token.power[j]) + ') ')
                 else:
                     token_string += str(val)
-        elif token.__class__ == Binary:
+        elif isinstance(token, Binary):
             token_string += ' ' + str(token.value) + ' '
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             token_string += ' ( '
             token_string += tokens_to_string(token.tokens)
             token_string += ' ) '
             if token.power != 1:
                 token_string += '^(' + str(token.power) + ') '
-        elif token.__class__ == Sqrt:
+        elif isinstance(token, Sqrt):
             token_string += 'sqrt['
             if isinstance(token.power, Constant):
                 token_string += tokens_to_string([token.power])
-            elif token.power.__class__ == Variable:
+            elif isinstance(token.power, Variable):
                 token_string += tokens_to_string([token.power])
-            elif token.power.__class__ == Expression:
+            elif isinstance(token.power, Expression):
                 token_string += tokens_to_string(token.power.tokens)
             token_string += ']('
             if isinstance(token.expression, Constant):
                 token_string += tokens_to_string([token.expression])
-            elif token.expression.__class__ == Variable:
+            elif isinstance(token.expression, Variable):
                 token_string += tokens_to_string([token.expression])
-            elif token.expression.__class__ == Expression:
+            elif isinstance(token.expression, Expression):
                 token_string += tokens_to_string(token.expression.tokens)
 
             token_string += ') '
@@ -214,15 +214,15 @@ def test():
 def remove_token(tokens, scope, scope_times=0):
     for remScope in scope:
         for i, token in enumerate(tokens):
-            if isinstance(token, Constant) or token.__class__ == Variable:
+            if isinstance(token, Constant) or isinstance(token, Variable):
                 if token.scope == remScope:
                     tokens.pop(i)
                     break
-            elif token.__class__ == Binary:
+            elif isinstance(token, Binary):
                 if token.scope == remScope:
                     tokens.pop(i)
                     break
-            elif token.__class__ == Expression:
+            elif isinstance(token, Expression):
                 if scope_times + 1 == len(remScope):
                     if token.scope == remScope:
                         tokens.pop(i)
@@ -832,16 +832,16 @@ def change_token(tokens, variables, scope_times=0):
                             token.power = changeVariable.power
                             token.value = changeVariable.value
                             break
-                    elif token.__class__ == Variable:
+                    elif isinstance(token, Variable):
                         if token.scope == changeVariable.scope:
                             token.coefficient = changeVariable.coefficient
                             token.power = changeVariable.power
                             token.value = changeVariable.value
                             break
-                    elif token.__class__ == Binary:
+                    elif isinstance(token, Binary):
                         if token.scope == changeVariable.scope:
                             token.value = changeVariable.value
-                    elif token.__class__ == Expression:
+                    elif isinstance(token, Expression):
                         if scope_times + 1 == len(changeVariable.scope):
                             if token.scope == changeVariable.scope:
                                 break
@@ -903,13 +903,13 @@ def define_scope(tokens, scope=None):
         local_scope = copy.deepcopy(scope)
         local_scope.extend(i)
         token.scope = local_scope
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             token = define_scope_variable(token, copy.deepcopy(local_scope))
         elif isinstance(token, Constant):
             token = define_scope_constant(token, copy.deepcopy(local_scope))
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             token.tokens = define_scope(token.tokens, local_scope)
-        elif token.__class__ == Binary:
+        elif isinstance(token, Binary):
             pass
         i += 1
     return tokens
@@ -977,11 +977,11 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
                                             variable2.beforeScope[k])
                                         return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
 
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             for j, pow1 in enumerate(variable.power):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
-                        if variable2.__class__ == Variable:
+                        if isinstance(variable2, Variable):
                             if variable2.power[0] == variable.power[0]:
                                 for k, pow2 in enumerate(variable2.value):
                                     if variable2.before[k] == '-' and variable2.after[k] in ['-', '+', '']:
@@ -1179,7 +1179,7 @@ def expression_addition(variables, tokens):
                                     return variables, tokens, removeScopes, change, comments
                         i += 1
 
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             if len(variable.power) > 1:
                 constantAdd = []
                 constant = []
@@ -1307,7 +1307,7 @@ def expression_addition(variables, tokens):
                                     return variables, tokens, removeScopes, change, comments
                         i += 1
 
-        elif variable.__class__ == Expression:
+        elif isinstance(variable, Expression):
             pass
 
     return variables, tokens, removeScopes, change, comments
@@ -1372,11 +1372,11 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
                                         rRemoveScopes.append(
                                             variable2.beforeScope[k])
                                         return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             for j, pow1 in enumerate(variable.power):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
-                        if variable2.__class__ == Variable:
+                        if isinstance(variable2, Variable):
                             if variable2.power[0] == variable.power[0]:
                                 for k, pow2 in enumerate(variable2.value):
                                     if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
@@ -1573,7 +1573,7 @@ def expression_subtraction(variables, tokens):
                                     return variables, tokens, removeScopes, change, comments
                         i += 1
 
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             if len(variable.power) > 1:
                 constantAdd = []
                 constant = []
@@ -1697,13 +1697,13 @@ def expression_subtraction(variables, tokens):
                                         variable.beforeScope[constantAdd[i]])
                                     return variables, tokens, removeScopes, change, comments
                         i += 1
-        elif variable.__class__ == Expression:
+        elif isinstance(variable, Expression):
             pass
     return variables, tokens, removeScopes, change, comments
 
 
 def multiply_variables(variable1, variable2, coeff):
-    variable = {}
+    variable = Variable()
     variable.value = []
     variable.value.extend(variable1.value)
     variable.power = []
@@ -1735,7 +1735,7 @@ def multiply_variables(variable1, variable2, coeff):
 def multiply_constants(constant1, constant2, coeff):
     no_1 = False
     no_2 = False
-    constant = {}
+    constant = Constant()
     if is_number(constant1.value):
         no_1 = True
     if is_number(constant2.value):
@@ -1801,7 +1801,7 @@ def multiply_constants(constant1, constant2, coeff):
 
 
 def multiply_variable_constant(constant, variable, coeff):
-    variable1 = {}
+    variable1 = Variable()
     variable1.value = []
     variable1.value.extend(variable.value)
     variable1.power = []
@@ -1829,26 +1829,26 @@ def multiply_expression_constant(constant, expression, coeff):
 def multiply_expression_variable(variable, expression, coeff):
     tokens = []
     for token in expression.tokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             tokens.append(multiply_variables(
                 variable, token, expression.coefficient))
         elif isinstance(token, Constant):
             tokens.append(multiply_variable_constant(
                 token, variable, expression.coefficient))
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             tokens.append(multiply_expression_variable(
                 variable, token, expression.coefficient))
-        elif token.__class__ == Binary:
+        elif isinstance(token, Binary):
             tokens.append(token)
     return tokens
 
 
 def multiply_select(token1, token2, coeff=1):
-    if token1.__class__ == Variable and token2.__class__ == Variable:
+    if isinstance(token1, Variable) and isinstance(token2, Variable):
         return multiply_variables(token1, token2, coeff)
-    elif token1.__class__ == Variable and isinstance(token2, Constant):
+    elif isinstance(token1, Variable) and isinstance(token2, Constant):
         return multiply_variable_constant(token2, token1, coeff)
-    elif isinstance(token1, Constant) and token2.__class__ == Variable:
+    elif isinstance(token1, Constant) and isinstance(token2, Variable):
         return multiply_variable_constant(token1, token2, coeff)
     elif isinstance(token1, Constant) and isinstance(token2, Constant):
         return multiply_constants(token1, token2, coeff)
@@ -1863,27 +1863,26 @@ def multiply_expressions(expression1, expression2):
         # print token1.value
         op = 1
         if i != 0:
-            if tokens1[i - 1].__class__ == Binary:
+            if isinstance(tokens1[i - 1], Binary):
                 if tokens1[i - 1].value == '+':
                     op *= 1
                 elif tokens1[i - 1].value == '-':
                     op *= -1
-        if token1.__class__ == Variable or isinstance(token1, Constant):
+        if isinstance(token1, Variable) or isinstance(token1, Constant):
             for j, token2 in enumerate(tokens2):
                 # print token2.value
                 op2 = op
-                if token2.__class__ == Variable or isinstance(token2, Constant):
+                if isinstance(token2, Variable) or isinstance(token2, Constant):
                     if j == 0 and i == 0:
                         pass
                     else:
                         if j != 0:
-                            if tokens2[j - 1].__class__ == Binary:
+                            if isinstance(tokens2[j - 1], Binary):
                                 if tokens2[j - 1].value == '+':
                                     op2 *= 1
                                 elif tokens2[j - 1].value == '-':
                                     op2 *= -1
-                        binary = {}
-                        binary.__class__ = Binary
+                        binary = Binary()
                         if op2 == -1:
                             binary.value = '-'
                         elif op2 == 1:
@@ -1897,7 +1896,7 @@ def expression_multiplication(variables, tokens):
     removeScopes = []
     comments = []
     for i, token in enumerate(tokens):
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*']:
                 prev = False
                 nxt = False
@@ -1910,7 +1909,7 @@ def expression_multiplication(variables, tokens):
                 if nxt and prev:
                     if isinstance(tokens[i + 1], Constant) and isinstance(tokens[i - 1], Constant):
                         comments.append("Multiplying " + str(tokens[i - 1].value) + "^(" + str(
-                            tokens[i - 1].power + ")") + " and " + str(tokens[i + 1].value) + "^(" + str(tokens[i + 1].power) + ") ")
+                            tokens[i - 1].power) + ")" + " and " + str(tokens[i + 1].value) + "^(" + str(tokens[i + 1].power) + ") ")
                         no_1 = False
                         no_2 = False
                         if is_number(tokens[i - 1].value):
@@ -1942,7 +1941,7 @@ def expression_multiplication(variables, tokens):
                             removeScopes.append(tokens[i - 1].scope)
                         return variables, tokens, removeScopes, comments
 
-                    elif tokens[i + 1].__class__ == Variable and tokens[i - 1].__class__ == Variable:
+                    elif isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Variable):
                         comments.append("Multiplying " + str(tokens[i - 1].coefficient) + get_variable_string(tokens[i - 1].value, tokens[i - 1].power) + " and " + str(
                             tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power))
                         for j, var in enumerate(tokens[i + 1].value):
@@ -1961,7 +1960,7 @@ def expression_multiplication(variables, tokens):
                         removeScopes.append(tokens[i + 1].scope)
                         return variables, tokens, removeScopes, comments
 
-                    elif (tokens[i + 1].__class__ == Variable and isinstance(tokens[i - 1], Constant)):
+                    elif (isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Constant)):
                         comments.append("Multiplying " + str(tokens[i - 1].value) + "^(" + str(tokens[i - 1].power) + ") and " + str(
                             tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power))
                         tokens[i + 1].coefficient *= evaluate_constant(tokens[i - 1])
@@ -1969,7 +1968,7 @@ def expression_multiplication(variables, tokens):
                         removeScopes.append(tokens[i - 1].scope)
                         return variables, tokens, removeScopes, comments
 
-                    elif (tokens[i - 1].__class__ == Variable and isinstance(tokens[i + 1], Constant)):
+                    elif (isinstance(tokens[i - 1], Variable) and isinstance(tokens[i + 1], Constant)):
                         comments.append("Multiplying " + str(tokens[i - 1].coefficient) + get_variable_string(
                             tokens[i - 1].value, tokens[i - 1].power) + " and " + str(tokens[i + 1].value) + "^(" + str(tokens[i + 1].power) + ") ")
                         tokens[i - 1].coefficient *= evaluate_constant(tokens[i + 1])
@@ -2003,7 +2002,7 @@ def division_variables(variable1, variable2, coeff):
 def division_constants(constant1, constant2, coeff):
     no_1 = False
     no_2 = False
-    constant = {}
+    constant = Constant()
     if is_number(constant1.value):
         no_1 = True
     if is_number(constant2.value):
@@ -2080,7 +2079,7 @@ def division_variable_constant(constant, variable, coeff):
 
 
 def division_constant_variable(constant, variable, coeff):
-    variable1 = {}
+    variable1 = Variable()
     variable1.coefficient = (evaluate_constant(
         constant) / variable.coefficient) * coeff
     variable1.value = []
@@ -2105,16 +2104,16 @@ def division_constant_expression(constant, expression, coeff):
 def division_expression_variable(variable, expression, coeff):
     tokens = []
     for token in expression.tokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             tokens.append(division_variables(
                 token, variable, expression.coefficient))
         elif isinstance(token, Constant):
             tokens.append(division_constant_variable(
                 token, variable, expression.coefficient))
-        elif token.__class__ == Expression:
+        elif isinstance(token, Expression):
             tokens.append(division_expression_variable(
                 variable, token, expression.coefficient))
-        elif token.__class__ == Binary:
+        elif isinstance(token, Binary):
             tokens.append(token)
     return tokens
 
@@ -2124,11 +2123,12 @@ def division_variable_expression(variable, expression, coeff):
 
 
 def division_select(token1, token2, coeff=1):
-    if token1.__class__ == Variable and token2.__class__ == Variable:
+    print token1, token2
+    if isinstance(token1, Variable) and isinstance(token2, Variable):
         return division_variables(token1, token2, coeff)
-    elif token1.__class__ == Variable and isinstance(token2, Constant):
+    elif isinstance(token1, Variable) and isinstance(token2, Constant):
         return division_variable_constant(token2, token1, coeff)
-    elif isinstance(token1, Constant) and token2.__class__ == Variable:
+    elif isinstance(token1, Constant) and isinstance(token2, Variable):
         return division_variable_constant(token1, token2, coeff)
     elif isinstance(token1, Constant) and isinstance(token2, Constant):
         return division_constants(token1, token2, coeff)
@@ -2142,7 +2142,7 @@ def expression_division(variables, tokens):
     removeScopes = []
     comments = []
     for i, token in enumerate(tokens):
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['/']:
                 prev = False
                 nxt = False
@@ -2193,7 +2193,7 @@ def expression_division(variables, tokens):
                             removeScopes.append(tokens[i + 1].scope)
                         return variables, tokens, removeScopes, comments
 
-                    elif tokens[i + 1].__class__ == Variable and tokens[i - 1].__class__ == Variable:
+                    elif isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Variable):
                         comments.append("Dividing " + str(tokens[i - 1].coefficient) + get_variable_string(tokens[i - 1].value, tokens[i - 1].power) + " by " + str(
                             tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power))
                         for j, var in enumerate(tokens[i + 1].value):
@@ -2221,17 +2221,16 @@ def expression_division(variables, tokens):
                             removeScopes.append(tokens[i + 1].scope)
                         return variables, tokens, removeScopes, comments
 
-                    elif (tokens[i + 1].__class__ == Variable and isinstance(tokens[i - 1], Constant)):
+                    elif (isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Constant)):
                         comments.append("Dividing " + str(tokens[i - 1].value) + "^(" + str(tokens[i - 1].power) + ") by " + str(
                             tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power))
                         val = evaluate_constant(tokens[i - 1])
                         scope = tokens[i - 1].scope
-                        tokens[i - 1] = {}
+                        tokens[i - 1] = Variable()
                         tokens[i - 1].value = tokens[i + 1].value
                         tokens[i - 1].coefficient = val / \
                             tokens[i + 1].coefficient
                         tokens[i - 1].power = []
-                        tokens[i - 1].__class__ = Variable
                         tokens[i - 1].scope = scope
                         for pows in tokens[i + 1].power:
                             tokens[i - 1].power.append(-pows)
@@ -2240,7 +2239,7 @@ def expression_division(variables, tokens):
                         removeScopes.append(tokens[i + 1].scope)
                         return variables, tokens, removeScopes, comments
 
-                    elif (tokens[i - 1].__class__ == Variable and isinstance(tokens[i + 1], Constant)):
+                    elif (isinstance(tokens[i - 1], Variable) and isinstance(tokens[i + 1], Constant)):
                         comments.append("Dividing " + str(tokens[i - 1].coefficient) + get_variable_string(
                             tokens[i - 1].value, tokens[i - 1].power) + " by " + str(tokens[i + 1].value) + "^(" + str(tokens[i + 1].power) + ") ")
                         tokens[i - 1].coefficient /= evaluate_constant(tokens[i + 1])
@@ -2268,7 +2267,7 @@ def evaluate_constant(constant):
 def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens):
     operations = []
     for i, token in enumerate(lTokens):
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*', '/']:
                 prev = False
                 nxt = False
@@ -2284,7 +2283,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
                         operations.append(op)
 
     for i, token in enumerate(rTokens):
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*', '/']:
                 prev = False
                 nxt = False
@@ -2344,10 +2343,10 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
                     if op not in operations:
                         operations.append(op)
 
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             rCount = 0
             for variable2 in rVariables:
-                if variable2.__class__ == Variable:
+                if isinstance(variable2, Variable):
                     if variable2.value == variable.value:
                         if variable2.power[0] == variable.power[0]:
                             rCount += len(variable2.value)
@@ -2372,7 +2371,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 
             if len(variable.power) > 0 and rCount > 0:
                 for variable2 in rVariables:
-                    if variable2.__class__ == Variable:
+                    if isinstance(variable2, Variable):
                         if variable2.value == variable.value and variable2.power[0] == variable.power[0]:
                             for l in xrange(len(variable2.power)):
                                 if variable2.after[l] in ['+', '-', ''] and variable2.before[l] in ['+', '-', '']:
@@ -2392,7 +2391,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
                     if not (op in operations):
                         operations.append(op)
 
-        elif variable.__class__ == Expression:
+        elif isinstance(variable, Expression):
             ops = get_available_operations(
                 variable.value, variable.tokens)
             for op in ops:
@@ -2413,7 +2412,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
                     for op in ops:
                         if op not in operations:
                             operations.append(op)
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             if len(variable.power) > 1:
                 count = 0
                 ops = []
@@ -2434,7 +2433,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
                         if not (op in operations):
                             operations.append(op)
 
-        elif variable.__class__ == Expression:
+        elif isinstance(variable, Expression):
             ops = get_available_operations(
                 variable.value, variable.tokens)
             for op in ops:
@@ -2447,7 +2446,7 @@ def get_available_operations_equations(lVariables, lTokens, rVariables, rTokens)
 def get_available_operations(variables, tokens):
     operations = []
     for i, token in enumerate(tokens):
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*', '/']:
                 prev = False
                 nxt = False
@@ -2480,7 +2479,7 @@ def get_available_operations(variables, tokens):
                     for op in ops:
                         if op not in operations:
                             operations.append(op)
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             if len(variable.power) > 1:
                 count = 0
                 ops = []
@@ -2501,7 +2500,7 @@ def get_available_operations(variables, tokens):
                         if not (op in operations):
                             operations.append(op)
 
-        elif variable.__class__ == Expression:
+        elif isinstance(variable, Expression):
             ops = get_available_operations(
                 variable.value, variable.tokens)
             for op in ops:
@@ -2513,7 +2512,7 @@ def get_available_operations(variables, tokens):
 def get_level_variables(tokens):
     variables = []
     for i, term in enumerate(tokens):
-        if term.__class__ == Variable:
+        if isinstance(term, Variable):
             skip = False
             for var in variables:
                 if var.value == term.value:
@@ -2521,13 +2520,13 @@ def get_level_variables(tokens):
                         var.power.append(term.power)
                         var.scope.append(term.scope)
                         var.coefficient.append(term.coefficient)
-                        if i != 0 and tokens[i - 1].__class__ == Binary:
+                        if i != 0 and isinstance(tokens[i - 1], Binary):
                             var.before.append(tokens[i - 1].value)
                             var.beforeScope.append(tokens[i - 1].scope)
                         else:
                             var.before.append('')
                             var.beforeScope.append('')
-                        if i + 1 < len(tokens) and tokens[i + 1].__class__ == Binary:
+                        if i + 1 < len(tokens) and isinstance(tokens[i + 1], Binary):
                             var.after.append(tokens[i + 1].value)
                             var.afterScope.append(tokens[i + 1].scope)
                         else:
@@ -2547,13 +2546,13 @@ def get_level_variables(tokens):
                 variable.afterScope = []
                 variable.power.append(term.power)
                 variable.coefficient.append(term.coefficient)
-                if i != 0 and tokens[i - 1].__class__ == Binary:
+                if i != 0 and isinstance(tokens[i - 1], Binary):
                     variable.before.append(tokens[i - 1].value)
                     variable.beforeScope.append(tokens[i - 1].scope)
                 else:
                     variable.before.append('')
                     variable.beforeScope.append('')
-                if i + 1 < len(tokens) and tokens[i + 1].__class__ == Binary:
+                if i + 1 < len(tokens) and isinstance(tokens[i + 1], Binary):
                     variable.after.append(tokens[i + 1].value)
                     variable.afterScope.append(tokens[i + 1].scope)
                 else:
@@ -2571,13 +2570,13 @@ def get_level_variables(tokens):
                         var.value.append(term.value)
                         var.power.append(term.power)
                         var.scope.append(term.scope)
-                        if i != 0 and tokens[i - 1].__class__ == Binary:
+                        if i != 0 and isinstance(tokens[i - 1], Binary):
                             var.before.append(tokens[i - 1].value)
                             var.beforeScope.append(tokens[i - 1].scope)
                         else:
                             var.before.append('')
                             var.beforeScope.append('')
-                        if i + 1 < len(tokens) and tokens[i + 1].__class__ == Binary:
+                        if i + 1 < len(tokens) and isinstance(tokens[i + 1], Binary):
                             var.after.append(tokens[i + 1].value)
                             var.afterScope.append(tokens[i + 1].scope)
                         else:
@@ -2599,25 +2598,24 @@ def get_level_variables(tokens):
                 variable.beforeScope = []
                 variable.after = []
                 variable.afterScope = []
-                if i != 0 and tokens[i - 1].__class__ == Binary:
+                if i != 0 and isinstance(tokens[i - 1], Binary):
                     variable.before.append(tokens[i - 1].value)
                     variable.beforeScope.append(tokens[i - 1].scope)
                 else:
                     variable.before.append('')
                     variable.beforeScope.append('')
-                if i + 1 < len(tokens) and tokens[i + 1].__class__ == Binary:
+                if i + 1 < len(tokens) and isinstance(tokens[i + 1], Binary):
                     variable.after.append(tokens[i + 1].value)
                     variable.afterScope.append(tokens[i + 1].scope)
                 else:
                     variable.after.append('')
                     variable.afterScope.append('')
                 variables.append(variable)
-        elif term.__class__ == Expression:
+        elif isinstance(term, Expression):
             var = get_level_variables(term.tokens)
             retType, val = extract_expression(var)
             if retType == "expression":
-                variable = {}
-                variable.__class__ = Expression
+                variable = Expression()
                 variable.value = val
                 variable.tokens = term.tokens
                 variables.append(variable)
@@ -2671,7 +2669,7 @@ def get_level_variables(tokens):
                     variables.append(var)
             elif retType == "mixed":
                 for v in val:
-                    if v.__class__ == Variable:
+                    if isinstance(v, Variable):
                         for var in variables:
                             if var.value == v.value:
                                 var.power.extend(v.power)
@@ -2720,7 +2718,7 @@ def get_level_variables(tokens):
                             var.after = [v.after]
                             var.afterScope = [v.afterScope]
                             variables.append(var)
-                    elif v.__class__ == Expression:
+                    elif isinstance(v, Expression):
                         variables.append(v)
 
     return variables
@@ -2728,11 +2726,11 @@ def get_level_variables(tokens):
 
 def extract_expression(variable):
     if len(variable) == 1:
-        if variable[0].__class__ == Expression:
+        if isinstance(variable[0], Expression):
             retType, variable = extract_expression(variable[0].value)
         elif isinstance(variable[0], Constant):
             return "constant", variable[0]
-        elif variable[0].__class__ == Variable:
+        elif isinstance(variable[0], Variable):
             return "variable", variable[0]
     else:
         if not eval_expressions(variable):
@@ -2745,15 +2743,15 @@ def eval_expressions(variables):
     var = []
     varPowers = []
     for i, variable in enumerate(variables):
-        if variable.__class__ == Expression:
+        if isinstance(variable, Expression):
             if eval_expressions(variable.tokens):
                 return False
-        elif variable.__class__ == Variable:
+        elif isinstance(variable, Variable):
             prev = False
             nxt = False
             # CHECKME: Undefined i and tokens. Which tokens ?
             if i != 0:
-                if variable[i - 1].__class__ == Binary:
+                if isinstance(variable[i - 1], Binary):
                     if variable[i - 1].value in ['-', '+']:
                         prev = True
                 else:
@@ -2762,7 +2760,7 @@ def eval_expressions(variables):
                 prev = True
 
             if i + 1 < len(variable):
-                if variable[i + 1].__class__ == Binary:
+                if isinstance(variable[i + 1], Binary):
                     if variable[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
@@ -2786,7 +2784,7 @@ def eval_expressions(variables):
             prev = False
             nxt = False
             if i != 0:
-                if variable[i - 1].__class__ == Binary:
+                if isinstance(variable[i - 1], Binary):
                     if variable[i - 1].value in ['-', '+']:
                         prev = True
                 else:
@@ -2795,7 +2793,7 @@ def eval_expressions(variables):
                 prev = True
 
             if i + 1 < len(variable):
-                if variable[i + 1].__class__ == Binary:
+                if isinstance(variable[i + 1], Binary):
                     if variable[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
@@ -2816,7 +2814,7 @@ def eval_expressions(variables):
                     var.append([variable.value])
                     varPowers.append([variable.power])
     for i, variable in enumerate(variables):
-        if variable.__class__ == Binary:
+        if isinstance(variable, Binary):
             prev = False
             nxt = False
             if variable.value in ['*', '/']:
