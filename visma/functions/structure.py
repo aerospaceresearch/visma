@@ -45,6 +45,8 @@ class Expression(Function):
 
     def __init__(self):
         super(Expression, self).__init__()
+        self.coefficient = 1
+        self.power = 1
         self.tokens = None
         self.type = 'Expression'
 

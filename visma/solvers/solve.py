@@ -93,7 +93,7 @@ class EquationCompatibility(object):
         # print self.availableOperations
 
 
-def find_solve_for(lTokens, rTokens=None, variables=None):
+def find_wrt_variable(lTokens, rTokens=None, variables=None):
     if rTokens is None:
         rTokens = []
     if variables is None:
@@ -104,7 +104,7 @@ def find_solve_for(lTokens, rTokens=None, variables=None):
                 if val not in variables:
                     variables.append(val)
         elif isinstance(token, Expression):
-            variables.extend(find_solve_for(token.tokens))
+            variables.extend(find_wrt_variable(token.tokens))
 
     for token in rTokens:
         if isinstance(token, Variable):
@@ -112,7 +112,7 @@ def find_solve_for(lTokens, rTokens=None, variables=None):
                 if val not in variables:
                     variables.append(val)
         elif isinstance(token, Expression):
-            variables.extend(find_solve_for(token.tokens, [], variables))
+            variables.extend(find_wrt_variable(token.tokens, [], variables))
     return variables
 
 
@@ -927,7 +927,7 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Constant):
-                            if variable2.power[0] == variable.power[0]:
+                            if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
                                 for k, val2 in enumerate(variable2.value):
                                     if (variable2.before[k] == '-' or (variable2.before[k] == '' and variable2.value[k] < 0)) and variable2.after[k] in ['-', '+', '']:
                                         comments.append(
@@ -1377,7 +1377,7 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Variable):
-                            if variable2.power[0] == variable.power[0]:
+                            if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
                                 for k, pow2 in enumerate(variable2.value):
                                     if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
                                         comments.append("Moving " + variable2.before[k] + str(variable2.coefficient[k]) + get_variable_string(
@@ -2123,7 +2123,6 @@ def division_variable_expression(variable, expression, coeff):
 
 
 def division_select(token1, token2, coeff=1):
-    print token1, token2
     if isinstance(token1, Variable) and isinstance(token2, Variable):
         return division_variables(token1, token2, coeff)
     elif isinstance(token1, Variable) and isinstance(token2, Constant):
@@ -2199,6 +2198,7 @@ def expression_division(variables, tokens):
                         for j, var in enumerate(tokens[i + 1].value):
                             found = False
                             for k, var2 in enumerate(tokens[i - 1].value):
+                                tokens[i-1].coefficient /= tokens[i+1].coefficient
                                 if var == var2:
                                     if is_number(tokens[i + 1].power[j]) and is_number(tokens[i - 1].power[k]):
                                         tokens[i - 1].power[k] -= tokens[i + 1].power[j]
@@ -2670,6 +2670,7 @@ def get_level_variables(tokens):
             elif retType == "mixed":
                 for v in val:
                     if isinstance(v, Variable):
+                        skip = False
                         for var in variables:
                             if var.value == v.value:
                                 var.power.extend(v.power)
@@ -2751,20 +2752,20 @@ def eval_expressions(variables):
             nxt = False
             # CHECKME: Undefined i and tokens. Which tokens ?
             if i != 0:
-                if isinstance(variable[i - 1], Binary):
+                if isinstance(variables[i - 1], Binary):
                     if variable[i - 1].value in ['-', '+']:
                         prev = True
                 else:
-                    print(variable[i - 1])
+                    print(variables[i - 1])
             else:
                 prev = True
 
-            if i + 1 < len(variable):
-                if isinstance(variable[i + 1], Binary):
-                    if variable[i + 1].value in ['-', '+']:
+            if i + 1 < len(variables):
+                if isinstance(variables[i + 1], Binary):
+                    if variables[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
-                    print(variable[i + 1])
+                    print(variables[i + 1])
             else:
                 nxt = True
             if nxt and prev:
@@ -2840,15 +2841,20 @@ def check_types(lTokens=None, rTokens=None):
         rTokens = []
 
     if len(rTokens) != 0:
-        equationCompatibile = EquationCompatibility(lTokens, rTokens)
-        availableOperations = equationCompatibile.availableOperations
+        equationCompatible = EquationCompatibility(lTokens, rTokens)
+        availableOperations = equationCompatible.availableOperations
 
         if preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
             availableOperations.append("find roots")
-        return availableOperations, "equation"
+        type = "equation"
     else:
         expressionCompatible = ExpressionCompatibility(lTokens)
-        return expressionCompatible.availableOperations, "expression"
+        availableOperations = expressionCompatible.availableOperations
+        availableOperations.append("integrate")
+        availableOperations.append("differentiate")
+        type = "expression"
+
+    return availableOperations, type
 
 
 if __name__ == '__main__':

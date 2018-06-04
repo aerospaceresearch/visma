@@ -13,6 +13,8 @@ class Constant(Function):
 
     def __init__(self):
         super(Constant, self).__init__()
+        self.coefficient = 1
+        self.power = 1
         self.type = 'Constant'
 
     def inverse(self, RHS):
@@ -32,47 +34,40 @@ class Constant(Function):
     def calculate(self):
         return self.coefficient * ((self.value**(self.power)))
 
+    def functionOf(self):
+        return ['x', 'y', 'z']
+
 
 class Zero(Constant):
 
     def __init__(self):
         super(Zero, self).__init__()
-        self.coefficient = 1
         self.value = 0
-        self.power = 1
 
 
 class One(Constant):
 
     def __init__(self):
         super(One, self).__init__()
-        self.coefficient = 1
         self.value = 1
-        self.power = 1
 
 
 class Pi(Constant):
 
     def __init__(self):
         super(Pi, self).__init__()
-        self.coefficient = 1
         self.value = math.pi
-        self.power = 1
 
 
 class Euler(Constant):
 
     def __init__(self):
         super(Euler, self).__init__()
-        self.coefficient = 1
         self.value = math.e
-        self.power = 1
 
 
 class Iota(Constant):
 
     def __init__(self):
         super(Iota, self).__init__()
-        self.coefficient = 1
         self.value = 1j
-        self.power = 1

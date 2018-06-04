@@ -1,69 +1,59 @@
-"""
-This file is to differentiate a function and is made along similar lines to that of integration.py
-"""
-
-import visma.solvers.solve as ViSoSo
 import copy
 
+from visma.functions.structure import Function
+from visma.functions.constant import Constant, Zero
+from visma.functions.operator import Operator
+from visma.solvers.solve import simplify_equation, tokens_to_string
 
-def differntiate_variable(variable):
-    if len(variable["value"]) == 1:
-        if ViSoSo.is_number(variable["power"][0]):
-            if variable["power"][0] != 0:
-                variable["coefficient"] *= variable["power"][0]
-                variable["power"][0] -= 1
-                return variable
-            else:
-                # log
-                return variable
-    else:
-        tokens = []
-        for i in xrange(len(variable["value"])):
-            if i != 0:
-                binary = {}
-                binary["type"] = 'binary'
-                binary["value"] = '+'
-                tokens.append(binary)
-            var = copy.deepcopy(variable)
-            var["coefficient"] *= var["power"][i]
-            var["power"][i] -= 1
-            tokens.append(var)
-        return tokens
+###################
+# Differentiation #
+###################
 
 
-def trigonometry(variable):
-    if variable["type"] == 'cos':
-        variable["type"] = 'sin'
-        variable["coefficient"] *= -1
-        return variable
-    elif variable["type"] == 'sin':
-        variable["type"] = 'cos'
-        return variable
-    elif variable["type"] == 'tan':
-        if variable["power"] == 1:
-            variable["power"] = 2
-            variable["type"] = 'sec'
-            return variable
-    elif variable["type"] == 'cot':
-        if variable["power"] == 1:
-            variable["power"] = 2
-            variable["type"] = 'cosec'
-            variable["coefficient"] *= -1
-            return variable
-    return variable
+def differentiate(lTokens, rTokens, wrtVar):
+    lTokens, rTokens, availableOperations, \
+      token_string, animation, comments \
+      = simplify_equation(lTokens, rTokens)
+    lTokens = differentiateTokens(lTokens, wrtVar)
+    rTokens = differentiateTokens(rTokens, wrtVar)
+
+    tokenToStringBuilder = copy.deepcopy(lTokens)
+    animation.append(copy.deepcopy(tokenToStringBuilder))
+    token_string = tokens_to_string(tokenToStringBuilder)
+    comments.append([])
+    return lTokens, rTokens, [], token_string, animation, comments
 
 
-def differentiate_tokens(tokens):
-    # for token in tokens:
-    # logic
-    return tokens
+def differentiateTokens(funclist, wrtVar):
+    difffunc = []
+    for func in funclist:
+        if isinstance(func, Operator) and wrtVar not in func.functionOf:
+            difffunc.append(func)
+        else:
+            newfunc = []
+            while(isinstance(func, Function)):
+                funcCopy = copy.deepcopy(func)
+                funcCopy.coefficient *= funcCopy.power
+                funcCopy.power[0] -= 1
+                if(func.power != 0):
+                    newfunc.append(funcCopy)
+                func.differentiate()
+                if not(isinstance(func, Constant) and func.value == 1):
+                    newfunc.append(func)
 
+                # TODO: Send each of these steps to animator
 
-def differentiate(lTokens, rTokens):
-    integratedLTokens = differentiate_tokens(lTokens)
-    integratedRTokens = differentiate_tokens(rTokens)
-    return integratedLTokens, integratedRTokens
+                if func.operand is None:
+                    break
+                else:
+                    func = func.operand
 
+                if isinstance(func, Constant):
+                    func = Zero()
+                    newfunc = [func]
+                    break
+            difffunc.extend(newfunc)
 
-if __name__ == '__main__':
-    pass
+        # The differentiated function list has been generated in difffunc
+        # FIXME: Find workaround for differentiating func1(func2+func3)
+        return difffunc
