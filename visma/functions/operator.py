@@ -10,6 +10,11 @@ class Operator(object):
         self.value = None
         self.type = None
 
+    def __str__(self):
+        represent = ""
+        represent += str(self.value)
+        return represent
+
     def level(self):
         return (int((len(self.tid)) / 2))
 
@@ -41,3 +46,11 @@ class Sqrt(Operator):
         self.power = None
         self.expression = None
         self.type = 'Sqrt'
+
+    def __str__(self):
+        represent = ""
+        if self.expression.value == -1:
+            represent += "\iota "
+        else:
+            represent += "{" + self.expression.__str__() + "}"
+        return represent

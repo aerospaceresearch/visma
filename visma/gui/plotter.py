@@ -22,7 +22,9 @@ def plotThis(equationTokens):
     coeff = 1
     for token in LHStok:
         if isinstance(token, Variable):
-            LHS += coeff*token.coefficient*(varDict[token.value[0]]**token.power[0])
+            LHS += coeff*token.coefficient
+            for eachValue, eachPower in zip(token.value, token.power):
+                LHS *= (varDict[eachValue]**eachPower)
         elif isinstance(token, Binary) and token.value == '-':
             coeff = -1
         elif isinstance(token, Constant):

@@ -34,6 +34,7 @@ def differentiateTokens(funclist, wrtVar):
             while(isinstance(func, Function)):
                 funcCopy = copy.deepcopy(func)
                 funcCopy.coefficient *= funcCopy.power
+                # Fix: [0]
                 funcCopy.power[0] -= 1
                 if(func.power != 0):
                     newfunc.append(funcCopy)

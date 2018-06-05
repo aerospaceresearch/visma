@@ -1,6 +1,4 @@
 # This module contains classes for all functions
-# TODO: Add exponential, logarithmic, trigonometric and hyperbolic functions
-# FIXME: Fix method arguments
 
 
 class Function(object):
@@ -17,6 +15,23 @@ class Function(object):
         self.after = None
         self.beforeScope = None
         self.afterScope = None
+
+    def __str__(self):
+        represent = ""
+        if self.coefficient != 1:
+            represent += str(self.coefficient)
+        if isinstance(self.value, list):
+            for eachValue, eachPower in zip(self.value, self.power):
+                represent += "{" + str(eachValue) + "}"
+                if eachPower != 1:
+                    represent += "^" + "{" + str(eachPower) + "}"
+        else:
+            represent += "{" + str(self.value) + "}"
+            if self.power != 1:
+                represent += "^" + "{" + str(self.power) + "}"
+            if self.operand is not None:
+                represent += "({" + str(self.power) + "})"
+        return represent
 
     def inverse(self, RHS):
         RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
@@ -49,6 +64,20 @@ class Expression(Function):
         self.power = 1
         self.tokens = None
         self.type = 'Expression'
+
+    def __str__(self):
+        represent = ""
+        if self.coefficient != 1:
+            represent += str(self.coefficient) + "*"
+        represent += "{("
+        for token in self.tokens:
+            represent += token.__str__()
+        represent += ")}"
+        if self.power != 1:
+            represent += "^" + "{" + str(self.power) + "}"
+        if self.operand is not None:
+            represent += "{(" + str(self.operand.__str__) + ")}"
+        return represent
 
 
 class Equation(Function):

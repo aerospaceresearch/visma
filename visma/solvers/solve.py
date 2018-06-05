@@ -931,7 +931,7 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
                                 for k, val2 in enumerate(variable2.value):
                                     if (variable2.before[k] == '-' or (variable2.before[k] == '' and variable2.value[k] < 0)) and variable2.after[k] in ['-', '+', '']:
                                         comments.append(
-                                            "Moving " + r"$" + variable2.before[k] + str(variable2.value[k]) + r"$" + " to LHS")
+                                            "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
                                             variable.value[j] -= variable2.value[k]
                                         elif variable2.before[k] == '' and variable2.value[k] < 0:
@@ -985,8 +985,7 @@ def equation_addition(lVariables, lTokens, rVariables, rTokens):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
                                 for k, pow2 in enumerate(variable2.value):
                                     if variable2.before[k] == '-' and variable2.after[k] in ['-', '+', '']:
-                                        comments.append("Moving " + r"$" + variable2.before[k] + str(variable2.coefficient[k]) + get_variable_string(
-                                            variable2.value[k], variable2.power[k]) + r"$" + " to LHS")
+                                        comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
                                             variable.coefficient[j] -= variable2.coefficient[k]
                                         else:
@@ -1044,8 +1043,7 @@ def expression_addition(variables, tokens):
                     while i < len(constantAdd):
                         for const in constant:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Adding " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(
-                                    variable.power[const]) + "}" + r"$" + " and " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
+                                comments.append("Adding " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(variable.power[const]) + "}" + r"$" + " and " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
                                 if variable.before[const] == '-':
                                     variable.value[const] -= variable.value[constantAdd[i]]
                                 else:
@@ -1947,6 +1945,7 @@ def expression_multiplication(variables, tokens):
                         for j, var in enumerate(tokens[i + 1].value):
                             found = False
                             for k, var2 in enumerate(tokens[i - 1].value):
+                                tokens[i - 1].coefficient *= tokens[i + 1].coefficient
                                 if var == var2:
                                     if tokens[i + 1].power[j] == tokens[i - 1].power[k]:
                                         if is_number(tokens[i + 1].power[j]) and is_number(tokens[i - 1].power[k]):

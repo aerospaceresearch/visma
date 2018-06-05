@@ -510,7 +510,6 @@ def get_variable(terms, symTokens, scope, coeff=1):
                             variable.coefficient = 1
                             power[-1] = variable
                 else:
-                    # print varTerms, is_number(varTerms[0])
                     if len(varTerms) == 1:
                         if is_variable(varTerms[0]):
                             power[-1] = varTerms[0]
@@ -1592,14 +1591,6 @@ def get_lhs_rhs(tokens):
         else:
             rhs.append(token)
     return lhs, rhs
-
-
-def get_variables_value(tokens):
-    variableDict = {}
-    for token in tokens:
-        if isinstance(token, Variable):
-            variableDict[token.value[0]] = None
-    return variableDict
 
 
 if __name__ == "__main__":
