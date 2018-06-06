@@ -16,21 +16,38 @@ class Function(object):
         self.beforeScope = None
         self.afterScope = None
 
-    def __str__(self):
+    def __str__(self, nv=None, np=None, nc=None):
         represent = ""
-        if self.coefficient != 1:
-            represent += str(self.coefficient)
+
+        if np is None and nv is None and nc is None:
+            if self.coefficient != 1:
+                represent += str(self.coefficient)
+        elif nc is not None:
+            if self.coefficient[nc] != 1:
+                represent += str(self.coefficient[nc])
+
         if isinstance(self.value, list):
-            for eachValue, eachPower in zip(self.value, self.power):
-                represent += "{" + str(eachValue) + "}"
-                if eachPower != 1:
-                    represent += "^" + "{" + str(eachPower) + "}"
+            if nv is None and np is None:
+                for eachValue, eachPower in zip(self.value, self.power):
+                    represent += "{" + str(eachValue) + "}"
+                    if eachPower != 1:
+                        represent += "^" + "{" + str(eachPower) + "}"
+            elif nc is None:
+                represent += "{" + str(self.value[nv]) + "}"
+                if self.power[np] != 1:
+                    represent += "^" + "{" + str(self.power[np]) + "}"
+            elif nc is not None:
+                for i, val in enumerate(self.value):
+                    represent += "{" + str(val) + "}"
+                    if self.power[np][i] != 1:
+                        represent += "^" + "{" + str(self.power[np][i]) + "}"
         else:
             represent += "{" + str(self.value) + "}"
             if self.power != 1:
                 represent += "^" + "{" + str(self.power) + "}"
             if self.operand is not None:
                 represent += "({" + str(self.power) + "})"
+
         return represent
 
     def inverse(self, RHS):
@@ -46,6 +63,12 @@ class Function(object):
 
     def level(self):
         return (int((len(self.tid)) / 2))
+
+    def functionOf(self):
+        inst = copy.deepcopy(self)
+        while inst.operand is not None:
+            inst = inst.operand
+        return inst.value
 
 
 ###################

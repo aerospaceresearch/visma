@@ -18,15 +18,6 @@ from visma.functions.operator import Binary, Sqrt
 from visma.io.tokenize import is_number, get_num
 
 
-def get_variable_string(variable, power):
-    string = ""
-    for j, val in enumerate(variable):
-        string += "{" + val + "}"
-        if power[j] != 1:
-            string += "^{" + str(power[j]) + "}"
-    return string
-
-
 def is_equation(lTokens, rTokens):
     if len(lTokens) > 0 and len(rTokens) == 1:
         if isinstance(rTokens[0], Constant):
@@ -1043,7 +1034,7 @@ def expression_addition(variables, tokens):
                     while i < len(constantAdd):
                         for const in constant:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Adding " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(variable.power[const]) + "}" + r"$" + " and " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
+                                comments.append("Adding " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " and " + r"$" + variable.__str__(const, const) + r"$")
                                 if variable.before[const] == '-':
                                     variable.value[const] -= variable.value[constantAdd[i]]
                                 else:
@@ -1088,8 +1079,7 @@ def expression_addition(variables, tokens):
                                 return variables, tokens, removeScopes, change, comments
                         for const in constantAdd:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Adding " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(
-                                    variable.power[const]) + "}" + r"$" + " and " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
+                                comments.append("Adding " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " and " + r"$" + variable.__str__(const, const) + r"$")
                                 variable.value[const] += variable.value[constantAdd[i]]
                                 if variable.value[const] == 0:
                                     if variable.power[const] == 0:
@@ -1135,8 +1125,7 @@ def expression_addition(variables, tokens):
                         for j, const in enumerate(constantAdd):
                             if i != j:
                                 if variable.power[constantAdd[i]] == variable.power[const]:
-                                    comments.append("Adding " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(
-                                        variable.power[const]) + "}" + r"$" + " and " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
+                                    comments.append("Adding " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " and " + r"$" + variable.__str__(const, const) + r"$")
                                     variable.value[const] += variable.value[constantAdd[i]]
                                     if variable.value[const] == 0:
                                         if variable.power[const] == 0:
@@ -1191,8 +1180,7 @@ def expression_addition(variables, tokens):
                     while i < len(constantAdd):
                         for const in constant:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Adding " + r"$" + str(variable.coefficient[constantAdd[i]]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$" + " and " + r"$" + str(
-                                    variable.coefficient[const]) + get_variable_string(variable.value, variable.power[const]) + r"$")
+                                comments.append("Adding " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " and " + r"$" + variable.__str__(const, const, const) + r"$")
                                 if variable.before[const] == '-':
                                     variable.coefficient[const] -= variable.coefficient[constantAdd[i]]
                                 else:
@@ -1228,8 +1216,7 @@ def expression_addition(variables, tokens):
                                 return variables, tokens, removeScopes, change, comments
                         for const in constantAdd:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Adding " + r"$" + str(variable.coefficient[constantAdd[i]]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$" + " and " + r"$" + str(
-                                    variable.coefficient[const]) + get_variable_string(variable.value, variable.power[const]) + r"$")
+                                comments.append("Adding " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " and " + r"$" + variable.__str__(const, const, const) + r"$")
                                 if variable.before[const] == '-':
                                     variable.coefficient[const] -= variable.coefficient[constantAdd[i]]
                                 else:
@@ -1270,8 +1257,7 @@ def expression_addition(variables, tokens):
                         for j, const in enumerate(constantAdd):
                             if i != j:
                                 if variable.power[constantAdd[i]] == variable.power[const]:
-                                    comments.append("Adding " + r"$" + str(variable.coefficient[constantAdd[i]]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$" + " and " + r"$" + str(
-                                        variable.coefficient[const]) + get_variable_string(variable.value, variable.power[const]) + r"$")
+                                    comments.append("Adding " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " and " + r"$" + variable.__str__(const, const, const) + r"$")
                                     variable.coefficient[const] += variable.coefficient[constantAdd[i]]
                                     if variable.coefficient[const] == 0:
                                         removeScopes.append(
@@ -1323,11 +1309,11 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Constant):
-                            if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
+                            if variable2.power[0] == variable.power[0]:
                                 for k, val2 in enumerate(variable2.value):
                                     if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
                                         comments.append(
-                                            "Moving " + r"$" + variable2.before[k] + str(variable2.value[k]) + r"$" + " to LHS")
+                                            "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
                                             variable.value[j] += variable2.value[k]
                                         else:
@@ -1378,8 +1364,7 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
                                 for k, pow2 in enumerate(variable2.value):
                                     if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
-                                        comments.append("Moving " + r"$" + variable2.before[k] + str(variable2.coefficient[k]) + get_variable_string(
-                                            variable2.value[k], variable2.power[k]) + r"$" + " to LHS")
+                                        comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
                                             variable.coefficient[j] += variable2.coefficient[k]
                                         else:
@@ -1437,8 +1422,7 @@ def expression_subtraction(variables, tokens):
                     while i < len(constantAdd):
                         for const in constant:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Subtracting " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(
-                                    variable.power[const]) + "}" + r"$" + " from " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
+                                comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " from " + r"$" + variable.__str__(const, const) + "}" + r"$")
                                 if variable.before[const] == '+' or variable.before[const] == '':
                                     variable.value[const] -= variable.value[constantAdd[i]]
                                 else:
@@ -1482,8 +1466,7 @@ def expression_subtraction(variables, tokens):
                                 return variables, tokens, removeScopes, change, comments
                         for const in constantAdd:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Subtracting " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(
-                                    variable.power[const]) + "}" + r"$" + " from " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
+                                comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " from " + r"$" + variable.__str__(const, const) + r"$")
                                 variable.value[const] += variable.value[constantAdd[i]]
                                 if variable.value[const] == 0:
                                     if variable.power[const] == 0:
@@ -1529,8 +1512,7 @@ def expression_subtraction(variables, tokens):
                         for j, const in enumerate(constantAdd):
                             if i != j:
                                 if variable.power[constantAdd[i]] == variable.power[const]:
-                                    comments.append("Subtracting " + r"$" + str(variable.value[constantAdd[i]]) + "^{" + str(
-                                        variable.power[const]) + "}" + r"$" + " from " + r"$" + str(variable.value[const]) + "^{" + str(variable.power[const]) + "}" + r"$")
+                                    comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " from " + r"$" + variable.__str__(const, const) + r"$")
                                     variable.value[const] += variable.value[constantAdd[i]]
                                     if variable.value[const] == 0:
                                         if variable.power[const] == 0:
@@ -1585,8 +1567,7 @@ def expression_subtraction(variables, tokens):
                     while i < len(constantAdd):
                         for const in constant:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Subtracting " + r"$" + str(variable.coefficient[constantAdd[i]]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$" + " from " + r"$" + str(
-                                    variable.coefficient[const]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$")
+                                comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " from " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], const) + r"$")
                                 if variable.before[const] == '+' or variable.before[const] == '':
                                     variable.coefficient[const] -= variable.coefficient[constantAdd[i]]
                                 else:
@@ -1622,8 +1603,7 @@ def expression_subtraction(variables, tokens):
                                 return variables, tokens, removeScopes, change, comments
                         for const in constantAdd:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Subtracting " + r"$" + str(variable.coefficient[constantAdd[i]]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$" + " from " + r"$" + str(
-                                    variable.coefficient[const]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$")
+                                comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " from " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], const) + r"$")
                                 variable.coefficient[const] += variable.coefficient[constantAdd[i]]
                                 if variable.coefficient[const] == 0:
                                     removeScopes.append(
@@ -1661,8 +1641,7 @@ def expression_subtraction(variables, tokens):
                         for j, const in enumerate(constantAdd):
                             if i != j:
                                 if variable.power[constantAdd[i]] == variable.power[const]:
-                                    comments.append("Subtracting " + r"$" + str(variable.coefficient[constantAdd[i]]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$" + " from " + r"$" + str(
-                                        variable.coefficient[const]) + get_variable_string(variable.value, variable.power[constantAdd[i]]) + r"$")
+                                    comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " from " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], const) + r"$")
                                     variable.coefficient[const] += variable.coefficient[constantAdd[i]]
                                     if variable.coefficient[const] == 0:
                                         removeScopes.append(
@@ -1906,8 +1885,7 @@ def expression_multiplication(variables, tokens):
                         nxt = True
                 if nxt and prev:
                     if isinstance(tokens[i + 1], Constant) and isinstance(tokens[i - 1], Constant):
-                        comments.append("Multiplying " + r"$" + str(tokens[i - 1].value) + "^{" + str(
-                            tokens[i - 1].power) + "}" + r"$" + " and " + r"$" + str(tokens[i + 1].value) + "^{" + str(tokens[i + 1].power) + "}" + r"$")
+                        comments.append("Multiplying " + r"$" + tokens[i-1].__str__() + r"$" + " and " + r"$" + tokens[i+1].__str__() + r"$")
                         no_1 = False
                         no_2 = False
                         if is_number(tokens[i - 1].value):
@@ -1940,8 +1918,7 @@ def expression_multiplication(variables, tokens):
                         return variables, tokens, removeScopes, comments
 
                     elif isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Variable):
-                        comments.append("Multiplying " + r"$" + str(tokens[i - 1].coefficient) + get_variable_string(tokens[i - 1].value, tokens[i - 1].power) + r"$" + " and " + r"$" + str(
-                            tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power) + r"$")
+                        comments.append("Multiplying " + r"$" + tokens[i - 1].__str__() + r"$" + " and " + r"$" + tokens[i + 1].__str__() + r"$")
                         for j, var in enumerate(tokens[i + 1].value):
                             found = False
                             for k, var2 in enumerate(tokens[i - 1].value):
@@ -1960,16 +1937,14 @@ def expression_multiplication(variables, tokens):
                         return variables, tokens, removeScopes, comments
 
                     elif (isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Constant)):
-                        comments.append("Multiplying " + r"$" + str(tokens[i - 1].value) + "^{" + str(tokens[i - 1].power) + "}" + r"$" + " and " + r"$" + str(
-                            tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power) + r"$")
+                        comments.append("Multiplying " + r"$" + tokens[i - 1].__str__() + "}" + r"$" + " and " + r"$" + tokens[i + 1].__str__() + r"$")
                         tokens[i + 1].coefficient *= evaluate_constant(tokens[i - 1])
                         removeScopes.append(tokens[i].scope)
                         removeScopes.append(tokens[i - 1].scope)
                         return variables, tokens, removeScopes, comments
 
                     elif (isinstance(tokens[i - 1], Variable) and isinstance(tokens[i + 1], Constant)):
-                        comments.append("Multiplying " + r"$" + str(tokens[i - 1].coefficient) + get_variable_string(
-                            tokens[i - 1].value, tokens[i - 1].power) + r"$" + " and " + r"$" + str(tokens[i + 1].value) + "^{" + str(tokens[i + 1].power) + "} " + r"$")
+                        comments.append("Multiplying " + r"$" + tokens[i - 1].__str__() + r"$" + " and " + r"$" + tokens[i + 1].__str__() + r"$")
                         tokens[i - 1].coefficient *= evaluate_constant(tokens[i + 1])
                         removeScopes.append(tokens[i].scope)
                         removeScopes.append(tokens[i + 1].scope)
@@ -2152,8 +2127,7 @@ def expression_division(variables, tokens):
                         nxt = True
                 if nxt and prev:
                     if isinstance(tokens[i + 1], Constant) and isinstance(tokens[i - 1], Constant):
-                        comments.append("Dividing " + r"$" + str(tokens[i - 1].value) + "^{" + str(tokens[i - 1].power) + "}" + r"$" + " by " + r"$" + str(
-                            tokens[i + 1].value) + "^{" + str(tokens[i + 1].power) + "}" + r"$")
+                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
                         no_1 = False
                         no_2 = False
                         if is_number(tokens[i - 1].value):
@@ -2192,8 +2166,7 @@ def expression_division(variables, tokens):
                         return variables, tokens, removeScopes, comments
 
                     elif isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Variable):
-                        comments.append("Dividing " + r"$" + str(tokens[i - 1].coefficient) + get_variable_string(tokens[i - 1].value, tokens[i - 1].power) + r"$" + " by " + r"$" + str(
-                            tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power) + r"$")
+                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
                         for j, var in enumerate(tokens[i + 1].value):
                             found = False
                             for k, var2 in enumerate(tokens[i - 1].value):
@@ -2221,8 +2194,7 @@ def expression_division(variables, tokens):
                         return variables, tokens, removeScopes, comments
 
                     elif (isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Constant)):
-                        comments.append("Dividing " + r"$" + str(tokens[i - 1].value) + "^{" + str(tokens[i - 1].power) + "}" + r"$" + " by " + r"$" + str(
-                            tokens[i + 1].coefficient) + get_variable_string(tokens[i + 1].value, tokens[i + 1].power) + r"$")
+                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
                         val = evaluate_constant(tokens[i - 1])
                         scope = tokens[i - 1].scope
                         tokens[i - 1] = Variable()
@@ -2239,8 +2211,7 @@ def expression_division(variables, tokens):
                         return variables, tokens, removeScopes, comments
 
                     elif (isinstance(tokens[i - 1], Variable) and isinstance(tokens[i + 1], Constant)):
-                        comments.append("Dividing " + r"$" + str(tokens[i - 1].coefficient) + get_variable_string(
-                            tokens[i - 1].value, tokens[i - 1].power) + r"$" + " by " + r"$" + str(tokens[i + 1].value) + "^{" + str(tokens[i + 1].power) + "}" + r"$")
+                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
                         tokens[i - 1].coefficient /= evaluate_constant(tokens[i + 1])
                         removeScopes.append(tokens[i].scope)
                         removeScopes.append(tokens[i + 1].scope)

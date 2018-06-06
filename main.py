@@ -180,13 +180,13 @@ class WorkSpace(QWidget):
         class NavigationCustomToolbar(NavigationToolbar):
             toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
-        self.toolbar = NavigationCustomToolbar(self.canvas, self)
+        # self.toolbar = NavigationCustomToolbar(self.canvas, self)
         self.button = QtGui.QPushButton('Plot')
         self.button.clicked.connect(self.plot)
         layout = QtGui.QVBoxLayout()
         layout.addWidget(QLabel("<h3>Plotter</h3>"))
         layout.addWidget(self.canvas)
-        layout.addWidget(self.toolbar)
+        # layout.addWidget(self.toolbar)
         layout.addWidget(self.button)
         return layout
 

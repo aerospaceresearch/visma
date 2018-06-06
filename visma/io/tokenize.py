@@ -33,14 +33,8 @@ words = ['tan', 'Sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot', 'sinh', 'cos
 
 
 def is_variable(term):
-    """Checks if given term is variable
-
-    Args:
-        term: a term of equation
-
-    Returns:
-        True: if term is variable
-        False: otherwise
+    """
+    Checks if given term is variable
     """
     if term in greek:
         return True

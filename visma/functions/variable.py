@@ -38,6 +38,3 @@ class Variable(Function):
 
     def calculate(self, val):
         return self.coefficient * ((val**(self.power)))
-
-    def functionOf(self):
-        return self.value
