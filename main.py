@@ -658,6 +658,7 @@ class WorkSpace(QWidget):
 
             elif operation == 'Differentiate':
                 self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, self.rTokens, varName)
+
         return calluser
 
 

@@ -18,6 +18,9 @@ class Operator(object):
     def level(self):
         return (int((len(self.tid)) / 2))
 
+    def functionOf(self):
+        return None
+
 
 class Binary(Operator):
     """Class for binary operator
