@@ -1,3 +1,4 @@
+import copy
 # This module contains classes for all functions
 
 

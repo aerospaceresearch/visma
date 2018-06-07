@@ -563,6 +563,7 @@ class WorkSpace(QWidget):
             token_string = ''
             global equationTokens
             equationTokens = []
+            resultOut = True
             if name == 'Addition':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, equationTokens, comments = addition(
@@ -600,29 +601,33 @@ class WorkSpace(QWidget):
                 lhs, rhs = get_lhs_rhs(self.tokens)
                 variables = find_wrt_variable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
+                resultOut = False
             elif name == 'Find Roots':
                 self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
             elif name == 'Integrate':
                 lhs, rhs = get_lhs_rhs(self.tokens)
                 variables = find_wrt_variable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
+                resultOut = False
             elif name == 'Differentiate':
                 lhs, rhs = get_lhs_rhs(self.tokens)
                 variables = find_wrt_variable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
+                resultOut = False
             # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
             # finalSteps = tokensToLatex(name, equationTokens, comments)
-            global theResult
-            theResult = resultLatex(name, equationTokens, comments)
-            if len(availableOperations) == 0:
-                self.clearButtons()
-            else:
-                self.refreshButtons(availableOperations)
-            if self.mode == 'normal':
-                self.textedit.setText(token_string)
-            elif self.mode == 'interaction':
-                cursor = self.textedit.textCursor()
-                cursor.insertText(token_string)
+            if resultOut:
+                global theResult
+                theResult = resultLatex(name, equationTokens, comments)
+                if len(availableOperations) == 0:
+                    self.clearButtons()
+                else:
+                    self.refreshButtons(availableOperations)
+                if self.mode == 'normal':
+                    self.textedit.setText(token_string)
+                elif self.mode == 'interaction':
+                    cursor = self.textedit.textCursor()
+                    cursor.insertText(token_string)
             # plotthis(token_string)
         return calluser
 
@@ -659,6 +664,17 @@ class WorkSpace(QWidget):
             elif operation == 'Differentiate':
                 self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, self.rTokens, varName)
 
+            global theResult
+            theResult = resultLatex(operation, equationTokens, comments)
+            if len(availableOperations) == 0:
+                self.clearButtons()
+            else:
+                self.refreshButtons(availableOperations)
+            if self.mode == 'normal':
+                self.textedit.setText(token_string)
+            elif self.mode == 'interaction':
+                cursor = self.textedit.textCursor()
+                cursor.insertText(token_string)
         return calluser
 
 

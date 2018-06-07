@@ -2,9 +2,8 @@ import copy
 
 from visma.functions.structure import Function
 from visma.functions.constant import Constant, Zero
-from visma.functions.variable import Variable
 from visma.functions.operator import Operator
-from visma.solvers.solve import simplify_equation, tokens_to_string
+from visma.solvers.solve import simplify_equation, tokens_to_string, get_level_variables, get_available_operations
 
 ###################
 # Differentiation #
@@ -17,46 +16,56 @@ def differentiate(lTokens, rTokens, wrtVar):
       token_string, animation, comments \
       = simplify_equation(lTokens, rTokens)
 
-    print animation
-    print comments
-
-    lTokens = (differentiateTokens(lTokens, wrtVar))
+    lTokens, animNew, commentsNew = (differentiateTokens(lTokens, wrtVar))
 
     tokenToStringBuilder = copy.deepcopy(lTokens)
-    animation.append(copy.deepcopy(tokenToStringBuilder))
+    animation.append(animNew)
+    comments.append(commentsNew)
     token_string = tokens_to_string(tokenToStringBuilder)
-    comments.append([])
-    for token in lTokens:
-        print token
-    return lTokens, rTokens, [], token_string, animation, comments
+
+    lVariables = []
+    lVariables.extend(get_level_variables(lTokens))
+
+    availableOperations = get_available_operations(lVariables, lTokens)
+
+    return lTokens, rTokens, availableOperations, token_string, animation, comments
 
 
 def differentiateTokens(funclist, wrtVar):
     difffunc = []
+    animNew = []
+    commentsNew = ["Differentiating with respect to " + r"$" + wrtVar + r"$" + "\n"]
     for func in funclist:
         if isinstance(func, Operator):  # add isFuntionOf
             difffunc.append(func)
         else:
             newfunc = []
             while(isinstance(func, Function)):
+                commentsNew[0] += r"$" + "\\frac{d}{d" + wrtVar + "} ( " + func.__str__() + ")" + r"$"
                 funcCopy = copy.deepcopy(func)
-                if not isinstance(funcCopy, Constant):
-                    for i, var in enumerate(funcCopy.value):
-                        if var == wrtVar:
-                            funcCopy.coefficient *= funcCopy.power[i]
-                            funcCopy.power[i] -= 1
-                            if(funcCopy.power[i] == 0):
-                                del funcCopy.power[i]
-                                del funcCopy.value[i]
-                                if funcCopy.value == []:
-                                    funcCopy.__class__ = Constant
-                                    funcCopy.value = funcCopy.coefficient
-                                    funcCopy.coefficient = 1
-                                    funcCopy.power = 1
+                if wrtVar in funcCopy.functionOf():
+                    if not isinstance(funcCopy, Constant):
+                        for i, var in enumerate(funcCopy.value):
+                            if var == wrtVar:
+                                funcCopy.coefficient *= funcCopy.power[i]
+                                funcCopy.power[i] -= 1
+                                if(funcCopy.power[i] == 0):
+                                    del funcCopy.power[i]
+                                    del funcCopy.value[i]
+                                    if funcCopy.value == []:
+                                        funcCopy.__class__ = Constant
+                                        funcCopy.value = funcCopy.coefficient
+                                        funcCopy.coefficient = 1
+                                        funcCopy.power = 1
+                        commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
+                        newfunc.append(funcCopy)
+                    func.differentiate()
+                    if not(isinstance(func, Constant) and func.value == 1):
+                        newfunc.append(func)
+                else:
+                    funcCopy = (Zero())
                     newfunc.append(funcCopy)
-                func.differentiate()
-                if not(isinstance(func, Constant) and func.value == 1):
-                    newfunc.append(func)
+                    commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
 
                 # TODO: Send each of these steps to animator
 
@@ -73,4 +82,5 @@ def differentiateTokens(funclist, wrtVar):
 
         # The differentiated function list has been generated in difffunc
         # FIXME: Find workaround for differentiating func1(func2+func3)
-    return difffunc
+    animNew.extend(difffunc)
+    return difffunc, animNew, commentsNew
