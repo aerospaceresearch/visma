@@ -12,10 +12,11 @@ from __future__ import division
 import math
 import copy
 from visma.functions.structure import Expression
-from visma.functions.variable import Variable, Constant
+from visma.functions.constant import Constant, Zero
+from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.solvers.solve import simplify_equation, tokens_to_string, move_rTokens_to_lTokens, evaluate_constant
-from config.config import ROUND_OFF
+from config.config import ROUNDOFF
 
 # FIXME: Extend to polynomials of all degrees
 
@@ -23,7 +24,7 @@ from config.config import ROUND_OFF
 def available_variables(tokens):
     variables = []
     for token in tokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             for val in token.value:
                 if val not in variables:
                     variables.append(val)
@@ -33,7 +34,7 @@ def available_variables(tokens):
 def highest_power(tokens, variable):
     maxPow = 0
     for token in tokens:
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             for i, val in enumerate(token.value):
                 if val == variable:
                     if token.power[i] > maxPow:
@@ -50,11 +51,11 @@ def check_for_quadratic_roots(lTokens, rTokens):
     lVariables = available_variables(lTokens)
     rVariables = available_variables(rTokens)
     for token in lTokens:
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*', '/']:
                 return False
     for token in rTokens:
-        if token.__class__ == Binary:
+        if isinstance(token, Binary):
             if token.value in ['*', '/']:
                 return False
 
@@ -112,7 +113,7 @@ def quadratic_roots(lTokens, rTokens):
             binary.value = '-'
         tokens.append(binary)
         constant = Constant()
-        constant.value = round(roots[0], ROUND_OFF)
+        constant.value = round(roots[0], ROUNDOFF)
         constant.power = 1
         tokens.append(constant)
         expression.tokens = tokens
@@ -136,7 +137,7 @@ def quadratic_roots(lTokens, rTokens):
             binary.value = '-'
         tokens.append(binary)
         constant = Constant()
-        constant.value = round(roots[0], ROUND_OFF)
+        constant.value = round(roots[0], ROUNDOFF)
         constant.power = 1
         tokens.append(constant)
         expression.tokens = tokens
@@ -158,7 +159,7 @@ def quadratic_roots(lTokens, rTokens):
             binary2.value = '-'
         tokens2.append(binary2)
         constant2 = Constant()
-        constant2.value = round(roots[1], ROUND_OFF)
+        constant2.value = round(roots[1], ROUNDOFF)
         constant2.power = 1
         tokens2.append(constant2)
         expression2.tokens = tokens2
@@ -180,14 +181,14 @@ def quadratic_roots(lTokens, rTokens):
             binary4.value = '-'
 
         constant3 = Constant()
-        constant3.value = round(roots[0], ROUND_OFF)
+        constant3.value = round(roots[0], ROUNDOFF)
         constant3.power = 1
 
         binary5 = Binary()
         binary5.value = '*'
 
         constant2 = Constant()
-        constant2.value = round(roots[2], ROUND_OFF)
+        constant2.value = round(roots[2], ROUNDOFF)
         constant2.power = 1
 
         tokens = []
@@ -207,7 +208,7 @@ def quadratic_roots(lTokens, rTokens):
         tokens.append(constant2)
         tokens.append(binary5)
         constant = Constant()
-        constant.value = round(roots[1], ROUND_OFF)
+        constant.value = round(roots[1], ROUNDOFF)
         constant.power = 1
         sqrt = Sqrt()
         sqrt.power = sqrtPow
@@ -238,9 +239,7 @@ def quadratic_roots(lTokens, rTokens):
         binary3.value = '*'
         lTokens = [expression, binary3, expression2]
 
-    zero = Constant()
-    zero.value = 0
-    zero.power = 1
+    zero = Zero()
     rTokens = [zero]
     comments.append([])
     tokenToStringBuilder = copy.deepcopy(lTokens)
@@ -250,9 +249,7 @@ def quadratic_roots(lTokens, rTokens):
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
-        zero = Constant()
-        zero.value = 0
-        zero.power = 1
+        zero = Zero()
         zero.scope = [tokLen + 1]
         tokenToStringBuilder.append(zero)
     else:
@@ -269,10 +266,10 @@ def find_quadratic_roots(lTokens, rTokens):
             lTokens, rTokens)
     coeffs = [0, 0, 0]
     for i, token in enumerate(lTokens):
-        if token.__class__ == Constant:
+        if isinstance(token, Constant):
             cons = evaluate_constant(token)
             if i != 0:
-                if lTokens[i - 1].__class__ == Binary:
+                if isinstance(lTokens[i - 1], Binary):
                     if lTokens[i - 1].value in ['-', '+']:
                         if lTokens[i - 1].value == '-':
                             cons *= -1
@@ -283,11 +280,11 @@ def find_quadratic_roots(lTokens, rTokens):
                     return roots
             else:
                 coeffs[0] += cons
-        if token.__class__ == Variable:
+        if isinstance(token, Variable):
             if len(token.value) == 1:
                 var = token.coefficient
                 if i != 0:
-                    if lTokens[i - 1].__class__ == Binary:
+                    if isinstance(lTokens[i - 1], Binary):
                         if lTokens[i - 1].value in ['-', '+']:
                             if lTokens[i - 1].value == '-':
                                 var *= -1

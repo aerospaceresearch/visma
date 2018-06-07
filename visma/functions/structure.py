@@ -1,6 +1,5 @@
+import copy
 # This module contains classes for all functions
-# TODO: Add exponential, logarithmic, trigonometric and hyperbolic functions
-# FIXME: Fix method arguments
 
 
 class Function(object):
@@ -18,15 +17,55 @@ class Function(object):
         self.beforeScope = None
         self.afterScope = None
 
-    def set(self, value=None, power=None, coefficient=None, scope=None, operand=None, operator=None):
-        if value is not None:
-            self.value = value
-        if power is not None:
-            self.power = power
-        if coefficient is not None:
-            self.coefficient = coefficient
+    def __str__(self, nv=None, np=None, nc=None):
+        represent = ""
+
+        if np is None and nv is None and nc is None:
+            if self.coefficient != 1:
+                represent += str(self.coefficient)
+        elif nc is not None:
+            if self.coefficient[nc] != 1:
+                represent += str(self.coefficient[nc])
+
+        if isinstance(self.value, list):
+            if nv is None and np is None:
+                for eachValue, eachPower in zip(self.value, self.power):
+                    represent += "{" + str(eachValue) + "}"
+                    if eachPower != 1:
+                        represent += "^" + "{" + str(eachPower) + "}"
+            elif nc is None:
+                represent += "{" + str(self.value[nv]) + "}"
+                if self.power[np] != 1:
+                    represent += "^" + "{" + str(self.power[np]) + "}"
+            elif nc is not None:
+                for i, val in enumerate(self.value):
+                    represent += "{" + str(val) + "}"
+                    if self.power[np][i] != 1:
+                        represent += "^" + "{" + str(self.power[np][i]) + "}"
+        elif self.operand is not None:
+            for eachOperand in self.operand:
+                represent += "\\" + self.value + " "
+                if self.power != 1:
+                    represent += "^" + "{" + str(self.power) + "}"
+                represent += "({" + eachOperand.__str__() + "})"
+        else:
+            represent += "{" + str(self.value) + "}"
+            if self.power != 1:
+                represent += "^" + "{" + str(self.power) + "}"
+
+        return represent
+
+    def setProp(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
+        if tid is not None:
+            self.tid = tid
         if scope is not None:
             self.scope = scope
+        if value is not None:
+            self.value = value
+        if coeff is not None:
+            self.coefficient = coeff
+        if power is not None:
+            self.power = power
         if operand is not None:
             self.operand = operand
         if operator is not None:
@@ -46,12 +85,18 @@ class Function(object):
     def level(self):
         return (int((len(self.tid)) / 2))
 
+    def functionOf(self):
+        inst = copy.deepcopy(self)
+        while inst.operand is not None:
+            inst = inst.operand
+        return inst.value
+
 
 ###################
 # Mixed Functions #
 ###################
 # For example: sec(x)*tan(x) or sin(x)*log(x) or e^(x)*cot(x)
-# Will be taken care by function 'Token ID'ing/tokening module
+# Will be taken care by function Expression
 
 class Expression(Function):
     """Class for expression type
@@ -59,23 +104,27 @@ class Expression(Function):
 
     def __init__(self):
         super(Expression, self).__init__()
+        self.coefficient = 1
+        self.power = 1
         self.tokens = None
         self.type = 'Expression'
 
-    def set(self, scope=None, tokens=None, tid=None):
-        if tid is not None:
-            self.tid = tid
-        if scope is not None:
-            self.scope = scope
-        else:
-            self.scope = []
-        if tokens is not None:
-            self.tokens = tokens
-        else:
-            self.tokens = []
+    def __str__(self):
+        represent = ""
+        if self.coefficient != 1:
+            represent += str(self.coefficient) + "*"
+        represent += "{("
+        for token in self.tokens:
+            represent += token.__str__()
+        represent += ")}"
+        if self.power != 1:
+            represent += "^" + "{" + str(self.power) + "}"
+        if self.operand is not None:
+            represent += "{(" + str(self.operand.__str__) + ")}"
+        return represent
 
 
-class Equation(Function):
+class Equation(Expression):
     """Class for equation type
     """
 
@@ -83,15 +132,3 @@ class Equation(Function):
         super(Equation, self).__init__()
         self.tokens = None
         self.type = 'Equation'
-
-    def set(self, scope=None, tokens=None, tid=None):
-        if tid is not None:
-            self.tid = tid
-        if scope is not None:
-            self.scope = scope
-        else:
-            self.scope = []
-        if tokens is not None:
-            self.tokens = tokens
-        else:
-            self.tokens = []

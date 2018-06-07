@@ -1,92 +1,106 @@
-"""
-Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors:
-Owner: AerospaceResearch.net
-About: Module is still under development. It aims at integrating the input, will only take care of simple cases in starting.
-Note: Please try to maintain proper documentation
-Logic Description:
-"""
-
-import visma.solvers.solve as ViSoSo
+from __future__ import division
 import copy
 
+from visma.functions.structure import Function
+from visma.functions.constant import Constant, Zero
+from visma.functions.variable import Variable
+from visma.functions.exponential import Logarithm
+from visma.functions.operator import Operator, Binary
+from visma.solvers.solve import simplify
 
-def integrate_variable(variable):
-    if len(variable["value"]) == 1:
-        if ViSoSo.is_number(variable["power"][0]):
-            if variable["power"][0] != -1:
-                variable["power"][0] += 1
-                variable["coefficient"] /= variable["power"][0]
-                return variable
-            else:
-                variable["type"] = 'log'
-                variable["power"] = 1
-                return variable
-    else:
-        tokens = []
-        for i in xrange(len(variable["value"])):
-            if i != 0:
-                binary = {}
-                binary["type"] = 'binary'
-                binary["value"] = '+'
-                tokens.append(binary)
-            var = copy.deepcopy(variable)
-            var["power"][i] += 1
-            var["coefficient"] /= var["power"][i]
-            tokens.append(var)
-        return tokens
+###################
+# Integration #
+###################
 
 
-def trigonometry(variable):
-    if variable["type"] == 'cos':
-        variable["type"] = 'sin'
-        return variable
-    elif variable["type"] == 'sin':
-        variable["type"] = 'cos'
-        variable["coefficient"] *= -1
-        return variable
-    elif variable["type"] == 'sec':
-        if variable["power"] == 2:
-            variable["power"] = 1
-            variable["type"] = 'tan'
-            return variable
-    elif variable["type"] == 'cosec':
-        if variable["power"] == 2:
-            variable["power"] = 1
-            variable["type"] = 'cot'
-            variable["coefficient"] *= -1
-        return variable
+def integrate(tokens, wrtVar):
+
+    tokens, availableOperations, token_string, animation, comments = simplify(tokens)
+
+    tokens, animNew, commentsNew = (integrateTokens(tokens, wrtVar))
+
+    animation.append(animNew)
+    comments.append(commentsNew)
+
+    tokens, availableOperations, token_string, animation2, comments2 = simplify(tokens)
+
+    return tokens, availableOperations, token_string, animation, comments
 
 
-def hyperbolic(variable):
-    if variable["type"] == 'sinh':
-        variable["type"] = 'cosh'
-        return variable
-    elif variable["type"] == 'cosh':
-        variable["type"] = 'sinh'
-        return variable
+# This is only applicable to Variable and Constant type
+# Kind of hacky as of now
+# Must be modified to accomodate other function types
+# Will add integrate class method later
 
+def integrateTokens(funclist, wrtVar):
+    intFunc = []
+    animNew = []
+    commentsNew = ["Integrating with respect to " + r"$" + wrtVar + r"$" + "\n"]
+    for func in funclist:
+        if isinstance(func, Operator):  # add isFuntionOf
+            intFunc.append(func)
+        else:
+            newfunc = []
+            while(isinstance(func, Function)):
+                commentsNew[0] += r"$" + "\int \ " + "( " + func.__str__() + ")" + " d" + wrtVar + r"$"
+                funcCopy = copy.deepcopy(func)
+                if wrtVar in funcCopy.functionOf():
+                    if not isinstance(funcCopy, Constant):
+                        for i, var in enumerate(funcCopy.value):
+                            log = False
+                            if var == wrtVar:
+                                if(funcCopy.power[i] == -1):
+                                    log = True
+                                    funcLog = Logarithm()
+                                    funcLog.setProp(coeff=1, power=1)
+                                    funcLog.operand.append(Variable())
+                                    funcLog.operand[-1].coefficient = 1
+                                    funcLog.operand[-1].value.append(funcCopy.value[i])
+                                    funcLog.operand[-1].power.append(1)
+                                    del funcCopy.power[i]
+                                    del funcCopy.value[i]
+                                    if funcCopy.value == []:
+                                        funcCopy.__class__ = Constant
+                                        funcCopy.value = funcCopy.coefficient
+                                        funcCopy.coefficient = 1
+                                        funcCopy.power = 1
+                                    funcCopy = [funcCopy]
+                                    funcJoin = Binary()
+                                    funcJoin.value = '*'
+                                    funcCopy.append(funcJoin)
+                                    funcCopy.append(funcLog)
+                                else:
+                                    funcCopy.power[i] += 1
+                                    funcCopy.coefficient /= funcCopy.power[i]
 
-def integrate_constant(constant, var):
-    variable = {}
-    variable["scope"] = constant["scope"]
-    variable["coefficient"] = ViSoSo.evaluate_constant(constant)
-    variable["value"] = [var]
-    variable["power"] = [1]
-    return variable
+                        if log:
+                            commentsNew[0] += r"$" + "= " + funcCopy[0].__str__() + "*" + funcCopy[2].__str__() + "\ ;\ " + r"$"
+                            newfunc.extend(funcCopy)
+                        else:
+                            commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
+                            newfunc.append(funcCopy)
+                else:
+                    if isinstance(funcCopy, Variable):
+                        funcCopy.value.append(wrtVar)
+                        funcCopy.power.append(1)
+                    if isinstance(funcCopy, Constant):
+                        coeff = funcCopy.value
+                        funcCopy = Variable()
+                        funcCopy.coefficient = coeff
+                        funcCopy.value.append(wrtVar)
+                        funcCopy.power.append(1)
+                    newfunc.append(funcCopy)
+                    commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
 
+                if func.operand is None:
+                    break
+                else:
+                    func = func.operand
+                    if isinstance(func, Constant):
+                        intFunc = Zero()
+                        break
 
-def integrate_tokens(tokens):
-    # for token in tokens:
-    # logic
-    return tokens
+            intFunc.extend(newfunc)
 
-
-def integrate(lTokens, rTokens):
-    integratedLTokens = integrate_tokens(lTokens)
-    integratedRTokens = integrate_tokens(rTokens)
-    return integratedLTokens, integratedRTokens
-
-
-if __name__ == '__main__':
-    pass
+    animNew.extend(intFunc)
+    return intFunc, animNew, commentsNew

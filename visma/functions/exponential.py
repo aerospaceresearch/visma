@@ -8,20 +8,18 @@ import math
 
 class Logarithm(Function):
 
-    def __init__(self, arg):
-        super().__init__()
-        self.value = []
-
-    def set(self, args):
-        super().set(args)
+    def __init__(self):
+        super(Logarithm, self).__init__()
+        self.operand = []
+        self.value = 'log'
 
     def inverse(self, RHS):
-        super().inverse(RHS)
+        super(Logarithm, self).inverse(RHS)
 
     def differentiate(self):
-        super().differentiate()
+        super(Logarithm, self).differentiate()
         self.power = -1
-        self.__class__ = operand.__class__
+        self.__class__ = self.operand.__class__
 
     def integrate(self, d):
         """
@@ -36,9 +34,6 @@ class Exponential(Function):
     def __init__(self, arg):
         super().__init__()
         self.value = []
-
-    def set(self, args):
-        super().set(args)
 
     def inverse(self, RHS):
         super().inverse(RHS)

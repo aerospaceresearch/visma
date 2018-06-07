@@ -9,18 +9,21 @@ Logic Description:
 """
 
 import sys
+import os
 from PyQt4.QtGui import QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QLabel, QFrame, QApplication, QAbstractButton, qApp, QPainter
 from PyQt4.QtCore import Qt
 from PyQt4 import QtGui
-from visma.io.tokenize import tokenizer, get_lhs_rhs
-from visma.solvers.solve import check_types, find_solve_for, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
-import visma.solvers.polynomial.roots as ViSoPoRo
-from visma.io.parser import resultLatex
-import os
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+
+from visma.calculus.differentiation import differentiate
+from visma.calculus.integration import integrate
+from visma.io.parser import resultLatex
+from visma.io.tokenize import tokenizer, get_lhs_rhs
 from visma.gui.plotter import plotThis
+import visma.solvers.polynomial.roots as ViSoPoRo
+from visma.solvers.solve import check_types, find_wrt_variable, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
 
 # from visma.gui.plotter import plotthis
 
@@ -178,13 +181,13 @@ class WorkSpace(QWidget):
         class NavigationCustomToolbar(NavigationToolbar):
             toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
-        self.toolbar = NavigationCustomToolbar(self.canvas, self)
+        # self.toolbar = NavigationCustomToolbar(self.canvas, self)
         self.button = QtGui.QPushButton('Plot')
         self.button.clicked.connect(self.plot)
         layout = QtGui.QVBoxLayout()
         layout.addWidget(QLabel("<h3>Plotter</h3>"))
         layout.addWidget(self.canvas)
-        layout.addWidget(self.toolbar)
+        # layout.addWidget(self.toolbar)
         layout.addWidget(self.button)
         return layout
 
@@ -258,7 +261,6 @@ class WorkSpace(QWidget):
         return vbox
 
     def interactionMode(self):
-        # textSelected = cursor.selectedText()
         cursor = self.textedit.textCursor()
         interactionText = cursor.selectedText()
         if str(interactionText) == '':
@@ -296,6 +298,10 @@ class WorkSpace(QWidget):
                     opButtons.append("Solve For")
                 elif operation == 'find roots':
                     opButtons.append("Find Roots")
+                elif operation == 'integrate':
+                    opButtons.append("Integrate")
+                elif operation == 'differentiate':
+                    opButtons.append("Differentiate")
 
             if self.buttonSet:
                 for i in reversed(xrange(self.solutionOptionsBox.count())):
@@ -349,6 +355,10 @@ class WorkSpace(QWidget):
                     opButtons.append("Solve For")
                 elif operations == 'find roots':
                     opButtons.append("Find Roots")
+                elif operation == 'integrate':
+                    opButtons.append("Integrate")
+                elif operation == 'differentiate':
+                    opButtons.append("Differentiate")
             for i in reversed(xrange(self.solutionOptionsBox.count())):
                 self.solutionOptionsBox.itemAt(i).widget().setParent(None)
             for i in xrange(int(len(opButtons) / 2) + 1):
@@ -366,7 +376,7 @@ class WorkSpace(QWidget):
         for i in reversed(xrange(self.solutionOptionsBox.count())):
             self.solutionOptionsBox.itemAt(i).widget().setParent(None)
 
-    def solveForButtons(self, variables):
+    def wrtVariableButtons(self, variables, operation):
         if isinstance(variables, list):
             varButtons = []
             if len(variables) > 0:
@@ -382,7 +392,7 @@ class WorkSpace(QWidget):
                                 varButtons[i * 2 + j])
                             self.solutionButtons[(i, j)].resize(100, 100)
                             self.solutionButtons[(i, j)].clicked.connect(
-                                self.onSolveForPress(varButtons[i * 2 + j]))
+                                self.onWRTVariablePress(varButtons[i * 2 + j], operation))
                             self.solutionOptionsBox.addWidget(
                                 self.solutionButtons[(i, j)], i, j)
 
@@ -554,6 +564,7 @@ class WorkSpace(QWidget):
             token_string = ''
             global equationTokens
             equationTokens = []
+            resultOut = True
             if name == 'Addition':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, equationTokens, comments = addition(
@@ -589,14 +600,72 @@ class WorkSpace(QWidget):
                     self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = simplify_equation(self.lTokens, self.rTokens)
             elif name == 'Solve For':
                 lhs, rhs = get_lhs_rhs(self.tokens)
-                variables = find_solve_for(lhs, rhs)
-                self.solveForButtons(variables)
+                variables = find_wrt_variable(lhs, rhs)
+                self.wrtVariableButtons(variables, name)
+                resultOut = False
             elif name == 'Find Roots':
                 self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
+            elif name == 'Integrate':
+                lhs, rhs = get_lhs_rhs(self.tokens)
+                variables = find_wrt_variable(lhs, rhs)
+                self.wrtVariableButtons(variables, name)
+                resultOut = False
+            elif name == 'Differentiate':
+                lhs, rhs = get_lhs_rhs(self.tokens)
+                variables = find_wrt_variable(lhs, rhs)
+                self.wrtVariableButtons(variables, name)
+                resultOut = False
             # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
             # finalSteps = tokensToLatex(name, equationTokens, comments)
+            if resultOut:
+                global theResult
+                theResult = resultLatex(name, equationTokens, comments)
+                if len(availableOperations) == 0:
+                    self.clearButtons()
+                else:
+                    self.refreshButtons(availableOperations)
+                if self.mode == 'normal':
+                    self.textedit.setText(token_string)
+                elif self.mode == 'interaction':
+                    cursor = self.textedit.textCursor()
+                    cursor.insertText(token_string)
+        return calluser
+
+    def onWRTVariablePress(self, varName, operation):
+        def calluser():
+            availableOperations = []
+            token_string = ''
+            global equationTokens
+            equationTokens = []
+            if varName == 'Back':
+                textSelected = str(self.textedit.toPlainText())
+                self.tokens = tokenizer(textSelected)
+                # print self.tokens
+                lhs, rhs = get_lhs_rhs(self.tokens)
+                operations, self.solutionType = check_types(
+                    lhs, rhs)
+                self.refreshButtons(operations)
+
+            elif operation == 'Solve For':
+                # CHECKME: No solve_for function in any module. Add solve_for
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solve_for(
+                    self.lTokens, self.rTokens, varName)
+                # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
+                self.refreshButtons(availableOperations)
+                if self.mode == 'normal':
+                    self.textedit.setText(token_string)
+                elif self.mode == 'interaction':
+                    cursor = self.textedit.textCursor()
+                    cursor.insertText(token_string)
+
+            elif operation == 'Integrate':
+                self.lTokens, availableOperations, token_string, equationTokens, comments = integrate(self.lTokens, varName)
+
+            elif operation == 'Differentiate':
+                self.lTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, varName)
+
             global theResult
-            theResult = resultLatex(name, equationTokens, comments)
+            theResult = resultLatex(operation, equationTokens, comments)
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:
@@ -606,35 +675,6 @@ class WorkSpace(QWidget):
             elif self.mode == 'interaction':
                 cursor = self.textedit.textCursor()
                 cursor.insertText(token_string)
-            # plotthis(token_string)
-        return calluser
-
-    def onSolveForPress(self, name):
-        def calluser():
-            availableOperations = []
-            token_string = ''
-            equationTokens = []
-            if name == 'Back':
-                textSelected = str(self.textedit.toPlainText())
-                self.tokens = tokenizer(textSelected)
-                # print self.tokens
-                lhs, rhs = get_lhs_rhs(self.tokens)
-                operations, self.solutionType = check_types(
-                    lhs, rhs)
-                self.refreshButtons(operations)
-
-            else:
-                # CHECKME: No solve_for function in any module. Supposed to be in solve.py module
-                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solve_for(
-                    self.lTokens, self.rTokens, name)
-                # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
-                self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
-
         return calluser
 
 

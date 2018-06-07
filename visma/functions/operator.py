@@ -10,16 +10,16 @@ class Operator(object):
         self.value = None
         self.type = None
 
-    def set(self, scope=None, value=None, tid=None):
-        if scope is not None:
-            self.scope = scope
-        if value is not None:
-            self.value = value
-        if tid is not None:
-            self.tid = tid
+    def __str__(self):
+        represent = ""
+        represent += str(self.value)
+        return represent
 
     def level(self):
         return (int((len(self.tid)) / 2))
+
+    def functionOf(self):
+        return None
 
 
 class Binary(Operator):
@@ -49,3 +49,11 @@ class Sqrt(Operator):
         self.power = None
         self.expression = None
         self.type = 'Sqrt'
+
+    def __str__(self):
+        represent = ""
+        if self.expression.value == -1:
+            represent += "\iota "
+        else:
+            represent += "{" + self.expression.__str__() + "}"
+        return represent
