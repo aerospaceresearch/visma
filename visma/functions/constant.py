@@ -35,7 +35,7 @@ class Constant(Function):
         return self.coefficient * ((self.value**(self.power)))
 
     def functionOf(self):
-        return ['x', 'y', 'z']
+        return []
 
 
 class Zero(Constant):

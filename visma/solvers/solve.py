@@ -14,6 +14,7 @@ import copy
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
+from visma.functions.exponential import Logarithm
 from visma.functions.operator import Binary, Sqrt
 from visma.io.tokenize import is_number, get_num
 
@@ -186,6 +187,20 @@ def tokens_to_string(tokens):
                 token_string += tokens_to_string(token.expression.tokens)
 
             token_string += ') '
+        elif isinstance(token, Logarithm):
+            if token.coefficient == 1:
+                pass
+            elif token.coefficient == -1:
+                token_string += ' -'
+            else:
+                token_string += str(token.coefficient)
+            if token.operand is not None:
+                for eachOperand in token.operand:
+                    token_string += token.value
+                    if token.power != 1:
+                        token_string += "^" + "(" + str(token.power) + ")"
+                    token_string += "(" + tokens_to_string([eachOperand]) + ")"
+
     return token_string
 
 
@@ -793,6 +808,7 @@ def multiplication_equation(lToks, rToks, direct=False):
 
 
 def multiplication(tokens, direct=False):
+    # FIXME: Fix multiplication for variables (Ex: x^-1 * x^2)
     animation = [copy.deepcopy(tokens)]
     comments = []
     if direct:

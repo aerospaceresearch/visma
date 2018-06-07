@@ -18,6 +18,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 from visma.calculus.differentiation import differentiate
+from visma.calculus.integration import integrate
 from visma.io.parser import resultLatex
 from visma.io.tokenize import tokenizer, get_lhs_rhs
 from visma.gui.plotter import plotThis
@@ -628,13 +629,13 @@ class WorkSpace(QWidget):
                 elif self.mode == 'interaction':
                     cursor = self.textedit.textCursor()
                     cursor.insertText(token_string)
-            # plotthis(token_string)
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
         def calluser():
             availableOperations = []
             token_string = ''
+            global equationTokens
             equationTokens = []
             if varName == 'Back':
                 textSelected = str(self.textedit.toPlainText())
@@ -658,11 +659,10 @@ class WorkSpace(QWidget):
                     cursor.insertText(token_string)
 
             elif operation == 'Integrate':
-                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = integrate(
-                    self.lTokens, self.rTokens, varName)
+                self.lTokens, availableOperations, token_string, equationTokens, comments = integrate(self.lTokens, varName)
 
             elif operation == 'Differentiate':
-                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, self.rTokens, varName)
+                self.lTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, varName)
 
             global theResult
             theResult = resultLatex(operation, equationTokens, comments)

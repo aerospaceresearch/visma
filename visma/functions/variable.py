@@ -12,6 +12,9 @@ class Variable(Function):
 
     def __init__(self):
         super(Variable, self).__init__()
+        # Report
+        self.value = []
+        self.power = []
         self.type = 'Variable'
 
     def inverse(self, RHS):

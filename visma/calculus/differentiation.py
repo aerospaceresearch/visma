@@ -3,41 +3,34 @@ import copy
 from visma.functions.structure import Function
 from visma.functions.constant import Constant, Zero
 from visma.functions.operator import Operator
-from visma.solvers.solve import simplify_equation, tokens_to_string, get_level_variables, get_available_operations
+from visma.solvers.solve import simplify
 
 ###################
 # Differentiation #
 ###################
 
 
-def differentiate(lTokens, rTokens, wrtVar):
+def differentiate(tokens, wrtVar):
 
-    lTokens, rTokens, availableOperations, \
-      token_string, animation, comments \
-      = simplify_equation(lTokens, rTokens)
+    tokens, availableOperations, token_string, animation, comments = simplify(tokens)
 
-    lTokens, animNew, commentsNew = (differentiateTokens(lTokens, wrtVar))
+    tokens, animNew, commentsNew = (differentiateTokens(tokens, wrtVar))
 
-    tokenToStringBuilder = copy.deepcopy(lTokens)
     animation.append(animNew)
     comments.append(commentsNew)
-    token_string = tokens_to_string(tokenToStringBuilder)
 
-    lVariables = []
-    lVariables.extend(get_level_variables(lTokens))
+    tokens, availableOperations, token_string, animation2, comments2 = simplify(tokens)
 
-    availableOperations = get_available_operations(lVariables, lTokens)
-
-    return lTokens, rTokens, availableOperations, token_string, animation, comments
+    return tokens, availableOperations, token_string, animation, comments
 
 
 def differentiateTokens(funclist, wrtVar):
-    difffunc = []
+    diffFunc = []
     animNew = []
     commentsNew = ["Differentiating with respect to " + r"$" + wrtVar + r"$" + "\n"]
     for func in funclist:
         if isinstance(func, Operator):  # add isFuntionOf
-            difffunc.append(func)
+            diffFunc.append(func)
         else:
             newfunc = []
             while(isinstance(func, Function)):
@@ -67,20 +60,15 @@ def differentiateTokens(funclist, wrtVar):
                     newfunc.append(funcCopy)
                     commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
 
-                # TODO: Send each of these steps to animator
-
                 if func.operand is None:
                     break
                 else:
                     func = func.operand
                     if isinstance(func, Constant):
-                        func = Zero()
-                        newfunc = [func]
+                        diffFunc = Zero()
                         break
 
-            difffunc.extend(newfunc)
+            diffFunc.extend(newfunc)
 
-        # The differentiated function list has been generated in difffunc
-        # FIXME: Find workaround for differentiating func1(func2+func3)
-    animNew.extend(difffunc)
-    return difffunc, animNew, commentsNew
+    animNew.extend(diffFunc)
+    return diffFunc, animNew, commentsNew

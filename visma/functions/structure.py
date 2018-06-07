@@ -42,14 +42,34 @@ class Function(object):
                     represent += "{" + str(val) + "}"
                     if self.power[np][i] != 1:
                         represent += "^" + "{" + str(self.power[np][i]) + "}"
+        elif self.operand is not None:
+            for eachOperand in self.operand:
+                represent += "\\" + self.value + " "
+                if self.power != 1:
+                    represent += "^" + "{" + str(self.power) + "}"
+                represent += "({" + eachOperand.__str__() + "})"
         else:
             represent += "{" + str(self.value) + "}"
             if self.power != 1:
                 represent += "^" + "{" + str(self.power) + "}"
-            if self.operand is not None:
-                represent += "({" + str(self.power) + "})"
 
         return represent
+
+    def setProp(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
+        if tid is not None:
+            self.tid = tid
+        if scope is not None:
+            self.scope = scope
+        if value is not None:
+            self.value = value
+        if coeff is not None:
+            self.coefficient = coeff
+        if power is not None:
+            self.power = power
+        if operand is not None:
+            self.operand = operand
+        if operator is not None:
+            self.operator = operator
 
     def inverse(self, RHS):
         RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
@@ -76,7 +96,7 @@ class Function(object):
 # Mixed Functions #
 ###################
 # For example: sec(x)*tan(x) or sin(x)*log(x) or e^(x)*cot(x)
-# Will be taken care by function 'Token ID'ing/tokening module
+# Will be taken care by function Expression
 
 class Expression(Function):
     """Class for expression type
@@ -104,7 +124,7 @@ class Expression(Function):
         return represent
 
 
-class Equation(Function):
+class Equation(Expression):
     """Class for equation type
     """
 

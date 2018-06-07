@@ -16,7 +16,7 @@ from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.solvers.solve import simplify_equation, tokens_to_string, move_rTokens_to_lTokens, evaluate_constant
-from config.config import ROUND_OFF
+from config.config import ROUNDOFF
 
 # FIXME: Extend to polynomials of all degrees
 
@@ -113,7 +113,7 @@ def quadratic_roots(lTokens, rTokens):
             binary.value = '-'
         tokens.append(binary)
         constant = Constant()
-        constant.value = round(roots[0], ROUND_OFF)
+        constant.value = round(roots[0], ROUNDOFF)
         constant.power = 1
         tokens.append(constant)
         expression.tokens = tokens
@@ -137,7 +137,7 @@ def quadratic_roots(lTokens, rTokens):
             binary.value = '-'
         tokens.append(binary)
         constant = Constant()
-        constant.value = round(roots[0], ROUND_OFF)
+        constant.value = round(roots[0], ROUNDOFF)
         constant.power = 1
         tokens.append(constant)
         expression.tokens = tokens
@@ -159,7 +159,7 @@ def quadratic_roots(lTokens, rTokens):
             binary2.value = '-'
         tokens2.append(binary2)
         constant2 = Constant()
-        constant2.value = round(roots[1], ROUND_OFF)
+        constant2.value = round(roots[1], ROUNDOFF)
         constant2.power = 1
         tokens2.append(constant2)
         expression2.tokens = tokens2
@@ -181,14 +181,14 @@ def quadratic_roots(lTokens, rTokens):
             binary4.value = '-'
 
         constant3 = Constant()
-        constant3.value = round(roots[0], ROUND_OFF)
+        constant3.value = round(roots[0], ROUNDOFF)
         constant3.power = 1
 
         binary5 = Binary()
         binary5.value = '*'
 
         constant2 = Constant()
-        constant2.value = round(roots[2], ROUND_OFF)
+        constant2.value = round(roots[2], ROUNDOFF)
         constant2.power = 1
 
         tokens = []
@@ -208,7 +208,7 @@ def quadratic_roots(lTokens, rTokens):
         tokens.append(constant2)
         tokens.append(binary5)
         constant = Constant()
-        constant.value = round(roots[1], ROUND_OFF)
+        constant.value = round(roots[1], ROUNDOFF)
         constant.power = 1
         sqrt = Sqrt()
         sqrt.power = sqrtPow

@@ -1,8 +1,8 @@
 import math
 
 # config
-ROUND_OFF = 3
-# FIXME: Make ROUND_OFF global
+ROUNDOFF = 2
+# FIXME: Make ROUNDOFF global
 INPUT_TYPE = "Greek"
 
 # constants

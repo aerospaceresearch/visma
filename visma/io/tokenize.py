@@ -297,7 +297,8 @@ def check_negative_number(terms, symTokens):
     for i, symToken in enumerate(symTokens):
         if symToken == 'Unary':
             if is_number(terms[i + 1]) and i + 1 < len(terms):
-                terms[i + 1] = terms[i] + terms[i + 1]
+                if terms[i] == '-':
+                    terms[i + 1] = terms[i] + terms[i + 1]
                 terms.pop(i)
                 symTokens.pop(i)
             elif is_variable(terms[i + 1]) and i + 1 < len(terms):
