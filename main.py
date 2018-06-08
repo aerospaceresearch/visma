@@ -19,11 +19,14 @@ from matplotlib.figure import Figure
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
-from visma.io.parser import resultLatex
+from visma.io.checks import checkTypes, find_wrt_variable
 from visma.io.tokenize import tokenizer, get_lhs_rhs
+from visma.io.parser import resultLatex
 from visma.gui.plotter import plotThis
 import visma.solvers.polynomial.roots as ViSoPoRo
-from visma.solvers.solve import check_types, find_wrt_variable, addition, addition_equation, subtraction, subtraction_equation, multiplication, multiplication_equation, division, division_equation, simplify, simplify_equation
+from visma.simplify.simplify import simplify, simplify_equation
+from visma.simplify.addsub import addition, addition_equation, subtraction, subtraction_equation
+from visma.simplify.muldiv import multiplication, multiplication_equation, division, division_equation
 
 # from visma.gui.plotter import plotthis
 
@@ -275,7 +278,7 @@ class WorkSpace(QWidget):
         lhs, rhs = get_lhs_rhs(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
-        operations, self.solutionType = check_types(
+        operations, self.solutionType = checkTypes(
             lhs, rhs)
         if isinstance(operations, list):
             opButtons = []
@@ -642,21 +645,13 @@ class WorkSpace(QWidget):
                 self.tokens = tokenizer(textSelected)
                 # print self.tokens
                 lhs, rhs = get_lhs_rhs(self.tokens)
-                operations, self.solutionType = check_types(
+                operations, self.solutionType = checkTypes(
                     lhs, rhs)
                 self.refreshButtons(operations)
 
             elif operation == 'Solve For':
-                # CHECKME: No solve_for function in any module. Add solve_for
-                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solve_for(
-                    self.lTokens, self.rTokens, varName)
-                # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
-                self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(token_string)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(token_string)
+                # self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
+                pass
 
             elif operation == 'Integrate':
                 self.lTokens, availableOperations, token_string, equationTokens, comments = integrate(self.lTokens, varName)

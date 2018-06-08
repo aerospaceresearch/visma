@@ -6,7 +6,7 @@ from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.exponential import Logarithm
 from visma.functions.operator import Operator, Binary
-from visma.solvers.solve import simplify
+from visma.simplify.simplify import simplify
 
 ###################
 # Integration #

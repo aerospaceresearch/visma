@@ -7,7 +7,7 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 
-import visma.solvers.solve as ViSoSo
+import visma.simplify.simplify as ViSoSo
 import copy
 
 

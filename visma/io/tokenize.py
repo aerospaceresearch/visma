@@ -15,6 +15,7 @@ Logic Description:
 # TODO: Add token formation for tan, sin, cos, cot, sec, cosec and log
 import math
 import copy
+from visma.io.checks import is_number, is_variable, get_num
 from visma.functions.structure import Function, Equation, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
@@ -30,53 +31,6 @@ inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'Sqrt']
 
 words = ['tan', 'Sqrt', 'sin', 'sec', 'cos', 'cosec', 'log', 'cot', 'sinh', 'cosh']
-
-
-def is_variable(term):
-    """
-    Checks if given term is variable
-    """
-    if term in greek:
-        return True
-    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
-        x = 0
-        while x < len(term):
-            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
-                return False
-            x += 1
-        return True
-
-
-def is_number(term):
-    if isinstance(term, int) or isinstance(term, float):
-        return True
-    else:
-        x = 0
-        dot = 0
-        if term[0] == '-':
-            x += 1
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-            if x >= 2:
-                return True
-            else:
-                return False
-        else:
-            while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-        return True
-
-
-def get_num(term):
-    return float(term)
 
 
 def remove_spaces(eqn):
@@ -1564,6 +1518,62 @@ def constant_conversion(tokens):
 
 def tokenizer(eqn=" {x-1} * {x+1} = x"):
     result, tokens = constant_conversion(clean(eqn))
+    return tokens
+
+
+def change_token(tokens, variables, scope_times=0):
+    if len(variables) != 0:
+        if variables[0].scope is not None:
+            for changeVariable in variables:
+                for i, token in enumerate(tokens):
+                    if isinstance(token, Constant):
+                        if token.scope == changeVariable.scope:
+                            if changeVariable.coefficient is not None:
+                                token.coefficient = changeVariable.coefficient
+                            token.power = changeVariable.power
+                            token.value = changeVariable.value
+                            break
+                    elif isinstance(token, Variable):
+                        if token.scope == changeVariable.scope:
+                            token.coefficient = changeVariable.coefficient
+                            token.power = changeVariable.power
+                            token.value = changeVariable.value
+                            break
+                    elif isinstance(token, Binary):
+                        if token.scope == changeVariable.scope:
+                            token.value = changeVariable.value
+                    elif isinstance(token, Expression):
+                        if scope_times + 1 == len(changeVariable.scope):
+                            if token.scope == changeVariable.scope:
+                                break
+                        elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
+                            token.tokens = change_token(
+                                token.tokens, token.scope, scope_times + 1)
+                            break
+    return tokens
+
+
+def remove_token(tokens, scope, scope_times=0):
+    for remScope in scope:
+        for i, token in enumerate(tokens):
+            if isinstance(token, Constant) or isinstance(token, Variable):
+                if token.scope == remScope:
+                    tokens.pop(i)
+                    break
+            elif isinstance(token, Binary):
+                if token.scope == remScope:
+                    tokens.pop(i)
+                    break
+            elif isinstance(token, Expression):
+                if scope_times + 1 == len(remScope):
+                    if token.scope == remScope:
+                        tokens.pop(i)
+                        break
+                elif token.scope == remScope[0:(scope_times + 1)]:
+                    token.tokens = remove_token(
+                        token.tokens, scope, scope_times + 1)
+                    break
+
     return tokens
 
 

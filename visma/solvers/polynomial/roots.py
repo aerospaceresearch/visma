@@ -11,11 +11,14 @@ Logic Description:
 from __future__ import division
 import math
 import copy
+from visma.io.checks import evaluate_constant
+from visma.io.parser import tokensToString
 from visma.functions.structure import Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
-from visma.solvers.solve import simplify_equation, tokens_to_string, move_rTokens_to_lTokens, evaluate_constant
+from visma.simplify.simplify import simplify_equation, move_rTokens_to_lTokens
+
 from config.config import ROUNDOFF
 
 # FIXME: Extend to polynomials of all degrees
@@ -255,7 +258,7 @@ def quadratic_roots(lTokens, rTokens):
     else:
         tokenToStringBuilder.extend(rTokens)
     animation.append(copy.deepcopy(tokenToStringBuilder))
-    token_string = tokens_to_string(tokenToStringBuilder)
+    token_string = tokensToString(tokenToStringBuilder)
     return lTokens, rTokens, [], token_string, animation, comments
 
 

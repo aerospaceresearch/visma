@@ -2,7 +2,7 @@
 This file is to differentiate a function and is made along similar lines to that of integration.py
 """
 
-import visma.solvers.solve as ViSoSo
+import visma.simplify.simplify as ViSoSo
 import copy
 
 

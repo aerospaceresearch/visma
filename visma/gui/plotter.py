@@ -3,7 +3,7 @@ import numpy as np
 from visma.functions.variable import Variable
 from visma.functions.constant import Constant
 from visma.functions.operator import Binary
-from visma.solvers.solve import is_equation
+from visma.io.checks import is_equation
 
 
 def plotThis(equationTokens):
