@@ -8,22 +8,34 @@ from visma.functions.operator import Binary
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 
 
-def is_variable(term):
-    """
-    Checks if given term is variable
-    """
-    if term in greek:
-        return True
-    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
-        x = 0
-        while x < len(term):
-            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
-                return False
-            x += 1
-        return True
+class EquationCompatibility(object):
+
+    def __init__(self, lTokens, rTokens):
+        self.lTokens = lTokens
+        self.lVariables = []
+        self.lVariables.extend(getLevelVariables(self.lTokens))
+        self.rTokens = rTokens
+        self.rVariables = []
+        self.rVariables.extend(getLevelVariables(self.rTokens))
+        self.availableOperations = []
+        if checkSolveFor(lTokens, rTokens):
+            self.availableOperations.append('solve')
+        self.availableOperations.extend(getOperationsEquation(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
+        # print self.availableOperations
 
 
-def is_number(term):
+class ExpressionCompatibility(object):
+    """docstring for ExpressionCompatibility"""
+
+    def __init__(self, tokens):
+        super(ExpressionCompatibility, self).__init__()
+        self.tokens = tokens
+        self.variables = []
+        self.variables.extend(getLevelVariables(self.tokens))
+        self.availableOperations = getOperationsExpression(self.variables, self.tokens)
+
+
+def isNumber(term):
     if isinstance(term, int) or isinstance(term, float):
         return True
     else:
@@ -51,11 +63,22 @@ def is_number(term):
         return True
 
 
-def get_num(term):
-    return float(term)
+def isVariable(term):
+    """
+    Checks if given term is variable
+    """
+    if term in greek:
+        return True
+    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
+        x = 0
+        while x < len(term):
+            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+                return False
+            x += 1
+        return True
 
 
-def is_equation(lTokens, rTokens):
+def isEquation(lTokens, rTokens):
     if len(lTokens) > 0 and len(rTokens) == 1:
         if isinstance(rTokens[0], Constant):
             if rTokens[0].value == 0:
@@ -63,7 +86,7 @@ def is_equation(lTokens, rTokens):
     return False
 
 
-def find_wrt_variable(lTokens, rTokens=None, variables=None):
+def findWRTVariable(lTokens, rTokens=None, variables=None):
     if rTokens is None:
         rTokens = []
     if variables is None:
@@ -74,7 +97,7 @@ def find_wrt_variable(lTokens, rTokens=None, variables=None):
                 if val not in variables:
                     variables.append(val)
         elif isinstance(token, Expression):
-            variables.extend(find_wrt_variable(token.tokens))
+            variables.extend(findWRTVariable(token.tokens))
 
     for token in rTokens:
         if isinstance(token, Variable):
@@ -82,8 +105,54 @@ def find_wrt_variable(lTokens, rTokens=None, variables=None):
                 if val not in variables:
                     variables.append(val)
         elif isinstance(token, Expression):
-            variables.extend(find_wrt_variable(token.tokens, [], variables))
+            variables.extend(findWRTVariable(token.tokens, [], variables))
     return variables
+
+
+def checkEquation(terms, symTokens):
+    brackets = 0
+    sqrBrackets = 0
+    equators = 0
+    for i, term in enumerate(terms):
+        if term == '(':
+            brackets += 1
+        elif term == ')':
+            brackets -= 1
+            if brackets < 0:
+                return False
+        # TODO: logger.log("Too many ')'")
+        elif term == '[':
+            sqrBrackets += 1
+        elif term == ']':
+            sqrBrackets -= 1
+            if sqrBrackets < 0:
+                return False
+        # TODO: logger.log("Too many ']'")
+        elif term == '^':
+            if symTokens[i + 1] == 'Binary':
+                return False
+        # TODO: logger.log("Check around '^'")
+        elif isVariable(term) or isNumber(term):
+            if i + 1 < len(terms):
+                if terms[i + 1] == '(':
+                    return False
+        elif term == '>' or term == '<':
+            if terms[i+1] != '=':
+                equators += 1
+            if equators > 1:
+                return False
+        elif term == '=':
+            equators += 1
+            if equators > 1:
+                return False
+        # TODO: logger.log("Inappropriate number of equator(=,<,>)")
+        elif term == ';':
+            equators = 0
+    if len(terms) != 0:
+        i = len(terms) - 1
+        if symTokens[i] == 'Binary' or symTokens[i] == 'Unary' or brackets != 0 or sqrBrackets != 0:
+            return False
+    return True
 
 
 def checkTypes(lTokens=None, rTokens=None):
@@ -101,58 +170,61 @@ def checkTypes(lTokens=None, rTokens=None):
 
         if preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
             availableOperations.append("find roots")
-        type = "equation"
+        inputType = "equation"
     else:
         expressionCompatible = ExpressionCompatibility(lTokens)
         availableOperations = expressionCompatible.availableOperations
         availableOperations.append("integrate")
         availableOperations.append("differentiate")
-        type = "expression"
+        inputType = "expression"
 
-    return availableOperations, type
+    return availableOperations, inputType
 
 
-def check_solve_for(lTokens, rTokens):
+def checkSolveFor(lTokens, rTokens):
     for token in lTokens:
         if isinstance(token, Variable):
             return True
         elif isinstance(token, Expression):
-            if check_solve_for(token.tokens):
+            if checkSolveFor(token.tokens, []):
                 return True
 
     for token in rTokens:
         if isinstance(token, Variable):
             return True
         elif isinstance(token, Expression):
-            if check_solve_for(token.tokens):
+            if checkSolveFor([], token.tokens):
                 return True
 
 
-def get_level_variables(tokens):
+def getNumber(term):
+    return float(term)
+
+
+def getLevelVariables(tokens):
     variables = []
     for i, term in enumerate(tokens):
         if isinstance(term, Variable):
             skip = False
             for var in variables:
-                if var.value == term.value:
-                    if var.power[0] == term.power:
-                        var.power.append(term.power)
-                        var.scope.append(term.scope)
-                        var.coefficient.append(term.coefficient)
-                        if i != 0 and isinstance(tokens[i - 1], Binary):
-                            var.before.append(tokens[i - 1].value)
-                            var.beforeScope.append(tokens[i - 1].scope)
-                        else:
-                            var.before.append('')
-                            var.beforeScope.append('')
-                        if i + 1 < len(tokens) and isinstance(tokens[i + 1], Binary):
-                            var.after.append(tokens[i + 1].value)
-                            var.afterScope.append(tokens[i + 1].scope)
-                        else:
-                            var.after.append('')
-                            var.afterScope.append('')
-                        skip = True
-                        break
+                if var.value == term.value and var.power[0] == term.power:
+                    var.power.append(term.power)
+                    var.scope.append(term.scope)
+                    var.coefficient.append(term.coefficient)
+                    if i != 0 and isinstance(tokens[i - 1], Binary):
+                        var.before.append(tokens[i - 1].value)
+                        var.beforeScope.append(tokens[i - 1].scope)
+                    else:
+                        var.before.append('')
+                        var.beforeScope.append('')
+                    if i + 1 < len(tokens) and isinstance(tokens[i + 1], Binary):
+                        var.after.append(tokens[i + 1].value)
+                        var.afterScope.append(tokens[i + 1].scope)
+                    else:
+                        var.after.append('')
+                        var.afterScope.append('')
+                    skip = True
+                    break
             if not skip:
                 variable = Variable()
                 variable.value = term.value
@@ -181,9 +253,9 @@ def get_level_variables(tokens):
         elif isinstance(term, Constant):
             skip = False
             for var in variables:
-                if isinstance(var.value, list) and is_number(var.value[0]):
+                if isinstance(var.value, list) and isNumber(var.value[0]):
                     if isinstance(term.value, list):
-                        term.value = evaluate_constant(term)
+                        term.value = evaluateConstant(term)
                         term.power = 1
                     if var.power[0] == term.power:
                         var.value.append(term.value)
@@ -207,7 +279,7 @@ def get_level_variables(tokens):
                 variable = Constant()
                 variable.power = []
                 if isinstance(term.value, list):
-                    variable.value = [evaluate_constant(term)]
+                    variable.value = [evaluateConstant(term)]
                     variable.power.append(1)
                 else:
                     variable.value = [term.value]
@@ -231,8 +303,8 @@ def get_level_variables(tokens):
                     variable.afterScope.append('')
                 variables.append(variable)
         elif isinstance(term, Expression):
-            var = get_level_variables(term.tokens)
-            retType, val = extract_expression(var)
+            var = getLevelVariables(term.tokens)
+            retType, val = extractExpression(var)
             if retType == "expression":
                 variable = Expression()
                 variable.value = val
@@ -241,7 +313,7 @@ def get_level_variables(tokens):
             elif retType == "constant":
                 skip = False
                 for var in variables:
-                    if isinstance(var.value, list) and is_number(var.value[0]):
+                    if isinstance(var.value, list) and isNumber(var.value[0]):
                         if var.power == val.power:
                             var.value.append(val.value)
                             var.power.append(val.power)
@@ -314,7 +386,7 @@ def get_level_variables(tokens):
                             variables.append(var)
                     elif isinstance(v, Constant):
                         for var in variables:
-                            if isinstance(var.value, list) and is_number(var.value[0]):
+                            if isinstance(var.value, list) and isNumber(var.value[0]):
                                 if var.power == v.power:
                                     var.value.extend(v.value)
                                     var.power.extend(v.power)
@@ -411,7 +483,7 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
                                 count += 1
                                 opCount += 1
                                 tempOp = '+'
-                                if variable2.before[l] == '+' or (variable2.before[l] == '' and get_num(variable2.value[l]) > 0):
+                                if variable2.before[l] == '+' or (variable2.before[l] == '' and getNumber(variable2.value[l]) > 0):
                                     tempOp = '-'
                                 else:
                                     tempOp = '+'
@@ -589,24 +661,24 @@ def getOperationsExpression(variables, tokens):
     return operations
 
 
-def extract_expression(variable):
+def extractExpression(variable):
     if len(variable) == 1:
         if isinstance(variable[0], Expression):
-            retType, variable = extract_expression(variable[0].value)
+            retType, variable = extractExpression(variable[0].value)
         elif isinstance(variable[0], Constant):
             return "constant", variable[0]
         elif isinstance(variable[0], Variable):
             return "variable", variable[0]
     else:
-        if not eval_expressions(variable):
-            return "expression", get_level_variables(variable)
+        if not evaluateExpressions(variable):
+            return "expression", getLevelVariables(variable)
         else:
-            return "mixed", get_level_variables(variable)
+            return "mixed", getLevelVariables(variable)
 
 
-def evaluate_constant(constant):
+def evaluateConstant(constant):
     if isinstance(constant, Function):
-        if is_number(constant.value):
+        if isNumber(constant.value):
             return math.pow(constant.value, constant.power)
         elif isinstance(constant.value, list):
             val = 1
@@ -615,16 +687,16 @@ def evaluate_constant(constant):
             for i, c_val in enumerate(constant.value):
                 val *= math.pow(c_val, constant.power[i])
             return val
-    elif is_number(constant):
+    elif isNumber(constant):
         return constant
 
 
-def eval_expressions(variables):
+def evaluateExpressions(variables):
     var = []
     varPowers = []
     for i, variable in enumerate(variables):
         if isinstance(variable, Expression):
-            if eval_expressions(variable.tokens):
+            if evaluateExpressions(variable.tokens):
                 return False
         elif isinstance(variable, Variable):
             prev = False
@@ -683,7 +755,7 @@ def eval_expressions(variables):
             if nxt and prev:
                 match = False
                 for i, v in enumerate(var):
-                    if isinstance(v.value, list) and is_number(v.value[0]):
+                    if isinstance(v.value, list) and isNumber(v.value[0]):
                         for p in varPowers[i]:
                             if variable.power == p:
                                 return False
@@ -708,30 +780,3 @@ def eval_expressions(variables):
                     return False
 
     return True
-
-
-class EquationCompatibility(object):
-
-    def __init__(self, lTokens, rTokens):
-        self.lTokens = lTokens
-        self.lVariables = []
-        self.lVariables.extend(get_level_variables(self.lTokens))
-        self.rTokens = rTokens
-        self.rVariables = []
-        self.rVariables.extend(get_level_variables(self.rTokens))
-        self.availableOperations = []
-        if check_solve_for(lTokens, rTokens):
-            self.availableOperations.append('solve')
-        self.availableOperations.extend(getOperationsEquation(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
-        # print self.availableOperations
-
-
-class ExpressionCompatibility(object):
-    """docstring for ExpressionCompatibility"""
-
-    def __init__(self, tokens):
-        super(ExpressionCompatibility, self).__init__()
-        self.tokens = tokens
-        self.variables = []
-        self.variables.extend(get_level_variables(self.tokens))
-        self.availableOperations = getOperationsExpression(self.variables, self.tokens)

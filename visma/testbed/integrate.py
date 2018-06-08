@@ -13,7 +13,7 @@ import copy
 
 def integrate_variable(variable):
     if len(variable["value"]) == 1:
-        if ViSoSo.is_number(variable["power"][0]):
+        if ViSoSo.isNumber(variable["power"][0]):
             if variable["power"][0] != -1:
                 variable["power"][0] += 1
                 variable["coefficient"] /= variable["power"][0]
@@ -70,7 +70,7 @@ def hyperbolic(variable):
 def integrate_constant(constant, var):
     variable = {}
     variable["scope"] = constant["scope"]
-    variable["coefficient"] = ViSoSo.evaluate_constant(constant)
+    variable["coefficient"] = ViSoSo.evaluateConstant(constant)
     variable["value"] = [var]
     variable["power"] = [1]
     return variable

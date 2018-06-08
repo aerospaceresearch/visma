@@ -14,16 +14,16 @@ from visma.functions.structure import Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary
-from visma.io.checks import is_equation, get_level_variables, getOperationsEquation, getOperationsExpression
+from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression
 from visma.io.parser import tokensToString
-from visma.simplify.addsub import addition, addition_equation, subtraction, subtraction_equation
-from visma.simplify.muldiv import multiplication, multiplication_equation, multiply_expressions, division, division_equation
+from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
+from visma.simplify.muldiv import multiplication, multiplicationEquation, multiplyExpressions, division, divisionEquation
 
 
-def move_rTokens_to_lTokens(lTokens, rTokens):
+def moveRTokensToLTokens(lTokens, rTokens):
     if len(lTokens) == 0 and len(rTokens) > 0:
         return rTokens, lTokens
-    elif is_equation(lTokens, rTokens):
+    elif isEquation(lTokens, rTokens):
         return lTokens, rTokens
     elif len(lTokens) != 0:
         for i, token in enumerate(rTokens):
@@ -62,15 +62,15 @@ def move_rTokens_to_lTokens(lTokens, rTokens):
     return lTokens, rTokens
 
 
-def simplify_equation(lToks, rToks):
+def simplifyEquation(lToks, rToks):
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     animation = []
     comments = [[]]
     lVariables = []
-    lVariables.extend(get_level_variables(lTokens))
+    lVariables.extend(getLevelVariables(lTokens))
     rVariables = []
-    rVariables.extend(get_level_variables(rTokens))
+    rVariables.extend(getLevelVariables(rTokens))
     animBuilder = lToks
     l = len(lToks)
     equalTo = Binary()
@@ -88,39 +88,39 @@ def simplify_equation(lToks, rToks):
         lVariables, lTokens, rVariables, rTokens)
     while len(availableOperations) > 0:
         if '/' in availableOperations:
-            lTokens, rTokens, availableOperations, token_string, anim, com = division_equation(
+            lTokens, rTokens, availableOperations, token_string, anim, com = divisionEquation(
                 lTokens, rTokens)
             animation.pop(len(animation) - 1)
             animation.extend(anim)
             comments.extend(com)
         elif '*' in availableOperations:
-            lTokens, rTokens, availableOperations, token_string, anim, com = multiplication_equation(
+            lTokens, rTokens, availableOperations, token_string, anim, com = multiplicationEquation(
                 lTokens, rTokens)
             animation.pop(len(animation) - 1)
             animation.extend(anim)
             comments.extend(com)
         elif '+' in availableOperations:
-            lTokens, rTokens, availableOperations, token_string, anim, com = addition_equation(
+            lTokens, rTokens, availableOperations, token_string, anim, com = additionEquation(
                 lTokens, rTokens)
             animation.pop(len(animation) - 1)
             animation.extend(anim)
             comments.extend(com)
         elif '-' in availableOperations:
-            lTokens, rTokens, availableOperations, token_string, anim, com = subtraction_equation(
+            lTokens, rTokens, availableOperations, token_string, anim, com = subtractionEquation(
                 lTokens, rTokens)
             animation.pop(len(animation) - 1)
             animation.extend(anim)
             comments.extend(com)
 
-        lVariables = get_level_variables(lTokens)
-        rVariables = get_level_variables(rTokens)
+        lVariables = getLevelVariables(lTokens)
+        rVariables = getLevelVariables(rTokens)
         availableOperations = getOperationsEquation(
             lVariables, lTokens, rVariables, rTokens)
 
     moved = False
     if len(rTokens) > 0:
         moved = True
-        lTokens, rTokens = move_rTokens_to_lTokens(lTokens, rTokens)
+        lTokens, rTokens = moveRTokensToLTokens(lTokens, rTokens)
     tokenToStringBuilder = copy.deepcopy(lTokens)
     l = len(lTokens)
     equalTo = Binary()
@@ -146,7 +146,7 @@ def simplify(tokens):
     animation = [tokens_orig]
     variables = []
     comments = [[]]
-    variables.extend(get_level_variables(tokens))
+    variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while len(availableOperations) > 0:
         if '/' in availableOperations:
@@ -181,7 +181,7 @@ def simplify(tokens):
     return tokens, availableOperations, token_string, animation, comments
 
 
-def define_scope_variable(variable, scope):
+def defineScopeVariable(variable, scope):
     token = copy.deepcopy(variable)
     local_scope = copy.deepcopy(scope)
     if isinstance(token.value, list):
@@ -203,7 +203,7 @@ def define_scope_variable(variable, scope):
     return token
 
 
-def define_scope_constant(constant, scope):
+def defineScopeConstant(constant, scope):
     token = copy.deepcopy(constant)
     local_scope = copy.deepcopy(scope)
     if isinstance(token.value, list):
@@ -224,7 +224,7 @@ def define_scope_constant(constant, scope):
     return token
 
 
-def define_scope(tokens, scope=None):
+def defineScope(tokens, scope=None):
     if scope is None:
         scope = []
     i = 0
@@ -233,11 +233,11 @@ def define_scope(tokens, scope=None):
         local_scope.extend(i)
         token.scope = local_scope
         if isinstance(token, Variable):
-            token = define_scope_variable(token, copy.deepcopy(local_scope))
+            token = defineScopeVariable(token, copy.deepcopy(local_scope))
         elif isinstance(token, Constant):
-            token = define_scope_constant(token, copy.deepcopy(local_scope))
+            token = defineScopeConstant(token, copy.deepcopy(local_scope))
         elif isinstance(token, Expression):
-            token.tokens = define_scope(token.tokens, local_scope)
+            token.tokens = defineScope(token.tokens, local_scope)
         elif isinstance(token, Binary):
             pass
         i += 1
@@ -246,5 +246,5 @@ def define_scope(tokens, scope=None):
 
 if __name__ == '__main__':
 
-    multiply_expressions({'tokens': [{'coefficient': 1, 'scope': [0, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [0, 1], 'type': Binary, 'value': '-'}, {'scope': [0, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [0], 'coefficient': 1, 'type': Expression}, {
+    multiplyExpressions({'tokens': [{'coefficient': 1, 'scope': [0, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [0, 1], 'type': Binary, 'value': '-'}, {'scope': [0, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [0], 'coefficient': 1, 'type': Expression}, {
                          'tokens': [{'coefficient': 1, 'scope': [1, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1, 1], 'type': Binary, 'value': '+'}, {'scope': [1, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [1], 'coefficient': 1, 'type': Expression})

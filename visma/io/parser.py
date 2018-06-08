@@ -3,7 +3,7 @@ from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
-from visma.io.checks import is_number
+from visma.io.checks import isNumber
 
 
 def resultLatex(operation, equations, comments):
@@ -41,7 +41,7 @@ def tokensToString(tokens):
                         token_string += (str(val) + '^(' + str(token.power[j]) + ') ')
                     else:
                         token_string += str(val)
-            elif is_number(token.value):
+            elif isNumber(token.value):
                 if token.power != 1:
                     token_string += (str(token.value) + '^(' + str(token.power) + ') ')
                 else:

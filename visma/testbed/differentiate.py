@@ -8,7 +8,7 @@ import copy
 
 def differentiate_variable(variable):
     if len(variable["value"]) == 1:
-        if ViSoSo.is_number(variable["power"][0]):
+        if ViSoSo.isNumber(variable["power"][0]):
             if variable["power"][0] != 0:
                 variable["coefficient"] *= variable["power"][0]
                 variable["power"][0] -= 1

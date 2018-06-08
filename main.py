@@ -19,14 +19,14 @@ from matplotlib.figure import Figure
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
-from visma.io.checks import checkTypes, find_wrt_variable
-from visma.io.tokenize import tokenizer, get_lhs_rhs
+from visma.io.checks import checkTypes, findWRTVariable
+from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotThis
 import visma.solvers.polynomial.roots as ViSoPoRo
-from visma.simplify.simplify import simplify, simplify_equation
-from visma.simplify.addsub import addition, addition_equation, subtraction, subtraction_equation
-from visma.simplify.muldiv import multiplication, multiplication_equation, division, division_equation
+from visma.simplify.simplify import simplify, simplifyEquation
+from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
+from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 
 # from visma.gui.plotter import plotthis
 
@@ -275,7 +275,7 @@ class WorkSpace(QWidget):
         self.tokens = tokenizer(textSelected)
         # DBP: print self.tokens
         self.addEquation()
-        lhs, rhs = get_lhs_rhs(self.tokens)
+        lhs, rhs = getLHSandRHS(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
         operations, self.solutionType = checkTypes(
@@ -573,53 +573,51 @@ class WorkSpace(QWidget):
                     self.tokens, availableOperations, token_string, equationTokens, comments = addition(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = addition_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = additionEquation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Subtraction':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, equationTokens, comments = subtraction(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = subtraction_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = subtractionEquation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Multiplication':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, equationTokens, comments = multiplication(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = multiplication_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = multiplicationEquation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Division':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, equationTokens, comments = division(
                         self.tokens, True)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = division_equation(
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = divisionEquation(
                         self.lTokens, self.rTokens, True)
             elif name == 'Simplify':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, token_string, equationTokens, comments = simplify(self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = simplify_equation(self.lTokens, self.rTokens)
+                    self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
             elif name == 'Solve For':
-                lhs, rhs = get_lhs_rhs(self.tokens)
-                variables = find_wrt_variable(lhs, rhs)
+                lhs, rhs = getLHSandRHS(self.tokens)
+                variables = findWRTVariable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
             elif name == 'Find Roots':
-                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = ViSoPoRo.quadratic_roots(self.lTokens, self.rTokens)
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = ViSoPoRo.quadraticRoots(self.lTokens, self.rTokens)
             elif name == 'Integrate':
-                lhs, rhs = get_lhs_rhs(self.tokens)
-                variables = find_wrt_variable(lhs, rhs)
+                lhs, rhs = getLHSandRHS(self.tokens)
+                variables = findWRTVariable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
             elif name == 'Differentiate':
-                lhs, rhs = get_lhs_rhs(self.tokens)
-                variables = find_wrt_variable(lhs, rhs)
+                lhs, rhs = getLHSandRHS(self.tokens)
+                variables = findWRTVariable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
-            # Popen(['python', 'visma/gui/animator.py', json.dumps(equationTokens, default=lambda o: o.__dict__), json.dumps(comments)])
-            # finalSteps = tokensToLatex(name, equationTokens, comments)
             if resultOut:
                 global theResult
                 theResult = resultLatex(name, equationTokens, comments)
@@ -644,7 +642,7 @@ class WorkSpace(QWidget):
                 textSelected = str(self.textedit.toPlainText())
                 self.tokens = tokenizer(textSelected)
                 # print self.tokens
-                lhs, rhs = get_lhs_rhs(self.tokens)
+                lhs, rhs = getLHSandRHS(self.tokens)
                 operations, self.solutionType = checkTypes(
                     lhs, rhs)
                 self.refreshButtons(operations)

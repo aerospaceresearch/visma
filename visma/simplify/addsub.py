@@ -1,119 +1,15 @@
 import copy
 from visma.io.parser import tokensToString
-from visma.io.checks import get_level_variables, getOperationsEquation, getOperationsExpression
+from visma.io.checks import getLevelVariables, getOperationsEquation, getOperationsExpression
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary
-from visma.io.tokenize import change_token, remove_token
+from visma.io.tokenize import changeToken, removeToken
 
-
-def addition_equation(lToks, rToks, direct=False):
-    lTokens = copy.deepcopy(lToks)
-    rTokens = copy.deepcopy(rToks)
-    comments = []
-    if direct:
-        comments = [[]]
-    animation = []
-    animBuilder = lToks
-    l = len(lToks)
-    equalTo = Binary()
-    equalTo.scope = [l]
-    equalTo.value = '='
-    animBuilder.append(equalTo)
-    if len(rToks) == 0:
-        zero = Zero()
-        zero.scope = [l + 1]
-        animBuilder.append(zero)
-    else:
-        animBuilder.extend(rToks)
-    animation.append(copy.deepcopy(animBuilder))
-    lVariables = []
-    lVariables.extend(get_level_variables(lTokens))
-    rVariables = []
-    rVariables.extend(get_level_variables(rTokens))
-    availableOperations = getOperationsExpression(lVariables, lTokens)
-    while '+' in availableOperations:
-        var, tok, rem, change, com = expression_addition(lVariables, lTokens)
-        lTokens = change_token(remove_token(tok, rem), change)
-        comments.append(com)
-        animBuilder = copy.deepcopy(lTokens)
-        l = len(lTokens)
-        equalTo = Binary()
-        equalTo.scope = [l]
-        equalTo.value = '='
-        animBuilder.append(equalTo)
-        if len(rTokens) == 0:
-            zero = Zero()
-            zero.scope = [l + 1]
-            animBuilder.append(zero)
-        else:
-            animBuilder.extend(rTokens)
-        animation.append(copy.deepcopy(animBuilder))
-        lVariables = get_level_variables(lTokens)
-        availableOperations = getOperationsExpression(lVariables, lTokens)
-
-    availableOperations = getOperationsExpression(rVariables, rTokens)
-    while '+' in availableOperations:
-        var, tok, rem, change, com = expression_addition(rVariables, rTokens)
-        rTokens = change_token(remove_token(tok, rem), change)
-        comments.append(com)
-        animBuilder = copy.deepcopy(lTokens)
-        l = len(lTokens)
-        equalTo = Binary()
-        equalTo.scope = [l]
-        equalTo.value = '='
-        animBuilder.append(equalTo)
-        if len(rTokens) == 0:
-            zero = Zero()
-            zero.scope = [l + 1]
-            animBuilder.append(zero)
-        else:
-            animBuilder.extend(rTokens)
-        animation.append(copy.deepcopy(animBuilder))
-        rVariables = get_level_variables(rTokens)
-        availableOperations = getOperationsExpression(rVariables, rTokens)
-
-    availableOperations = getOperationsEquation(
-        lVariables, lTokens, rVariables, rTokens)
-    while '+' in availableOperations:
-        lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, com = equation_addition(
-            lVariables, lTokens, rVariables, rTokens)
-        rTokens = change_token(remove_token(rTokens, rRemoveScopes), rChange)
-        lTokens = change_token(remove_token(lTokens, lRemoveScopes), lChange)
-        comments.append(com)
-        animBuilder = copy.deepcopy(lTokens)
-        l = len(lTokens)
-        equalTo = Binary()
-        equalTo.scope = [l]
-        equalTo.value = '='
-        animBuilder.append(equalTo)
-        if len(rTokens) == 0:
-            zero = Zero()
-            zero.scope = [l + 1]
-            animBuilder.append(zero)
-        else:
-            animBuilder.extend(rTokens)
-        animation.append(copy.deepcopy(animBuilder))
-        lVariables = get_level_variables(lTokens)
-        rVariables = get_level_variables(rTokens)
-        availableOperations = getOperationsEquation(
-            lVariables, lTokens, rVariables, rTokens)
-
-    tokenToStringBuilder = copy.deepcopy(lTokens)
-    l = len(lTokens)
-    equalTo = Binary()
-    equalTo.scope = [l]
-    equalTo.value = '='
-    tokenToStringBuilder.append(equalTo)
-    if len(rTokens) == 0:
-        zero = Zero()
-        zero.scope = [l + 1]
-        tokenToStringBuilder.append(zero)
-    else:
-        tokenToStringBuilder.extend(rTokens)
-    token_string = tokensToString(tokenToStringBuilder)
-    return lTokens, rTokens, availableOperations, token_string, animation, comments
+############
+# Addition #
+############
 
 
 def addition(tokens, direct=False):
@@ -122,20 +18,20 @@ def addition(tokens, direct=False):
     comments = []
     if direct:
         comments = [[]]
-    variables.extend(get_level_variables(tokens))
+    variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while '+' in availableOperations:
-        var, tok, rem, change, com = expression_addition(variables, tokens)
-        tokens = change_token(remove_token(tok, rem), change)
+        var, tok, rem, change, com = expressionAddition(variables, tokens)
+        tokens = changeToken(removeToken(tok, rem), change)
         animation.append(copy.deepcopy(tokens))
         comments.append(com)
-        variables = get_level_variables(tokens)
+        variables = getLevelVariables(tokens)
         availableOperations = getOperationsExpression(variables, tokens)
     token_string = tokensToString(tokens)
     return tokens, availableOperations, token_string, animation, comments
 
 
-def subtraction_equation(lToks, rToks, direct=False):
+def additionEquation(lToks, rToks, direct=False):
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     comments = []
@@ -156,14 +52,13 @@ def subtraction_equation(lToks, rToks, direct=False):
         animBuilder.extend(rToks)
     animation.append(copy.deepcopy(animBuilder))
     lVariables = []
-    lVariables.extend(get_level_variables(lTokens))
+    lVariables.extend(getLevelVariables(lTokens))
     rVariables = []
-    rVariables.extend(get_level_variables(rTokens))
+    rVariables.extend(getLevelVariables(rTokens))
     availableOperations = getOperationsExpression(lVariables, lTokens)
-    while '-' in availableOperations:
-        var, tok, rem, change, com = expression_subtraction(
-            lVariables, lTokens)
-        lTokens = change_token(remove_token(tok, rem), change)
+    while '+' in availableOperations:
+        var, tok, rem, change, com = expressionAddition(lVariables, lTokens)
+        lTokens = changeToken(removeToken(tok, rem), change)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
         l = len(lTokens)
@@ -178,14 +73,13 @@ def subtraction_equation(lToks, rToks, direct=False):
         else:
             animBuilder.extend(rTokens)
         animation.append(copy.deepcopy(animBuilder))
-        lVariables = get_level_variables(lTokens)
+        lVariables = getLevelVariables(lTokens)
         availableOperations = getOperationsExpression(lVariables, lTokens)
 
     availableOperations = getOperationsExpression(rVariables, rTokens)
-    while '-' in availableOperations:
-        var, tok, rem, change, com = expression_subtraction(
-            rVariables, rTokens)
-        rTokens = change_token(remove_token(tok, rem), change)
+    while '+' in availableOperations:
+        var, tok, rem, change, com = expressionAddition(rVariables, rTokens)
+        rTokens = changeToken(removeToken(tok, rem), change)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
         l = len(lTokens)
@@ -200,16 +94,16 @@ def subtraction_equation(lToks, rToks, direct=False):
         else:
             animBuilder.extend(rTokens)
         animation.append(copy.deepcopy(animBuilder))
-        rVariables = get_level_variables(rTokens)
+        rVariables = getLevelVariables(rTokens)
         availableOperations = getOperationsExpression(rVariables, rTokens)
 
     availableOperations = getOperationsEquation(
         lVariables, lTokens, rVariables, rTokens)
-    while '-' in availableOperations:
-        lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, com = equation_subtraction(
+    while '+' in availableOperations:
+        lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, com = equationAddition(
             lVariables, lTokens, rVariables, rTokens)
-        rTokens = change_token(remove_token(rTokens, rRemoveScopes), rChange)
-        lTokens = change_token(remove_token(lTokens, lRemoveScopes), lChange)
+        rTokens = changeToken(removeToken(rTokens, rRemoveScopes), rChange)
+        lTokens = changeToken(removeToken(lTokens, lRemoveScopes), lChange)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
         l = len(lTokens)
@@ -224,8 +118,8 @@ def subtraction_equation(lToks, rToks, direct=False):
         else:
             animBuilder.extend(rTokens)
         animation.append(copy.deepcopy(animBuilder))
-        lVariables = get_level_variables(lTokens)
-        rVariables = get_level_variables(rTokens)
+        lVariables = getLevelVariables(lTokens)
+        rVariables = getLevelVariables(rTokens)
         availableOperations = getOperationsEquation(
             lVariables, lTokens, rVariables, rTokens)
 
@@ -245,137 +139,7 @@ def subtraction_equation(lToks, rToks, direct=False):
     return lTokens, rTokens, availableOperations, token_string, animation, comments
 
 
-def subtraction(tokens, direct=False):
-    animation = [copy.deepcopy(tokens)]
-    comments = []
-    if direct:
-        comments = [[]]
-    variables = []
-    variables.extend(get_level_variables(tokens))
-    availableOperations = getOperationsExpression(variables, tokens)
-    while '-' in availableOperations:
-        var, tok, rem, change, com = expression_subtraction(variables, tokens)
-        tokens = change_token(remove_token(tok, rem), change)
-        animation.append(copy.deepcopy(tokens))
-        comments.append(com)
-        variables = get_level_variables(tokens)
-        availableOperations = getOperationsExpression(variables, tokens)
-    token_string = tokensToString(tokens)
-    return tokens, availableOperations, token_string, animation, comments
-
-# del maybe
-
-
-def equation_addition(lVariables, lTokens, rVariables, rTokens):
-    lRemoveScopes = []
-    rRemoveScopes = []
-    lChange = []
-    rChange = []
-    comments = []
-    for variable in lVariables:
-        if isinstance(variable, Constant):
-            for j, val in enumerate(variable.value):
-                if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
-                    for variable2 in rVariables:
-                        if isinstance(variable2, Constant):
-                            if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
-                                for k, val2 in enumerate(variable2.value):
-                                    if (variable2.before[k] == '-' or (variable2.before[k] == '' and variable2.value[k] < 0)) and variable2.after[k] in ['-', '+', '']:
-                                        comments.append(
-                                            "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
-                                        if variable.before[j] == '-':
-                                            variable.value[j] -= variable2.value[k]
-                                        elif variable2.before[k] == '' and variable2.value[k] < 0:
-                                            variable.value[j] -= variable2.value[k]
-                                        else:
-                                            variable.value[j] += variable2.value[k]
-                                        if variable.value[j] == 0:
-                                            if variable.power[j] == 0:
-                                                variable.value[j] = 1
-                                                variable.power[j] = 1
-                                                lChange1 = Function()
-                                                lChange1.scope = variable.scope[j]
-                                                lChange1.power = variable.power[j]
-                                                lChange1.value = variable.value[j]
-                                                lChange.append(lChange1)
-                                            else:
-                                                lRemoveScopes.append(
-                                                    variable.scope[j])
-                                                lRemoveScopes.append(
-                                                    variable.beforeScope[j])
-                                        else:
-                                            lChange1 = Function()
-                                            lChange1.scope = variable.scope[j]
-                                            lChange1.power = variable.power[j]
-                                            lChange1.value = variable.value[j]
-                                            if variable.value[j] < 0 and variable.before[j] in ['-', '+']:
-                                                lChange1.value = - \
-                                                    1 * lChange1.value
-                                                variable.value[j] = - \
-                                                    1 * variable.value[j]
-                                                lChange2 = Binary()
-                                                lChange2.scope = variable.beforeScope[j]
-                                                if variable.before[j] == '-':
-                                                    lChange2.value = '+'
-                                                elif variable.before[j] == '+':
-                                                    lChange2.value = '-'
-                                                lChange.append(lChange2)
-                                            lChange.append(lChange1)
-
-                                        rRemoveScopes.append(
-                                            variable2.scope[k])
-                                        rRemoveScopes.append(
-                                            variable2.beforeScope[k])
-                                        return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
-
-        elif isinstance(variable, Variable):
-            for j, pow1 in enumerate(variable.power):
-                if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
-                    for variable2 in rVariables:
-                        if isinstance(variable2, Variable):
-                            if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
-                                for k, pow2 in enumerate(variable2.value):
-                                    if variable2.before[k] == '-' and variable2.after[k] in ['-', '+', '']:
-                                        comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
-                                        if variable.before[j] == '-':
-                                            variable.coefficient[j] -= variable2.coefficient[k]
-                                        else:
-                                            variable.coefficient[j] += variable2.coefficient[k]
-                                        if variable.coefficient[j] == 0:
-                                            lRemoveScopes.append(
-                                                variable.scope[j])
-                                            lRemoveScopes.append(
-                                                variable.beforeScope[j])
-                                        else:
-                                            lChange1 = Function()
-                                            lChange1.scope = variable.scope[j]
-                                            lChange1.power = variable.power[j]
-                                            lChange1.value = variable.value[j]
-                                            lChange1.coefficient = variable.coefficient[j]
-                                            if variable.coefficient[j] < 0 and variable.before[j] in ['-', '+']:
-                                                lChange1.coefficient = - \
-                                                    1 * lChange1.coefficient
-                                                variable.coefficient[j] = - \
-                                                    1 * \
-                                                    variable.coefficient[j]
-                                                lChange2 = Binary()
-                                                lChange2.scope = variable.beforeScope[j]
-                                                if variable.before[j] == '-':
-                                                    lChange2.value = '+'
-                                                elif variable.before[j] == '+':
-                                                    lChange2.value = '-'
-                                                lChange.append(lChange2)
-                                            lChange.append(lChange1)
-
-                                        rRemoveScopes.append(
-                                            variable2.scope[k])
-                                        rRemoveScopes.append(
-                                            variable2.beforeScope[k])
-                                        return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
-    return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
-
-
-def expression_addition(variables, tokens):
+def expressionAddition(variables, tokens):
     removeScopes = []
     change = []
     comments = []
@@ -657,7 +421,7 @@ def expression_addition(variables, tokens):
     return variables, tokens, removeScopes, change, comments
 
 
-def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
+def equationAddition(lVariables, lTokens, rVariables, rTokens):
     lRemoveScopes = []
     rRemoveScopes = []
     lChange = []
@@ -669,19 +433,21 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Constant):
-                            if variable2.power[0] == variable.power[0]:
+                            if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
                                 for k, val2 in enumerate(variable2.value):
-                                    if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
+                                    if (variable2.before[k] == '-' or (variable2.before[k] == '' and variable2.value[k] < 0)) and variable2.after[k] in ['-', '+', '']:
                                         comments.append(
                                             "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
-                                            variable.value[j] += variable2.value[k]
-                                        else:
                                             variable.value[j] -= variable2.value[k]
+                                        elif variable2.before[k] == '' and variable2.value[k] < 0:
+                                            variable.value[j] -= variable2.value[k]
+                                        else:
+                                            variable.value[j] += variable2.value[k]
                                         if variable.value[j] == 0:
-                                            if variable.power == 0:
-                                                variable.value = 1
-                                                variable.power = 1
+                                            if variable.power[j] == 0:
+                                                variable.value[j] = 1
+                                                variable.power[j] = 1
                                                 lChange1 = Function()
                                                 lChange1.scope = variable.scope[j]
                                                 lChange1.power = variable.power[j]
@@ -716,6 +482,7 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
                                         rRemoveScopes.append(
                                             variable2.beforeScope[k])
                                         return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
+
         elif isinstance(variable, Variable):
             for j, pow1 in enumerate(variable.power):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
@@ -723,12 +490,12 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
                         if isinstance(variable2, Variable):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
                                 for k, pow2 in enumerate(variable2.value):
-                                    if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
+                                    if variable2.before[k] == '-' and variable2.after[k] in ['-', '+', '']:
                                         comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
-                                            variable.coefficient[j] += variable2.coefficient[k]
-                                        else:
                                             variable.coefficient[j] -= variable2.coefficient[k]
+                                        else:
+                                            variable.coefficient[j] += variable2.coefficient[k]
                                         if variable.coefficient[j] == 0:
                                             lRemoveScopes.append(
                                                 variable.scope[j])
@@ -763,7 +530,141 @@ def equation_subtraction(lVariables, lTokens, rVariables, rTokens):
     return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
 
 
-def expression_subtraction(variables, tokens):
+###############
+# Subtraction #
+###############
+
+
+def subtraction(tokens, direct=False):
+    animation = [copy.deepcopy(tokens)]
+    comments = []
+    if direct:
+        comments = [[]]
+    variables = []
+    variables.extend(getLevelVariables(tokens))
+    availableOperations = getOperationsExpression(variables, tokens)
+    while '-' in availableOperations:
+        var, tok, rem, change, com = expressionSubtraction(variables, tokens)
+        tokens = changeToken(removeToken(tok, rem), change)
+        animation.append(copy.deepcopy(tokens))
+        comments.append(com)
+        variables = getLevelVariables(tokens)
+        availableOperations = getOperationsExpression(variables, tokens)
+    token_string = tokensToString(tokens)
+    return tokens, availableOperations, token_string, animation, comments
+
+
+def subtractionEquation(lToks, rToks, direct=False):
+    lTokens = copy.deepcopy(lToks)
+    rTokens = copy.deepcopy(rToks)
+    comments = []
+    if direct:
+        comments = [[]]
+    animation = []
+    animBuilder = lToks
+    l = len(lToks)
+    equalTo = Binary()
+    equalTo.scope = [l]
+    equalTo.value = '='
+    animBuilder.append(equalTo)
+    if len(rToks) == 0:
+        zero = Zero()
+        zero.scope = [l + 1]
+        animBuilder.append(zero)
+    else:
+        animBuilder.extend(rToks)
+    animation.append(copy.deepcopy(animBuilder))
+    lVariables = []
+    lVariables.extend(getLevelVariables(lTokens))
+    rVariables = []
+    rVariables.extend(getLevelVariables(rTokens))
+    availableOperations = getOperationsExpression(lVariables, lTokens)
+    while '-' in availableOperations:
+        var, tok, rem, change, com = expressionSubtraction(
+            lVariables, lTokens)
+        lTokens = changeToken(removeToken(tok, rem), change)
+        comments.append(com)
+        animBuilder = copy.deepcopy(lTokens)
+        l = len(lTokens)
+        equalTo = Binary()
+        equalTo.scope = [l]
+        equalTo.value = '='
+        animBuilder.append(equalTo)
+        if len(rTokens) == 0:
+            zero = Zero()
+            zero.scope = [l + 1]
+            animBuilder.append(zero)
+        else:
+            animBuilder.extend(rTokens)
+        animation.append(copy.deepcopy(animBuilder))
+        lVariables = getLevelVariables(lTokens)
+        availableOperations = getOperationsExpression(lVariables, lTokens)
+
+    availableOperations = getOperationsExpression(rVariables, rTokens)
+    while '-' in availableOperations:
+        var, tok, rem, change, com = expressionSubtraction(
+            rVariables, rTokens)
+        rTokens = changeToken(removeToken(tok, rem), change)
+        comments.append(com)
+        animBuilder = copy.deepcopy(lTokens)
+        l = len(lTokens)
+        equalTo = Binary()
+        equalTo.scope = [l]
+        equalTo.value = '='
+        animBuilder.append(equalTo)
+        if len(rTokens) == 0:
+            zero = Zero()
+            zero.scope = [l + 1]
+            animBuilder.append(zero)
+        else:
+            animBuilder.extend(rTokens)
+        animation.append(copy.deepcopy(animBuilder))
+        rVariables = getLevelVariables(rTokens)
+        availableOperations = getOperationsExpression(rVariables, rTokens)
+
+    availableOperations = getOperationsEquation(
+        lVariables, lTokens, rVariables, rTokens)
+    while '-' in availableOperations:
+        lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, com = equationSubtraction(
+            lVariables, lTokens, rVariables, rTokens)
+        rTokens = changeToken(removeToken(rTokens, rRemoveScopes), rChange)
+        lTokens = changeToken(removeToken(lTokens, lRemoveScopes), lChange)
+        comments.append(com)
+        animBuilder = copy.deepcopy(lTokens)
+        l = len(lTokens)
+        equalTo = Binary()
+        equalTo.scope = [l]
+        equalTo.value = '='
+        animBuilder.append(equalTo)
+        if len(rTokens) == 0:
+            zero = Zero()
+            zero.scope = [l + 1]
+            animBuilder.append(zero)
+        else:
+            animBuilder.extend(rTokens)
+        animation.append(copy.deepcopy(animBuilder))
+        lVariables = getLevelVariables(lTokens)
+        rVariables = getLevelVariables(rTokens)
+        availableOperations = getOperationsEquation(
+            lVariables, lTokens, rVariables, rTokens)
+
+    tokenToStringBuilder = copy.deepcopy(lTokens)
+    l = len(lTokens)
+    equalTo = Binary()
+    equalTo.scope = [l]
+    equalTo.value = '='
+    tokenToStringBuilder.append(equalTo)
+    if len(rTokens) == 0:
+        zero = Zero()
+        zero.scope = [l + 1]
+        tokenToStringBuilder.append(zero)
+    else:
+        tokenToStringBuilder.extend(rTokens)
+    token_string = tokensToString(tokenToStringBuilder)
+    return lTokens, rTokens, availableOperations, token_string, animation, comments
+
+
+def expressionSubtraction(variables, tokens):
     removeScopes = []
     change = []
     comments = []
@@ -1037,3 +938,109 @@ def expression_subtraction(variables, tokens):
         elif isinstance(variable, Expression):
             pass
     return variables, tokens, removeScopes, change, comments
+
+
+def equationSubtraction(lVariables, lTokens, rVariables, rTokens):
+    lRemoveScopes = []
+    rRemoveScopes = []
+    lChange = []
+    rChange = []
+    comments = []
+    for variable in lVariables:
+        if isinstance(variable, Constant):
+            for j, val in enumerate(variable.value):
+                if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
+                    for variable2 in rVariables:
+                        if isinstance(variable2, Constant):
+                            if variable2.power[0] == variable.power[0]:
+                                for k, val2 in enumerate(variable2.value):
+                                    if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
+                                        comments.append(
+                                            "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
+                                        if variable.before[j] == '-':
+                                            variable.value[j] += variable2.value[k]
+                                        else:
+                                            variable.value[j] -= variable2.value[k]
+                                        if variable.value[j] == 0:
+                                            if variable.power == 0:
+                                                variable.value = 1
+                                                variable.power = 1
+                                                lChange1 = Function()
+                                                lChange1.scope = variable.scope[j]
+                                                lChange1.power = variable.power[j]
+                                                lChange1.value = variable.value[j]
+                                                lChange.append(lChange1)
+                                            else:
+                                                lRemoveScopes.append(
+                                                    variable.scope[j])
+                                                lRemoveScopes.append(
+                                                    variable.beforeScope[j])
+                                        else:
+                                            lChange1 = Function()
+                                            lChange1.scope = variable.scope[j]
+                                            lChange1.power = variable.power[j]
+                                            lChange1.value = variable.value[j]
+                                            if variable.value[j] < 0 and variable.before[j] in ['-', '+']:
+                                                lChange1.value = - \
+                                                    1 * lChange1.value
+                                                variable.value[j] = - \
+                                                    1 * variable.value[j]
+                                                lChange2 = Binary()
+                                                lChange2.scope = variable.beforeScope[j]
+                                                if variable.before[j] == '-':
+                                                    lChange2.value = '+'
+                                                elif variable.before[j] == '+':
+                                                    lChange2.value = '-'
+                                                lChange.append(lChange2)
+                                            lChange.append(lChange1)
+
+                                        rRemoveScopes.append(
+                                            variable2.scope[k])
+                                        rRemoveScopes.append(
+                                            variable2.beforeScope[k])
+                                        return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
+        elif isinstance(variable, Variable):
+            for j, pow1 in enumerate(variable.power):
+                if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
+                    for variable2 in rVariables:
+                        if isinstance(variable2, Variable):
+                            if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
+                                for k, pow2 in enumerate(variable2.value):
+                                    if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
+                                        comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
+                                        if variable.before[j] == '-':
+                                            variable.coefficient[j] += variable2.coefficient[k]
+                                        else:
+                                            variable.coefficient[j] -= variable2.coefficient[k]
+                                        if variable.coefficient[j] == 0:
+                                            lRemoveScopes.append(
+                                                variable.scope[j])
+                                            lRemoveScopes.append(
+                                                variable.beforeScope[j])
+                                        else:
+                                            lChange1 = Function()
+                                            lChange1.scope = variable.scope[j]
+                                            lChange1.power = variable.power[j]
+                                            lChange1.value = variable.value[j]
+                                            lChange1.coefficient = variable.coefficient[j]
+                                            if variable.coefficient[j] < 0 and variable.before[j] in ['-', '+']:
+                                                lChange1.coefficient = - \
+                                                    1 * lChange1.coefficient
+                                                variable.coefficient[j] = - \
+                                                    1 * \
+                                                    variable.coefficient[j]
+                                                lChange2 = Binary()
+                                                lChange2.scope = variable.beforeScope[j]
+                                                if variable.before[j] == '-':
+                                                    lChange2.value = '+'
+                                                elif variable.before[j] == '+':
+                                                    lChange2.value = '-'
+                                                lChange.append(lChange2)
+                                            lChange.append(lChange1)
+
+                                        rRemoveScopes.append(
+                                            variable2.scope[k])
+                                        rRemoveScopes.append(
+                                            variable2.beforeScope[k])
+                                        return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
+    return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
