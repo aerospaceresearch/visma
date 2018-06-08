@@ -1,16 +1,16 @@
-from visma.io.tokenize import get_lhs_rhs
+from visma.io.tokenize import getLHSandRHS
 import numpy as np
 from visma.functions.variable import Variable
 from visma.functions.constant import Constant
 from visma.functions.operator import Binary
-from visma.solvers.solve import is_equation
+from visma.io.checks import isEquation
 
 
 def plotThis(equationTokens):
 
     # FIXME: Quite basic right now. Need fix for multi-variables
 
-    LHStok, RHStok = get_lhs_rhs(equationTokens)
+    LHStok, RHStok = getLHSandRHS(equationTokens)
 
     varDict = {}
     delta = 0.1
@@ -30,7 +30,7 @@ def plotThis(equationTokens):
         elif isinstance(token, Constant):
             LHS += coeff*token.value
     RHS = varDict['y']
-    if(is_equation(LHStok, RHStok)):
+    if(isEquation(LHStok, RHStok)):
         RHS = 0
 
     return varDict['x'], varDict['y'], LHS, RHS

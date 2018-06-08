@@ -3,7 +3,7 @@ import copy
 from visma.functions.structure import Function
 from visma.functions.constant import Constant, Zero
 from visma.functions.operator import Operator
-from visma.solvers.solve import simplify
+from visma.simplify.simplify import simplify
 
 ###################
 # Differentiation #

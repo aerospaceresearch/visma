@@ -2,13 +2,13 @@
 This file is to differentiate a function and is made along similar lines to that of integration.py
 """
 
-import visma.solvers.solve as ViSoSo
+import visma.simplify.simplify as ViSoSo
 import copy
 
 
 def differentiate_variable(variable):
     if len(variable["value"]) == 1:
-        if ViSoSo.is_number(variable["power"][0]):
+        if ViSoSo.isNumber(variable["power"][0]):
             if variable["power"][0] != 0:
                 variable["coefficient"] *= variable["power"][0]
                 variable["power"][0] -= 1

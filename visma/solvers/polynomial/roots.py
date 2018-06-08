@@ -11,11 +11,14 @@ Logic Description:
 from __future__ import division
 import math
 import copy
+from visma.io.checks import evaluateConstant
+from visma.io.parser import tokensToString
 from visma.functions.structure import Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
-from visma.solvers.solve import simplify_equation, tokens_to_string, move_rTokens_to_lTokens, evaluate_constant
+from visma.simplify.simplify import simplifyEquation, moveRTokensToLTokens
+
 from config.config import ROUNDOFF
 
 # FIXME: Extend to polynomials of all degrees
@@ -43,7 +46,7 @@ def highest_power(tokens, variable):
 
 
 def preprocess_check_quadratic_roots(lTokens, rTokens):
-    lTokens, rTokens, avaiableOperations, token_string, animation, comments = simplify_equation(lTokens, rTokens)
+    lTokens, rTokens, avaiableOperations, token_string, animation, comments = simplifyEquation(lTokens, rTokens)
     return check_for_quadratic_roots(lTokens, rTokens)
 
 
@@ -91,8 +94,8 @@ def get_roots(coeffs):
     return roots
 
 
-def quadratic_roots(lTokens, rTokens):
-    lTokens, rTokens, availableOperations, token_string, animation, comments = simplify_equation(
+def quadraticRoots(lTokens, rTokens):
+    lTokens, rTokens, availableOperations, token_string, animation, comments = simplifyEquation(
         lTokens, rTokens)
     roots, var = find_quadratic_roots(lTokens, rTokens)
     if len(roots) == 1:
@@ -255,19 +258,19 @@ def quadratic_roots(lTokens, rTokens):
     else:
         tokenToStringBuilder.extend(rTokens)
     animation.append(copy.deepcopy(tokenToStringBuilder))
-    token_string = tokens_to_string(tokenToStringBuilder)
+    token_string = tokensToString(tokenToStringBuilder)
     return lTokens, rTokens, [], token_string, animation, comments
 
 
 def find_quadratic_roots(lTokens, rTokens):
     roots = []
     if len(rTokens) > 0:
-        lTokens, rTokens = move_rTokens_to_lTokens(
+        lTokens, rTokens = moveRTokensToLTokens(
             lTokens, rTokens)
     coeffs = [0, 0, 0]
     for i, token in enumerate(lTokens):
         if isinstance(token, Constant):
-            cons = evaluate_constant(token)
+            cons = evaluateConstant(token)
             if i != 0:
                 if isinstance(lTokens[i - 1], Binary):
                     if lTokens[i - 1].value in ['-', '+']:
