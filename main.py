@@ -16,6 +16,7 @@ from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+import webbrowser
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
@@ -23,14 +24,11 @@ from visma.io.checks import checkTypes, findWRTVariable
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotThis
-import visma.solvers.polynomial.roots as ViSoPoRo
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
-
-# from visma.gui.plotter import plotthis
-
-# TODO: Revamp GUI
+from visma.solvers.polynomial.roots import quadraticRoots
+from visma.transform.factorize import factorize
 
 
 class Window(QtGui.QMainWindow):
@@ -40,11 +38,15 @@ class Window(QtGui.QMainWindow):
         self.initUI()
 
     def initUI(self):
-        # exitAction = QtGui.QAction(QtGui.QIcon('assets/exit.png'), 'Exit', self)
         exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
+
+        wikiAction = QtGui.QAction('Wiki', self)
+        wikiAction.setStatusTip('Open Github wiki')
+        # TODO: Make a mini browser for docs and wiki
+        wikiAction.triggered.connect(lambda: webbrowser.open('https://github.com/aerospaceresearch/visma/wiki'))
 
         self.statusBar()
 
@@ -56,7 +58,7 @@ class Window(QtGui.QMainWindow):
         configMenu = menubar.addMenu('&Config')
         #
         helpMenu = menubar.addMenu('&Help')
-        #
+        helpMenu.addAction(wikiAction)
         workSpace = WorkSpace()
         self.setCentralWidget(workSpace)
         self.setGeometry(300, 300, 1280, 720)
@@ -284,7 +286,7 @@ class WorkSpace(QWidget):
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
-                    if operations[0] != 'solve':
+                    if operations[0] not in ['Solve', 'Integrate', 'Differentiate', 'Find Roots', 'Factorize']:
                         opButtons = ['Simplify']
                 else:
                     opButtons = ['Simplify']
@@ -297,14 +299,8 @@ class WorkSpace(QWidget):
                     opButtons.append("Multiplication")
                 elif operation == '/':
                     opButtons.append("Division")
-                elif operation == 'solve':
-                    opButtons.append("Solve For")
-                elif operation == 'find roots':
-                    opButtons.append("Find Roots")
-                elif operation == 'integrate':
-                    opButtons.append("Integrate")
-                elif operation == 'differentiate':
-                    opButtons.append("Differentiate")
+                else:
+                    opButtons.append(operation)
 
             if self.buttonSet:
                 for i in reversed(xrange(self.solutionOptionsBox.count())):
@@ -341,7 +337,7 @@ class WorkSpace(QWidget):
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
-                    if operations[0] != 'solve':
+                    if operations[0] != 'Solve':
                         opButtons = ['Simplify']
                 else:
                     opButtons = ['Simplify']
@@ -354,14 +350,8 @@ class WorkSpace(QWidget):
                     opButtons.append("Multiplication")
                 elif operation == '/':
                     opButtons.append("Division")
-                elif operation == 'solve':
-                    opButtons.append("Solve For")
-                elif operations == 'find roots':
-                    opButtons.append("Find Roots")
-                elif operation == 'integrate':
-                    opButtons.append("Integrate")
-                elif operation == 'differentiate':
-                    opButtons.append("Differentiate")
+                else:
+                    opButtons.append(operation)
             for i in reversed(xrange(self.solutionOptionsBox.count())):
                 self.solutionOptionsBox.itemAt(i).widget().setParent(None)
             for i in xrange(int(len(opButtons) / 2) + 1):
@@ -601,13 +591,15 @@ class WorkSpace(QWidget):
                     self.tokens, availableOperations, token_string, equationTokens, comments = simplify(self.tokens)
                 else:
                     self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
-            elif name == 'Solve For':
+            elif name == 'Factorize':
+                    self.tokens, availableOperations, token_string, equationTokens, comments = factorize(self.tokens)
+            elif name == 'Find Roots':
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = quadraticRoots(self.lTokens, self.rTokens)
+            elif name == 'Solve':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = findWRTVariable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
-            elif name == 'Find Roots':
-                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = ViSoPoRo.quadraticRoots(self.lTokens, self.rTokens)
             elif name == 'Integrate':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = findWRTVariable(lhs, rhs)
@@ -647,7 +639,7 @@ class WorkSpace(QWidget):
                     lhs, rhs)
                 self.refreshButtons(operations)
 
-            elif operation == 'Solve For':
+            elif operation == 'Solve':
                 # self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
                 pass
 

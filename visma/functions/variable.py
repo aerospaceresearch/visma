@@ -10,11 +10,17 @@ class Variable(Function):
     """Class for variable type
     """
 
-    def __init__(self):
+    def __init__(self, coeff=None, value=None, power=None):
         super(Variable, self).__init__()
         # Report
+        if coeff is not None:
+            self.coefficient = coeff
         self.value = []
+        if value is not None:
+            self.value.append(value)
         self.power = []
+        if power is not None:
+            self.power.append(power)
         self.type = 'Variable'
 
     def inverse(self, RHS):

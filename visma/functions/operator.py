@@ -57,3 +57,31 @@ class Sqrt(Operator):
         else:
             represent += "{" + self.expression.__str__() + "}"
         return represent
+
+
+class Plus(Binary):
+
+    def __init__(self):
+        super(Plus, self).__init__()
+        self.value = '+'
+
+
+class Minus(Binary):
+
+    def __init__(self):
+        super(Minus, self).__init__()
+        self.value = '-'
+
+
+class Multiply(Binary):
+
+    def __init__(self):
+        super(Multiply, self).__init__()
+        self.value = '*'
+
+
+class Divide(Binary):
+
+    def __init__(self):
+        super(Divide, self).__init__()
+        self.value = '/'

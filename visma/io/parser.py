@@ -18,7 +18,7 @@ def resultLatex(operation, equations, comments):
 
     for i in xrange(len(equationLatex)):
         if comments[i] != []:
-            finalSteps += comments[i][0] + "\n"
+            finalSteps += str(comments[i][0]) + "\n"
         finalSteps += r"$" + equationLatex[i] + r"$" + "\n"*2
 
     return finalSteps
