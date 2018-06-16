@@ -67,7 +67,6 @@ def factorizeTokens(tokens):
             tokens.pop()
     else:
         comment = None
-        animation = None
     return tokens, [tokens], [comment]
 
 
@@ -112,7 +111,6 @@ def extractRoots(coefficients):
         quotient, remainder = syntheticDivision(coefficients, root)
         if remainder == 0:
             return root, quotient
-            break
     else:
         return False
 
@@ -128,9 +126,9 @@ def possibleRoots(listA, listB):
     return roots
 
 
-def removeDuplicates(input):
-    output = []
-    for x in input:
-        if x not in output:
-            output.append(x)
-    return output
+def removeDuplicates(extraRoots):
+    roots = []
+    for x in extraRoots:
+        if x not in roots:
+            roots.append(x)
+    return roots
