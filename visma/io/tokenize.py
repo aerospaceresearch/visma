@@ -1398,7 +1398,7 @@ def constant_variable(variable):
     for var in variable.value:
         if isinstance(var, Function):
             if isinstance(var, Expression):
-                result, token = constant_conversion(var.tokens)
+                result, _ = constant_conversion(var.tokens)
                 if not result:
                     constant = False
             elif isinstance(var, Variable):
@@ -1461,7 +1461,7 @@ def constant_conversion(tokens):
 
 
 def tokenizer(eqn=" {x-1} * {x+1} = x"):
-    result, tokens = constant_conversion(clean(eqn))
+    _, tokens = constant_conversion(clean(eqn))
     return tokens
 
 
@@ -1543,16 +1543,6 @@ def getLHSandRHS(tokens):
 
 
 if __name__ == "__main__":
-    '''
-    eqn = 'sqrt + sin(x) + sec - tan * cos / cot = cosec'
-    cleanEqn = removeSpaces(eqn)
-    terms = getTerms(cleanEqn)
-    normalizedTerms = normalize(terms)
-    symTokens = tokenizeSymbols(normalizedTerms)
-    terms, symTokens = checkNegativeNumber(normalizedTerms, symTokens)
-    print terms
-    print symTokens
-    '''
 
     print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
 

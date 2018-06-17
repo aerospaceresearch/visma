@@ -21,6 +21,11 @@ def differentiate(tokens, wrtVar):
 
     tokens, availableOperations, token_string, animation2, comments2 = simplify(tokens)
 
+    animation2.pop(0)
+    comments2.pop(0)
+    animation.extend(animation2)
+    comments.extend(comments2)
+
     return tokens, availableOperations, token_string, animation, comments
 
 

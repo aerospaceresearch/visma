@@ -21,7 +21,7 @@ def addition(tokens, direct=False):
     variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while '+' in availableOperations:
-        var, tok, rem, change, com = expressionAddition(variables, tokens)
+        _, tok, rem, change, com = expressionAddition(variables, tokens)
         tokens = changeToken(removeToken(tok, rem), change)
         animation.append(copy.deepcopy(tokens))
         comments.append(com)
@@ -57,7 +57,7 @@ def additionEquation(lToks, rToks, direct=False):
     rVariables.extend(getLevelVariables(rTokens))
     availableOperations = getOperationsExpression(lVariables, lTokens)
     while '+' in availableOperations:
-        var, tok, rem, change, com = expressionAddition(lVariables, lTokens)
+        _, tok, rem, change, com = expressionAddition(lVariables, lTokens)
         lTokens = changeToken(removeToken(tok, rem), change)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
@@ -429,12 +429,12 @@ def equationAddition(lVariables, lTokens, rVariables, rTokens):
     comments = []
     for variable in lVariables:
         if isinstance(variable, Constant):
-            for j, val in enumerate(variable.value):
+            for j in xrange(len(variable.value)):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Constant):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
-                                for k, val2 in enumerate(variable2.value):
+                                for k in xrange(len(variable2.value)):
                                     if (variable2.before[k] == '-' or (variable2.before[k] == '' and variable2.value[k] < 0)) and variable2.after[k] in ['-', '+', '']:
                                         comments.append(
                                             "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
@@ -484,12 +484,12 @@ def equationAddition(lVariables, lTokens, rVariables, rTokens):
                                         return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
 
         elif isinstance(variable, Variable):
-            for j, pow1 in enumerate(variable.power):
+            for j in xrange(len(variable.power)):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Variable):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
-                                for k, pow2 in enumerate(variable2.value):
+                                for k in xrange(len(variable2.value)):
                                     if variable2.before[k] == '-' and variable2.after[k] in ['-', '+', '']:
                                         comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
@@ -544,7 +544,7 @@ def subtraction(tokens, direct=False):
     variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while '-' in availableOperations:
-        var, tok, rem, change, com = expressionSubtraction(variables, tokens)
+        _, tok, rem, change, com = expressionSubtraction(variables, tokens)
         tokens = changeToken(removeToken(tok, rem), change)
         animation.append(copy.deepcopy(tokens))
         comments.append(com)
@@ -580,7 +580,7 @@ def subtractionEquation(lToks, rToks, direct=False):
     rVariables.extend(getLevelVariables(rTokens))
     availableOperations = getOperationsExpression(lVariables, lTokens)
     while '-' in availableOperations:
-        var, tok, rem, change, com = expressionSubtraction(
+        _, tok, rem, change, com = expressionSubtraction(
             lVariables, lTokens)
         lTokens = changeToken(removeToken(tok, rem), change)
         comments.append(com)

@@ -42,7 +42,7 @@ def getRoots(coeffs):
 
 
 def quadraticRoots(lTokens, rTokens):
-    lTokens, rTokens, availableOperations, token_string, animation, comments = simplifyEquation(
+    lTokens, rTokens, _, token_string, animation, comments = simplifyEquation(
         lTokens, rTokens)
     roots, var = findQuadraticRoots(lTokens, rTokens)
     if len(roots) == 1:

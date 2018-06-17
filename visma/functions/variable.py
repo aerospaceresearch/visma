@@ -23,7 +23,7 @@ class Variable(Function):
             self.power.append(power)
         self.type = 'Variable'
 
-    def inverse(self, RHS):
+    def inverse(self, wrtVar, RHS):
         self.operand = RHS.operand
         self.coefficient = (
             RHS.coefficient / self.coefficient)**(1 / self.power)

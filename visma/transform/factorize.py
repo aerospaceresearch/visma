@@ -111,8 +111,7 @@ def extractRoots(coefficients):
         quotient, remainder = syntheticDivision(coefficients, root)
         if remainder == 0:
             return root, quotient
-    else:
-        return False
+    return False
 
 
 def possibleRoots(listA, listB):

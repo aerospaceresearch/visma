@@ -36,6 +36,24 @@ class Window(QtGui.QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
         self.initUI()
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.setFont(font)
+        # Experimenting custom themes
+        self.setStyleSheet("""
+            QListWidget {
+                background-color: rgb(191, 191, 191);
+                color: white
+            }
+            QPushButton {
+                background-color: rgb(55, 55, 55);
+                border: 2px solid rgb(55, 55, 55);
+                border-radius: 10px;
+                color: white
+            }
+            QPushButton:pressed {
+            }
+            """)
 
     def initUI(self):
         exitAction = QtGui.QAction('Exit', self)
@@ -133,7 +151,15 @@ class WorkSpace(QWidget):
         stepsFig.setLayout(self.stepsFigure())
         stepsFig.setStatusTip("Step-by-step solver")
 
+        font = QtGui.QFont()
+        font.setPointSize(16)
         self.textedit = QTextEdit()
+        self.textedit.setStyleSheet("""
+                QWidget {
+                border:3px solid rgb(55, 55, 55);
+                }
+            """)
+        self.textedit.setFont(font)
         self.textedit.textChanged.connect(self.textChangeTrigger)
         self.textedit.setFixedHeight(70)
         self.textedit.setStatusTip("Input equation")
@@ -174,10 +200,17 @@ class WorkSpace(QWidget):
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
         self.myQListWidget.resize(400, 300)
-        self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(QLabel("<h3>Equation History</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
+        self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.clearButton = QtGui.QPushButton('Clear')
+        self.clearButton.clicked.connect(self.clearHistory)
+        self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
+
+    def clearHistory(self):
+        file = open('local/eqn-list.vis', 'w')
+        file.truncate()
 
     def plotFigure(self):
         self.figure = Figure()
@@ -222,7 +255,7 @@ class WorkSpace(QWidget):
                                         x=0.0, y=1.0,
                                         horizontalalignment='left',
                                         verticalalignment='top',
-                                        size=qApp.font().pointSize()*1.5)
+                                        size=qApp.font().pointSize()*1)
         self.stpscanvas.draw()
 
     def Clicked(self, item):
@@ -471,25 +504,28 @@ class WorkSpace(QWidget):
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(QLabel("<h3>Equation History</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
+        self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.clearButton = QtGui.QPushButton('Clear')
+        self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
 
     def inputsLayout(self, loadList="Greek"):
         inputLayout = QHBoxLayout(self)
         blank = QFrame()
+        # TODO: Move input type to config
+        # comboLabel = QtGui.QLabel()
+        # comboLabel.setText("Input Type:")
+        # comboLabel.setFixedSize(100, 30)
 
-        comboLabel = QtGui.QLabel()
-        comboLabel.setText("Input Type:")
-        comboLabel.setFixedSize(100, 30)
-
-        combo = QtGui.QComboBox(self)
-        combo.addItem("Greek")
-        combo.addItem("LaTeX")
-        combo.setFixedSize(100, 30)
-        combo.activated[str].connect(self.onActivated)
+        # combo = QtGui.QComboBox(self)
+        # combo.addItem("Greek")
+        # combo.addItem("LaTeX")
+        # combo.setFixedSize(100, 30)
+        # combo.activated[str].connect(self.onActivated)
 
         inputTypeSplitter = QSplitter(Qt.Horizontal)
-        inputTypeSplitter.addWidget(comboLabel)
-        inputTypeSplitter.addWidget(combo)
+        # inputTypeSplitter.addWidget(comboLabel)
+        # inputTypeSplitter.addWidget(combo)
 
         topSplitter = QSplitter(Qt.Horizontal)
         topSplitter.addWidget(blank)
@@ -677,10 +713,10 @@ class QCustomQWidget (QtGui.QWidget):
         self.setLayout(self.allQHBoxLayout)
         # setStyleSheet
         self.textUpQLabel.setStyleSheet('''
-        color: rgb(255, 0, 0);
+        color: black;
         ''')
         self.textDownQLabel.setStyleSheet('''
-        color: rgb(0, 0, 0);
+        color: black;
         ''')
 
     def setTextUp(self, text):

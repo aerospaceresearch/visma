@@ -19,9 +19,8 @@ class Constant(Function):
         if value is not None:
             self.value = value
 
-    def inverse(self, RHS):
-        """
-        """
+    def inverse(self, wrtVar, RHS):
+        pass
 
     def differentiate(self):
         super(Constant, self).differentiate()

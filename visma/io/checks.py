@@ -667,7 +667,7 @@ def getOperationsExpression(variables, tokens):
 def extractExpression(variable):
     if len(variable) == 1:
         if isinstance(variable[0], Expression):
-            retType, variable = extractExpression(variable[0].value)
+            _, variable = extractExpression(variable[0].value)
         elif isinstance(variable[0], Constant):
             return "constant", variable[0]
         elif isinstance(variable[0], Variable):
@@ -816,7 +816,7 @@ def isIntegerPower(tokens, variable):
 
 def preprocessCheckPolynomial(lTokens, rTokens):
     from visma.simplify.simplify import simplifyEquation  # Circular import
-    lTokens, rTokens, avaiableOperations, token_string, animation, comments = simplifyEquation(lTokens, rTokens)
+    lTokens, rTokens, _, _, _, _ = simplifyEquation(lTokens, rTokens)
     lVariables = availableVariables(lTokens)
     rVariables = availableVariables(rTokens)
     for token in lTokens:
