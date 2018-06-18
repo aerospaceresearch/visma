@@ -714,7 +714,7 @@ def division_variable_constant(constant, variable, coeff):
     return variable1
 
 
-def division_constant_variable(constant, variable, coeff):
+def division_constantVariable(constant, variable, coeff):
     variable1 = Variable()
     variable1.coefficient = (evaluateConstant(
         constant) / variable.coefficient) * coeff
@@ -744,7 +744,7 @@ def division_expression_variable(variable, expression, coeff):
             tokens.append(division_variables(
                 token, variable, expression.coefficient))
         elif isinstance(token, Constant):
-            tokens.append(division_constant_variable(
+            tokens.append(division_constantVariable(
                 token, variable, expression.coefficient))
         elif isinstance(token, Expression):
             tokens.append(division_expression_variable(

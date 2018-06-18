@@ -75,12 +75,12 @@ def tokensToString(tokens):
             elif isinstance(token.power, Expression):
                 token_string += tokensToString(token.power.tokens)
             token_string += ']('
-            if isinstance(token.expression, Constant):
-                token_string += tokensToString([token.expression])
-            elif isinstance(token.expression, Variable):
-                token_string += tokensToString([token.expression])
-            elif isinstance(token.expression, Expression):
-                token_string += tokensToString(token.expression.tokens)
+            if isinstance(token.operand, Constant):
+                token_string += tokensToString([token.operand])
+            elif isinstance(token.operand, Variable):
+                token_string += tokensToString([token.operand])
+            elif isinstance(token.operand, Expression):
+                token_string += tokensToString(token.operand.tokens)
 
             token_string += ') '
         elif isinstance(token, Logarithm):

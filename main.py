@@ -79,7 +79,7 @@ class Window(QtGui.QMainWindow):
         helpMenu.addAction(wikiAction)
         workSpace = WorkSpace()
         self.setCentralWidget(workSpace)
-        self.setGeometry(300, 300, 1280, 720)
+        self.setGeometry(300, 300, 1400, 800)
         self.setWindowTitle('VisMa - Visual Math')
         self.show()
 

@@ -47,15 +47,15 @@ class Sqrt(Operator):
     def __init__(self):
         super(Sqrt, self).__init__()
         self.power = None
-        self.expression = None
-        self.type = 'Sqrt'
+        self.operand = None
+        self.type = 'sqrt'
 
     def __str__(self):
         represent = ""
-        if self.expression.value == -1:
+        if self.operand.value == -1:
             represent += "\iota "
         else:
-            represent += "{" + self.expression.__str__() + "}"
+            represent += "{" + self.operand.__str__() + "}"
         return represent
 
 

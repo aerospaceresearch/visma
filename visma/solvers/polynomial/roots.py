@@ -162,7 +162,7 @@ def quadraticRoots(lTokens, rTokens):
         constant.power = 1
         sqrt = Sqrt()
         sqrt.power = sqrtPow
-        sqrt.expression = constant
+        sqrt.operand = constant
         tokens.append(sqrt)
         expression.tokens = tokens
 
