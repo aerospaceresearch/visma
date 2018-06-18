@@ -33,7 +33,7 @@ class Exponential(Function):
 
     def __init__(self, arg):
         super().__init__()
-        self.value = []
+        self.value = 'exp'
 
     def inverse(self, RHS):
         super().inverse(RHS)

@@ -99,11 +99,32 @@ class Cotangent(Function):
 
 # Incomplete
 
+class Cosecant(Function):
+
+    def __init__(self, arg):
+        super().__init__()
+        self.value = 'cosec'
+
+    def inverse(self, RHS):
+        super().inverse(RHS)
+        self.__class__ = ArcCosec
+
+    def differentiate(self):
+        super().differentiate()
+
+    def integrate(self):
+        """
+        """
+
+    def calculate(self, val):
+        return self.coefficient * ((math.cot(val))**self.power)
+
+
 class Secant(Function):
 
     def __init__(self, arg):
         super().__init__()
-        self.value = 'cot'
+        self.value = 'sec'
 
     def inverse(self, RHS):
         super().inverse(RHS)

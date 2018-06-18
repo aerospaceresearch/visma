@@ -55,7 +55,7 @@ class Sqrt(Operator):
         if self.operand.value == -1:
             represent += "\iota "
         else:
-            represent += "{" + self.operand.__str__() + "}"
+            represent += "\sqrt" + self.operand.__str__()
         return represent
 
 
