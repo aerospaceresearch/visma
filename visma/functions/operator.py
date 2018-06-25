@@ -85,3 +85,10 @@ class Divide(Binary):
     def __init__(self):
         super(Divide, self).__init__()
         self.value = '/'
+
+
+class EqualTo(Binary):
+
+    def __init__(self):
+        super(EqualTo, self).__init__()
+        self.value = '='

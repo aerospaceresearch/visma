@@ -15,9 +15,9 @@ def gcd(numbers):
     return gcd
 
 
-def factors(x):
+def factors(number):
     factors = []
-    for i in xrange(1, abs(int(x)) + 1):
-        if x % i == 0:
+    for i in xrange(1, abs(int(number)) + 1):
+        if number % i == 0:
             factors.append(i)
     return factors

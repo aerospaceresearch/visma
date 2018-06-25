@@ -12,16 +12,13 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 
-# TODO: Add token formation for tan, sin, cos, cot, sec, cosec and log
 import math
 import copy
 from visma.io.checks import isNumber, isVariable, getNumber, checkEquation
 from visma.functions.structure import Function, Equation, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.functions.exponential import Logarithm, Exponential
-from visma.functions.hyperbolic import Sinh, Cosh
-from visma.functions.trigonometry import Sine, Cosine, Tangent, Cosecant, Secant, Cotangent
+from visma.functions.exponential import Logarithm
 from visma.functions.operator import Binary, Sqrt
 
 symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=']
