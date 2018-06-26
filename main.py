@@ -27,6 +27,7 @@ from visma.gui.plotter import plotThis
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
+from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
 from visma.transform.factorize import factorize
 
@@ -41,15 +42,11 @@ class Window(QtGui.QMainWindow):
         self.setFont(font)
         # Experimenting custom themes
         self.setStyleSheet("""
-            QListWidget {
-                background-color: rgb(191, 191, 191);
-                color: white
-            }
             QPushButton {
-                background-color: rgb(55, 55, 55);
-                border: 2px solid rgb(55, 55, 55);
+                background-color: white;
+                border: 3px solid white;
                 border-radius: 10px;
-                color: white
+                color: black
             }
             QPushButton:pressed {
             }
@@ -79,7 +76,7 @@ class Window(QtGui.QMainWindow):
         helpMenu.addAction(wikiAction)
         workSpace = WorkSpace()
         self.setCentralWidget(workSpace)
-        self.setGeometry(300, 300, 1400, 800)
+        self.setGeometry(300, 300, 1000, 800)
         self.setWindowTitle('VisMa - Visual Math')
         self.show()
 
@@ -216,6 +213,8 @@ class WorkSpace(QWidget):
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
 
+        self.figure.patch.set_facecolor('white')
+
         class NavigationCustomToolbar(NavigationToolbar):
             toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
@@ -243,6 +242,7 @@ class WorkSpace(QWidget):
         self.stpsfigure.clear()
         self.stpsbutton = QtGui.QPushButton('Show steps')
         self.stpsbutton.clicked.connect(self.showSteps)
+        self.stpsfigure.patch.set_facecolor('white')
 
         stpslayout = QtGui.QVBoxLayout()
         stpslayout.addWidget(QLabel("<h3>Step-by-step solution</h3>"))
@@ -676,8 +676,7 @@ class WorkSpace(QWidget):
                 self.refreshButtons(operations)
 
             elif operation == 'Solve':
-                # self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
-                pass
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
 
             elif operation == 'Integrate':
                 self.lTokens, availableOperations, token_string, equationTokens, comments = integrate(self.lTokens, varName)
@@ -699,7 +698,7 @@ class WorkSpace(QWidget):
         return calluser
 
 
-class QCustomQWidget (QtGui.QWidget):
+class QCustomQWidget(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(QCustomQWidget, self).__init__(parent)
@@ -711,7 +710,6 @@ class QCustomQWidget (QtGui.QWidget):
         self.allQHBoxLayout = QtGui.QHBoxLayout()
         self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
         self.setLayout(self.allQHBoxLayout)
-        # setStyleSheet
         self.textUpQLabel.setStyleSheet('''
         color: black;
         ''')

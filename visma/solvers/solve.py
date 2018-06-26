@@ -1,82 +1,117 @@
 from visma.functions.structure import Function, Expression
 from visma.functions.variable import Variable
 from visma.functions.constant import Constant
-from visma.functions.operator import Operator, Plus, Minus, EqualTo
+from visma.functions.operator import Operator, Minus, EqualTo
 from visma.simplify.simplify import simplify, simplifyEquation
+import copy
 
 ##########################
 # Simple Solver(for now) #
 ##########################
 
+# FIXME: ValueError: negative number cannot be raised to a fractional power
+
 
 def solveFor(lTokens, rTokens, wrtVar):
 
-    ltokens, rtokens, availableOperations, token_string, animation, comments = simplifyEquation(lTokens, rTokens)
+    lTokens, rTokens, availableOperations, token_string, animation, comments = simplifyEquation(lTokens, rTokens)
 
-    tokens, animNew, commentsNew = (solveTokens(lTokens, rTokens, wrtVar))
+    lTokens, rTokens, animNew, commentsNew = solveTokens(lTokens, rTokens, wrtVar)
 
-    animation.append(animNew)
-    comments.append(commentsNew)
+    animation.extend(animNew)
+    comments[0] = ["Solving with respect to " + r"$" + wrtVar + r"$" + "\n"]
+    comments.extend(commentsNew)
 
-    return tokens, availableOperations, token_string, animation, comments
+    return lTokens, rTokens, availableOperations, token_string, animation, comments
 
 
 def solveTokens(lTokens, rTokens, wrtVar):
     animNew = []
-    commentsNew = ["Solving with respect to " + r"$" + wrtVar + r"$" + "\n"]
-    animNew.extend()
+    commentsNew = []
+
+    lTokens, rTokens, animation1, comment1 = moveToRHS(lTokens, rTokens, wrtVar)
+
+    if checkOnlyVarTermsInList(lTokens, wrtVar):
+        if len(lTokens) == 1:
+            lTokens, rTokens, animation2, comment2 = funcInverse(lTokens, rTokens, wrtVar)
+    else:
+        animation2 = []
+        comment2 = [""]
+
+    animNew.extend([animation1, animation2])
+    commentsNew.extend([comment1, comment2])
     return lTokens, rTokens, animNew, commentsNew
 
 
-def funcInverse(lTokens, rTokens, wrtVar):
-    pass
-
-
 def moveToRHS(lTokens, rTokens, wrtVar):
+
     comment = "Moving "
-    lTokensCopy = lTokens
-    for i, token in enumerate(lTokensCopy):
-        if isinstance(token, Function) and not checkVarInToken(token, wrtVar):
-            if i-1 > 0 and isinstance(lTokensCopy[i-1], Operator):
-                if token.value == '-':
-                    rTokens.append(Plus())
-                else:
-                    rTokens.append(Minus())
-                comment += r"$" + lTokensCopy[i-1].__str__() + r"$"
-                lTokens.pop(i-1)
-            elif i == 0 and not checkVarInToken(token, wrtVar):
+    i = 0
+    while i < len(lTokens):
+        if isinstance(lTokens[i], Function) and not isVarInToken(lTokens[i], wrtVar):
+            if i-1 >= 0 and isinstance(lTokens[i-1], Operator):
+                comment += r"$" + lTokens[i-1].__str__() + r"$"
+                if lTokens[i-1].value == '-':
+                    lTokens[i-1].value = '+'
+                    rTokens.append(lTokens.pop(i-1))
+                elif lTokens[i-1].value == '+':
+                    lTokens[i-1].value = '-'
+                    rTokens.append(lTokens.pop(i-1))
+                i -= 1
+            elif i == 0:
                 rTokens.append(Minus())
-            rTokens.append(token)
-            lTokens.pop(i)
-            comment += r"$" + token.__str__() + r"$" + " "
-    comment += "to RHS"
+            comment += r"$" + lTokens[i].__str__() + r"$"
+            rTokens.append(lTokens.pop(i))
+            i -= 1
+        i += 1
+    comment += " to RHS"
+    if isinstance(lTokens[0], Operator):
+        if lTokens[0].value == '+':
+            lTokens.pop(0)
+        elif lTokens[0].value == '-':
+            lTokens.pop(0)
+            lTokens[0].coefficient *= -1
     lTokens, _, _, _, _ = simplify(lTokens)
     rTokens, _, _, _, _ = simplify(rTokens)
-    animation = lTokens
+    animation = copy.deepcopy(lTokens)
     animation.append(EqualTo())
     animation.extend(rTokens)
-    return lTokens, rTokens, animation, comment
+    return lTokens, rTokens, animation, [comment]
 
 
-def checkVarInTokensList(tokens, wrtVar):
+def funcInverse(lTokens, rTokens, wrtVar):
+    if len(lTokens) == 1:
+        rExpr = Expression()
+        rExpr.tokens.extend(rTokens)
+        rToken, comment = lTokens[0].inverse(rExpr, wrtVar)
+    animation = copy.deepcopy(lTokens)
+    animation.append(EqualTo())
+    animation.append(rToken)
+    rTokens = [rToken]
+    return lTokens, rTokens, animation, [comment]
+
+
+def isVarInTokensList(tokens, wrtVar):
     for token in tokens:
-        return checkVarInToken(token, wrtVar)
+        if isVarInToken(token, wrtVar) is True:
+            return True
+    return False
 
 
-def checkVarInToken(token, wrtVar):
+def checkOnlyVarTermsInList(tokens, wrtVar):  # Rename func
+    for token in tokens:
+        if isVarInToken(token, wrtVar) is False:
+            return False
+    return True
+
+
+def isVarInToken(token, wrtVar):
     if isinstance(token, Constant):
         return False
     elif isinstance(token, Variable):
         if wrtVar in token.value:
             return True
     elif isinstance(token, Expression):
-        return checkVarInTokensList(token.tokens, wrtVar)
+        return isVarInTokensList(token.tokens, wrtVar)
     else:
         return True
-
-
-def ifOnlyVarTermsInList(tokens, wrtVar):  # Rename func
-    for token in tokens:
-        if checkVarInToken(token, wrtVar) is False:
-            return False
-    return True
