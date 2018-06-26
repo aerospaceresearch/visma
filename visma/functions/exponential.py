@@ -10,6 +10,8 @@ class Logarithm(Function):
 
     def __init__(self):
         super(Logarithm, self).__init__()
+        self.coefficient = 1
+        self.power = 1
         self.operand = []
         self.value = 'log'
 
@@ -33,7 +35,7 @@ class Exponential(Function):
 
     def __init__(self, arg):
         super().__init__()
-        self.value = []
+        self.value = 'exp'
 
     def inverse(self, RHS):
         super().inverse(RHS)

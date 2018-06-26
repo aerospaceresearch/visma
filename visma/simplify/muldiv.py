@@ -22,7 +22,7 @@ def multiplication(tokens, direct=False):
     variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while '*' in availableOperations:
-        var, tok, rem, com = expressionMultiplication(variables, tokens)
+        _, tok, rem, com = expressionMultiplication(variables, tokens)
         tokens = removeToken(tok, rem)
         comments.append(com)
         animation.append(copy.deepcopy(tokens))
@@ -180,7 +180,7 @@ def multiplicationEquation(lToks, rToks, direct=False):
     rVariables.extend(getLevelVariables(rTokens))
     availableOperations = getOperationsExpression(lVariables, lTokens)
     while '*' in availableOperations:
-        var, tok, rem, com = expressionMultiplication(lVariables, lTokens)
+        _, tok, rem, com = expressionMultiplication(lVariables, lTokens)
         lTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
@@ -383,7 +383,7 @@ def division(tokens, direct=False):
     variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while '/' in availableOperations:
-        var, tok, rem, com = expressionDivision(variables, tokens)
+        _, tok, rem, com = expressionDivision(variables, tokens)
         tokens = removeToken(tok, rem)
         comments.append(com)
         animation.append(copy.deepcopy(tokens))
@@ -419,7 +419,7 @@ def divisionEquation(lToks, rToks, direct=False):
     rVariables.extend(getLevelVariables(rTokens))
     availableOperations = getOperationsExpression(lVariables, lTokens)
     while '/' in availableOperations:
-        var, tok, rem, com = expressionDivision(lVariables, lTokens)
+        _, tok, rem, com = expressionDivision(lVariables, lTokens)
         lTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
@@ -714,7 +714,7 @@ def division_variable_constant(constant, variable, coeff):
     return variable1
 
 
-def division_constant_variable(constant, variable, coeff):
+def division_constantVariable(constant, variable, coeff):
     variable1 = Variable()
     variable1.coefficient = (evaluateConstant(
         constant) / variable.coefficient) * coeff
@@ -744,7 +744,7 @@ def division_expression_variable(variable, expression, coeff):
             tokens.append(division_variables(
                 token, variable, expression.coefficient))
         elif isinstance(token, Constant):
-            tokens.append(division_constant_variable(
+            tokens.append(division_constantVariable(
                 token, variable, expression.coefficient))
         elif isinstance(token, Expression):
             tokens.append(division_expression_variable(

@@ -1,5 +1,6 @@
-from visma.functions.structure import Function
+from visma.functions.structure import Function, Expression
 from visma.functions.exponential import Logarithm
+from visma.functions.operator import Divide
 
 ############
 # Variable #
@@ -10,19 +11,34 @@ class Variable(Function):
     """Class for variable type
     """
 
-    def __init__(self):
+    def __init__(self, coeff=None, value=None, power=None):
         super(Variable, self).__init__()
         # Report
+        self.coefficient = 1
+        if coeff is not None:
+            self.coefficient = coeff
         self.value = []
+        if value is not None:
+            self.value.append(value)
         self.power = []
+        if power is not None:
+            self.power.append(power)
         self.type = 'Variable'
 
-    def inverse(self, RHS):
-        self.operand = RHS.operand
-        self.coefficient = (
-            RHS.coefficient / self.coefficient)**(1 / self.power)
-        self.power = RHS.power / self.power
-        self.__class__ = RHS.__class__
+    def inverse(self, rToken, wrtVar):
+        rVar = Variable()
+        for i, var in enumerate(self.value):
+            if var != wrtVar:
+                rVar.value.append(self.value.pop(i))
+                rVar.power.append(self.power.pop(i))
+        if rVar.value != []:
+            rToken = Expression([rToken, Divide(), rVar])
+        rToken.coefficient /= (self.coefficient)**(1/self.power[0])
+        rToken.power /= self.power[0]
+        self.coefficient = 1
+        self.power[0] = 1
+        comment = "Dividing RHS by " + r"$" + rVar.__str__() + r"$"
+        return rToken, comment
 
     def differentiate(self):
         # FIXME: Circular imports

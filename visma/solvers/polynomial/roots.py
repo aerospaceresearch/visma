@@ -11,7 +11,7 @@ Logic Description:
 from __future__ import division
 import math
 import copy
-from visma.io.checks import evaluateConstant
+from visma.io.checks import evaluateConstant, availableVariables
 from visma.io.parser import tokensToString
 from visma.functions.structure import Expression
 from visma.functions.constant import Constant, Zero
@@ -24,60 +24,7 @@ from config.config import ROUNDOFF
 # FIXME: Extend to polynomials of all degrees
 
 
-def available_variables(tokens):
-    variables = []
-    for token in tokens:
-        if isinstance(token, Variable):
-            for val in token.value:
-                if val not in variables:
-                    variables.append(val)
-    return variables
-
-
-def highest_power(tokens, variable):
-    maxPow = 0
-    for token in tokens:
-        if isinstance(token, Variable):
-            for i, val in enumerate(token.value):
-                if val == variable:
-                    if token.power[i] > maxPow:
-                        maxPow = token.power[i]
-    return maxPow
-
-
-def preprocess_check_quadratic_roots(lTokens, rTokens):
-    lTokens, rTokens, avaiableOperations, token_string, animation, comments = simplifyEquation(lTokens, rTokens)
-    return check_for_quadratic_roots(lTokens, rTokens)
-
-
-def check_for_quadratic_roots(lTokens, rTokens):
-    lVariables = available_variables(lTokens)
-    rVariables = available_variables(rTokens)
-    for token in lTokens:
-        if isinstance(token, Binary):
-            if token.value in ['*', '/']:
-                return False
-    for token in rTokens:
-        if isinstance(token, Binary):
-            if token.value in ['*', '/']:
-                return False
-
-    if len(lVariables) == 1 and len(rVariables) == 1:
-        if lVariables[0] == rVariables[0]:
-            if highest_power(lTokens, lVariables[0]) == 2 or highest_power(rTokens, rVariables[0]) == 2:
-                return True
-    elif len(lVariables) == 1 and len(rVariables) == 0:
-        if highest_power(lTokens, lVariables[0]) == 2:
-            return True
-
-    elif len(lVariables) == 0 and len(rVariables) == 1:
-        if highest_power(lTokens, lVariables[0]) == 2:
-            return True
-
-    return False
-
-
-def get_roots(coeffs):
+def getRoots(coeffs):
     roots = []
     if len(coeffs) == 3:
         d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
@@ -95,9 +42,9 @@ def get_roots(coeffs):
 
 
 def quadraticRoots(lTokens, rTokens):
-    lTokens, rTokens, availableOperations, token_string, animation, comments = simplifyEquation(
+    lTokens, rTokens, _, token_string, animation, comments = simplifyEquation(
         lTokens, rTokens)
-    roots, var = find_quadratic_roots(lTokens, rTokens)
+    roots, var = findQuadraticRoots(lTokens, rTokens)
     if len(roots) == 1:
         tokens = []
         expression = Expression()
@@ -215,7 +162,7 @@ def quadraticRoots(lTokens, rTokens):
         constant.power = 1
         sqrt = Sqrt()
         sqrt.power = sqrtPow
-        sqrt.expression = constant
+        sqrt.operand = constant
         tokens.append(sqrt)
         expression.tokens = tokens
 
@@ -262,7 +209,7 @@ def quadraticRoots(lTokens, rTokens):
     return lTokens, rTokens, [], token_string, animation, comments
 
 
-def find_quadratic_roots(lTokens, rTokens):
+def findQuadraticRoots(lTokens, rTokens):
     roots = []
     if len(rTokens) > 0:
         lTokens, rTokens = moveRTokensToLTokens(
@@ -307,7 +254,7 @@ def find_quadratic_roots(lTokens, rTokens):
             else:
                 return roots
 
-    return get_roots(coeffs), available_variables(lTokens)
+    return getRoots(coeffs), availableVariables(lTokens)
 
 
 if __name__ == '__main__':

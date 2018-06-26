@@ -11,15 +11,16 @@ class Constant(Function):
     """Class for constant type
     """
 
-    def __init__(self):
+    def __init__(self, value=None):
         super(Constant, self).__init__()
         self.coefficient = 1
         self.power = 1
         self.type = 'Constant'
+        if value is not None:
+            self.value = value
 
-    def inverse(self, RHS):
-        """
-        """
+    def inverse(self, wrtVar, RHS):
+        pass
 
     def differentiate(self):
         super(Constant, self).differentiate()

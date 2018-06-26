@@ -19,7 +19,7 @@ class EquationCompatibility(object):
         self.rVariables.extend(getLevelVariables(self.rTokens))
         self.availableOperations = []
         if checkSolveFor(lTokens, rTokens):
-            self.availableOperations.append('solve')
+            self.availableOperations.append('Solve')
         self.availableOperations.extend(getOperationsEquation(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
         # print self.availableOperations
 
@@ -157,8 +157,6 @@ def checkEquation(terms, symTokens):
 
 def checkTypes(lTokens=None, rTokens=None):
 
-    from visma.solvers.polynomial.roots import preprocess_check_quadratic_roots
-
     if lTokens is None:
         lTokens = []
     if rTokens is None:
@@ -167,15 +165,20 @@ def checkTypes(lTokens=None, rTokens=None):
     if len(rTokens) != 0:
         equationCompatible = EquationCompatibility(lTokens, rTokens)
         availableOperations = equationCompatible.availableOperations
-
-        if preprocess_check_quadratic_roots(copy.deepcopy(lTokens), copy.deepcopy(rTokens)):
-            availableOperations.append("find roots")
+        isPoly, polyDegree = preprocessCheckPolynomial(copy.deepcopy(lTokens), copy.deepcopy(rTokens))
+        if isPoly:
+            availableOperations.append('Factorize')
+            if(polyDegree == 2):
+                availableOperations.append("Find Roots")
         inputType = "equation"
     else:
         expressionCompatible = ExpressionCompatibility(lTokens)
         availableOperations = expressionCompatible.availableOperations
-        availableOperations.append("integrate")
-        availableOperations.append("differentiate")
+        isPoly, polyDegree = preprocessCheckPolynomial(copy.deepcopy(lTokens), copy.deepcopy(rTokens))
+        if isPoly:
+            availableOperations.append('Factorize')
+        availableOperations.append("Integrate")
+        availableOperations.append("Differentiate")
         inputType = "expression"
 
     return availableOperations, inputType
@@ -664,7 +667,7 @@ def getOperationsExpression(variables, tokens):
 def extractExpression(variable):
     if len(variable) == 1:
         if isinstance(variable[0], Expression):
-            retType, variable = extractExpression(variable[0].value)
+            _, variable = extractExpression(variable[0].value)
         elif isinstance(variable[0], Constant):
             return "constant", variable[0]
         elif isinstance(variable[0], Variable):
@@ -701,7 +704,7 @@ def evaluateExpressions(variables):
         elif isinstance(variable, Variable):
             prev = False
             nxt = False
-            # CHECKME: Undefined i and tokens. Which tokens ?
+            # FIXME: Undefined i and tokens. Which tokens ?
             if i != 0:
                 if isinstance(variables[i - 1], Binary):
                     if variable[i - 1].value in ['-', '+']:
@@ -780,3 +783,59 @@ def evaluateExpressions(variables):
                     return False
 
     return True
+
+
+def availableVariables(tokens):
+    variables = []
+    for token in tokens:
+        if isinstance(token, Variable):
+            for val in token.value:
+                if val not in variables:
+                    variables.append(val)
+    return variables
+
+
+def highestPower(tokens, variable):
+    maxPow = 0
+    for token in tokens:
+        if isinstance(token, Variable):
+            for i, val in enumerate(token.value):
+                if val == variable and token.power[i] > maxPow:
+                        maxPow = token.power[i]
+    return maxPow
+
+
+def isIntegerPower(tokens, variable):
+    for token in tokens:
+        if isinstance(token, Variable):
+            for i, val in enumerate(token.value):
+                if val == variable and token.power[i] != int(token.power[i]):
+                    return False
+    return True
+
+
+def preprocessCheckPolynomial(lTokens, rTokens):
+    from visma.simplify.simplify import simplifyEquation  # Circular import
+    lTokens, rTokens, _, _, _, _ = simplifyEquation(lTokens, rTokens)
+    lVariables = availableVariables(lTokens)
+    rVariables = availableVariables(rTokens)
+    for token in lTokens:
+        if isinstance(token, Binary):
+            if token.value in ['*', '/']:
+                return False, -1
+    for token in rTokens:
+        if isinstance(token, Binary):
+            if token.value in ['*', '/']:
+                return False, -1
+    # OPTIMIZE
+    if len(lVariables) == 1 and len(rVariables) == 1:
+        if isIntegerPower(lTokens, lVariables[0]) and isIntegerPower(rTokens, rVariables[0]):
+            if lVariables[0] == rVariables[0]:
+                return True, max(highestPower(lTokens, lVariables[0]), highestPower(rTokens, rVariables[0]))
+    elif len(lVariables) == 1 and len(rVariables) == 0:
+        if isIntegerPower(lTokens, lVariables[0]):
+            return True, highestPower(lTokens, lVariables[0])
+    elif len(lVariables) == 0 and len(rVariables) == 1:
+        if isIntegerPower(rTokens, rVariables[0]):
+            return True, highestPower(lTokens, lVariables[0])
+    return False, -1

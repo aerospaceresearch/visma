@@ -16,6 +16,7 @@ from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+import webbrowser
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
@@ -23,14 +24,12 @@ from visma.io.checks import checkTypes, findWRTVariable
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotThis
-import visma.solvers.polynomial.roots as ViSoPoRo
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
-
-# from visma.gui.plotter import plotthis
-
-# TODO: Revamp GUI
+from visma.solvers.solve import solveFor
+from visma.solvers.polynomial.roots import quadraticRoots
+from visma.transform.factorize import factorize
 
 
 class Window(QtGui.QMainWindow):
@@ -38,13 +37,31 @@ class Window(QtGui.QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
         self.initUI()
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.setFont(font)
+        # Experimenting custom themes
+        self.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                border: 3px solid white;
+                border-radius: 10px;
+                color: black
+            }
+            QPushButton:pressed {
+            }
+            """)
 
     def initUI(self):
-        # exitAction = QtGui.QAction(QtGui.QIcon('assets/exit.png'), 'Exit', self)
         exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
+
+        wikiAction = QtGui.QAction('Wiki', self)
+        wikiAction.setStatusTip('Open Github wiki')
+        # TODO: Make a mini browser for docs and wiki
+        wikiAction.triggered.connect(lambda: webbrowser.open('https://github.com/aerospaceresearch/visma/wiki'))
 
         self.statusBar()
 
@@ -56,10 +73,10 @@ class Window(QtGui.QMainWindow):
         configMenu = menubar.addMenu('&Config')
         #
         helpMenu = menubar.addMenu('&Help')
-        #
+        helpMenu.addAction(wikiAction)
         workSpace = WorkSpace()
         self.setCentralWidget(workSpace)
-        self.setGeometry(300, 300, 1280, 720)
+        self.setGeometry(300, 300, 1000, 800)
         self.setWindowTitle('VisMa - Visual Math')
         self.show()
 
@@ -131,7 +148,15 @@ class WorkSpace(QWidget):
         stepsFig.setLayout(self.stepsFigure())
         stepsFig.setStatusTip("Step-by-step solver")
 
+        font = QtGui.QFont()
+        font.setPointSize(16)
         self.textedit = QTextEdit()
+        self.textedit.setStyleSheet("""
+                QWidget {
+                border:3px solid rgb(55, 55, 55);
+                }
+            """)
+        self.textedit.setFont(font)
         self.textedit.textChanged.connect(self.textChangeTrigger)
         self.textedit.setFixedHeight(70)
         self.textedit.setStatusTip("Input equation")
@@ -172,14 +197,23 @@ class WorkSpace(QWidget):
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
         self.myQListWidget.resize(400, 300)
-        self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(QLabel("<h3>Equation History</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
+        self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.clearButton = QtGui.QPushButton('Clear')
+        self.clearButton.clicked.connect(self.clearHistory)
+        self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
+
+    def clearHistory(self):
+        file = open('local/eqn-list.vis', 'w')
+        file.truncate()
 
     def plotFigure(self):
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
+
+        self.figure.patch.set_facecolor('white')
 
         class NavigationCustomToolbar(NavigationToolbar):
             toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
@@ -208,6 +242,7 @@ class WorkSpace(QWidget):
         self.stpsfigure.clear()
         self.stpsbutton = QtGui.QPushButton('Show steps')
         self.stpsbutton.clicked.connect(self.showSteps)
+        self.stpsfigure.patch.set_facecolor('white')
 
         stpslayout = QtGui.QVBoxLayout()
         stpslayout.addWidget(QLabel("<h3>Step-by-step solution</h3>"))
@@ -220,7 +255,7 @@ class WorkSpace(QWidget):
                                         x=0.0, y=1.0,
                                         horizontalalignment='left',
                                         verticalalignment='top',
-                                        size=qApp.font().pointSize()*1.5)
+                                        size=qApp.font().pointSize()*1)
         self.stpscanvas.draw()
 
     def Clicked(self, item):
@@ -284,7 +319,7 @@ class WorkSpace(QWidget):
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
-                    if operations[0] != 'solve':
+                    if operations[0] not in ['Solve', 'Integrate', 'Differentiate', 'Find Roots', 'Factorize']:
                         opButtons = ['Simplify']
                 else:
                     opButtons = ['Simplify']
@@ -297,14 +332,8 @@ class WorkSpace(QWidget):
                     opButtons.append("Multiplication")
                 elif operation == '/':
                     opButtons.append("Division")
-                elif operation == 'solve':
-                    opButtons.append("Solve For")
-                elif operation == 'find roots':
-                    opButtons.append("Find Roots")
-                elif operation == 'integrate':
-                    opButtons.append("Integrate")
-                elif operation == 'differentiate':
-                    opButtons.append("Differentiate")
+                else:
+                    opButtons.append(operation)
 
             if self.buttonSet:
                 for i in reversed(xrange(self.solutionOptionsBox.count())):
@@ -341,7 +370,7 @@ class WorkSpace(QWidget):
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
-                    if operations[0] != 'solve':
+                    if operations[0] != 'Solve':
                         opButtons = ['Simplify']
                 else:
                     opButtons = ['Simplify']
@@ -354,14 +383,8 @@ class WorkSpace(QWidget):
                     opButtons.append("Multiplication")
                 elif operation == '/':
                     opButtons.append("Division")
-                elif operation == 'solve':
-                    opButtons.append("Solve For")
-                elif operations == 'find roots':
-                    opButtons.append("Find Roots")
-                elif operation == 'integrate':
-                    opButtons.append("Integrate")
-                elif operation == 'differentiate':
-                    opButtons.append("Differentiate")
+                else:
+                    opButtons.append(operation)
             for i in reversed(xrange(self.solutionOptionsBox.count())):
                 self.solutionOptionsBox.itemAt(i).widget().setParent(None)
             for i in xrange(int(len(opButtons) / 2) + 1):
@@ -481,25 +504,28 @@ class WorkSpace(QWidget):
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(QLabel("<h3>Equation History</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
+        self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.clearButton = QtGui.QPushButton('Clear')
+        self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
 
     def inputsLayout(self, loadList="Greek"):
         inputLayout = QHBoxLayout(self)
         blank = QFrame()
+        # TODO: Move input type to config
+        # comboLabel = QtGui.QLabel()
+        # comboLabel.setText("Input Type:")
+        # comboLabel.setFixedSize(100, 30)
 
-        comboLabel = QtGui.QLabel()
-        comboLabel.setText("Input Type:")
-        comboLabel.setFixedSize(100, 30)
-
-        combo = QtGui.QComboBox(self)
-        combo.addItem("Greek")
-        combo.addItem("LaTeX")
-        combo.setFixedSize(100, 30)
-        combo.activated[str].connect(self.onActivated)
+        # combo = QtGui.QComboBox(self)
+        # combo.addItem("Greek")
+        # combo.addItem("LaTeX")
+        # combo.setFixedSize(100, 30)
+        # combo.activated[str].connect(self.onActivated)
 
         inputTypeSplitter = QSplitter(Qt.Horizontal)
-        inputTypeSplitter.addWidget(comboLabel)
-        inputTypeSplitter.addWidget(combo)
+        # inputTypeSplitter.addWidget(comboLabel)
+        # inputTypeSplitter.addWidget(combo)
 
         topSplitter = QSplitter(Qt.Horizontal)
         topSplitter.addWidget(blank)
@@ -601,13 +627,15 @@ class WorkSpace(QWidget):
                     self.tokens, availableOperations, token_string, equationTokens, comments = simplify(self.tokens)
                 else:
                     self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
-            elif name == 'Solve For':
+            elif name == 'Factorize':
+                    self.tokens, availableOperations, token_string, equationTokens, comments = factorize(self.tokens)
+            elif name == 'Find Roots':
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = quadraticRoots(self.lTokens, self.rTokens)
+            elif name == 'Solve':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = findWRTVariable(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
-            elif name == 'Find Roots':
-                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = ViSoPoRo.quadraticRoots(self.lTokens, self.rTokens)
             elif name == 'Integrate':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = findWRTVariable(lhs, rhs)
@@ -647,9 +675,8 @@ class WorkSpace(QWidget):
                     lhs, rhs)
                 self.refreshButtons(operations)
 
-            elif operation == 'Solve For':
-                # self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
-                pass
+            elif operation == 'Solve':
+                self.lTokens, self.rTokens, availableOperations, token_string, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
 
             elif operation == 'Integrate':
                 self.lTokens, availableOperations, token_string, equationTokens, comments = integrate(self.lTokens, varName)
@@ -671,7 +698,7 @@ class WorkSpace(QWidget):
         return calluser
 
 
-class QCustomQWidget (QtGui.QWidget):
+class QCustomQWidget(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(QCustomQWidget, self).__init__(parent)
@@ -683,12 +710,11 @@ class QCustomQWidget (QtGui.QWidget):
         self.allQHBoxLayout = QtGui.QHBoxLayout()
         self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
         self.setLayout(self.allQHBoxLayout)
-        # setStyleSheet
         self.textUpQLabel.setStyleSheet('''
-        color: rgb(255, 0, 0);
+        color: black;
         ''')
         self.textDownQLabel.setStyleSheet('''
-        color: rgb(0, 0, 0);
+        color: black;
         ''')
 
     def setTextUp(self, text):

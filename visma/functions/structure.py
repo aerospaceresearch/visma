@@ -71,7 +71,7 @@ class Function(object):
         if operator is not None:
             self.operator = operator
 
-    def inverse(self, RHS):
+    def inverse(self, wrtVar, RHS):
         RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
         RHS.power /= self.power
         self.operand = RHS
@@ -102,11 +102,13 @@ class Expression(Function):
     """Class for expression type
     """
 
-    def __init__(self):
+    def __init__(self, tokens=None, coefficient=None, power=None):
         super(Expression, self).__init__()
         self.coefficient = 1
         self.power = 1
-        self.tokens = None
+        self.tokens = []
+        if tokens is not None:
+            self.tokens.extend(tokens)
         self.type = 'Expression'
 
     def __str__(self):
