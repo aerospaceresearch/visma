@@ -10,7 +10,7 @@ Logic Description:
 
 import sys
 import os
-from PyQt4.QtGui import QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QLabel, QFrame, QApplication, QAbstractButton, qApp, QPainter
+from PyQt4.QtGui import QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QLabel, QFrame, QApplication, QAbstractButton, QPainter
 from PyQt4.QtCore import Qt
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -234,6 +234,7 @@ class WorkSpace(QWidget):
         x, y, LHS, RHS = plotThis(equationTokens[-1])
         ax.contour(x, y, (LHS - RHS), [0])
         ax.grid()
+        self.figure.set_tight_layout({"pad": 1})  # removes extra padding
         self.canvas.draw()
 
     def stepsFigure(self):
@@ -251,11 +252,12 @@ class WorkSpace(QWidget):
         return stpslayout
 
     def showSteps(self):
-        text = self.stpsfigure.suptitle(theResult,
-                                        x=0.0, y=1.0,
-                                        horizontalalignment='left',
-                                        verticalalignment='top',
-                                        size=qApp.font().pointSize()*1)
+        # REVIEW: matplot figure title alignment (ha, va)
+        self.stpsfigure.suptitle(theResult,
+                                 horizontalalignment='left',
+                                 verticalalignment='top',
+                                 ha='center', va='center')
+        #                        size=qApp.font().pointSize()*1)
         self.stpscanvas.draw()
 
     def Clicked(self, item):
@@ -685,7 +687,7 @@ class WorkSpace(QWidget):
                 self.lTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, varName)
 
             global theResult
-            theResult = resultLatex(operation, equationTokens, comments)
+            theResult = resultLatex(operation, equationTokens, comments, varName)
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:

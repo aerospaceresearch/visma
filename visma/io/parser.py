@@ -6,14 +6,17 @@ from visma.functions.exponential import Logarithm
 from visma.io.checks import isNumber
 
 
-def resultLatex(operation, equations, comments):
+def resultLatex(operation, equations, comments, wrtVar=None):
 
     equationLatex = []
     for eqTokens in equations:
         equationLatex.append(tokensToLatex(eqTokens))
 
     finalSteps = "INPUT: " + r"$" + equationLatex[0] + r"$" + "\n"
-    finalSteps += "OPERATION: " + operation + "\n"
+    finalSteps += "OPERATION: " + operation
+    if wrtVar is not None:
+        finalSteps += " with respect to " + r"$" + wrtVar + r"$"
+    finalSteps += "\n"
     finalSteps += "OUTPUT: " + r"$" + equationLatex[-1] + r"$" + "\n"*2
 
     for i in xrange(len(equationLatex)):
@@ -32,6 +35,7 @@ def tokensToLatex(eqTokens):
 
 
 def tokensToString(tokens):
+    # FIXME: tokensToString method
     token_string = ''
     for token in tokens:
         if isinstance(token, Constant):

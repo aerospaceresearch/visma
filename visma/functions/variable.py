@@ -37,7 +37,7 @@ class Variable(Function):
         rToken.power /= self.power[0]
         self.coefficient = 1
         self.power[0] = 1
-        comment = "Dividing RHS by " + r"$" + rVar.__str__() + r"$"
+        comment = "Therefore, " + r"$" + wrtVar + r"$" + " can be written as:"
         return rToken, comment
 
     def differentiate(self):
