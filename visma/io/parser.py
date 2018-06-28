@@ -42,24 +42,24 @@ def tokensToString(tokens):
             if isinstance(token.value, list):
                 for j, val in token.value:
                     if token['power'][j] != 1:
-                        token_string += (str(val) + '^(' + str(token.power[j]) + ') ')
+                        token_string += (str(val) + '^(' + str(token.power[j]) + ')')
                     else:
                         token_string += str(val)
             elif isNumber(token.value):
                 if token.power != 1:
-                    token_string += (str(token.value) + '^(' + str(token.power) + ') ')
+                    token_string += (str(token.value) + '^(' + str(token.power) + ')')
                 else:
                     token_string += str(token.value)
         elif isinstance(token, Variable):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
-                token_string += ' -'
+                token_string += '-'
             else:
                 token_string += str(token.coefficient)
             for j, val in enumerate(token.value):
                 if token.power[j] != 1:
-                    token_string += (str(val) + '^(' + str(token.power[j]) + ') ')
+                    token_string += (str(val) + '^(' + str(token.power[j]) + ')')
                 else:
                     token_string += str(val)
         elif isinstance(token, Binary):
@@ -86,12 +86,12 @@ def tokensToString(tokens):
             elif isinstance(token.operand, Expression):
                 token_string += tokensToString(token.operand.tokens)
 
-            token_string += ') '
+            token_string += ')'
         elif isinstance(token, Logarithm):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
-                token_string += ' -'
+                token_string += '-'
             else:
                 token_string += str(token.coefficient)
             if token.operand is not None:

@@ -52,8 +52,8 @@ for func in random:
 
 for i in xrange(0, openbrac - closebrac):
     final.append(')')
-
+eqstring = ""
 for func in final:
-    print(func, end=' ')
+    eqstring += str(func)
 
-print()
+print(eqstring)

@@ -2,4 +2,8 @@ language: python
 
 install :
   - pip install pylama
-script : pylama
+  - pip install pytest
+
+script :
+  - pylama
+  - pytest --doctest-modules
