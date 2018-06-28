@@ -55,6 +55,7 @@ fi
 
 sudo pip2 install simplejson
 sudo pip2 install pyopengl
+sudo pip2 install matplotlib
 
 
 git clone https://github.com/umlaeute/pyftgl.git
@@ -65,4 +66,3 @@ cd ..
 rm -rf pyftgl
 mkdir local
 chmod -R 777 local
-python main.py
