@@ -1,5 +1,7 @@
 *.pyc
+.pytest_cache
 .idea
 .cache
 local
 visweb
+__pycache__
