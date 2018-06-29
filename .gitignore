@@ -2,6 +2,9 @@
 .pytest_cache
 .idea
 .cache
+.coverage
+coverage.xml
+htmlcov
 local
 visweb
 __pycache__

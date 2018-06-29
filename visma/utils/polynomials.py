@@ -7,8 +7,3 @@ def syntheticDivision(coefficients, divisor):
         quotient.append(quotient[-1] * divisor + coefficients[i + 1])
     remainder = quotient.pop()
     return quotient, remainder
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

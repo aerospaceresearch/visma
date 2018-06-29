@@ -25,8 +25,3 @@ def factors(number):
         if number % i == 0:
             factors.append(i)
     return factors
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

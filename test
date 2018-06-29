@@ -1,0 +1,12 @@
+#!/bin/bash
+pylama
+coverage run --source ./ -m pytest -v
+coverage report
+coverage html
+if [ $1 == 'upload' ]; then
+    coverage xml
+    python-codacy-coverage -r coverage.xml
+fi
+if [ $1 == 'report' ]; then
+    xdg-open ./htmlcov/index.html
+fi
