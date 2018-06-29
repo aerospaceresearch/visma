@@ -72,14 +72,14 @@ def simplifyEquation(lToks, rToks):
     rVariables = []
     rVariables.extend(getLevelVariables(rTokens))
     animBuilder = lToks
-    l = len(lToks)
+    lenToks = len(lToks)
     equalTo = Binary()
-    equalTo.scope = [l]
+    equalTo.scope = [lenToks]
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
         zero = Zero()
-        zero.scope = [l + 1]
+        zero.scope = [lenToks + 1]
         animBuilder.append(zero)
     else:
         animBuilder.extend(rToks)
@@ -122,14 +122,14 @@ def simplifyEquation(lToks, rToks):
         moved = True
         lTokens, rTokens = moveRTokensToLTokens(lTokens, rTokens)
     tokenToStringBuilder = copy.deepcopy(lTokens)
-    l = len(lTokens)
+    lenToks = len(lTokens)
     equalTo = Binary()
-    equalTo.scope = [l]
+    equalTo.scope = [lenToks]
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
         zero = Zero()
-        zero.scope = [l + 1]
+        zero.scope = [lenToks + 1]
         tokenToStringBuilder.append(zero)
     else:
         tokenToStringBuilder.extend(rTokens)

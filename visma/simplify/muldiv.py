@@ -8,7 +8,7 @@ from visma.functions.operator import Binary
 from visma.io.tokenize import removeToken
 
 ##################
-# Multiplication #
+# multiplication #
 ##################
 
 
@@ -162,14 +162,14 @@ def multiplicationEquation(lToks, rToks, direct=False):
         comments = [[]]
     animation = []
     animBuilder = lToks
-    l = len(lToks)
+    lenToks = len(lToks)
     equalTo = Binary()
-    equalTo.scope = [l]
+    equalTo.scope = [lenToks]
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
         zero = Zero()
-        zero.scope = [l + 1]
+        zero.scope = [lenToks + 1]
         animBuilder.append(zero)
     else:
         animBuilder.extend(rToks)
@@ -184,14 +184,14 @@ def multiplicationEquation(lToks, rToks, direct=False):
         lTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
-        l = len(lTokens)
+        lenToks = len(lTokens)
         equalTo = Binary()
-        equalTo.scope = [l]
+        equalTo.scope = [lenToks]
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
             zero = Zero()
-            zero.scope = [l + 1]
+            zero.scope = [lenToks + 1]
             animBuilder.append(zero)
         else:
             animBuilder.extend(rTokens)
@@ -205,14 +205,14 @@ def multiplicationEquation(lToks, rToks, direct=False):
         rTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
-        l = len(lTokens)
+        lenToks = len(lTokens)
         equalTo = Binary()
-        equalTo.scope = [l]
+        equalTo.scope = [lenToks]
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
             zero = Zero()
-            zero.scope = [l + 1]
+            zero.scope = [lenToks + 1]
             animBuilder.append(zero)
         else:
             animBuilder.extend(rTokens)
@@ -221,14 +221,14 @@ def multiplicationEquation(lToks, rToks, direct=False):
         availableOperations = getOperationsExpression(rVariables, rTokens)
 
     tokenToStringBuilder = copy.deepcopy(lTokens)
-    l = len(lTokens)
+    lenToks = len(lTokens)
     equalTo = Binary()
-    equalTo.scope = [l]
+    equalTo.scope = [lenToks]
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
         zero = Zero()
-        zero.scope = [l + 1]
+        zero.scope = [lenToks + 1]
         tokenToStringBuilder.append(zero)
     else:
         tokenToStringBuilder.extend(rTokens)
@@ -370,7 +370,7 @@ def multiplyVariableConstant(constant, variable, coeff):
 
 
 ############
-# Division #
+# division #
 ############
 
 
@@ -401,14 +401,14 @@ def divisionEquation(lToks, rToks, direct=False):
     if direct:
         comments = [[]]
     animBuilder = lToks
-    l = len(lToks)
+    lenToks = len(lToks)
     equalTo = Binary()
-    equalTo.scope = [l]
+    equalTo.scope = [lenToks]
     equalTo.value = '='
     animBuilder.append(equalTo)
     if len(rToks) == 0:
         zero = Zero()
-        zero.scope = [l + 1]
+        zero.scope = [lenToks + 1]
         animBuilder.append(zero)
     else:
         animBuilder.extend(rToks)
@@ -423,14 +423,14 @@ def divisionEquation(lToks, rToks, direct=False):
         lTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
-        l = len(lTokens)
+        lenToks = len(lTokens)
         equalTo = Binary()
-        equalTo.scope = [l]
+        equalTo.scope = [lenToks]
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
             zero = Zero()
-            zero.scope = [l + 1]
+            zero.scope = [lenToks + 1]
             animBuilder.append(zero)
         else:
             animBuilder.extend(rTokens)
@@ -444,14 +444,14 @@ def divisionEquation(lToks, rToks, direct=False):
         rTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
-        l = len(lTokens)
+        lenToks = len(lTokens)
         equalTo = Binary()
-        equalTo.scope = [l]
+        equalTo.scope = [lenToks]
         equalTo.value = '='
         animBuilder.append(equalTo)
         if len(rTokens) == 0:
             zero = Zero()
-            zero.scope = [l + 1]
+            zero.scope = [lenToks + 1]
             animBuilder.append(zero)
         else:
             animBuilder.extend(rTokens)
@@ -460,14 +460,14 @@ def divisionEquation(lToks, rToks, direct=False):
         availableOperations = getOperationsExpression(rVariables, rTokens)
 
     tokenToStringBuilder = copy.deepcopy(lTokens)
-    l = len(lTokens)
+    lenToks = len(lTokens)
     equalTo = Binary()
-    equalTo.scope = [l]
+    equalTo.scope = [lenToks]
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     if len(rTokens) == 0:
         zero = Zero()
-        zero.scope = [l + 1]
+        zero.scope = [lenToks + 1]
         tokenToStringBuilder.append(zero)
     else:
         tokenToStringBuilder.extend(rTokens)
