@@ -79,7 +79,7 @@ class Window(QtGui.QMainWindow):
         helpMenu.addAction(wikiAction)
         workSpace = WorkSpace()
         self.setCentralWidget(workSpace)
-        self.setGeometry(300, 300, 1080, 720)
+        self.setGeometry(300, 300, 1200, 800)
         self.setWindowTitle('VISual MAth')
         self.show()
 
@@ -156,7 +156,7 @@ class WorkSpace(QWidget):
         self.textedit = QTextEdit()
         self.textedit.setStyleSheet("""
                 QWidget {
-                border:3px solid rgb(55, 55, 55);
+                border:3px solid rgb(76, 76, 76);
                 }
             """)
         self.textedit.setFont(font)

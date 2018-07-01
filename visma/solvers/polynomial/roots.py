@@ -224,7 +224,7 @@ def findQuadraticRoots(lTokens, rTokens):
                         if lTokens[i - 1].value == '-':
                             cons *= -1
             if (i + 1) < len(lTokens):
-                if lTokens[i + 1].__class__ not in ['*', '/']:
+                if lTokens[i + 1].value not in ['*', '/']:
                     coeffs[0] += cons
                 else:
                     return roots
@@ -239,7 +239,7 @@ def findQuadraticRoots(lTokens, rTokens):
                             if lTokens[i - 1].value == '-':
                                 var *= -1
                 if (i + 1) < len(lTokens):
-                    if lTokens[i + 1].__class__ not in ['*', '/']:
+                    if lTokens[i + 1].value not in ['*', '/']:
                         if token.power[0] == 1 or token.power[0] == 2:
                             coeffs[int(token.power[0])] += var
                         else:
@@ -255,7 +255,3 @@ def findQuadraticRoots(lTokens, rTokens):
                 return roots
 
     return getRoots(coeffs), availableVariables(lTokens)
-
-
-if __name__ == '__main__':
-    pass

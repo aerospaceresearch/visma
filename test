@@ -1,8 +1,10 @@
 #!/bin/bash
+echo "Python Syntax Test..."
 pylama
+echo "Python Tests..."
 coverage run --source ./ -m pytest -v
 coverage report
 coverage html
 if [ $1 == "report" ]; then
-    xdg-open ./htmlcov/index.html
+    nohup xdg-open ./htmlcov/index.html &
 fi

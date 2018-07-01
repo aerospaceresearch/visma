@@ -10,7 +10,7 @@ import copy
 # Simple Solver(for now) #
 ##########################
 
-# FIXME: ValueError: negative number cannot be raised to a fractional power
+# FIXME: try-catch ValueError: negative number cannot be raised to a fractional power
 # FIXME: Only single variable in LHS after move to RHS
 
 
