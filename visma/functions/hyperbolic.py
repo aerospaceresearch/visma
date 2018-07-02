@@ -34,7 +34,7 @@ class Cosh(Function):
 
     def inverse(self, RHS):
         super().inverse(RHS)
-        self.__class__ = ArcCosine
+        self.__class__ = ArcCosh
 
     def differentiate(self):
         super().differentiate()
@@ -47,6 +47,21 @@ class Cosh(Function):
         return self.coefficient * ((math.cos(val))**self.power)
 
 
+class Tanh:
+    pass
+
 ################################
 # Inverse Hyperbolic Functions #
 ################################
+
+
+class ArcSinh:
+    pass
+
+
+class ArcCosh:
+    pass
+
+
+class ArcTanh:
+    pass

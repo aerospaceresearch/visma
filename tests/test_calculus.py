@@ -25,6 +25,6 @@ def test_integrate():
 
     assert quickTest("x + 1", integrate, 'x') == "0.5x^(2)+x"
 
-    assert quickTest("xyz + xy/z + x + 1", integrate, 'x') == "0.5x^(2)yz+0.5x^(2)yz^(-1)+0.5x^(2)+x"
-    assert quickTest("xyz + xy/z + x + 1", integrate, 'y') == "0.5xy^(2)z+0.5xy^(2)z^(-1)+xy+y"
-    assert quickTest("xyz + xy/z + x + 1", integrate, 'z') == "0.5xyz^(2)+xy*log(z)+xz+z"
+    assert quickTest("xyz + xy/z + x + 1 + 1/x", integrate, 'x') == "0.5x^(2)yz+0.5x^(2)yz^(-1)+0.5x^(2)+x+1.0*log(x)" # FIXME: Ignore coeff if 1
+    assert quickTest("xyz + xy/z + x + 1 + 1/x", integrate, 'y') == "0.5xy^(2)z+0.5xy^(2)z^(-1)+xy+y+x^(-1)y"
+    assert quickTest("xyz + xy/z + x + 1 + 1/x", integrate, 'z') == "0.5xyz^(2)+xy*log(z)+xz+z+x^(-1)z"

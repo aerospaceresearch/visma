@@ -10,14 +10,13 @@ Logic Description:
 """
 
 import copy
-from visma.functions.structure import Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary
 from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression
 from visma.io.parser import tokensToString
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
-from visma.simplify.muldiv import multiplication, multiplicationEquation, multiplyExpressions, division, divisionEquation
+from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 
 
 def moveRTokensToLTokens(lTokens, rTokens):
@@ -27,7 +26,7 @@ def moveRTokensToLTokens(lTokens, rTokens):
         return lTokens, rTokens
     elif len(lTokens) != 0:
         for i, token in enumerate(rTokens):
-            if i == 0 and token.__class__ != Binary:
+            if i == 0 and not isinstance(token, Binary):
                 binary = Binary()
                 binary.value = '-'
                 binary.scope = copy.copy(token.scope)
@@ -181,6 +180,7 @@ def simplify(tokens):
     return tokens, availableOperations, token_string, animation, comments
 
 
+"""
 def defineScopeVariable(variable, scope):
     token = copy.deepcopy(variable)
     local_scope = copy.deepcopy(scope)
@@ -242,9 +242,4 @@ def defineScope(tokens, scope=None):
             pass
         i += 1
     return tokens
-
-
-if __name__ == '__main__':
-
-    multiplyExpressions({'tokens': [{'coefficient': 1, 'scope': [0, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [0, 1], 'type': Binary, 'value': '-'}, {'scope': [0, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [0], 'coefficient': 1, 'type': Expression}, {
-                         'tokens': [{'coefficient': 1, 'scope': [1, 0], 'type': 'variable', 'power': [1], 'value': ['x']}, {'scope': [1, 1], 'type': Binary, 'value': '+'}, {'scope': [1, 2], 'type': 'constant', 'value': 1.0, 'power': 1}], 'scope': [1], 'coefficient': 1, 'type': Expression})
+"""

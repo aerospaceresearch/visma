@@ -18,6 +18,7 @@ class Function(object):
         self.afterScope = None
 
     def __str__(self, nv=None, np=None, nc=None):
+        # OPTIMIZE: Works but a mess. Organize and add comments
         represent = ""
 
         if np is None and nv is None and nc is None:

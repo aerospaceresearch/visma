@@ -1,6 +1,8 @@
 from visma.io.tokenize import tokenizer, getLHSandRHS, removeSpaces
 from visma.io.checks import checkTypes
 
+# TODO: Categorize all test cases into COVERAGE and BASIS
+
 
 def quickTest(input, operation, wrtVar=None):
     lhs, rhs = getLHSandRHS(tokenizer(input))

@@ -34,7 +34,7 @@ def differentiateTokens(funclist, wrtVar):
     animNew = []
     commentsNew = ["Differentiating with respect to " + r"$" + wrtVar + r"$" + "\n"]
     for func in funclist:
-        if isinstance(func, Operator):  # add isFuntionOf
+        if isinstance(func, Operator):
             diffFunc.append(func)
         else:
             newfunc = []

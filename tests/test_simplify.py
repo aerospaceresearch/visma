@@ -1,5 +1,6 @@
 from visma.simplify.simplify import simplify, simplifyEquation
-from visma.simplify.addsub import addition, additionEquation, subtraction
+from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
+from visma.simplify.muldiv import multiplication, division
 from tests.tester import quickTest
 
 #####################
@@ -25,7 +26,11 @@ def test_simplify():
 
     assert quickTest("3*2 + 4*2 = 3*4", simplifyEquation) == "2.0=0"  # FIXME: Exclude these cases, raise math error
     assert quickTest("3*x = 4*x + 2*y", simplifyEquation) == "-x-2.0y=0"
-    assert quickTest("x*y + x*x + x*x^2 = x^2*x + x*y^2 + x^2*y", simplifyEquation) == "xy+x^(2)+xx^(2.0)-x^(2.0)x-xy^(2.0)-x^(2.0)y=0"  # FIXME: Simplify further
+    assert quickTest("1 - 1 = 3*x + 4*x + 2*y", simplifyEquation) == "7.0x+2.0y=0"
+    assert quickTest("4 = 3x - 4x - 1 + 2", simplifyEquation) == "3.0+x=0"
+    assert quickTest("z = x^2 - x + 1 - 2", simplifyEquation) == "z-x^(2.0)+x+1.0=0"
+    assert quickTest("x = -1 + 2", simplifyEquation) == "x+1.0-2.0=0"  # FIXME: Further simplification required (simplification in RHS)
+    assert quickTest("x*y + x*x + x*x^2 = x^2*x + x*y^2 + x^2*y", simplifyEquation) == "xy+x^(2)+xx^(2.0)-x^(2.0)x-xy^(2.0)-x^(2.0)y=0"  # FIXME: Further simplification required
 
     assert quickTest("3/2 + 4/2 = 2/4", simplifyEquation) == "3.0=0"  # FIXME: Exclude these cases, raise math error
     assert quickTest("x/5 + x/4 = 2/y", simplifyEquation) == "0.45x-2.0y^(-1)=0"
@@ -50,3 +55,15 @@ def test_addsub():
     assert quickTest("1 - 2", subtraction) == "-1.0"
     assert quickTest("x - 2x", subtraction) == "-x"
     assert quickTest("xy^2 - 3xy^2", subtraction) == "-2.0xy^(2.0)"
+
+    assert quickTest("1 - 2 = x - 3x", subtractionEquation) == "-1.0=-2.0x"
+    assert quickTest("y + 2 = -x - x", subtractionEquation) == "y+2.0=-2.0x"
+
+
+def test_muldiv():
+
+    assert quickTest("x^3 * x^2", multiplication) == "x^(3.0)x^(2.0)"  # FIXME: Further simplification required
+
+    assert quickTest("x^2 / x^2", division) == "1"
+    assert quickTest("x^4 / x^2", division) == "x^(2.0)"
+    assert quickTest("x^2 / x^4", division) == "x^(-2.0)"

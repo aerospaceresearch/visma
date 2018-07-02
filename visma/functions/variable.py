@@ -41,7 +41,6 @@ class Variable(Function):
         return rToken, comment
 
     def differentiate(self):
-        # FIXME: Circular imports
         from visma.functions.constant import Constant
         super(Variable, self).differentiate()
         self.value = 1

@@ -13,7 +13,6 @@ Logic Description:
 """
 
 import math
-import copy
 from visma.io.checks import isNumber, isVariable, getNumber, checkEquation
 from visma.functions.structure import Function, Equation, Expression
 from visma.functions.constant import Constant
@@ -30,8 +29,8 @@ constants = [u'\u03C0', 'e', 'i']
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
-funcs = ['log', 'exp', 'sqrt', 'sin', 'cos', 'tan', 'cosec', 'sec', 'cot', 'sinh', 'cosh']
-funcNames = ['Log', 'Exp', 'Sqrt', 'Sin', 'Cos', 'Tan', 'Cosec', 'Sec', 'Cot', 'Sinh', 'Cosh']
+funcs = ['log', 'exp', 'sqrt', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sinh', 'cosh']
+funcNames = ['Log', 'Exp', 'Sqrt', 'Sin', 'Cos', 'Tan', 'Csc', 'Sec', 'Cot', 'Sinh', 'Cosh']
 
 
 def removeSpaces(eqn):
@@ -93,9 +92,14 @@ def getTerms(eqn):
                     if i < len(eqn):
                         buf += eqn[i]
                 if buf == "sec":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
+                    if buf + eqn[i+1] == "sech":
+                        terms.append(buf + eqn[i+1])
+                        x = i + 2
+                        continue
+                    else:
+                        terms.append(buf)
+                        x = i + 1
+                        continue
 
                 terms.append(eqn[x])
 
@@ -112,6 +116,10 @@ def getTerms(eqn):
                     continue
                 terms.append(eqn[x])
 
+            elif eqn[x] == 'p' and eqn[x+1] == 'i':
+                x += 1
+                terms.append('pi')
+
             elif eqn[x] == 'e':
                 terms.append('exp')
 
@@ -126,22 +134,32 @@ def getTerms(eqn):
                     if i < len(eqn):
                         buf += eqn[i]
                 if buf == "tan":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
+                    if buf + eqn[i+1] == "tanh":
+                        terms.append(buf + eqn[i+1])
+                        x = i + 2
+                        continue
+                    else:
+                        terms.append(buf)
+                        x = i + 1
+                        continue
                 terms.append(eqn[x])
 
             elif eqn[x] == 'c':
                 i = x
                 buf = eqn[x]
-                while (i - x) < len("osec"):
+                while (i - x) < len("sc"):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
-                if buf == "cosec":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
+                if buf == "csc":
+                    if buf + eqn[i+1] == "csch":
+                        terms.append(buf + eqn[i+1])
+                        x = i + 2
+                        continue
+                    else:
+                        terms.append(buf)
+                        x = i + 1
+                        continue
 
                 i = x
                 buf = eqn[x]
@@ -175,14 +193,6 @@ def getTerms(eqn):
             else:
                 terms.append(eqn[x])
             x += 1
-        elif eqn[x] == '\\':
-            buf = '\\'
-            x += 1
-            while x < len(terms):
-                if (eqn[x] >= 'a' and eqn[x] <= 'z') or (eqn[x] >= 'A' and eqn[x] <= 'Z'):
-                    buf += eqn[x]
-                    x += 1
-            terms.append(buf)
         elif eqn[x] >= '0' and eqn[x] <= '9':
             buf = ''
             buf = eqn[x]
@@ -708,7 +718,7 @@ def getVariable(terms, symTokens, scope, coeff=1):
                         x += 1
     variable.scope = scope
     variable.value = value
-    variable.power = copy.deepcopy(power)
+    variable.power = power
     variable.coefficient = coefficient
     # DBP: print terms
     # DBP: print variable.scope, variable.coefficient, variable.value, variable.power
