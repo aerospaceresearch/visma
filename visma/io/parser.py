@@ -6,14 +6,17 @@ from visma.functions.exponential import Logarithm
 from visma.io.checks import isNumber
 
 
-def resultLatex(operation, equations, comments):
+def resultLatex(operation, equations, comments, wrtVar=None):
 
     equationLatex = []
     for eqTokens in equations:
         equationLatex.append(tokensToLatex(eqTokens))
 
     finalSteps = "INPUT: " + r"$" + equationLatex[0] + r"$" + "\n"
-    finalSteps += "OPERATION: " + operation + "\n"
+    finalSteps += "OPERATION: " + operation
+    if wrtVar is not None:
+        finalSteps += " with respect to " + r"$" + wrtVar + r"$"
+    finalSteps += "\n"
     finalSteps += "OUTPUT: " + r"$" + equationLatex[-1] + r"$" + "\n"*2
 
     for i in xrange(len(equationLatex)):
@@ -32,30 +35,31 @@ def tokensToLatex(eqTokens):
 
 
 def tokensToString(tokens):
+    # FIXME: tokensToString method
     token_string = ''
     for token in tokens:
         if isinstance(token, Constant):
             if isinstance(token.value, list):
                 for j, val in token.value:
                     if token['power'][j] != 1:
-                        token_string += (str(val) + '^(' + str(token.power[j]) + ') ')
+                        token_string += (str(val) + '^(' + str(token.power[j]) + ')')
                     else:
                         token_string += str(val)
             elif isNumber(token.value):
                 if token.power != 1:
-                    token_string += (str(token.value) + '^(' + str(token.power) + ') ')
+                    token_string += (str(token.value) + '^(' + str(token.power) + ')')
                 else:
                     token_string += str(token.value)
         elif isinstance(token, Variable):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
-                token_string += ' -'
+                token_string += '-'
             else:
                 token_string += str(token.coefficient)
             for j, val in enumerate(token.value):
                 if token.power[j] != 1:
-                    token_string += (str(val) + '^(' + str(token.power[j]) + ') ')
+                    token_string += (str(val) + '^(' + str(token.power[j]) + ')')
                 else:
                     token_string += str(val)
         elif isinstance(token, Binary):
@@ -82,12 +86,12 @@ def tokensToString(tokens):
             elif isinstance(token.operand, Expression):
                 token_string += tokensToString(token.operand.tokens)
 
-            token_string += ') '
+            token_string += ')'
         elif isinstance(token, Logarithm):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
-                token_string += ' -'
+                token_string += '-'
             else:
                 token_string += str(token.coefficient)
             if token.operand is not None:

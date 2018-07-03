@@ -19,7 +19,7 @@ class EquationCompatibility(object):
         self.rVariables.extend(getLevelVariables(self.rTokens))
         self.availableOperations = []
         if checkSolveFor(lTokens, rTokens):
-            self.availableOperations.append('Solve')
+            self.availableOperations.append('solve')
         self.availableOperations.extend(getOperationsEquation(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
         # print self.availableOperations
 
@@ -167,18 +167,18 @@ def checkTypes(lTokens=None, rTokens=None):
         availableOperations = equationCompatible.availableOperations
         isPoly, polyDegree = preprocessCheckPolynomial(copy.deepcopy(lTokens), copy.deepcopy(rTokens))
         if isPoly:
-            availableOperations.append('Factorize')
+            availableOperations.append('factorize')
             if(polyDegree == 2):
-                availableOperations.append("Find Roots")
+                availableOperations.append("find roots")
         inputType = "equation"
     else:
         expressionCompatible = ExpressionCompatibility(lTokens)
         availableOperations = expressionCompatible.availableOperations
         isPoly, polyDegree = preprocessCheckPolynomial(copy.deepcopy(lTokens), copy.deepcopy(rTokens))
         if isPoly:
-            availableOperations.append('Factorize')
-        availableOperations.append("Integrate")
-        availableOperations.append("Differentiate")
+            availableOperations.append('factorize')
+        availableOperations.append("integrate")
+        availableOperations.append("differentiate")
         inputType = "expression"
 
     return availableOperations, inputType

@@ -1,6 +1,6 @@
-###############
-# Token ID printing #
-###############
+############
+# Token ID #
+############
 
 '''
 Following is a list of random IDs (func.tid property of func class) of a functions generated during calculations/simplifications
@@ -52,8 +52,8 @@ for func in random:
 
 for i in xrange(0, openbrac - closebrac):
     final.append(')')
-
+eqstring = ""
 for func in final:
-    print(func, end=' ')
+    eqstring += str(func)
 
-print()
+print(eqstring)

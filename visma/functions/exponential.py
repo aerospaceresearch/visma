@@ -8,11 +8,13 @@ import math
 
 class Logarithm(Function):
 
-    def __init__(self):
+    def __init__(self, operand=None):
         super(Logarithm, self).__init__()
         self.coefficient = 1
         self.power = 1
         self.operand = []
+        if operand is not None:
+            self.operand.append(operand)
         self.value = 'log'
 
     def inverse(self, RHS):

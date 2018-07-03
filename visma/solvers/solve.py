@@ -3,13 +3,15 @@ from visma.functions.variable import Variable
 from visma.functions.constant import Constant
 from visma.functions.operator import Operator, Minus, EqualTo
 from visma.simplify.simplify import simplify, simplifyEquation
+from visma.io.parser import tokensToString
 import copy
 
 ##########################
 # Simple Solver(for now) #
 ##########################
 
-# FIXME: ValueError: negative number cannot be raised to a fractional power
+# FIXME: try-catch ValueError: negative number cannot be raised to a fractional power
+# FIXME: Only single variable in LHS after move to RHS
 
 
 def solveFor(lTokens, rTokens, wrtVar):
@@ -18,8 +20,12 @@ def solveFor(lTokens, rTokens, wrtVar):
 
     lTokens, rTokens, animNew, commentsNew = solveTokens(lTokens, rTokens, wrtVar)
 
+    tokenToStringBuilder = copy.deepcopy(lTokens)
+    tokenToStringBuilder.append(EqualTo())
+    tokenToStringBuilder.extend(rTokens)
+    token_string = tokensToString(tokenToStringBuilder)
+
     animation.extend(animNew)
-    comments[0] = ["Solving with respect to " + r"$" + wrtVar + r"$" + "\n"]
     comments.extend(commentsNew)
 
     return lTokens, rTokens, availableOperations, token_string, animation, comments

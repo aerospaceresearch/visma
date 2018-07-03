@@ -18,6 +18,7 @@ class Function(object):
         self.afterScope = None
 
     def __str__(self, nv=None, np=None, nc=None):
+        # OPTIMIZE: Works but a mess. Organize and add comments
         represent = ""
 
         if np is None and nv is None and nc is None:
@@ -71,7 +72,7 @@ class Function(object):
         if operator is not None:
             self.operator = operator
 
-    def inverse(self, wrtVar, RHS):
+    def inverse(self, RHS, wrtVar):
         RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
         RHS.power /= self.power
         self.operand = RHS

@@ -1,5 +1,5 @@
-# This classes is for operators (+, -, *, / etc)
-# Not to be confused with 'operator' and 'operand' propperties of 'Function' class
+# These classes are for operators (+, -, *, / etc)
+# Not to be confused with 'operator' and 'operand' properties of 'Function' class
 
 
 class Operator(object):
@@ -15,12 +15,6 @@ class Operator(object):
         represent += str(self.value)
         return represent
 
-    def level(self):
-        return (int((len(self.tid)) / 2))
-
-    def functionOf(self):
-        return None
-
 
 class Binary(Operator):
     """Class for binary operator
@@ -29,15 +23,6 @@ class Binary(Operator):
     def __init__(self):
         super(Binary, self).__init__()
         self.type = 'Binary'
-
-
-class Unary(Operator):
-    """Class for unary operator
-    """
-
-    def __init__(self):
-        super(Unary, self).__init__()
-        self.type = 'Unary'
 
 
 class Sqrt(Operator):

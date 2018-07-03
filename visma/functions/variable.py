@@ -1,3 +1,4 @@
+from __future__ import division
 from visma.functions.structure import Function, Expression
 from visma.functions.exponential import Logarithm
 from visma.functions.operator import Divide
@@ -37,23 +38,35 @@ class Variable(Function):
         rToken.power /= self.power[0]
         self.coefficient = 1
         self.power[0] = 1
-        comment = "Dividing RHS by " + r"$" + rVar.__str__() + r"$"
+        comment = "Therefore, " + r"$" + wrtVar + r"$" + " can be written as:"
         return rToken, comment
 
     def differentiate(self):
-        # FIXME: Circular imports
         from visma.functions.constant import Constant
         super(Variable, self).differentiate()
         self.value = 1
         self.__class__ = Constant
 
-    def integrate(self):
-        if self.power == -1:
-            self.power = 1
-            self.__class__ = Logarithm
+    def integrate(self, wrtVar):
+        if wrtVar not in self.value:
+            self.value.append(wrtVar)
+            self.power.append(1)
         else:
-            self.coefficient /= self.power + 1
-            self.power += 1
+            for i, val in enumerate(self.value):
+                if val == 'wrtVar':
+                    break
+            if self.power[i] == -1:
+                self.power.pop(i)
+                self.value.pop(i)
+                expression = Expression()
+                expression.tokens = [self]
+                variable = Variable(1, 'wrtVar', 1)
+                expression.tokens.append(Logarithm(variable))
+                self.__class__ = Expression
+                self = expression
+            else:
+                self.coefficient /= self.power[i] + 1
+                self.power[i] += 1
 
     def calculate(self, val):
         return self.coefficient * ((val**(self.power)))

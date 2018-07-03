@@ -1,4 +1,10 @@
 *.pyc
-.idea
+*.out
+.cache
+.coverage
+.pytest_cache
+coverage.xml
+htmlcov
 local
 visweb
+__pycache__

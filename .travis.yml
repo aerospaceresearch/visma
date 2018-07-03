@@ -1,5 +1,19 @@
 language: python
+python: "2.7"
 
 install :
   - pip install pylama
-script : pylama
+  - pip install pytest
+  - pip install coverage
+  - pip install coveralls
+  - pip install codacy-coverage
+
+script :
+  - pylama
+  - coverage run --source ./ -m pytest -v
+  - coverage report
+
+after_success:
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
+  - coveralls

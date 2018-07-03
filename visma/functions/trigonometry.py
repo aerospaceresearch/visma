@@ -14,7 +14,7 @@ class Sine(Function):
 
     def inverse(self, RHS):
         super().inverse(RHS)
-        self.__class__ = ArcSine
+        self.__class__ = ArcSin
 
     def differentiate(self):
         super().differentiate()
@@ -36,7 +36,7 @@ class Cosine(Function):
 
     def inverse(self, RHS):
         super().inverse(RHS)
-        self.__class__ = ArcCosine
+        self.__class__ = ArcCos
 
     def differentiate(self):
         super().differentiate()
@@ -58,7 +58,7 @@ class Tangent(Function):
 
     def inverse(self, RHS):
         super().inverse(RHS)
-        self.__class__ = ArcTangent
+        self.__class__ = ArcTan
 
     def differentiate(self):
         super().differentiate()
@@ -103,7 +103,7 @@ class Cosecant(Function):
 
     def __init__(self, arg):
         super().__init__()
-        self.value = 'cosec'
+        self.value = 'csc'
 
     def inverse(self, RHS):
         super().inverse(RHS)
@@ -117,7 +117,7 @@ class Cosecant(Function):
         """
 
     def calculate(self, val):
-        return self.coefficient * ((math.cot(val))**self.power)
+        return self.coefficient * ((math.cosec(val))**self.power)
 
 
 class Secant(Function):
@@ -138,8 +138,32 @@ class Secant(Function):
         """
 
     def calculate(self, val):
-        return self.coefficient * ((math.cot(val))**self.power)
+        return self.coefficient * ((math.sec(val))**self.power)
 
 ##################################
 # Inverse Trignometric Functions #
 ##################################
+
+
+class ArcSin:
+    pass
+
+
+class ArcCos:
+    pass
+
+
+class ArcTan:
+    pass
+
+
+class ArcCot:
+    pass
+
+
+class ArcSec:
+    pass
+
+
+class ArcCosec:
+    pass

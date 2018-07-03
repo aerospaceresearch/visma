@@ -1,4 +1,6 @@
 def gcd(numbers):
+    """Return the greatest common divisor for a given list of integers.
+    """
     gcd = 1
     absValues = [abs(i) for i in numbers]
     large = max(absValues)
@@ -16,6 +18,8 @@ def gcd(numbers):
 
 
 def factors(number):
+    """Return the factors list for given number.
+    """
     factors = []
     for i in xrange(1, abs(int(number)) + 1):
         if number % i == 0:
