@@ -8,7 +8,7 @@ from visma.functions.operator import Binary
 from visma.io.tokenize import removeToken
 
 ##################
-# multiplication #
+# Multiplication #
 ##################
 
 
@@ -370,7 +370,7 @@ def multiplyVariableConstant(constant, variable, coeff):
 
 
 ############
-# division #
+# Division #
 ############
 
 

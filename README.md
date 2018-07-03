@@ -2,7 +2,7 @@
 
 [![Build Status](https://img.shields.io/travis/8hantanu/visma.svg?style=for-the-badge)](https://travis-ci.org/8hantanu/visma)
 [![Codacy Badge](https://img.shields.io/codacy/grade/d8523777601e464ca7ede4ad85892c34.svg?style=for-the-badge)](https://www.codacy.com/app/8hantanu/visma?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=8hantanu/visma&amp;utm_campaign=Badge_Grade)
-![Coveralls github](https://img.shields.io/coveralls/github/8hantanu/visma.svg?style=for-the-badge)
+[![Coveralls github](https://img.shields.io/coveralls/github/8hantanu/visma.svg?style=for-the-badge)](https://coveralls.io/github/8hantanu/visma)
 
 ![visma](/assets/banner.png)
 

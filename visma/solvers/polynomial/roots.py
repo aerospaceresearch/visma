@@ -198,12 +198,7 @@ def quadraticRoots(lTokens, rTokens):
     equalTo.scope = [tokLen]
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
-    if len(rTokens) == 0:
-        zero = Zero()
-        zero.scope = [tokLen + 1]
-        tokenToStringBuilder.append(zero)
-    else:
-        tokenToStringBuilder.extend(rTokens)
+    tokenToStringBuilder.extend(rTokens)
     animation.append(copy.deepcopy(tokenToStringBuilder))
     token_string = tokensToString(tokenToStringBuilder)
     return lTokens, rTokens, [], token_string, animation, comments

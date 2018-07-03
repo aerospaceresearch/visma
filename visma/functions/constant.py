@@ -27,10 +27,10 @@ class Constant(Function):
         self.value = 0
 
     def integrate(self, intwrt):
-        self.power = 1
         self.coefficient = (self.value)**(self.power)
         self.__class__ = Variable
-        self.value = intwrt.value
+        self.power = [1]
+        self.value = [intwrt]
 
     def calculate(self):
         return self.coefficient * ((self.value**(self.power)))

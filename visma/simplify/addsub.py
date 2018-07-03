@@ -8,7 +8,7 @@ from visma.functions.operator import Binary
 from visma.io.tokenize import changeToken, removeToken
 
 ############
-# addition #
+# Addition #
 ############
 
 
@@ -531,7 +531,7 @@ def equationAddition(lVariables, lTokens, rVariables, rTokens):
 
 
 ###############
-# subtraction #
+# Subtraction #
 ###############
 
 

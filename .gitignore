@@ -1,9 +1,8 @@
 *.pyc
 *.out
-.pytest_cache
-.idea
 .cache
 .coverage
+.pytest_cache
 coverage.xml
 htmlcov
 local

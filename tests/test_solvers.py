@@ -10,7 +10,15 @@ from tests.tester import quickTest
 def test_quadraticRoots():
 
     assert quickTest("x^2 + 2x + 1 = 0", quadraticRoots) == "(x+1.0)^(2)=0"
+    assert quickTest("x^2 + 2x = - 1", quadraticRoots) == "(x+1.0)^(2)=0"
+    assert quickTest("x^2 = - 2x - 1", quadraticRoots) == "(x+1.0)^(2)=0"
+    assert quickTest("0 = x^2 + 2x + 1", quadraticRoots) == "(x+1.0)^(2)=0"
+
+    assert quickTest("x^2 + 1 - 2x = 0", quadraticRoots) == "(x-1.0)^(2)=0"
     assert quickTest("x^2 + 1 = 2x", quadraticRoots) == "(x-1.0)^(2)=0"
+    assert quickTest("x^2 = 2x - 1", quadraticRoots) == "(x-1.0)^(2)=0"
+    assert quickTest("-2x = - x^2 - 1", quadraticRoots) == "(x-1.0)^(2)=0"
+    # FIXME: assert quickTest("0 = 2x - x^2 - 1", quadraticRoots) == "(x-1.0)^(2)=0"
 
     assert quickTest("2x^2 - 4x - 6 = 0", quadraticRoots) == "(x+1.0)*(x-3.0)=0"
     assert quickTest("3x^2 + 7x + 1 = 0", quadraticRoots) == "(x+2.18)*(x+0.15)=0"

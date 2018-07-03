@@ -27,6 +27,9 @@ def test_simplify():
     assert quickTest("3*2 + 4*2 = 3*4", simplifyEquation) == "2.0=0"  # FIXME: Exclude these cases, raise math error
     assert quickTest("3*x = 4*x + 2*y", simplifyEquation) == "-x-2.0y=0"
     assert quickTest("1 - 1 = 3*x + 4*x + 2*y", simplifyEquation) == "7.0x+2.0y=0"
+
+    assert quickTest("x = y --1 --x^2", simplifyEquation) == "x-y-1.0-x^(2.0)=0"  # FIXME: Valid but silly input case
+
     assert quickTest("4 = 3x - 4x - 1 + 2", simplifyEquation) == "3.0+x=0"
     assert quickTest("z = x^2 - x + 1 - 2", simplifyEquation) == "z-x^(2.0)+x+1.0=0"
     assert quickTest("x = -1 + 2", simplifyEquation) == "x+1.0-2.0=0"  # FIXME: Further simplification required (simplification in RHS)

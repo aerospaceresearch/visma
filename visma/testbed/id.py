@@ -1,6 +1,6 @@
-###############
-# Token ID printing #
-###############
+############
+# Token ID #
+############
 
 '''
 Following is a list of random IDs (func.tid property of func class) of a functions generated during calculations/simplifications
