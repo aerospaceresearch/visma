@@ -29,7 +29,7 @@ from visma.simplify.addsub import addition, additionEquation, subtraction, subtr
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
-from visma.transform.factorize import factorize
+from visma.transform.factorization import factorize
 
 
 class Window(QtGui.QMainWindow):

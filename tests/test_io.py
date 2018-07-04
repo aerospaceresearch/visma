@@ -1,18 +1,67 @@
+from visma.io.checks import findWRTVariable, areTokensEqual, isTokenInToken
 from visma.io.tokenize import getTerms
+from visma.functions.operator import Operator, Plus
+from visma.functions.structure import Expression
+from tests.tester import getTokens
 
-###############
+#############
 # io.checks #
-###############
+#############
 
 
-###############
+def test_findWRTVariable():
+
+    varA = getTokens("x")
+    assert findWRTVariable([varA]) == ['x']
+
+    varB = getTokens("xy+ xy^2 +yz^3")
+    assert findWRTVariable(varB) == ['x', 'y', 'z']
+
+
+def test_areTokensEqual():
+
+    varA = getTokens("3xy")
+    varB = getTokens("3yx")
+    varC = getTokens("3yz")
+    assert areTokensEqual(varA, varB)
+    assert not areTokensEqual(varA, varC)
+
+    opA = Operator()
+    opA.value = '+'
+    opB = Plus()
+    assert areTokensEqual(opA, opB)
+
+
+def test_isTokenInToken():
+
+    varA = getTokens("x^3")
+    varB = getTokens("xy^2")
+    varC = Expression(getTokens("1 + w + x"))
+    varD = Expression(getTokens("w + y"))
+    assert isTokenInToken(varA, varB)
+    assert isTokenInToken(varA, varC)
+    assert not isTokenInToken(varA, varD)
+
+    varA = getTokens("xy^2")
+    varB = getTokens("x^(2)y^(4)z")
+    varC = getTokens("yx^0.5")
+    varD = getTokens("xy^(3)z")
+    varE = getTokens("2")
+    assert isTokenInToken(varA, varB)
+    assert isTokenInToken(varA, varC)
+    assert not isTokenInToken(varA, varD)
+    assert not isTokenInToken(varA, varE)
+
+
+#############
 # io.parser #
-###############
+#############
 
 
 ###############
 # io.tokenize #
 ###############
+
 
 def test_getTerms():
 

@@ -1,9 +1,9 @@
-from visma.transform.factorize import factorize
+from visma.transform.factorization import factorize
 from tests.tester import quickTest
 
-#######################
-# transform.factorize #
-#######################
+###########################
+# transform.factorization #
+###########################
 
 
 def test_factorize():
