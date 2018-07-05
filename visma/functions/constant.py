@@ -19,7 +19,7 @@ class Constant(Function):
         if value is not None:
             self.value = value
 
-    def inverse(self, wrtVar, RHS):
+    def inverse(self, RHS):
         pass
 
     def differentiate(self):

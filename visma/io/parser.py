@@ -65,11 +65,13 @@ def tokensToString(tokens):
         elif isinstance(token, Binary):
             token_string += ' ' + str(token.value) + ' '
         elif isinstance(token, Expression):
-            token_string += ' ( '
+            if token.coefficient != 1:
+                token_string += str(token.coefficient) + '*'
+            token_string += '('
             token_string += tokensToString(token.tokens)
-            token_string += ' ) '
+            token_string += ')'
             if token.power != 1:
-                token_string += '^(' + str(token.power) + ') '
+                token_string += '^(' + str(token.power) + ')'
         elif isinstance(token, Sqrt):
             token_string += 'sqrt['
             if isinstance(token.power, Constant):

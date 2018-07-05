@@ -201,7 +201,7 @@ def multiplicationEquation(lToks, rToks, direct=False):
 
     availableOperations = getOperationsExpression(rVariables, rTokens)
     while '*' in availableOperations:
-        var, tok, rem, com = expressionMultiplication(rVariables, rTokens)
+        _, tok, rem, com = expressionMultiplication(rVariables, rTokens)
         rTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
@@ -440,7 +440,7 @@ def divisionEquation(lToks, rToks, direct=False):
 
     availableOperations = getOperationsExpression(rVariables, rTokens)
     while '/' in availableOperations:
-        var, tok, rem, com = expressionDivision(rVariables, rTokens)
+        _, tok, rem, com = expressionDivision(rVariables, rTokens)
         rTokens = removeToken(tok, rem)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)

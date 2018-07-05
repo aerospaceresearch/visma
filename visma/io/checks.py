@@ -844,7 +844,7 @@ def preprocessCheckPolynomial(lTokens, rTokens):
 def commonAttributes(tok1, tok2):
     commAttr = {}
     commAttr['Type'] = commAttr['Coeff'] = commAttr['Value'] = commAttr['Power'] = commAttr['Operand'] = False
-    commAttr['Type'] = (type(tok1) == type(tok2))
+    commAttr['Type'] = (tok1.__class__ == tok2.__class__)
     if commAttr['Type']:
         if isinstance(tok1, Function) and isinstance(tok2, Function):
             commAttr['Coeff'] = (tok1.coefficient == tok2.coefficient)

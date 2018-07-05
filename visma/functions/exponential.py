@@ -36,14 +36,14 @@ class Logarithm(Function):
 class Exponential(Function):
 
     def __init__(self, arg):
-        super().__init__()
+        super(Exponential, self).__init__()
         self.value = 'exp'
 
     def inverse(self, RHS):
-        super().inverse(RHS)
+        super(Exponential, self).inverse(RHS)
 
     def differentiate(self):
-        super().differentiate()
+        super(Exponential, self).differentiate()
 
     def integrate(self, d):
         """

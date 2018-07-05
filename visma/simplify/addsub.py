@@ -78,7 +78,7 @@ def additionEquation(lToks, rToks, direct=False):
 
     availableOperations = getOperationsExpression(rVariables, rTokens)
     while '+' in availableOperations:
-        var, tok, rem, change, com = expressionAddition(rVariables, rTokens)
+        _, tok, rem, change, com = expressionAddition(rVariables, rTokens)
         rTokens = changeToken(removeToken(tok, rem), change)
         comments.append(com)
         animBuilder = copy.deepcopy(lTokens)
@@ -602,7 +602,7 @@ def subtractionEquation(lToks, rToks, direct=False):
 
     availableOperations = getOperationsExpression(rVariables, rTokens)
     while '-' in availableOperations:
-        var, tok, rem, change, com = expressionSubtraction(
+        _, tok, rem, change, com = expressionSubtraction(
             rVariables, rTokens)
         rTokens = changeToken(removeToken(tok, rem), change)
         comments.append(com)
@@ -948,12 +948,12 @@ def equationSubtraction(lVariables, lTokens, rVariables, rTokens):
     comments = []
     for variable in lVariables:
         if isinstance(variable, Constant):
-            for j, val in enumerate(variable.value):
+            for j, _ in enumerate(variable.value):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Constant):
                             if variable2.power[0] == variable.power[0]:
-                                for k, val2 in enumerate(variable2.value):
+                                for k, _ in enumerate(variable2.value):
                                     if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
                                         comments.append(
                                             "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
@@ -1000,12 +1000,12 @@ def equationSubtraction(lVariables, lTokens, rVariables, rTokens):
                                             variable2.beforeScope[k])
                                         return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
         elif isinstance(variable, Variable):
-            for j, pow1 in enumerate(variable.power):
+            for j, _ in enumerate(variable.power):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Variable):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
-                                for k, pow2 in enumerate(variable2.value):
+                                for k, _ in enumerate(variable2.value):
                                     if variable2.before[k] in ['+', ''] and variable2.after[k] in ['-', '+', '']:
                                         comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
