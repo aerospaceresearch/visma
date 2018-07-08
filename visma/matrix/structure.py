@@ -5,6 +5,18 @@ class Matrix(object):
         self.value = []
         self.coefficient = 1
         self.power = 1
+        self.dim = [0, 0]
+
+    def __str__(self):
+
+        represent = "["
+        for i in range(0, self.dim[0]):
+            for j in range(0, self.dim[1]):
+                represent += self.value[0][1].__str__() + ","
+            represent = represent[:-1] + ";"
+        represent = represent[:-1] + "]"
+
+        return represent
 
     def setProp(self, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
         if scope is not None:
@@ -21,7 +33,7 @@ class Matrix(object):
             self.__class__ = Square
             return True
         else:
-            False
+            return False
 
     def transpose(self, RHS, wrtVar=None):
         pass
@@ -31,6 +43,10 @@ class Matrix(object):
 
     def cofactor(self):
         pass
+
+    def dimension(self):
+        self.dim[0] = len(self.value)
+        self.dim[1] = len(self.value[0])
 
 
 class Square(Matrix):

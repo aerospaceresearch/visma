@@ -20,8 +20,9 @@ from visma.functions.variable import Variable
 from visma.functions.exponential import Logarithm
 from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
+from visma.matrix.checks import isMatrix
 
-symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', ';']
+symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', ',', ';']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 # inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
@@ -240,14 +241,14 @@ def tokenizeSymbols(terms):
         symTokens.append('')
         if term in symbols:
             if term == '*' or term == '/':
-                if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[]' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2])))):
+                if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2])))):
                     symTokens[-1] = 'Binary'
             elif term == '+' or term == '-':
                 if i == 0:
                     symTokens[-1] = 'Unary'
                 elif terms[i - 1] in ['-', '+', '*', '/', '=', '^', '(', '[', ';']:
                     symTokens[-1] = 'Unary'
-                elif (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ')') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or terms[i + 1] in funcs or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2]) or terms[i + 2] in funcs))):
+                elif (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or terms[i + 1] in funcs or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2]) or terms[i + 2] in funcs))):
                     symTokens[-1] = 'Binary'
                 else:
                     # logger.log
@@ -740,7 +741,7 @@ def getToken(terms, symTokens, scope=None, coeff=1):
             brackets = 0
             nSqrt = 0
             binary = 0
-            while x < len(terms) and (symTokens[x] != 'Binary' or brackets != 0):
+            while x < len(terms) and (symTokens[x] != 'Binary' or brackets != 0) and terms[x] != ',':
                 if terms[x] == '(':
                     brackets += 1
                 elif terms[x] == ')':
@@ -855,18 +856,27 @@ def getToken(terms, symTokens, scope=None, coeff=1):
         elif terms[x] == '[':
             x += 1
             matrixTok = Matrix()
-            while terms[x] != ']':
-                rowTerms = []
-                rowSymToks = []
-                while terms[x] != ';' and terms[x] != ']':
-                    rowTerms.append(terms[x])
-                    rowSymToks.append(symTokens[x])
-                    x += 1
-                rowToks = getToken(rowTerms, rowSymToks)
-                matrixTok.value.append(rowToks.tokens)
+            while x < len(terms) and terms[x] != ']':
+                rowToks = []
+                while x < len(terms) and terms[x] != ';' and terms[x] != ']':
+                    eleTerms = []
+                    eleSymTokens = []
+                    while x < len(terms) and terms[x] != ',' and terms[x] != ';' and terms[x] != ']':
+                        eleTerms.append(terms[x])
+                        eleSymTokens.append(symTokens[x])
+                        x += 1
+                    eleToks = getToken(eleTerms, eleSymTokens)
+                    if len(eleToks.tokens) == 1:
+                        rowToks.append(eleToks.tokens[0])
+                    else:
+                        rowToks.append(Expression(eleToks.tokens))
+                    if terms[x] != ']' and terms[x] != ';':
+                        x += 1
+                matrixTok.value.append(rowToks)
                 if terms[x] != ']':
                     x += 1
-            tokens.append(matrixTok)
+            if isMatrix(matrixTok):
+                tokens.append(matrixTok)
         elif symTokens[x] == 'Unary':
             coeff = 1
             if terms[x] == '-':
