@@ -29,7 +29,7 @@ from visma.simplify.addsub import addition, additionEquation, subtraction, subtr
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
-from visma.transform.factorize import factorize
+from visma.transform.factorization import factorize
 
 
 class Window(QtGui.QMainWindow):
@@ -154,11 +154,7 @@ class WorkSpace(QWidget):
         font = QtGui.QFont()
         font.setPointSize(16)
         self.textedit = QTextEdit()
-        self.textedit.setStyleSheet("""
-                QWidget {
-                border:3px solid rgb(76, 76, 76);
-                }
-            """)
+
         self.textedit.setFont(font)
         self.textedit.textChanged.connect(self.textChangeTrigger)
         self.textedit.setFixedHeight(70)
@@ -264,7 +260,7 @@ class WorkSpace(QWidget):
         self.stpscanvas.draw()
 
     def Clicked(self, item):
-        index, name = self.equations[self.myQListWidget.currentRow()]
+        _, name = self.equations[self.myQListWidget.currentRow()]
         self.textedit.setText(name)
 
     def buttonsLayout(self):

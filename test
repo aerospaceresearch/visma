@@ -10,7 +10,7 @@ else
 fi
 coverage report
 coverage html
-if [ $1 == "report" ];
+if [ "$1" == "report" ];
     then
     nohup xdg-open ./htmlcov/index.html &
 fi

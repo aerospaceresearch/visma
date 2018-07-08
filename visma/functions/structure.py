@@ -72,7 +72,7 @@ class Function(object):
         if operator is not None:
             self.operator = operator
 
-    def inverse(self, RHS, wrtVar):
+    def inverse(self, RHS, wrtVar=None):
         RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
         RHS.power /= self.power
         self.operand = RHS

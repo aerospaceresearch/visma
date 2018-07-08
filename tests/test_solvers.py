@@ -40,8 +40,8 @@ def test_solveFor():
     assert quickTest("x^2 - 1 = 0", solveFor, 'x') == "x=(1.0)^(0.5)"
 
     assert quickTest("x - yz + 1= 0", solveFor, 'x') == "x=(-1.0+yz)"
-    assert quickTest("x - yz + 1= 0", solveFor, 'y') == "y=((-1.0-x)/z)"
-    assert quickTest("x - yz + 1= 0", solveFor, 'z') == "z=((-1.0-x)/y)"
+    assert quickTest("x - 2yz + 1= 0", solveFor, 'y') == "y=-0.5*((-1.0-x)/z)"
+    assert quickTest("x - 5yz + 1= 0", solveFor, 'z') == "z=-0.2*((-1.0-x)/y)"
 
     assert quickTest("w + x^2 + yz^3 = 1", solveFor, 'w') == "w=(-x^(2.0)-yz^(3.0)+1.0)"
     assert quickTest("w + x^2 + yz^3 = 1", solveFor, 'x') == "x=(-w-yz^(3.0)+1.0)^(0.5)"

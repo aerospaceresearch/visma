@@ -3,7 +3,7 @@ import copy
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.functions.operator import Binary
+from visma.functions.operator import Operator, Binary
 
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 
@@ -839,3 +839,76 @@ def preprocessCheckPolynomial(lTokens, rTokens):
         if isIntegerPower(rTokens, rVariables[0]):
             return True, highestPower(lTokens, lVariables[0])
     return False, -1
+
+
+def commonAttributes(tok1, tok2):
+    commAttr = {}
+    commAttr['Type'] = commAttr['Coeff'] = commAttr['Value'] = commAttr['Power'] = commAttr['Operand'] = False
+    commAttr['Type'] = (tok1.__class__ == tok2.__class__)
+    if commAttr['Type']:
+        if isinstance(tok1, Function) and isinstance(tok2, Function):
+            commAttr['Coeff'] = (tok1.coefficient == tok2.coefficient)
+            if isinstance(tok1.value, list) and isinstance(tok2.value, list):
+                tok1.value = [val for val, pow in sorted(zip(tok1.value, tok1.power))]
+                tok1.power = [pow for val, pow in sorted(zip(tok1.value, tok1.power))]
+                tok2.value = [val for val, pow in sorted(zip(tok2.value, tok2.power))]
+                tok2.power = [pow for val, pow in sorted(zip(tok2.value, tok2.power))]
+            commAttr['Value'] = (tok1.value == tok2.value)
+            commAttr['Power'] = (tok1.power == tok2.power)
+            operand1 = copy.deepcopy(tok1.operand)
+            operand2 = copy.deepcopy(tok2.operand)
+            if operand1 is None and operand2 is None:
+                commAttr['Operand'] = True
+            else:
+                # FIXME: Add test for operand in test_io.py
+                while operand1 is not None and operand2 is not None:
+                    commAttr['Operand'] = (operand1 == operand2)
+                    operand1 = operand1.operand
+                    operand2 = operand2.operand
+
+    elif isinstance(tok1, Operator) and isinstance(tok2, Operator):
+        commAttr['Type'] = commAttr['Coeff'] = commAttr['Value'] = commAttr['Power'] = commAttr['Operand'] = True
+        commAttr['Value'] = (tok1.value == tok2.value)
+    return commAttr
+
+
+def areTokensEqual(tok1, tok2):
+    commAttr = commonAttributes(tok1, tok2)
+    for attr in commAttr:
+        if commAttr[attr] is False:
+            return False
+    return True
+
+
+def isTokenInToken(tokA, tokB):
+    if isinstance(tokA, Variable) and isinstance(tokB, Variable):
+        varA = findWRTVariable([tokA])
+        varB = findWRTVariable([tokB])
+        if all(var in varB for var in varA):
+            ratios = []
+            for iA, valA in enumerate(tokA.value):
+                for iB, valB in enumerate(tokB.value):
+                    if valA == valB:
+                        ratios.append(tokA.power[iA]/tokB.power[iB])
+                        break
+            if all(ratio == ratios[0] for ratio in ratios):
+                return True
+            else:
+                return False
+        else:
+            return False
+    elif isinstance(tokA, Variable) and isinstance(tokB, Expression):
+        for token in tokB.tokens:
+            if isinstance(token, Variable) or isinstance(token, Expression):
+                if isTokenInToken(tokA, token) is True:
+                    return True
+        return False
+    else:
+        return False
+
+
+def isTokenInList(token, tokList):
+    for tok in tokList:
+        if isTokenInToken(token, tok) is True:
+            return True
+    return False
