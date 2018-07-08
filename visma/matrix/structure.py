@@ -1,3 +1,6 @@
+from visma.functions.constant import Constant
+
+
 class Matrix(object):
 
     def __init__(self):
@@ -10,9 +13,11 @@ class Matrix(object):
     def __str__(self):
 
         represent = "["
-        for i in range(0, self.dim[0]):
-            for j in range(0, self.dim[1]):
-                represent += self.value[0][1].__str__() + ","
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                for tok in self.value[i][j]:
+                    represent += tok.__str__()
+                represent += ","
             represent = represent[:-1] + ";"
         represent = represent[:-1] + "]"
 
@@ -49,21 +54,35 @@ class Matrix(object):
         self.dim[1] = len(self.value[0])
 
 
-class Square(Matrix):
+class ValMat(Matrix):
+
+    def __init__(self, dim, token):
+        super(ValMat, self).__init__()
+        for i in range(0, dim[0]):
+            row = []
+            for j in range(0, dim[1]):
+                if i == j:
+                    row.append(token)
+                else:
+                    row.append(token)
+            self.value.append(row)
+
+
+class SquareMat(Matrix):
 
     def determinant(self):
         pass
 
 
-class Identity(Square):
+class IdenMat(SquareMat):
 
     def __init__(self, dim):
-        super(Identity, self).__init__()
-        for i in range(0, dim):
+        super(IdenMat, self).__init__()
+        for i in range(0, dim[0]):
             row = []
-            for j in range(0, dim):
+            for j in range(0, dim[1]):
                 if i == j:
-                    row.append(1)
+                    row.append(Constant(1))
                 else:
-                    row.append(0)
+                    row.append(Constant(0))
             self.value.append(row)

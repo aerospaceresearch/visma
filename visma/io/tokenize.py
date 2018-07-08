@@ -866,10 +866,7 @@ def getToken(terms, symTokens, scope=None, coeff=1):
                         eleSymTokens.append(symTokens[x])
                         x += 1
                     eleToks = getToken(eleTerms, eleSymTokens)
-                    if len(eleToks.tokens) == 1:
-                        rowToks.append(eleToks.tokens[0])
-                    else:
-                        rowToks.append(Expression(eleToks.tokens))
+                    rowToks.append(eleToks.tokens)
                     if terms[x] != ']' and terms[x] != ';':
                         x += 1
                 matrixTok.value.append(rowToks)
