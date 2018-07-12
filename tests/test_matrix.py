@@ -1,5 +1,5 @@
 from visma.matrix.checks import isMatrix, dimCheck, mulDimCheck
-from visma.matrix.operations import simplifyMatrix
+from visma.matrix.operations import simplifyMatrix, addMatrix
 from tests.tester import getTokens
 
 ####################
@@ -59,11 +59,26 @@ def test_mulDimCheck():
 
 def test_simplifyMatrix():
 
-    mat = getTokens("[x + y + y, x^2 + x^2; \
+    mat = getTokens("[x + y + x, x^2 + x^2; \
                       1 + 4/2  , z^3/z^2  ]")
     matRes = simplifyMatrix(mat)
-    assert matRes.__str__() == "[{x}+2{y},2{x}^{2.0};{3.0},{z}]"
+    assert matRes.__str__() == "[2{x}+{y},2{x}^{2.0};{3.0},{z}]"
 
     mat = getTokens("[1 + x^2 + 2]")
     matRes = simplifyMatrix(mat)
     assert matRes.__str__() == "[{3.0}+{x}^{2.0}]"
+
+
+def test_addMatrix():
+
+    matA = getTokens("[x+y]")
+    matB = getTokens("[x]")
+    matSum = addMatrix(matA, matB)
+    # assert matSum.__str__() == "[2{x}+{y}]"  # BUG: Strange simplification for SUM[0][0]
+
+    matA = getTokens("[ x,   x^2; \
+                        3 + x^2, xy  ]")
+    matB = getTokens("[ y + 1,   x^2; \
+                        2 - x^2, xy - 1  ]")
+    matSum = addMatrix(matA, matB)
+    assert matSum.__str__() == "[{x}+{y}+{1.0},2{x}^{2.0};{5.0},2{x}{y}-{1.0}]"

@@ -1,5 +1,6 @@
 from visma.functions.structure import Function
 import math
+
 ########################
 # Hyberbolic Functions #
 ########################

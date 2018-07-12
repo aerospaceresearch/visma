@@ -704,10 +704,9 @@ def evaluateExpressions(variables):
         elif isinstance(variable, Variable):
             prev = False
             nxt = False
-            # FIXME: Undefined i and tokens. Which tokens ?
             if i != 0:
                 if isinstance(variables[i - 1], Binary):
-                    if variable[i - 1].value in ['-', '+']:
+                    if variables[i - 1].value in ['-', '+']:
                         prev = True
                 else:
                     print(variables[i - 1])
@@ -739,20 +738,20 @@ def evaluateExpressions(variables):
             prev = False
             nxt = False
             if i != 0:
-                if isinstance(variable[i - 1], Binary):
-                    if variable[i - 1].value in ['-', '+']:
+                if isinstance(variables[i - 1], Binary):
+                    if variables[i - 1].value in ['-', '+']:
                         prev = True
                 else:
-                    print(variable[i - 1])
+                    print(variables[i - 1])
             else:
                 prev = True
 
             if i + 1 < len(variable):
-                if isinstance(variable[i + 1], Binary):
-                    if variable[i + 1].value in ['-', '+']:
+                if isinstance(variables[i + 1], Binary):
+                    if variables[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
-                    print(variable[i + 1])
+                    print(variables[i + 1])
             else:
                 nxt = True
             if nxt and prev:

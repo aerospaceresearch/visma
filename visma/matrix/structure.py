@@ -23,6 +23,11 @@ class Matrix(object):
 
         return represent
 
+    def empty(self, dim=None):
+        if dim is not None:
+            self.dim = dim
+        self.value = [[[] for _ in range(self.dim[1])] for _ in range(self.dim[0])]
+
     def setProp(self, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
         if scope is not None:
             self.scope = scope
@@ -35,7 +40,7 @@ class Matrix(object):
 
     def isSquare(self):
         if self.dim[0] == self.dim[1]:
-            self.__class__ = Square
+            self.__class__ = SquareMat
             return True
         else:
             return False

@@ -11,7 +11,7 @@ import copy
 ##########################
 
 # FIXME: try-catch ValueError: negative number cannot be raised to a fractional power
-# FIXME: Only single variable in LHS after move to RHS
+# FIXME: Only single variable in LHS after moveToRHS
 
 
 def solveFor(lTokens, rTokens, wrtVar):
@@ -40,6 +40,9 @@ def solveTokens(lTokens, rTokens, wrtVar):
     if checkOnlyVarTermsInList(lTokens, wrtVar):
         if len(lTokens) == 1:
             lTokens, rTokens, animation2, comment2 = funcInverse(lTokens, rTokens, wrtVar)
+        else:
+            animation2 = []
+            comment2 = [""]
     else:
         animation2 = []
         comment2 = [""]
