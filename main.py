@@ -585,7 +585,13 @@ class WorkSpace(QWidget):
 
     def onInputPress(self, name):
         def calluser():
-            self.textedit.insertPlainText(unicode(name) + " ")
+            if name == 'C':
+                self.textedit.clear()
+            elif name == 'DEL':
+                cursor = self.textedit.textCursor()
+                cursor.deletePreviousChar()
+            else:
+                self.textedit.insertPlainText(unicode(name))
         return calluser
 
     def onSolvePress(self, name):

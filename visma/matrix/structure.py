@@ -11,7 +11,6 @@ class Matrix(object):
         self.dim = [0, 0]
 
     def __str__(self):
-
         represent = "["
         for i in range(self.dim[0]):
             for j in range(self.dim[1]):
@@ -20,7 +19,6 @@ class Matrix(object):
                 represent += ","
             represent = represent[:-1] + ";"
         represent = represent[:-1] + "]"
-
         return represent
 
     def empty(self, dim=None):
