@@ -39,7 +39,6 @@ class Window(QtGui.QMainWindow):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.setFont(font)
-        # Experimenting custom themes
         self.setStyleSheet("""
             QPushButton {
                 background-color: white;
@@ -63,7 +62,7 @@ class Window(QtGui.QMainWindow):
 
         wikiAction = QtGui.QAction('Wiki', self)
         wikiAction.setStatusTip('Open Github wiki')
-        # TODO: Make a mini browser for docs and wiki
+        # TODO: Pop a mini browser for docs and wiki
         wikiAction.triggered.connect(lambda: webbrowser.open('https://github.com/aerospaceresearch/visma/wiki'))
 
         self.statusBar()
@@ -77,8 +76,8 @@ class Window(QtGui.QMainWindow):
 
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(wikiAction)
-        workSpace = WorkSpace()
-        self.setCentralWidget(workSpace)
+        self.workSpace = WorkSpace()
+        self.setCentralWidget(self.workSpace)
         self.setGeometry(300, 300, 1200, 800)
         self.setWindowTitle('VISual MAth')
         self.show()
@@ -231,34 +230,34 @@ class WorkSpace(QWidget):
     def plot(self):
         ax = self.figure.add_subplot(111)
         ax.clear()
-        x, y, LHS, RHS = plotThis(equationTokens[-1])
+        x, y, LHS, RHS = plotThis(self.eqToks[-1])
         ax.contour(x, y, (LHS - RHS), [0])
         ax.grid()
         self.figure.set_tight_layout({"pad": 1})  # removes extra padding
         self.canvas.draw()
 
     def stepsFigure(self):
-        self.stpsfigure = Figure()
-        self.stpscanvas = FigureCanvas(self.stpsfigure)
-        self.stpsfigure.clear()
-        self.stpsbutton = QtGui.QPushButton('show steps')
-        self.stpsbutton.clicked.connect(self.showSteps)
-        self.stpsfigure.patch.set_facecolor('white')
+        self.stepsfigure = Figure()
+        self.stepscanvas = FigureCanvas(self.stepsfigure)
+        self.stepsfigure.clear()
+        self.stepsbutton = QtGui.QPushButton('show steps')
+        self.stepsbutton.clicked.connect(self.showSteps)
+        self.stepsfigure.patch.set_facecolor('white')
 
-        stpslayout = QtGui.QVBoxLayout()
-        stpslayout.addWidget(QLabel("<h3>step-by-step solution</h3>"))
-        stpslayout.addWidget(self.stpscanvas)
-        stpslayout.addWidget(self.stpsbutton)
-        return stpslayout
+        stepslayout = QtGui.QVBoxLayout()
+        stepslayout.addWidget(QLabel("<h3>step-by-step solution</h3>"))
+        stepslayout.addWidget(self.stepscanvas)
+        stepslayout.addWidget(self.stepsbutton)
+        return stepslayout
 
     def showSteps(self):
         # REVIEW: matplot figure title alignment (ha, va)
-        self.stpsfigure.suptitle(theResult,
-                                 horizontalalignment='left',
-                                 verticalalignment='top',
-                                 ha='center', va='center')
+        self.stepsfigure.suptitle(self.result,
+                                  horizontalalignment='left',
+                                  verticalalignment='top',
+                                  ha='center', va='center')
         #                        size=qApp.font().pointSize()*1)
-        self.stpscanvas.draw()
+        self.stepscanvas.draw()
 
     def Clicked(self, item):
         _, name = self.equations[self.myQListWidget.currentRow()]
@@ -600,7 +599,6 @@ class WorkSpace(QWidget):
         def calluser():
             availableOperations = []
             token_string = ''
-            global equationTokens
             equationTokens = []
             resultOut = True
             if name == 'addition':
@@ -656,8 +654,8 @@ class WorkSpace(QWidget):
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
             if resultOut:
-                global theResult
-                theResult = resultLatex(name, equationTokens, comments)
+                self.eqToks = equationTokens
+                self.result = resultLatex(name, equationTokens, comments)
                 if len(availableOperations) == 0:
                     self.clearButtons()
                 else:
@@ -673,7 +671,6 @@ class WorkSpace(QWidget):
         def calluser():
             availableOperations = []
             token_string = ''
-            global equationTokens
             equationTokens = []
             if varName == 'Back':
                 textSelected = str(self.textedit.toPlainText())
@@ -693,8 +690,8 @@ class WorkSpace(QWidget):
             elif operation == 'differentiate':
                 self.lTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, varName)
 
-            global theResult
-            theResult = resultLatex(operation, equationTokens, comments, varName)
+            self.eqToks = equationTokens
+            self.result = resultLatex(operation, equationTokens, comments, varName)
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:

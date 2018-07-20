@@ -1,5 +1,5 @@
-from visma.matrix.checks import isMatrix, dimCheck, mulDimCheck
-from visma.matrix.operations import simplifyMatrix, addMatrix
+from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck
+from visma.matrix.operations import simplifyMatrix, addMatrix, multiplyMatrix
 from tests.tester import getTokens
 
 ####################

@@ -276,7 +276,6 @@ def removeUnary(terms, symTokens):
 
 
 def getVariable(terms, symTokens, scope, coeff=1):
-    # DBP: print terms
     variable = Variable()
     value = []
     coefficient = coeff
@@ -722,8 +721,6 @@ def getVariable(terms, symTokens, scope, coeff=1):
     variable.value = value
     variable.power = power
     variable.coefficient = coefficient
-    # DBP: print terms
-    # DBP: print variable.scope, variable.coefficient, variable.value, variable.power
     return variable
 
 
