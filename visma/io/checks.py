@@ -649,12 +649,10 @@ def getOperationsExpression(variables, tokens):
                             power.append(variable.power[j])
                     elif variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-', '']:
                         count += 1
-
                 if count > 1 and opCount > 0:
                     for i, op in enumerate(ops):
                         if not (op in operations):
                             operations.append(op)
-
         elif isinstance(variable, Expression):
             ops = getOperationsExpression(
                 variable.value, variable.tokens)
@@ -780,7 +778,6 @@ def evaluateExpressions(variables):
                         nxt = True
                 if prev and nxt:
                     return False
-
     return True
 
 

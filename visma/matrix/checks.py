@@ -15,7 +15,7 @@ def dimCheck(matA, matB):
     return False
 
 
-def mulDimCheck(matA, matB):
+def multiplyCheck(matA, matB):
     if matA.dim[1] == matB.dim[0]:
         return True
     return False

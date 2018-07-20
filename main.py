@@ -199,6 +199,7 @@ class WorkSpace(QWidget):
         self.equationListVbox.addWidget(QLabel("<h3>equation history</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
+        # FIXME: Clear button. Clear rightaway.
         self.clearButton = QtGui.QPushButton('clear')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
@@ -217,13 +218,13 @@ class WorkSpace(QWidget):
         class NavigationCustomToolbar(NavigationToolbar):
             toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
-        # self.toolbar = NavigationCustomToolbar(self.canvas, self)
+        self.toolbar = NavigationCustomToolbar(self.canvas, self)
         self.button = QtGui.QPushButton('plot')
         self.button.clicked.connect(self.plot)
         layout = QtGui.QVBoxLayout()
         layout.addWidget(QLabel("<h3>plotter</h3>"))
         layout.addWidget(self.canvas)
-        # layout.addWidget(self.toolbar)
+        layout.addWidget(self.toolbar)
         layout.addWidget(self.button)
         return layout
 
@@ -507,6 +508,7 @@ class WorkSpace(QWidget):
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.clearButton = QtGui.QPushButton('clear')
+        self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
 

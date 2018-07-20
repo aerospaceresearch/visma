@@ -289,7 +289,6 @@ def expressionAddition(variables, tokens):
                                         variable.beforeScope[constantAdd[i]])
                                     return variables, tokens, removeScopes, change, comments
                         i += 1
-
         elif isinstance(variable, Variable):
             if len(variable.power) > 1:
                 constantAdd = []
@@ -417,7 +416,6 @@ def expressionAddition(variables, tokens):
 
         elif isinstance(variable, Expression):
             pass
-
     return variables, tokens, removeScopes, change, comments
 
 

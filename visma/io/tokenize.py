@@ -246,12 +246,12 @@ def tokenizeSymbols(terms):
             elif term == '+' or term == '-':
                 if i == 0:
                     symTokens[-1] = 'Unary'
-                elif terms[i - 1] in ['-', '+', '*', '/', '=', '^', '(', '[', ';']:
+                elif terms[i - 1] in ['-', '+', '*', '/', '=', '^', '(', '[', ',', ';']:
                     symTokens[-1] = 'Unary'
                 elif (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or terms[i + 1] in funcs or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2]) or terms[i + 2] in funcs))):
                     symTokens[-1] = 'Binary'
                 else:
-                    # logger.log
+                    # logger.log("Invalid Sign Terms")
                     print(terms[i - 1], terms[i], isNumber(terms[i + 1]))
             elif term == '=':
                 symTokens[-1] = 'Binary'
@@ -874,6 +874,9 @@ def getToken(terms, symTokens, scope=None, coeff=1):
                     x += 1
             if isMatrix(matrixTok):
                 tokens.append(matrixTok)
+            else:
+                # logger.log(Invalid Matrix)
+                pass
         elif symTokens[x] == 'Unary':
             coeff = 1
             if terms[x] == '-':
