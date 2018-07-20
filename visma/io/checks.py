@@ -119,8 +119,8 @@ def checkEquation(terms, symTokens):
         elif term == ')':
             brackets -= 1
             if brackets < 0:
+                # TODO: logger.log("Too many ')'")
                 return False
-        # TODO: logger.log("Too many ')'")
         elif term == '[':
             sqrBrackets += 1
         elif term == ']':

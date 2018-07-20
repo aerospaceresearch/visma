@@ -1,1 +1,0 @@
-# TODO: Logger initialized

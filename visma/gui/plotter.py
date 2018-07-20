@@ -1,5 +1,5 @@
-from visma.io.tokenize import getLHSandRHS
 import numpy as np
+from visma.io.tokenize import getLHSandRHS
 from visma.functions.variable import Variable
 from visma.functions.constant import Constant
 from visma.functions.operator import Binary
@@ -8,7 +8,7 @@ from visma.io.checks import isEquation
 
 def plotThis(equationTokens):
 
-    # FIXME: Quite basic right now. Need fix for multi-variables
+    # FIXME: Quite basic right now. Needs fix for multi-variables
 
     LHStok, RHStok = getLHSandRHS(equationTokens)
 
