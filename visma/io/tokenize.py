@@ -241,18 +241,26 @@ def tokenizeSymbols(terms):
         symTokens.append('')
         if term in symbols:
             if term == '*' or term == '/':
-                if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2])))):
-                    symTokens[-1] = 'Binary'
+                if i + 1 < len(terms):
+                    if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2])))):
+                        symTokens[-1] = 'Binary'
+                    else:
+                        symTokens[-1] = False
+                else:
+                    symTokens[-1] = False
             elif term == '+' or term == '-':
                 if i == 0:
                     symTokens[-1] = 'Unary'
                 elif terms[i - 1] in ['-', '+', '*', '/', '=', '^', '(', '[', ',', ';']:
                     symTokens[-1] = 'Unary'
-                elif (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or terms[i + 1] in funcs or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2]) or terms[i + 2] in funcs))):
-                    symTokens[-1] = 'Binary'
+                elif i + 1 < len(terms):
+                    if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or terms[i + 1] in funcs or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2]) or terms[i + 2] in funcs))):
+                        symTokens[-1] = 'Binary'
+                    else:
+                        symTokens[-1] = False
                 else:
-                    # logger.log("Invalid Sign Terms")
-                    print(terms[i - 1], terms[i], isNumber(terms[i + 1]))
+                    symTokens[-1] = False
+                    # print(terms[i - 1], terms[i], isNumber(terms[i + 1]))
             elif term == '=':
                 symTokens[-1] = 'Binary'
         elif term in funcs:

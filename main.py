@@ -11,7 +11,7 @@ Logic Description:
 import sys
 import os
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton
+from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui, QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -25,6 +25,7 @@ from visma.io.checks import checkTypes, findWRTVariable
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotThis
+from visma.gui.qsolver import quickSimplify
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
@@ -108,15 +109,19 @@ class WorkSpace(QWidget):
     solutionType = ""
 
     def __init__(self):
-        super(WorkSpace, self).__init__()
+        super().__init__()
         self.initUI()
 
     def initUI(self):
         hbox = QHBoxLayout(self)
 
-        equationList = QWidget()
-        equationList.setLayout(self.equationsLayout())
-        equationList.setStatusTip("Track of old equations")
+        equationList = QTabWidget()
+        equationList.tab1 = QWidget()
+        equationList.tab2 = QWidget()
+        equationList.addTab(equationList.tab1, "history")
+        equationList.addTab(equationList.tab2, "favourites")
+        equationList.tab1.setLayout(self.equationsLayout())
+        equationList.tab1.setStatusTip("Track of old equations")
         equationList.setFixedWidth(300)
 
         inputList = QWidget()
@@ -129,13 +134,21 @@ class WorkSpace(QWidget):
         buttonSpace.setFixedWidth(300)
         buttonSpace.setStatusTip("Interact")
 
-        plotFig = QWidget()
-        plotFig.setLayout(self.plotFigure())
-        plotFig.setStatusTip("Visualize graph")
+        tabPlot = QTabWidget()
+        tabPlot.tab1 = QWidget()
+        tabPlot.addTab(tabPlot.tab1, "plotter")
+        tabPlot.tab1.setLayout(self.plotFigure())
+        tabPlot.tab1.setStatusTip("Visualize graph")
 
-        stepsFig = QWidget()
-        stepsFig.setLayout(self.stepsFigure())
-        stepsFig.setStatusTip("Step-by-step solver")
+        tabStepsLogs = QTabWidget()
+        tabStepsLogs.tab1 = QWidget()
+        tabStepsLogs.tab2 = QWidget()
+        tabStepsLogs.addTab(tabStepsLogs.tab1, "step-by-step")
+        tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
+        tabStepsLogs.tab1.setLayout(self.stepsFigure())
+        tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
+        # tabStepsLogs.tab1.setLayout(self.stepsFigure())
+        tabStepsLogs.tab2.setStatusTip("")
 
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -143,11 +156,17 @@ class WorkSpace(QWidget):
 
         self.textedit.setFont(font)
         self.textedit.textChanged.connect(self.textChangeTrigger)
-        self.textedit.setFixedHeight(70)
+        self.textedit.setFixedHeight(60)
         self.textedit.setStatusTip("Input equation")
+
+        quickSolve = QWidget()
+        quickSolve.setLayout(self.qSolveFigure())
+        quickSolve.setFixedHeight(60)
+        quickSolve.setStatusTip("Quick solver")
 
         splitter4 = QSplitter(Qt.Vertical)
         splitter4.addWidget(self.textedit)
+        splitter4.addWidget(quickSolve)
         splitter4.addWidget(inputList)
 
         splitter3 = QSplitter(Qt.Horizontal)
@@ -155,8 +174,8 @@ class WorkSpace(QWidget):
         splitter3.addWidget(buttonSpace)
 
         splitter2 = QSplitter(Qt.Horizontal)
-        splitter2.addWidget(stepsFig)
-        splitter2.addWidget(plotFig)
+        splitter2.addWidget(tabStepsLogs)
+        splitter2.addWidget(tabPlot)
         splitter2.addWidget(equationList)
 
         splitter1 = QSplitter(Qt.Vertical)
@@ -167,8 +186,10 @@ class WorkSpace(QWidget):
         self.setLayout(hbox)
 
     def textChangeTrigger(self):
-        pass
-        # print(self.textedit.toPlainText())
+        self.qSol = quickSimplify(self.textedit.toPlainText())
+        if self.qSol is None:
+            self.qSol = ""
+        self.showQSolve()
 
     def equationsLayout(self):
         self.myQListWidget = QtWidgets.QListWidget(self)
@@ -182,7 +203,6 @@ class WorkSpace(QWidget):
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
         self.myQListWidget.resize(400, 300)
-        # self.equationListVbox.addWidget(QLabel("<h3>equation history</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
         # FIXME: Clear button. Clear rightaway.
@@ -199,7 +219,7 @@ class WorkSpace(QWidget):
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
 
-        self.figure.patch.set_facecolor('white')
+        # self.figure.patch.set_facecolor('white')
 
         class NavigationCustomToolbar(NavigationToolbar):
             toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
@@ -208,7 +228,6 @@ class WorkSpace(QWidget):
         self.button = QtWidgets.QPushButton('plot graph')
         self.button.clicked.connect(self.plot)
         layout = QtWidgets.QVBoxLayout()
-        # layout.addWidget(QLabel("<h3>plotter</h3>"))
         layout.addWidget(self.canvas)
         layout.addWidget(self.toolbar)
         layout.addWidget(self.button)
@@ -229,22 +248,36 @@ class WorkSpace(QWidget):
         self.stepsfigure.clear()
         self.stepsbutton = QtWidgets.QPushButton('show steps')
         self.stepsbutton.clicked.connect(self.showSteps)
-        self.stepsfigure.patch.set_facecolor('white')
 
         stepslayout = QtWidgets.QVBoxLayout()
-        # stepslayout.addWidget(QLabel("<h3>step-by-step solution</h3>"))
         stepslayout.addWidget(self.stepscanvas)
         stepslayout.addWidget(self.stepsbutton)
         return stepslayout
 
     def showSteps(self):
-        # REVIEW: matplot figure title alignment (ha, va)
-        self.stepsfigure.suptitle(self.result,
-                                  horizontalalignment='left',
-                                  verticalalignment='top',
-                                  ha='center', va='center')
-        #                        size=qApp.font().pointSize()*1)
+        self.stepsfigure.suptitle(self.output,
+                                  horizontalalignment='center',
+                                  verticalalignment='top')
+        #                         size=qApp.font().pointSize()*1)
         self.stepscanvas.draw()
+
+    def qSolveFigure(self):
+        self.qSolveFigure = Figure()
+        self.solcanvas = FigureCanvas(self.qSolveFigure)
+        self.qSolveFigure.clear()
+        self.stepsbutton = QtWidgets.QPushButton('show steps')
+        self.stepsbutton.clicked.connect(self.showSteps)
+
+        stepslayout = QtWidgets.QVBoxLayout()
+        stepslayout.addWidget(self.solcanvas)
+        return stepslayout
+
+    def showQSolve(self):
+        self.qSolveFigure.suptitle(self.qSol,
+                                   horizontalalignment='center',
+                                   verticalalignment='top')
+        #                          size=qApp.font().pointSize()*1.5)
+        self.solcanvas.draw()
 
     def Clicked(self, item):
         _, name = self.equations[self.myQListWidget.currentRow()]
@@ -291,11 +324,11 @@ class WorkSpace(QWidget):
         interactionText = cursor.selectedText()
         if str(interactionText) == '':
             self.mode = 'normal'
-            textSelected = str(self.textedit.toPlainText())
+            self.input = str(self.textedit.toPlainText())
         else:
-            textSelected = str(interactionText)
+            self.input = str(interactionText)
             self.mode = 'interaction'
-        self.tokens = tokenizer(textSelected)
+        self.tokens = tokenizer(self.input)
         # DBP: print(self.tokens)
         self.addEquation()
         lhs, rhs = getLHSandRHS(self.tokens)
@@ -490,7 +523,6 @@ class WorkSpace(QWidget):
         self.myQListWidget.resize(400, 300)
 
         self.myQListWidget.itemClicked.connect(self.Clicked)
-        # self.equationListVbox.addWidget(QLabel("<h3>equation history</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.clearButton = QtWidgets.QPushButton('clear equations')
@@ -642,7 +674,7 @@ class WorkSpace(QWidget):
                 resultOut = False
             if resultOut:
                 self.eqToks = equationTokens
-                self.result = resultLatex(name, equationTokens, comments)
+                self.output = resultLatex(name, equationTokens, comments)
                 if len(availableOperations) == 0:
                     self.clearButtons()
                 else:
@@ -660,8 +692,8 @@ class WorkSpace(QWidget):
             token_string = ''
             equationTokens = []
             if varName == 'Back':
-                textSelected = str(self.textedit.toPlainText())
-                self.tokens = tokenizer(textSelected)
+                self.input = str(self.textedit.toPlainText())
+                self.tokens = tokenizer(self.input)
                 # print(self.tokens)
                 lhs, rhs = getLHSandRHS(self.tokens)
                 operations, self.solutionType = checkTypes(
@@ -678,7 +710,7 @@ class WorkSpace(QWidget):
                 self.lTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, varName)
 
             self.eqToks = equationTokens
-            self.result = resultLatex(operation, equationTokens, comments, varName)
+            self.output = resultLatex(operation, equationTokens, comments, varName)
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:

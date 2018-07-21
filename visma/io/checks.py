@@ -110,6 +110,7 @@ def findWRTVariable(lTokens, rTokens=None, variables=None):
 
 
 def checkEquation(terms, symTokens):
+    # OPTIMIZE: Clean this
     brackets = 0
     sqrBrackets = 0
     equators = 0
@@ -118,40 +119,51 @@ def checkEquation(terms, symTokens):
             brackets += 1
         elif term == ')':
             brackets -= 1
-            if brackets < 0:
-                # TODO: logger.log("Too many ')'")
-                return False
         elif term == '[':
             sqrBrackets += 1
         elif term == ']':
             sqrBrackets -= 1
-            if sqrBrackets < 0:
-                return False
-        # TODO: logger.log("Too many ']'")
         elif term == '^':
-            if symTokens[i + 1] == 'Binary':
-                return False
-        # TODO: logger.log("Check around '^'")
+            if i + 1 < len(terms):
+                if symTokens[i + 1] == 'Binary':
+                    log = "Check around '^'"
+                    return False, log
+            else:
+                log = "Check around '^'"
+                return False, log
         elif isVariable(term) or isNumber(term):
             if i + 1 < len(terms):
                 if terms[i + 1] == '(':
-                    return False
+                    log = "Invalid expression"
+                    return False, log
         elif term == '>' or term == '<':
             if terms[i+1] != '=':
                 equators += 1
-            if equators > 1:
-                return False
         elif term == '=':
             equators += 1
-            if equators > 1:
-                return False
-        # TODO: logger.log("Inappropriate number of equator(=,<,>)")
         elif term == ';':
             equators = 0
+
+    if brackets < 0:
+        log = "Too many ')'"
+        return False, log
+    elif brackets > 0:
+        log = "Too many '('"
+        return False, log
+    if sqrBrackets < 0:
+        log = "Too many ']'"
+        return False, log
+    elif sqrBrackets > 0:
+        log = "Too many '['"
+        return False, log
+    if equators > 1:
+        log = "Inappropriate number of equators(=,<,>)"
+        return False, log
     if len(terms) != 0:
         i = len(terms) - 1
         if symTokens[i] == 'Binary' or symTokens[i] == 'Unary' or brackets != 0 or sqrBrackets != 0:
-            return False
+            log = "Invalid expression"
+            return False, log
     return True
 
 
