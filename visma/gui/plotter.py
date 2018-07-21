@@ -14,9 +14,9 @@ def plotThis(equationTokens):
 
     varDict = {}
     delta = 0.1
-    xrange = np.arange(-20, 20.0, delta)
+    range = np.arange(-20, 20.0, delta)
     yrange = np.arange(-20, 20.0, delta)
-    varDict['x'], varDict['y'] = np.meshgrid(xrange, yrange)
+    varDict['x'], varDict['y'] = np.meshgrid(range, yrange)
 
     LHS = 0
     coeff = 1

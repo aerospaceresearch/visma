@@ -60,7 +60,7 @@ class Matrix(object):
 class ValMat(Matrix):
 
     def __init__(self, dim, token):
-        super(ValMat, self).__init__()
+        super().__init__()
         for i in range(0, dim[0]):
             row = []
             for j in range(0, dim[1]):
@@ -80,7 +80,7 @@ class SquareMat(Matrix):
 class IdenMat(SquareMat):
 
     def __init__(self, dim):
-        super(IdenMat, self).__init__()
+        super().__init__()
         for i in range(0, dim[0]):
             row = []
             for j in range(0, dim[1]):

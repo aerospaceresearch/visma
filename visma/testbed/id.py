@@ -3,11 +3,11 @@
 ############
 
 '''
-Following is a list of random IDs (func.tid property of func class) of a functions generated during calculations/simplifications
+Following is an example list of IDs (func.tid property of Function class) of the functions generated during calculations/simplifications
 Only + and * are used as binary operations, the - and / will be taken care by func.coefficient and func.power respectively.
 '''
 
-# TODO: Use this Token ID in func.scope
+# Using nested expressions instead of ID. Leaving here for future use.
 
 random = ['a0', 'b0', 'b0a2', 'b0a1', 'b0a3',
           'b0b0', 'a0b0', 'a0a1', 'a0a2', 'a0a2a0', 'a0a3', 'c1', 'c2']
@@ -32,7 +32,7 @@ for func in random:
         final.append('(')
         openbrac += 1
     elif(levelold > level):
-        for i in xrange(0, levelold - level):
+        for i in range(0, levelold - level):
             final.append(')')
             closebrac += 1
         if(func[2 * level + 1] <= '1'):
@@ -50,7 +50,7 @@ for func in random:
 
 # FIXME: Find a way to handle functions in exponentials Ex: f1^(f2+f3)
 
-for i in xrange(0, openbrac - closebrac):
+for i in range(0, openbrac - closebrac):
     final.append(')')
 eqstring = ""
 for func in final:
