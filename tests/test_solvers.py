@@ -24,8 +24,8 @@ def test_quadraticRoots():
     assert quickTest("3x^2 + 7x + 1 = 0", quadraticRoots) == "(x+2.18)*(x+0.15)=0"
     assert quickTest("3x^2 - 7x + 1 = 0", quadraticRoots) == "(x-0.15)*(x-2.18)=0"
 
-    assert quickTest("x^2 + x + 1 = 0", quadraticRoots) == "(x+0.5+0.87*sqrt[2](-1.0))*(x+0.5-0.87*sqrt[2](-1.0))=0"
-    assert quickTest("x^2 - x + 1 = 0", quadraticRoots) == "(x-0.5+0.87*sqrt[2](-1.0))*(x-0.5-0.87*sqrt[2](-1.0))=0"
+    assert quickTest("x^2 + x + 1 = 0", quadraticRoots) == "(x+0.5+0.87*sqrt[2](-1))*(x+0.5-0.87*sqrt[2](-1))=0"
+    assert quickTest("x^2 - x + 1 = 0", quadraticRoots) == "(x-0.5+0.87*sqrt[2](-1))*(x-0.5-0.87*sqrt[2](-1))=0"
 
 
 #################
@@ -46,4 +46,4 @@ def test_solveFor():
     assert quickTest("w + x^2 + yz^3 = 1", solveFor, 'w') == "w=(-x^(2.0)-yz^(3.0)+1.0)"
     assert quickTest("w + x^2 + yz^3 = 1", solveFor, 'x') == "x=(-w-yz^(3.0)+1.0)^(0.5)"
     assert quickTest("w + x^2 + yz^3 = 1", solveFor, 'y') == "y=((-w-x^(2.0)+1.0)/z^(3.0))"
-    assert quickTest("w + x^2 + yz^3 = 1", solveFor, 'z') == "z=((-w-x^(2.0)+1.0)/y)^(0.333333333333)"
+    assert quickTest("w + x^2 + yz^3 = 1", solveFor, 'z') == "z=((-w-x^(2.0)+1.0)/y)^(0.3333333333333333)"

@@ -1,4 +1,3 @@
-from __future__ import division
 from visma.functions.structure import Function, Expression
 from visma.functions.exponential import Logarithm
 from visma.functions.operator import Divide
@@ -43,7 +42,7 @@ class Variable(Function):
 
     def differentiate(self):
         from visma.functions.constant import Constant
-        super(Variable, self).differentiate()
+        super().differentiate()
         self.value = 1
         self.__class__ = Constant
 

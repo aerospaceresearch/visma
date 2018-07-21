@@ -122,7 +122,7 @@ def multiplyExpressions(expression1, expression2):
     tokens2 = expression2.tokens
     coeff = expression1.coefficient * expression2.coefficient
     for i, token1 in enumerate(tokens1):
-        # print token1.value
+        # print(token1.value)
         op = 1
         if i != 0:
             if isinstance(tokens1[i - 1], Binary):
@@ -132,7 +132,7 @@ def multiplyExpressions(expression1, expression2):
                     op *= -1
         if isinstance(token1, Variable) or isinstance(token1, Constant):
             for j, token2 in enumerate(tokens2):
-                # print token2.value
+                # print(token2.value)
                 op2 = op
                 if isinstance(token2, Variable) or isinstance(token2, Constant):
                     if j == 0 and i == 0:
@@ -151,7 +151,7 @@ def multiplyExpressions(expression1, expression2):
                             binary.value = '+'
                         tokens.append(binary)
                     tokens.append(multiplySelect(token1, token2, coeff))
-                    # print tokens
+                    # print(tokens)
 
 
 def multiplicationEquation(lToks, rToks, direct=False):
