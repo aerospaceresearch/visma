@@ -104,7 +104,7 @@ class Expression(Function):
     """
 
     def __init__(self, tokens=None, coefficient=None, power=None):
-        super(Expression, self).__init__()
+        super().__init__()
         self.coefficient = 1
         self.power = 1
         self.tokens = []
@@ -132,6 +132,6 @@ class Equation(Expression):
     """
 
     def __init__(self):
-        super(self).__init__()
+        super().__init__()
         self.tokens = None
         self.type = 'Equation'

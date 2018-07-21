@@ -36,7 +36,7 @@ from visma.transform.factorization import factorize
 class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
-        super(Window, self).__init__()
+        super().__init__()
         font = QtGui.QFont()
         font.setPointSize(12)
         self.setFont(font)
@@ -65,7 +65,7 @@ class Window(QtWidgets.QMainWindow):
         helpMenu.addAction(wikiAction)
         self.workSpace = WorkSpace()
         self.setCentralWidget(self.workSpace)
-        self.setGeometry(300, 300, 1200, 800)
+        self.setGeometry(300, 300, 1000, 800)
         self.setWindowTitle('VISual MAth')
         self.show()
 
@@ -694,7 +694,7 @@ class WorkSpace(QWidget):
 class QCustomQWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
-        super(QCustomQWidget, self).__init__(parent)
+        super().__init__(parent)
         self.textQVBoxLayout = QtWidgets.QVBoxLayout()
         self.textUpQLabel = QtWidgets.QLabel()
         self.textDownQLabel = QtWidgets.QLabel()
@@ -719,7 +719,7 @@ class QCustomQWidget(QtWidgets.QWidget):
 
 class PicButton(QAbstractButton):
     def __init__(self, pixmap, parent=None):
-        super(PicButton, self).__init__(parent)
+        super().__init__(parent)
         self.pixmap = pixmap
 
     def paintEvent(self, event):

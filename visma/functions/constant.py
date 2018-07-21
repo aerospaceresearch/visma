@@ -12,7 +12,7 @@ class Constant(Function):
     """
 
     def __init__(self, value=None):
-        super(Constant, self).__init__()
+        super().__init__()
         self.coefficient = 1
         self.power = 1
         self.type = 'Constant'
@@ -23,7 +23,7 @@ class Constant(Function):
         pass
 
     def differentiate(self):
-        super(Constant, self).differentiate()
+        super().differentiate()
         self.value = 0
 
     def integrate(self, intwrt):
@@ -42,33 +42,33 @@ class Constant(Function):
 class Zero(Constant):
 
     def __init__(self):
-        super(Zero, self).__init__()
+        super().__init__()
         self.value = 0
 
 
 class One(Constant):
 
     def __init__(self):
-        super(One, self).__init__()
+        super().__init__()
         self.value = 1
 
 
 class Pi(Constant):
 
     def __init__(self):
-        super(Pi, self).__init__()
+        super().__init__()
         self.value = math.pi
 
 
 class Euler(Constant):
 
     def __init__(self):
-        super(Euler, self).__init__()
+        super().__init__()
         self.value = math.e
 
 
 class Iota(Constant):
 
     def __init__(self):
-        super(Iota, self).__init__()
+        super().__init__()
         self.value = 1j

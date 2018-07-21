@@ -9,7 +9,7 @@ import math
 class Logarithm(Function):
 
     def __init__(self, operand=None):
-        super(Logarithm, self).__init__()
+        super().__init__()
         self.coefficient = 1
         self.power = 1
         self.operand = []
@@ -18,10 +18,10 @@ class Logarithm(Function):
         self.value = 'log'
 
     def inverse(self, RHS):
-        super(Logarithm, self).inverse(RHS)
+        super().inverse(RHS)
 
     def differentiate(self):
-        super(Logarithm, self).differentiate()
+        super().differentiate()
         self.power = -1
         self.__class__ = self.operand.__class__
 
@@ -36,14 +36,14 @@ class Logarithm(Function):
 class Exponential(Function):
 
     def __init__(self, arg):
-        super(Exponential, self).__init__()
+        super().__init__()
         self.value = 'exp'
 
     def inverse(self, RHS):
-        super(Exponential, self).inverse(RHS)
+        super().inverse(RHS)
 
     def differentiate(self):
-        super(Exponential, self).differentiate()
+        super().differentiate()
 
     def integrate(self, d):
         """

@@ -12,7 +12,7 @@ class Variable(Function):
     """
 
     def __init__(self, coeff=None, value=None, power=None):
-        super(Variable, self).__init__()
+        super().__init__()
         # Report
         self.coefficient = 1
         if coeff is not None:
