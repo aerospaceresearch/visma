@@ -21,14 +21,14 @@ class EquationCompatibility(object):
         if checkSolveFor(lTokens, rTokens):
             self.availableOperations.append('solve')
         self.availableOperations.extend(getOperationsEquation(self.lVariables, self.lTokens, self.rVariables, self.rTokens))
-        # print self.availableOperations
+        # print(self.availableOperations)
 
 
 class ExpressionCompatibility(object):
     """docstring for ExpressionCompatibility"""
 
     def __init__(self, tokens):
-        super(ExpressionCompatibility, self).__init__()
+        super().__init__()
         self.tokens = tokens
         self.variables = []
         self.variables.extend(getLevelVariables(self.tokens))
@@ -119,8 +119,8 @@ def checkEquation(terms, symTokens):
         elif term == ')':
             brackets -= 1
             if brackets < 0:
+                # TODO: logger.log("Too many ')'")
                 return False
-        # TODO: logger.log("Too many ')'")
         elif term == '[':
             sqrBrackets += 1
         elif term == ']':
@@ -466,7 +466,7 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
             ops = []
 
             if len(variable.value) > 1:
-                for j in xrange(len(variable.value)):
+                for j in range(len(variable.value)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-']:
                         count += 1
                         opCount += 1
@@ -481,7 +481,7 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
             if (len(variable.value) > 0 and rCount > 0):
                 for variable2 in rVariables:
                     if isinstance(variable2, Constant):
-                        for l in xrange(len(variable2.value)):
+                        for l in range(len(variable2.value)):
                             if variable2.after[l] in ['+', '-', ''] and variable2.before[l] in ['+', '-', ''] and variable2.value[l] != 0:
                                 count += 1
                                 opCount += 1
@@ -511,7 +511,7 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
             power = []
             opCount = 0
             if len(variable.power) > 1:
-                for j in xrange(len(variable.power)):
+                for j in range(len(variable.power)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-']:
                         count += 1
                         opCount += 1
@@ -528,7 +528,7 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
                 for variable2 in rVariables:
                     if isinstance(variable2, Variable):
                         if variable2.value == variable.value and variable2.power[0] == variable.power[0]:
-                            for l in xrange(len(variable2.power)):
+                            for l in range(len(variable2.power)):
                                 if variable2.after[l] in ['+', '-', ''] and variable2.before[l] in ['+', '-', '']:
                                     count += 1
                                     opCount += 1
@@ -558,7 +558,7 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
             if len(variable.value) > 1:
                 count = 0
                 ops = []
-                for j in xrange(len(variable.value)):
+                for j in range(len(variable.value)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-']:
                         count += 1
                         if not (variable.before[j] in ops):
@@ -573,7 +573,7 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
                 ops = []
                 power = []
                 opCount = 0
-                for j in xrange(len(variable.power)):
+                for j in range(len(variable.power)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-']:
                         count += 1
                         opCount += 1
@@ -621,7 +621,7 @@ def getOperationsExpression(variables, tokens):
                 count = 0
                 opCount = 0
                 ops = []
-                for j in xrange(len(variable.value)):
+                for j in range(len(variable.value)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-']:
                         count += 1
                         opCount += 1
@@ -640,7 +640,7 @@ def getOperationsExpression(variables, tokens):
                 ops = []
                 power = []
                 opCount = 0
-                for j in xrange(len(variable.power)):
+                for j in range(len(variable.power)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-']:
                         count += 1
                         opCount += 1
@@ -649,12 +649,10 @@ def getOperationsExpression(variables, tokens):
                             power.append(variable.power[j])
                     elif variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+', '-', '']:
                         count += 1
-
                 if count > 1 and opCount > 0:
                     for i, op in enumerate(ops):
                         if not (op in operations):
                             operations.append(op)
-
         elif isinstance(variable, Expression):
             ops = getOperationsExpression(
                 variable.value, variable.tokens)
@@ -704,10 +702,9 @@ def evaluateExpressions(variables):
         elif isinstance(variable, Variable):
             prev = False
             nxt = False
-            # FIXME: Undefined i and tokens. Which tokens ?
             if i != 0:
                 if isinstance(variables[i - 1], Binary):
-                    if variable[i - 1].value in ['-', '+']:
+                    if variables[i - 1].value in ['-', '+']:
                         prev = True
                 else:
                     print(variables[i - 1])
@@ -739,20 +736,20 @@ def evaluateExpressions(variables):
             prev = False
             nxt = False
             if i != 0:
-                if isinstance(variable[i - 1], Binary):
-                    if variable[i - 1].value in ['-', '+']:
+                if isinstance(variables[i - 1], Binary):
+                    if variables[i - 1].value in ['-', '+']:
                         prev = True
                 else:
-                    print(variable[i - 1])
+                    print(variables[i - 1])
             else:
                 prev = True
 
             if i + 1 < len(variable):
-                if isinstance(variable[i + 1], Binary):
-                    if variable[i + 1].value in ['-', '+']:
+                if isinstance(variables[i + 1], Binary):
+                    if variables[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
-                    print(variable[i + 1])
+                    print(variables[i + 1])
             else:
                 nxt = True
             if nxt and prev:
@@ -781,7 +778,6 @@ def evaluateExpressions(variables):
                         nxt = True
                 if prev and nxt:
                     return False
-
     return True
 
 

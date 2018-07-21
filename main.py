@@ -10,11 +10,12 @@ Logic Description:
 
 import sys
 import os
-from PyQt4.QtGui import QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QLabel, QFrame, QApplication, QAbstractButton, QPainter
-from PyQt4.QtCore import Qt
-from PyQt4 import QtGui
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from PyQt5.QtGui import QPainter
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton
+from PyQt5.QtCore import Qt
+from PyQt5 import QtGui, QtWidgets
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import webbrowser
 
@@ -32,38 +33,23 @@ from visma.solvers.polynomial.roots import quadraticRoots
 from visma.transform.factorization import factorize
 
 
-class Window(QtGui.QMainWindow):
+class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(Window, self).__init__()
         font = QtGui.QFont()
         font.setPointSize(12)
         self.setFont(font)
-        # Experimenting custom themes
-        self.setStyleSheet("""
-            QPushButton {
-                background-color: white;
-                border: 3px solid white;
-                border-radius: 10px;
-                color: black
-            }
-            QPushButton:pressed {
-                background-color: black;
-                border: 3px solid black;
-                border-radius: 10px;
-                color: white
-            }
-            """)
 
     def initUI(self):
-        exitAction = QtGui.QAction('Exit', self)
+        exitAction = QtWidgets.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
 
-        wikiAction = QtGui.QAction('Wiki', self)
+        wikiAction = QtWidgets.QAction('Wiki', self)
         wikiAction.setStatusTip('Open Github wiki')
-        # TODO: Make a mini browser for docs and wiki
+        # TODO: Pop a mini browser for docs and wiki
         wikiAction.triggered.connect(lambda: webbrowser.open('https://github.com/aerospaceresearch/visma/wiki'))
 
         self.statusBar()
@@ -77,8 +63,8 @@ class Window(QtGui.QMainWindow):
 
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(wikiAction)
-        workSpace = WorkSpace()
-        self.setCentralWidget(workSpace)
+        self.workSpace = WorkSpace()
+        self.setCentralWidget(self.workSpace)
         self.setGeometry(300, 300, 1200, 800)
         self.setWindowTitle('VISual MAth')
         self.show()
@@ -145,7 +131,7 @@ class WorkSpace(QWidget):
 
         plotFig = QWidget()
         plotFig.setLayout(self.plotFigure())
-        plotFig.setStatusTip("Graph plot")
+        plotFig.setStatusTip("Visualize graph")
 
         stepsFig = QWidget()
         stepsFig.setLayout(self.stepsFigure())
@@ -182,24 +168,25 @@ class WorkSpace(QWidget):
 
     def textChangeTrigger(self):
         pass
-        # print self.textedit.toPlainText()
+        # print(self.textedit.toPlainText())
 
     def equationsLayout(self):
-        self.myQListWidget = QtGui.QListWidget(self)
+        self.myQListWidget = QtWidgets.QListWidget(self)
         for index, name in self.equations:
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(index)
             myQCustomQWidget.setTextDown(name)
-            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem = QtWidgets.QListWidgetItem(self.myQListWidget)
             myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
             self.myQListWidget.addItem(myQListWidgetItem)
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
         self.myQListWidget.resize(400, 300)
-        self.equationListVbox.addWidget(QLabel("<h3>equation history</h3>"))
+        # self.equationListVbox.addWidget(QLabel("<h3>equation history</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
-        self.clearButton = QtGui.QPushButton('clear')
+        # FIXME: Clear button. Clear rightaway.
+        self.clearButton = QtWidgets.QPushButton('clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
@@ -217,47 +204,47 @@ class WorkSpace(QWidget):
         class NavigationCustomToolbar(NavigationToolbar):
             toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
-        # self.toolbar = NavigationCustomToolbar(self.canvas, self)
-        self.button = QtGui.QPushButton('plot')
+        self.toolbar = NavigationCustomToolbar(self.canvas, self)
+        self.button = QtWidgets.QPushButton('plot graph')
         self.button.clicked.connect(self.plot)
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(QLabel("<h3>plotter</h3>"))
+        layout = QtWidgets.QVBoxLayout()
+        # layout.addWidget(QLabel("<h3>plotter</h3>"))
         layout.addWidget(self.canvas)
-        # layout.addWidget(self.toolbar)
+        layout.addWidget(self.toolbar)
         layout.addWidget(self.button)
         return layout
 
     def plot(self):
         ax = self.figure.add_subplot(111)
         ax.clear()
-        x, y, LHS, RHS = plotThis(equationTokens[-1])
+        x, y, LHS, RHS = plotThis(self.eqToks[-1])
         ax.contour(x, y, (LHS - RHS), [0])
         ax.grid()
         self.figure.set_tight_layout({"pad": 1})  # removes extra padding
         self.canvas.draw()
 
     def stepsFigure(self):
-        self.stpsfigure = Figure()
-        self.stpscanvas = FigureCanvas(self.stpsfigure)
-        self.stpsfigure.clear()
-        self.stpsbutton = QtGui.QPushButton('show steps')
-        self.stpsbutton.clicked.connect(self.showSteps)
-        self.stpsfigure.patch.set_facecolor('white')
+        self.stepsfigure = Figure()
+        self.stepscanvas = FigureCanvas(self.stepsfigure)
+        self.stepsfigure.clear()
+        self.stepsbutton = QtWidgets.QPushButton('show steps')
+        self.stepsbutton.clicked.connect(self.showSteps)
+        self.stepsfigure.patch.set_facecolor('white')
 
-        stpslayout = QtGui.QVBoxLayout()
-        stpslayout.addWidget(QLabel("<h3>step-by-step solution</h3>"))
-        stpslayout.addWidget(self.stpscanvas)
-        stpslayout.addWidget(self.stpsbutton)
-        return stpslayout
+        stepslayout = QtWidgets.QVBoxLayout()
+        # stepslayout.addWidget(QLabel("<h3>step-by-step solution</h3>"))
+        stepslayout.addWidget(self.stepscanvas)
+        stepslayout.addWidget(self.stepsbutton)
+        return stepslayout
 
     def showSteps(self):
         # REVIEW: matplot figure title alignment (ha, va)
-        self.stpsfigure.suptitle(theResult,
-                                 horizontalalignment='left',
-                                 verticalalignment='top',
-                                 ha='center', va='center')
+        self.stepsfigure.suptitle(self.result,
+                                  horizontalalignment='left',
+                                  verticalalignment='top',
+                                  ha='center', va='center')
         #                        size=qApp.font().pointSize()*1)
-        self.stpscanvas.draw()
+        self.stepscanvas.draw()
 
     def Clicked(self, item):
         _, name = self.equations[self.myQListWidget.currentRow()]
@@ -267,7 +254,7 @@ class WorkSpace(QWidget):
         vbox = QVBoxLayout()
 
         interactionModeLayout = QVBoxLayout()
-        vismaButton = QtGui.QPushButton('visma')
+        vismaButton = QtWidgets.QPushButton('visma')
         interactionModeButton = vismaButton
 
         interactionModeButton.clicked.connect(self.interactionMode)
@@ -309,7 +296,7 @@ class WorkSpace(QWidget):
             textSelected = str(interactionText)
             self.mode = 'interaction'
         self.tokens = tokenizer(textSelected)
-        # DBP: print self.tokens
+        # DBP: print(self.tokens)
         self.addEquation()
         lhs, rhs = getLHSandRHS(self.tokens)
         self.lTokens = lhs
@@ -337,12 +324,12 @@ class WorkSpace(QWidget):
                     opButtons.append(operation)
 
             if self.buttonSet:
-                for i in reversed(xrange(self.solutionOptionsBox.count())):
+                for i in reversed(range(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-                for i in xrange(int(len(opButtons) / 2) + 1):
-                    for j in xrange(2):
+                for i in range(int(len(opButtons) / 2) + 1):
+                    for j in range(2):
                         if len(opButtons) > (i * 2 + j):
-                            self.solutionButtons[(i, j)] = QtGui.QPushButton(
+                            self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
                                 opButtons[i * 2 + j])
                             self.solutionButtons[(i, j)].resize(100, 100)
                             self.solutionButtons[(i, j)].clicked.connect(
@@ -352,10 +339,10 @@ class WorkSpace(QWidget):
             else:
                 self.bottomButton.setParent(None)
                 self.solutionWidget = QWidget()
-                for i in xrange(int(len(opButtons) / 2) + 1):
-                    for j in xrange(2):
+                for i in range(int(len(opButtons) / 2) + 1):
+                    for j in range(2):
                         if len(opButtons) > (i * 2 + j):
-                            self.solutionButtons[(i, j)] = QtGui.QPushButton(
+                            self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
                                 opButtons[i * 2 + j])
                             self.solutionButtons[(i, j)].resize(100, 100)
                             self.solutionButtons[(i, j)].clicked.connect(
@@ -386,12 +373,12 @@ class WorkSpace(QWidget):
                     opButtons.append("division")
                 else:
                     opButtons.append(operation)
-            for i in reversed(xrange(self.solutionOptionsBox.count())):
+            for i in reversed(range(self.solutionOptionsBox.count())):
                 self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-            for i in xrange(int(len(opButtons) / 2) + 1):
-                for j in xrange(2):
+            for i in range(int(len(opButtons) / 2) + 1):
+                for j in range(2):
                     if len(opButtons) > (i * 2 + j):
-                        self.solutionButtons[(i, j)] = QtGui.QPushButton(
+                        self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
                             opButtons[i * 2 + j])
                         self.solutionButtons[(i, j)].resize(100, 100)
                         self.solutionButtons[(i, j)].clicked.connect(
@@ -400,7 +387,7 @@ class WorkSpace(QWidget):
                             self.solutionButtons[(i, j)], i, j)
 
     def clearButtons(self):
-        for i in reversed(xrange(self.solutionOptionsBox.count())):
+        for i in reversed(range(self.solutionOptionsBox.count())):
             self.solutionOptionsBox.itemAt(i).widget().setParent(None)
 
     def wrtVariableButtons(self, variables, operation):
@@ -410,12 +397,12 @@ class WorkSpace(QWidget):
                 for variable in variables:
                     varButtons.append(variable)
                 varButtons.append("Back")
-                for i in reversed(xrange(self.solutionOptionsBox.count())):
+                for i in reversed(range(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-                for i in xrange(int(len(varButtons) / 2) + 1):
-                    for j in xrange(2):
+                for i in range(int(len(varButtons) / 2) + 1):
+                    for j in range(2):
                         if len(varButtons) > (i * 2 + j):
-                            self.solutionButtons[(i, j)] = QtGui.QPushButton(
+                            self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
                                 varButtons[i * 2 + j])
                             self.solutionButtons[(i, j)].resize(100, 100)
                             self.solutionButtons[(i, j)].clicked.connect(
@@ -427,10 +414,10 @@ class WorkSpace(QWidget):
         self.textedit.setText("")
 
     def saveEquation(self):
-        for i in reversed(xrange(self.equationListVbox.count())):
+        for i in reversed(range(self.equationListVbox.count())):
             self.equationListVbox.itemAt(i).widget().setParent(None)
 
-        eqn = unicode(self.textedit.toPlainText())
+        eqn = str(self.textedit.toPlainText())
         if len(self.equations) == 1:
             index, name = self.equations[0]
             if index == "No equations stored":
@@ -443,7 +430,7 @@ class WorkSpace(QWidget):
 
         self.textedit.setText('')
         file = open('local/eqn-list.vis', 'r+')
-        self.myQListWidget = QtGui.QListWidget(self)
+        self.myQListWidget = QtWidgets.QListWidget(self)
         i = 0
         for index, name in self.equations:
             if i != 0:
@@ -452,7 +439,7 @@ class WorkSpace(QWidget):
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(index)
             myQCustomQWidget.setTextDown(name)
-            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem = QtWidgets.QListWidgetItem(self.myQListWidget)
             myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
             self.myQListWidget.addItem(myQListWidgetItem)
             self.myQListWidget.setItemWidget(
@@ -466,12 +453,12 @@ class WorkSpace(QWidget):
         return self.equationListVbox
 
     def addEquation(self):
-        eqn = unicode(self.textedit.toPlainText())
+        eqn = str(self.textedit.toPlainText())
         for index, equation in self.equations:
             if equation == eqn:
                 return self.equationListVbox
 
-        for i in reversed(xrange(self.equationListVbox.count())):
+        for i in reversed(range(self.equationListVbox.count())):
             self.equationListVbox.itemAt(i).widget().setParent(None)
 
         if len(self.equations) == 1:
@@ -484,7 +471,7 @@ class WorkSpace(QWidget):
             self.equations.append(
                 ("Equation No. " + str(len(self.equations) + 1), eqn))
         file = open('local/eqn-list.vis', 'r+')
-        self.myQListWidget = QtGui.QListWidget(self)
+        self.myQListWidget = QtWidgets.QListWidget(self)
         i = 0
         for index, name in self.equations:
             if i != 0:
@@ -493,7 +480,7 @@ class WorkSpace(QWidget):
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(index)
             myQCustomQWidget.setTextDown(name)
-            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem = QtWidgets.QListWidgetItem(self.myQListWidget)
             myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
             self.myQListWidget.addItem(myQListWidgetItem)
             self.myQListWidget.setItemWidget(
@@ -503,10 +490,11 @@ class WorkSpace(QWidget):
         self.myQListWidget.resize(400, 300)
 
         self.myQListWidget.itemClicked.connect(self.Clicked)
-        self.equationListVbox.addWidget(QLabel("<h3>equation history</h3>"))
+        # self.equationListVbox.addWidget(QLabel("<h3>equation history</h3>"))
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
-        self.clearButton = QtGui.QPushButton('clear')
+        self.clearButton = QtWidgets.QPushButton('clear equations')
+        self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
 
@@ -514,11 +502,11 @@ class WorkSpace(QWidget):
         inputLayout = QHBoxLayout(self)
         blank = QFrame()
         # TODO: Move input type to config
-        # comboLabel = QtGui.QLabel()
+        # comboLabel = QtWidgets.QLabel()
         # comboLabel.setText("Input Type:")
         # comboLabel.setFixedSize(100, 30)
 
-        # combo = QtGui.QComboBox(self)
+        # combo = QtWidgets.QComboBox(self)
         # combo.addItem("Greek")
         # combo.addItem("LaTeX")
         # combo.setFixedSize(100, 30)
@@ -534,11 +522,11 @@ class WorkSpace(QWidget):
         inputSplitter = QSplitter(Qt.Vertical)
         inputWidget = QWidget()
         self.selectedCombo = str(loadList)
-        for i in xrange(4):
-            for j in xrange(10):
+        for i in range(4):
+            for j in range(10):
                 if str(loadList) in "Greek":
                     if (i * 10 + j) < len(self.inputGreek):
-                        self.buttons[(i, j)] = QtGui.QPushButton(
+                        self.buttons[(i, j)] = QtWidgets.QPushButton(
                             self.inputGreek[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
@@ -546,7 +534,7 @@ class WorkSpace(QWidget):
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
                 elif str(loadList) in "LaTeX":
                     if (i * 10 + j) < len(self.inputLaTeX):
-                        self.buttons[(i, j)] = QtGui.QPushButton(
+                        self.buttons[(i, j)] = QtWidgets.QPushButton(
                             self.inputLaTeX[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
@@ -560,14 +548,14 @@ class WorkSpace(QWidget):
         return inputLayout
 
     def onActivated(self, text):
-        for i in reversed(xrange(self.inputBox.count())):
+        for i in reversed(range(self.inputBox.count())):
             self.inputBox.itemAt(i).widget().setParent(None)
 
-        for i in xrange(4):
-            for j in xrange(10):
+        for i in range(4):
+            for j in range(10):
                 if str(text) in "Greek":
                     if (i * 10 + j) < len(self.inputGreek):
-                        self.buttons[(i, j)] = QtGui.QPushButton(
+                        self.buttons[(i, j)] = QtWidgets.QPushButton(
                             self.inputGreek[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
@@ -575,7 +563,7 @@ class WorkSpace(QWidget):
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
                 elif str(text) in "LaTeX":
                     if (i * 10 + j) < len(self.inputLaTeX):
-                        self.buttons[(i, j)] = QtGui.QPushButton(
+                        self.buttons[(i, j)] = QtWidgets.QPushButton(
                             self.inputLaTeX[i * 10 + j])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
@@ -585,14 +573,19 @@ class WorkSpace(QWidget):
 
     def onInputPress(self, name):
         def calluser():
-            self.textedit.insertPlainText(unicode(name) + " ")
+            if name == 'C':
+                self.textedit.clear()
+            elif name == 'DEL':
+                cursor = self.textedit.textCursor()
+                cursor.deletePreviousChar()
+            else:
+                self.textedit.insertPlainText(str(name))
         return calluser
 
     def onSolvePress(self, name):
         def calluser():
             availableOperations = []
             token_string = ''
-            global equationTokens
             equationTokens = []
             resultOut = True
             if name == 'addition':
@@ -648,8 +641,8 @@ class WorkSpace(QWidget):
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
             if resultOut:
-                global theResult
-                theResult = resultLatex(name, equationTokens, comments)
+                self.eqToks = equationTokens
+                self.result = resultLatex(name, equationTokens, comments)
                 if len(availableOperations) == 0:
                     self.clearButtons()
                 else:
@@ -665,12 +658,11 @@ class WorkSpace(QWidget):
         def calluser():
             availableOperations = []
             token_string = ''
-            global equationTokens
             equationTokens = []
             if varName == 'Back':
                 textSelected = str(self.textedit.toPlainText())
                 self.tokens = tokenizer(textSelected)
-                # print self.tokens
+                # print(self.tokens)
                 lhs, rhs = getLHSandRHS(self.tokens)
                 operations, self.solutionType = checkTypes(
                     lhs, rhs)
@@ -685,8 +677,8 @@ class WorkSpace(QWidget):
             elif operation == 'differentiate':
                 self.lTokens, availableOperations, token_string, equationTokens, comments = differentiate(self.lTokens, varName)
 
-            global theResult
-            theResult = resultLatex(operation, equationTokens, comments, varName)
+            self.eqToks = equationTokens
+            self.result = resultLatex(operation, equationTokens, comments, varName)
             if len(availableOperations) == 0:
                 self.clearButtons()
             else:
@@ -699,16 +691,16 @@ class WorkSpace(QWidget):
         return calluser
 
 
-class QCustomQWidget(QtGui.QWidget):
+class QCustomQWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super(QCustomQWidget, self).__init__(parent)
-        self.textQVBoxLayout = QtGui.QVBoxLayout()
-        self.textUpQLabel = QtGui.QLabel()
-        self.textDownQLabel = QtGui.QLabel()
+        self.textQVBoxLayout = QtWidgets.QVBoxLayout()
+        self.textUpQLabel = QtWidgets.QLabel()
+        self.textDownQLabel = QtWidgets.QLabel()
         self.textQVBoxLayout.addWidget(self.textUpQLabel)
         self.textQVBoxLayout.addWidget(self.textDownQLabel)
-        self.allQHBoxLayout = QtGui.QHBoxLayout()
+        self.allQHBoxLayout = QtWidgets.QHBoxLayout()
         self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
         self.setLayout(self.allQHBoxLayout)
         self.textUpQLabel.setStyleSheet('''

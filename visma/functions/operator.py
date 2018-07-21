@@ -20,9 +20,11 @@ class Binary(Operator):
     """Class for binary operator
     """
 
-    def __init__(self):
+    def __init__(self, value=None):
         super(Binary, self).__init__()
         self.type = 'Binary'
+        if value is not None:
+            self.value = value
 
 
 class Sqrt(Operator):

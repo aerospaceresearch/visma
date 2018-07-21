@@ -1,6 +1,4 @@
-from __future__ import division
 import copy
-
 from visma.functions.structure import Function
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable

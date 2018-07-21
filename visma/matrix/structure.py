@@ -11,7 +11,6 @@ class Matrix(object):
         self.dim = [0, 0]
 
     def __str__(self):
-
         represent = "["
         for i in range(self.dim[0]):
             for j in range(self.dim[1]):
@@ -20,8 +19,12 @@ class Matrix(object):
                 represent += ","
             represent = represent[:-1] + ";"
         represent = represent[:-1] + "]"
-
         return represent
+
+    def empty(self, dim=None):
+        if dim is not None:
+            self.dim = dim
+        self.value = [[[] for _ in range(self.dim[1])] for _ in range(self.dim[0])]
 
     def setProp(self, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
         if scope is not None:
@@ -35,7 +38,7 @@ class Matrix(object):
 
     def isSquare(self):
         if self.dim[0] == self.dim[1]:
-            self.__class__ = Square
+            self.__class__ = SquareMat
             return True
         else:
             return False
@@ -57,7 +60,7 @@ class Matrix(object):
 class ValMat(Matrix):
 
     def __init__(self, dim, token):
-        super(ValMat, self).__init__()
+        super().__init__()
         for i in range(0, dim[0]):
             row = []
             for j in range(0, dim[1]):
@@ -77,7 +80,7 @@ class SquareMat(Matrix):
 class IdenMat(SquareMat):
 
     def __init__(self, dim):
-        super(IdenMat, self).__init__()
+        super().__init__()
         for i in range(0, dim[0]):
             row = []
             for j in range(0, dim[1]):

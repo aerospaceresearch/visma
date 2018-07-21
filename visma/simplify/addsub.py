@@ -148,7 +148,7 @@ def expressionAddition(variables, tokens):
             if len(variable.value) > 1:
                 constantAdd = []
                 constant = []
-                for j in xrange(len(variable.value)):
+                for j in range(len(variable.value)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+']:
                         constantAdd.append(j)
                     elif variable.after[j] in ['+', '-', ''] and variable.before[j] in ['', '-']:
@@ -289,12 +289,11 @@ def expressionAddition(variables, tokens):
                                         variable.beforeScope[constantAdd[i]])
                                     return variables, tokens, removeScopes, change, comments
                         i += 1
-
         elif isinstance(variable, Variable):
             if len(variable.power) > 1:
                 constantAdd = []
                 constant = []
-                for j in xrange(len(variable.power)):
+                for j in range(len(variable.power)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['+']:
                         constantAdd.append(j)
                     elif variable.after[j] in ['+', '-', ''] and variable.before[j] in ['', '-']:
@@ -417,7 +416,6 @@ def expressionAddition(variables, tokens):
 
         elif isinstance(variable, Expression):
             pass
-
     return variables, tokens, removeScopes, change, comments
 
 
@@ -429,12 +427,12 @@ def equationAddition(lVariables, lTokens, rVariables, rTokens):
     comments = []
     for variable in lVariables:
         if isinstance(variable, Constant):
-            for j in xrange(len(variable.value)):
+            for j in range(len(variable.value)):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Constant):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
-                                for k in xrange(len(variable2.value)):
+                                for k in range(len(variable2.value)):
                                     if (variable2.before[k] == '-' or (variable2.before[k] == '' and variable2.value[k] < 0)) and variable2.after[k] in ['-', '+', '']:
                                         comments.append(
                                             "Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
@@ -484,12 +482,12 @@ def equationAddition(lVariables, lTokens, rVariables, rTokens):
                                         return lVariables, lTokens, lRemoveScopes, lChange, rVariables, rTokens, rRemoveScopes, rChange, comments
 
         elif isinstance(variable, Variable):
-            for j in xrange(len(variable.power)):
+            for j in range(len(variable.power)):
                 if variable.before[j] in ['-', '+', ''] and variable.after[j] in ['+', '-', '']:
                     for variable2 in rVariables:
                         if isinstance(variable2, Variable):
                             if variable2.power[0] == variable.power[0] and variable2.value[0] == variable.value[0]:
-                                for k in xrange(len(variable2.value)):
+                                for k in range(len(variable2.value)):
                                     if variable2.before[k] == '-' and variable2.after[k] in ['-', '+', '']:
                                         comments.append("Moving " + r"$" + variable2.before[k] + variable2.__str__() + r"$" + " to LHS")
                                         if variable.before[j] == '-':
@@ -673,7 +671,7 @@ def expressionSubtraction(variables, tokens):
             if len(variable.value) > 1:
                 constantAdd = []
                 constant = []
-                for j in xrange(len(variable.value)):
+                for j in range(len(variable.value)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['-']:
                         constantAdd.append(j)
                     elif variable.after[j] in ['+', '-', ''] and variable.before[j] in ['', '+']:
@@ -818,7 +816,7 @@ def expressionSubtraction(variables, tokens):
             if len(variable.power) > 1:
                 constantAdd = []
                 constant = []
-                for j in xrange(len(variable.power)):
+                for j in range(len(variable.power)):
                     if variable.after[j] in ['+', '-', ''] and variable.before[j] in ['-']:
                         constantAdd.append(j)
                     elif variable.after[j] in ['+', '-', ''] and variable.before[j] in ['', '+']:

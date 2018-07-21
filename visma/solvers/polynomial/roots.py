@@ -8,7 +8,6 @@ Note: Please try to maintain proper documentation
 Logic Description:
 """
 
-from __future__ import division
 import math
 import copy
 from visma.io.checks import evaluateConstant, availableVariables

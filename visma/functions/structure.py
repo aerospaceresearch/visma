@@ -132,6 +132,6 @@ class Equation(Expression):
     """
 
     def __init__(self):
-        super(Equation, self).__init__()
+        super(self).__init__()
         self.tokens = None
         self.type = 'Equation'

@@ -32,7 +32,7 @@ def test_substitute():
     init_tok = getTokens("2x")
     subs_tok = getTokens("4yz^2")
     tok_list = getTokens("3 + 2x + zx^4 + 3xyz")
-    assert tokensToString(substitute(init_tok, subs_tok, tok_list)) == "3.0 + 4.0yz^(2.0) + 16.0z^(9.0)y^(4.0) + 6.0y^(2)z^(3.0)"
+    assert tokensToString(substitute(init_tok, subs_tok, tok_list)) == "3.0 + 4.0yz^(2.0) + 16.0z^(9.0)y^(4.0) + 6.0y^(2.0)z^(3.0)"
 
     init_tok = getTokens("4x^2")
     subs_tok = getTokens("9yz")
