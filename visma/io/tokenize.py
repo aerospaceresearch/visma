@@ -48,18 +48,20 @@ def removeSpaces(eqn):
 
 def getTerms(eqn):
     """Separate terms of the input equation into a list
-
     Args:
         eqn: Input equation
-
     Returns
         terms: List of terms
     """
+    # OPTIMIZE: Replace list[i+1]
     x = 0
     terms = []
     while x < len(eqn):
+
         if (eqn[x] >= 'a' and eqn[x] <= 'z') or (eqn[x] >= 'A' and eqn[x] <= 'Z') or eqn[x] in greek:
+
             if eqn[x] == 's':
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("qrt"):
@@ -73,19 +75,36 @@ def getTerms(eqn):
 
                 i = x
                 buf = eqn[x]
+                while (i - x) < len("inh"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == 'sinh':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+
+                i = x
+                buf = eqn[x]
                 while (i - x) < len("in"):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
-                if buf == "sin":
-                    if buf + eqn[i+1] == "sinh":
-                        terms.append(buf + eqn[i+1])
-                        x = i + 2
-                        continue
-                    else:
-                        terms.append(buf)
-                        x = i + 1
-                        continue
+                if buf == 'sin':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("ech"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == 'sech':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
 
                 i = x
                 buf = eqn[x]
@@ -93,15 +112,10 @@ def getTerms(eqn):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
-                if buf == "sec":
-                    if buf + eqn[i+1] == "sech":
-                        terms.append(buf + eqn[i+1])
-                        x = i + 2
-                        continue
-                    else:
-                        terms.append(buf)
-                        x = i + 1
-                        continue
+                if buf == 'sec':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
 
                 terms.append(eqn[x])
 
@@ -118,9 +132,18 @@ def getTerms(eqn):
                     continue
                 terms.append(eqn[x])
 
-            elif eqn[x] == 'p' and eqn[x+1] == 'i':
-                x += 1
-                terms.append('pi')
+            elif eqn[x] == 'p':
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("i"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == "pi":
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                terms.append(eqn[x])
 
             elif eqn[x] == 'e':
                 terms.append('exp')
@@ -131,61 +154,86 @@ def getTerms(eqn):
             elif eqn[x] == 't':
                 i = x
                 buf = eqn[x]
+                while (i - x) < len("anh"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == 'tanh':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                i = x
+                buf = eqn[x]
                 while (i - x) < len("an"):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
-                if buf == "tan":
-                    if buf + eqn[i+1] == "tanh":
-                        terms.append(buf + eqn[i+1])
-                        x = i + 2
-                        continue
-                    else:
-                        terms.append(buf)
-                        x = i + 1
-                        continue
+                if buf == 'tan':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
                 terms.append(eqn[x])
 
             elif eqn[x] == 'c':
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("sch"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == 'csch':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("sc"):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
-                if buf == "csc":
-                    if buf + eqn[i+1] == "csch":
-                        terms.append(buf + eqn[i+1])
-                        x = i + 2
-                        continue
-                    else:
-                        terms.append(buf)
-                        x = i + 1
-                        continue
+                if buf == 'csc':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
 
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("osh"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == 'cosh':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("os"):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
-                if buf == "cos":
-                    if buf + eqn[i+1] == "cosh":
-                        terms.append(buf + eqn[i+1])
-                        x = i + 2
-                        continue
-                    else:
-                        terms.append(buf)
-                        x = i + 1
-                        continue
+                if buf == 'cos':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
 
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("oth"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == 'coth':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("ot"):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
-                if buf == "cot":
+                if buf == 'cot':
                     terms.append(buf)
                     x = i + 1
                     continue
@@ -272,14 +320,15 @@ def tokenizeSymbols(terms):
 def removeUnary(terms, symTokens):
     for i, symToken in enumerate(symTokens):
         if symToken == 'Unary':
-            if isNumber(terms[i + 1]) and i + 1 < len(terms):
-                if terms[i] == '-':
-                    terms[i + 1] = terms[i] + terms[i + 1]
-                terms.pop(i)
-                symTokens.pop(i)
-            elif isVariable(terms[i + 1]) and i + 1 < len(terms):
-                terms[i] = terms[i] + '1'
-                symTokens[i] = ''
+            if i + 1 < len(terms):
+                if isNumber(terms[i + 1]):
+                    if terms[i] == '-':
+                        terms[i + 1] = terms[i] + terms[i + 1]
+                    terms.pop(i)
+                    symTokens.pop(i)
+                elif isVariable(terms[i + 1]):
+                    terms[i] = terms[i] + '1'
+                    symTokens[i] = ''
     return terms, symTokens
 
 

@@ -19,8 +19,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'VisMa'
-copyright = '2018, Siddharth Kothiyal, Shantanu Mishra'
+project = 'visma'
+copyright = '2018, visma'
 author = 'Siddharth Kothiyal, Shantanu Mishra'
 
 # The short X.Y version

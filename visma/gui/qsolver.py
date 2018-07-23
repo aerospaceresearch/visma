@@ -1,7 +1,16 @@
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from PyQt5 import QtWidgets
+
 from visma.io.tokenize import removeSpaces, getTerms, normalize, tokenizeSymbols, removeUnary, getToken, getLHSandRHS
 from visma.io.checks import checkEquation, checkTypes
 from visma.io.parser import tokensToLatex
 from visma.simplify.simplify import simplify, simplifyEquation
+
+
+###########
+# backend #
+###########
 
 
 def quickSimplify(input):
@@ -35,3 +44,26 @@ def quickSimplify(input):
         if input != "":
             _, log = checkEquation(normalizedTerms, symTokens)
         return log
+
+
+#######
+# GUI #
+#######
+
+
+def qSolveFigure(workspace):
+    workspace.qSolveFigure = Figure()
+    workspace.solcanvas = FigureCanvas(workspace.qSolveFigure)
+    workspace.qSolveFigure.clear()
+
+    stepslayout = QtWidgets.QVBoxLayout()
+    stepslayout.addWidget(workspace.solcanvas)
+    return stepslayout
+
+
+def showQSolve(workspace):
+    workspace.qSolveFigure.suptitle(workspace.qSol,
+                                    horizontalalignment='center',
+                                    verticalalignment='top')
+    #                          size=qApp.font().pointSize()*1.5)
+    workspace.solcanvas.draw()

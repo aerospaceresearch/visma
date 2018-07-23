@@ -756,7 +756,7 @@ def evaluateExpressions(variables):
             else:
                 prev = True
 
-            if i + 1 < len(variable):
+            if i + 1 < len(variables):
                 if isinstance(variables[i + 1], Binary):
                     if variables[i + 1].value in ['-', '+']:
                         nxt = True

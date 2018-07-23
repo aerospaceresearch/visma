@@ -74,7 +74,7 @@ def test_getTerms():
 
     assert getTerms("cosh^2(x)-sinh^2(x)=1") == ['cosh', '^', '2', '(', 'x', ')', '-', 'sinh', '^', '2', '(', 'x', ')', '=', '1']
     assert getTerms("1 - tanh^2(x) = sech^2(x)") == ['1', '-', 'tanh', '^', '2', '(', 'x', ')', '=', 'sech', '^', '2', '(', 'x', ')']
-    assert getTerms("coth^2(x)-csch^2(x)=1") == ['cot', 'h', '^', '2', '(', 'x', ')', '-', 'csch', '^', '2', '(', 'x', ')', '=', '1']
+    assert getTerms("coth^2(x)-csch^2(x)=1") == ['coth', '^', '2', '(', 'x', ')', '-', 'csch', '^', '2', '(', 'x', ')', '=', '1']
 
     assert getTerms("e = 2.71828") == ['exp', '=', '2.71828']
     assert getTerms("log(e) = 1") == ['log', '(', 'exp', ')', '=', '1']
