@@ -52,7 +52,9 @@ def quickSimplify(input):
 
 
 def qSolveFigure(workspace):
-    workspace.qSolveFigure = Figure()
+    bg = workspace.palette().window().color()
+    bgcolor = (bg.redF(), bg.greenF(), bg.blueF())
+    workspace.qSolveFigure = Figure(edgecolor=bgcolor, facecolor=bgcolor)
     workspace.solcanvas = FigureCanvas(workspace.qSolveFigure)
     workspace.qSolveFigure.clear()
 
@@ -62,8 +64,8 @@ def qSolveFigure(workspace):
 
 
 def showQSolve(workspace):
-    workspace.qSolveFigure.suptitle(workspace.qSol,
-                                    horizontalalignment='center',
+    workspace.qSolveFigure.suptitle(workspace.qSol, x=0.01,
+                                    horizontalalignment='left',
                                     verticalalignment='top')
-    #                          size=qApp.font().pointSize()*1.5)
+    #                               size=qApp.font().pointSize()*1.5)
     workspace.solcanvas.draw()

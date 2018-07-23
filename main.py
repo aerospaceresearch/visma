@@ -159,7 +159,7 @@ class WorkSpace(QWidget):
 
         quickSolve = QWidget()
         quickSolve.setLayout(qSolveFigure(self))
-        quickSolve.setFixedHeight(60)
+        quickSolve.setFixedHeight(45)
         quickSolve.setStatusTip("Quick solver")
 
         splitter4 = QSplitter(Qt.Vertical)

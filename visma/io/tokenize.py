@@ -22,7 +22,7 @@ from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
 
-symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', ',', ';']
+symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 # inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
@@ -31,8 +31,8 @@ constants = [u'\u03C0', 'e', 'i']
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
-funcs = ['log', 'exp', 'sqrt', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sinh', 'cosh']
-funcNames = ['Log', 'Exp', 'Sqrt', 'Sin', 'Cos', 'Tan', 'Csc', 'Sec', 'Cot', 'Sinh', 'Cosh']
+funcs = ['log', 'log_', 'ln', 'exp', 'sqrt', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sinh', 'cosh', 'tanh', 'coth', 'csch', 'sech']
+funcSyms = ['Log', 'LogB', 'LogN', 'Exp', 'Sqrt', 'Sin', 'Cos', 'Tan', 'Csc', 'Sec', 'Cot', 'Sinh', 'Cosh', 'Tanh', 'Coth', 'Csch', 'Sech']
 
 
 def removeSpaces(eqn):
@@ -53,7 +53,6 @@ def getTerms(eqn):
     Returns
         terms: List of terms
     """
-    # OPTIMIZE: Replace list[i+1]
     x = 0
     terms = []
     while x < len(eqn):
@@ -122,11 +121,31 @@ def getTerms(eqn):
             elif eqn[x] == 'l':
                 i = x
                 buf = eqn[x]
+                while (i - x) < len("og_"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == "log_":
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                i = x
+                buf = eqn[x]
                 while (i - x) < len("og"):
                     i += 1
                     if i < len(eqn):
                         buf += eqn[i]
                 if buf == "log":
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("n"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == "ln":
                     terms.append(buf)
                     x = i + 1
                     continue
@@ -263,7 +282,32 @@ def getTerms(eqn):
                     break
             terms.append(buf)
         elif eqn[x] in symbols:
-            terms.append(eqn[x])
+            if eqn[x] == '<':
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("="):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == '<=':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                terms.append(eqn[x])
+            elif eqn[x] == '>':
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("="):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == '>=':
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                terms.append(eqn[x])
+            else:
+                terms.append(eqn[x])
             x += 1
         else:
             x += 1
@@ -299,7 +343,7 @@ def tokenizeSymbols(terms):
             elif term == '+' or term == '-':
                 if i == 0:
                     symTokens[-1] = 'Unary'
-                elif terms[i - 1] in ['-', '+', '*', '/', '=', '^', '(', '[', ',', ';']:
+                elif terms[i - 1] in ['-', '+', '*', '/', '=', '<', '>', '<=', '>=', '^', '(', '[', ',', ';']:
                     symTokens[-1] = 'Unary'
                 elif i + 1 < len(terms):
                     if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or terms[i + 1] in funcs or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2]) or terms[i + 2] in funcs))):
@@ -309,10 +353,10 @@ def tokenizeSymbols(terms):
                 else:
                     symTokens[-1] = False
                     # print(terms[i - 1], terms[i], isNumber(terms[i + 1]))
-            elif term == '=':
+            elif term in ['=', '<', '>', '<=', '>=']:
                 symTokens[-1] = 'Binary'
         elif term in funcs:
-            symTokens[-1] = funcNames[funcs.index(term)]
+            symTokens[-1] = funcSyms[funcs.index(term)]
 
     return symTokens
 
@@ -789,7 +833,7 @@ def getToken(terms, symTokens, scope=None, coeff=1):
     x = 0
     level = 0
     while x < len(terms):
-        if isVariable(terms[x]) and symTokens[x] not in funcNames:
+        if isVariable(terms[x]) and symTokens[x] not in funcSyms:
             varTerms = []
             varSymTokens = []
             brackets = 0
@@ -859,17 +903,12 @@ def getToken(terms, symTokens, scope=None, coeff=1):
                 termToken.value = getNumber(terms[x])
                 level += 1
                 tokens.append(termToken)
-        elif terms[x] in ['='] or symTokens[x] == 'Binary':
+        elif symTokens[x] == 'Binary':
             operator = Binary()
             operator.value = terms[x]
             tempScope = []
             tempScope.extend(scope)
             tempScope.append(level)
-            # CHECKME:
-            if symTokens[x] == '':
-                operator.type = "other"
-            else:
-                operator.type = symTokens[x]
             operator.scope = tempScope
             level += 1
             tokens.append(operator)
@@ -1330,7 +1369,7 @@ def getToken(terms, symTokens, scope=None, coeff=1):
                         varTerms, varSymTokens, tempScope)
             level += 1
             tokens.append(operator)
-        elif symTokens[x] in funcNames:
+        elif symTokens[x] in funcSyms:
             # TODO: Added functions tokens
             operator = Logarithm()
             tokens.append(operator)

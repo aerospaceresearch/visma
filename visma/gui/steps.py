@@ -18,7 +18,7 @@ def stepsFigure(workspace):
 
 
 def showSteps(workspace):
-    workspace.stepsfigure.suptitle(workspace.output,
+    workspace.stepsfigure.suptitle(workspace.output, y=0.98,
                                    horizontalalignment='center',
                                    verticalalignment='top')
     #                              size=qApp.font().pointSize()*1)

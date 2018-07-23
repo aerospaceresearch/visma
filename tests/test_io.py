@@ -77,8 +77,15 @@ def test_getTerms():
     assert getTerms("coth^2(x)-csch^2(x)=1") == ['coth', '^', '2', '(', 'x', ')', '-', 'csch', '^', '2', '(', 'x', ')', '=', '1']
 
     assert getTerms("e = 2.71828") == ['exp', '=', '2.71828']
-    assert getTerms("log(e) = 1") == ['log', '(', 'exp', ')', '=', '1']
+    assert getTerms("log_10(100) = 2") == ['log_', '10', '(', '100', ')', '=', '2']
+    assert getTerms("ln(e) = 1") == ['ln', '(', 'exp', ')', '=', '1']
     assert getTerms("e^(i*pi)=1") == ['exp', '^', '(', 'iota', '*', 'pi', ')', '=', '1']
+
+    assert getTerms("a = b") == ['a', '=', 'b']
+    assert getTerms("a < b") == ['a', '<', 'b']
+    assert getTerms("a > b") == ['a', '>', 'b']
+    assert getTerms("a <= b") == ['a', '<=', 'b']
+    assert getTerms("a >= b") == ['a', '>=', 'b']
 
     assert getTerms("[1,0;0,1]") == ['[', '1', ',', '0', ';', '0', ',', '1', ']']
     assert getTerms("2*[2,3;2,3]+[1,2;1,2]") == ['2', '*', '[', '2', ',', '3', ';', '2', ',', '3', ']', '+', '[', '1', ',', '2', ';', '1', ',', '2', ']']
