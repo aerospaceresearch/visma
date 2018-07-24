@@ -1,5 +1,4 @@
 import copy
-# This module contains classes for all functions
 
 
 class Function(object):
@@ -8,8 +7,8 @@ class Function(object):
         self.tid = None
         self.scope = None
         self.value = None
-        self.coefficient = None
-        self.power = None
+        self.coefficient = 1
+        self.power = 1
         self.operand = None
         self.operator = None
         self.before = None
@@ -44,11 +43,10 @@ class Function(object):
                     if self.power[np][i] != 1:
                         represent += "^" + "{" + str(self.power[np][i]) + "}"
         elif self.operand is not None:
-            for eachOperand in self.operand:
-                represent += "\\" + self.value + " "
-                if self.power != 1:
-                    represent += "^" + "{" + str(self.power) + "}"
-                represent += "({" + eachOperand.__str__() + "})"
+            represent += "\\" + self.value + " "
+            if self.power != 1:
+                represent += "^" + "{" + str(self.power) + "}"
+            represent += "({" + self.operand.__str__() + "})"
         else:
             represent += "{" + str(self.value) + "}"
             if self.power != 1:
@@ -56,7 +54,7 @@ class Function(object):
 
         return represent
 
-    def setProp(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
+    def prop(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
         if tid is not None:
             self.tid = tid
         if scope is not None:

@@ -7,6 +7,9 @@ from visma.functions.operator import Operator, Binary
 
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 
+funcs = ['log', 'log_', 'ln', 'exp', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh']
+funcSyms = ['Log', 'LogB', 'LogN', 'Exp', 'Sin', 'Cos', 'Tan', 'Csc', 'Sec', 'Cot', 'Asin', 'Acos', 'Atan', 'Sinh', 'Cosh', 'Tanh', 'Asinh', 'Acosh', 'Atanh']
+
 
 class EquationCompatibility(object):
 
@@ -78,6 +81,15 @@ def isVariable(term):
         return True
 
 
+def isFunction(term):
+    """
+    Checks if given term is function
+    """
+    if term in funcs:
+        return True
+    return False
+
+
 def isEquation(lTokens, rTokens):
     if len(lTokens) > 0 and len(rTokens) == 1:
         if isinstance(rTokens[0], Constant):
@@ -110,7 +122,6 @@ def findWRTVariable(lTokens, rTokens=None, variables=None):
 
 
 def checkEquation(terms, symTokens):
-    # OPTIMIZE: Clean this
     brackets = 0
     sqrBrackets = 0
     equators = 0
@@ -129,16 +140,22 @@ def checkEquation(terms, symTokens):
                     log = "Check around '^'"
                     return False, log
             else:
-                log = "Check around '^'"
+                log = "Missing exponent after '^'"
                 return False, log
+        elif isFunction(term):
+            if i + 1 < len(terms):
+                if terms[i + 1] != '(':
+                    log = "Use parenthesis to contain the function"
+                    return False, log
         elif isVariable(term) or isNumber(term):
             if i + 1 < len(terms):
                 if terms[i + 1] == '(':
                     log = "Invalid expression"
                     return False, log
         elif term == '>' or term == '<':
-            if terms[i+1] != '=':
-                equators += 1
+            if i + 1 < len(terms):
+                if terms[i+1] != '=':
+                    equators += 1
         elif term == '=':
             equators += 1
         elif term == ';':

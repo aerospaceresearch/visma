@@ -97,10 +97,9 @@ def tokensToString(tokens):
             else:
                 token_string += str(token.coefficient)
             if token.operand is not None:
-                for eachOperand in token.operand:
-                    token_string += token.value
-                    if token.power != 1:
-                        token_string += "^" + "(" + str(token.power) + ")"
-                    token_string += "(" + tokensToString([eachOperand]) + ")"
+                token_string += token.value
+                if token.power != 1:
+                    token_string += "^" + "(" + str(token.power) + ")"
+                token_string += "(" + tokensToString([token.operand]) + ")"
 
     return token_string

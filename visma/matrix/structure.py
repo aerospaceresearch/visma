@@ -26,7 +26,7 @@ class Matrix(object):
             self.dim = dim
         self.value = [[[] for _ in range(self.dim[1])] for _ in range(self.dim[0])]
 
-    def setProp(self, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
+    def prop(self, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
         if scope is not None:
             self.scope = scope
         if value is not None:

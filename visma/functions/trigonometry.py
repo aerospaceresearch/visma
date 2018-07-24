@@ -8,7 +8,7 @@ import math
 
 class Sine(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'sin'
 
@@ -30,7 +30,7 @@ class Sine(Function):
 
 class Cosine(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'cos'
 
@@ -52,7 +52,7 @@ class Cosine(Function):
 
 class Tangent(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'tan'
 
@@ -75,7 +75,7 @@ class Tangent(Function):
 
 class Cotangent(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'cot'
 
@@ -101,7 +101,7 @@ class Cotangent(Function):
 
 class Cosecant(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'csc'
 
@@ -122,7 +122,7 @@ class Cosecant(Function):
 
 class Secant(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'sec'
 
@@ -145,25 +145,25 @@ class Secant(Function):
 ##################################
 
 
-class ArcSin:
+class ArcSin(Function):
     pass
 
 
-class ArcCos:
+class ArcCos(Function):
     pass
 
 
-class ArcTan:
+class ArcTan(Function):
     pass
 
 
-class ArcCot:
+class ArcCot(Function):
     pass
 
 
-class ArcSec:
+class ArcSec(Function):
     pass
 
 
-class ArcCosec:
+class ArcCsc(Function):
     pass

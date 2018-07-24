@@ -10,11 +10,10 @@ class Logarithm(Function):
 
     def __init__(self, operand=None):
         super().__init__()
-        self.coefficient = 1
-        self.power = 1
-        self.operand = []
+        self.operand = None
+        self.base = 10
         if operand is not None:
-            self.operand.append(operand)
+            self.operand = operand
         self.value = 'log'
 
     def inverse(self, RHS):
@@ -33,9 +32,17 @@ class Logarithm(Function):
         return self.coefficient * ((math.log(val, self.base)))
 
 
+class NaturalLog(Function):
+
+    def __init__(self, operand=None):
+        super().__init__()
+        self.base = math.exp(1)
+        self.value = 'ln'
+
+
 class Exponential(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'exp'
 
@@ -46,8 +53,7 @@ class Exponential(Function):
         super().differentiate()
 
     def integrate(self, d):
-        """
-        """
+        pass
 
     def calculate(self, val):
-        return self.coefficient * ((math.exp(val)))
+        return self.coefficient * (math.exp(val))

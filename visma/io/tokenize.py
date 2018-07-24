@@ -13,11 +13,14 @@ Logic Description:
 """
 
 import math
-from visma.io.checks import isNumber, isVariable, getNumber, checkEquation
+import copy
+from visma.io.checks import isNumber, isVariable, getNumber, checkEquation, funcs, funcSyms
 from visma.functions.structure import Function, Equation, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.functions.exponential import Logarithm
+from visma.functions.exponential import Logarithm, NaturalLog, Exponential
+from visma.functions.hyperbolic import Sinh, Cosh, Tanh, ArcSinh, ArcCosh, ArcTanh
+from visma.functions.trigonometry import Sine, Cosine, Tangent, Cotangent, Cosecant, Secant, ArcSin, ArcCos, ArcTan
 from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
@@ -25,14 +28,12 @@ from visma.matrix.checks import isMatrix
 symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
-# inputLaTeX = ['\\times', '\\div', '\\alpha', '\\beta', '\\gamma', '\\pi', '+', '-', '=', '^', '\\sqrt']
-# inputGreek = ['*', '/', u'\u03B1', u'\u03B2', u'\u03B3', u'\u03C0', '+', '-', '=', '^', 'sqrt']
+
 # TODO: Add latex input support
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
-funcs = ['log', 'log_', 'ln', 'exp', 'sqrt', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sinh', 'cosh', 'tanh', 'coth', 'csch', 'sech']
-funcSyms = ['Log', 'LogB', 'LogN', 'Exp', 'Sqrt', 'Sin', 'Cos', 'Tan', 'Csc', 'Sec', 'Cot', 'Sinh', 'Cosh', 'Tanh', 'Coth', 'Csch', 'Sech']
+funcTokens = [Logarithm(), Logarithm(), NaturalLog(), Exponential(), Sine(), Cosine(), Tangent(), Cosecant(), Secant(), Cotangent(), ArcSin(), ArcCos(), ArcTan(), Sinh(), Cosh(), Tanh(), ArcSinh(), ArcCosh(), ArcTanh()]
 
 
 def removeSpaces(eqn):
@@ -408,215 +409,20 @@ def getVariable(terms, symTokens, scope, coeff=1):
             x += 1
         elif terms[x] == '^':
             x += 1
-            if terms[x] == '(':
-                x += 1
-                binary = 0
-                nSqrt = 0
-                varTerms = []
-                varSymTokens = []
-                brackets = 0
-                while x < len(terms):
-                    if terms[x] != ')' or brackets != 0:
-                        if symTokens[x] == 'Binary':
-                            if brackets == 0:
-                                binary += 1
-                        elif terms[x] == '(':
-                            brackets += 1
-                        elif terms[x] == ')':
-                            brackets -= 1
-                        elif symTokens[x] == 'Sqrt':
-                            if brackets == 0:
-                                nSqrt += 1
-                        varTerms.append(terms[x])
-                        varSymTokens.append(symTokens[x])
-                        x += 1
-                    else:
-                        break
-                if x + 1 < len(terms) and terms[x + 1] == '^':
-                    x += 2
-                    binary2 = 0
-                    nSqrt2 = 0
-                    brackets2 = 0
-                    varSymTokens2 = []
-                    varTerms2 = []
-                    power2 = []
-                    while x < len(terms):
-                        if symTokens[x] != 'Binary' or brackets != 0:
-                            if symTokens[x] == 'Binary':
-                                if brackets2 == 0:
-                                    binary2 += 1
-                            elif terms[x] == '(':
-                                brackets2 += 1
-                            elif terms[x] == ')':
-                                brackets2 -= 1
-                            elif symTokens[x] == 'Sqrt':
-                                if nSqrt2 == 0:
-                                    nSqrt2 += 1
-                            varTerms2.append(terms[x])
-                            varSymTokens2.append(symTokens[x])
-                            x += 1
-                        else:
-                            break
-                    if len(varTerms2) == 1:
-                        if isVariable(terms[x - 1]):
-                            variable = Variable()
-                            variable.value = [terms[x - 1]]
-                            variable.power = [1]
-                            variable.coefficient = 1
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            tempScope.append(-1)
-                            variable.scope = tempScope
-                            power2.append(variable)
-                        elif isNumber(terms[x - 1]):
-                            variable = Constant()
-                            variable.value = getNumber(terms[x - 1])
-                            variable.power = 1
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            tempScope.append(-1)
-                            variable.scope = tempScope
-                            power2.append(variable)
-                    else:
-                        if binary2 == 0 and nSqrt2 == 0:
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            tempScope.append(-1)
-                            power2.append(getVariable(varTerms2, varSymTokens2, tempScope))
-                        else:
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            tempScope.append(-1)
-                            power2.append(getToken(varTerms2, varSymTokens2, tempScope))
-                    if len(varTerms) == 1:
-                        if isVariable(varTerms[-1]):
-                            variable = Variable()
-                            variable.value = [varTerms[-1]]
-                            variable.power = power2
-                            variable.coefficient = coeff
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            variable.scope = tempScope
-                            power[-1] = variable
-                        elif isNumber(varTerms[-1]):
-                            variable = Constant()
-                            variable.value = getNumber(varTerms[-1])
-                            variable.power = power2
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            variable.scope = tempScope
-                            power[-1] = variable
-                    else:
-                        if binary == 0 and nSqrt == 0:
-                            variable = Variable()
-                            variable.power = power2
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            variable.value = getVariable(varTerms, varSymTokens, tempScope)
-                            variable.coefficient = 1
-                            power[-1] = variable
-                        else:
-                            variable = Equation()
-                            variable.power = power2
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            variable.value = getToken(varTerms, varSymTokens, tempScope)
-                            variable.coefficient = 1
-                            power[-1] = variable
-                else:
-                    if len(varTerms) == 1:
-                        if isVariable(varTerms[0]):
-                            power[-1] = varTerms[0]
-                        elif isNumber(varTerms[0]):
-                            power[-1] *= getNumber(varTerms[0])
-                    else:
-                        if binary == 0 and nSqrt == 0:
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            power[-1] = getVariable(varTerms, varSymTokens, tempScope)
-                        else:
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            power[-1] = getToken(varTerms, varSymTokens, tempScope)
-                x += 1
-
-            elif isVariable(terms[x]) or isNumber(terms[x]):
-                if x + 1 < len(terms):
-                    if terms[x + 1] == '^' or isNumber(terms[x]) or isVariable(terms[x]):
-                        varTerms = []
-                        varSymTokens = []
-                        brackets = 0
-                        nSqrt = 0
-                        binary = 0
-                        while x < len(terms):
-                            if symTokens[x] != 'Binary' or brackets != 0:
-                                if terms[x] == '(':
-                                    brackets += 1
-                                elif terms[x] == ')':
-                                    brackets -= 1
-                                elif symTokens[x] == 'Binary':
-                                    if brackets == 0:
-                                        binary += 1
-                                elif symTokens[x] == 'Sqrt':
-                                    if brackets == 0:
-                                        nSqrt += 1
-                                varTerms.append(terms[x])
-                                varSymTokens.append(symTokens[x])
-                                x += 1
-                            else:
-                                break
-                        if binary != 0 or nSqrt != 0:
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            power[-1] = getToken(varTerms, varSymTokens, tempScope)
-                        else:
-                            tempScope = []
-                            tempScope.extend(scope)
-                            tempScope.append(level)
-                            power[-1] = getVariable(varTerms, varSymTokens, tempScope)
-
-                    else:
-                        if isNumber(terms[x]):
-                            power[-1] = getNumber(terms[x])
-                        else:
-                            power[-1] = terms[x]
-                        x += 1
-                else:
-                    if isNumber(terms[x]):
-                        power[-1] = getNumber(terms[x])
-                    else:
-                        power[-1] = terms[x]
-                    x += 1
-
-            elif symTokens[x] == 'Unary':
-                coeff = 1
-                if terms[x] == '-':
-                    coeff = -1
-                x += 1
+            if x < len(terms):
                 if terms[x] == '(':
                     x += 1
                     binary = 0
+                    nSqrt = 0
                     varTerms = []
                     varSymTokens = []
                     brackets = 0
-                    nSqrt = 0
                     while x < len(terms):
                         if terms[x] != ')' or brackets != 0:
                             if symTokens[x] == 'Binary':
                                 if brackets == 0:
                                     binary += 1
-                            if terms[x] == '(':
+                            elif terms[x] == '(':
                                 brackets += 1
                             elif terms[x] == ')':
                                 brackets -= 1
@@ -628,156 +434,131 @@ def getVariable(terms, symTokens, scope, coeff=1):
                             x += 1
                         else:
                             break
-                    if x + 1 < len(terms):
-                        if terms[x + 1] == '^':
-                            x += 2
-                            binary2 = 0
-                            nSqrt2 = 0
-                            brackets2 = 0
-                            varSymTokens2 = []
-                            varTerms2 = []
-                            power2 = []
-                            while x < len(terms):
-                                if symTokens[x] != 'Binary' or brackets != 0:
-                                    if symTokens[x] == 'Binary':
-                                        if brackets2 == 0:
-                                            binary2 += 1
-                                    elif terms[x] == '(':
-                                        brackets2 += 1
-                                    elif terms[x] == ')':
-                                        brackets2 -= 1
-                                    elif symTokens[x] == 'Sqrt':
-                                        if nSqrt2 == 0:
-                                            nSqrt2 += 1
-                                    varTerms2.append(terms[x])
-                                    varSymTokens2.append(symTokens[x])
-                                    x += 1
-                                else:
-                                    break
-                            if len(varTerms2) == 1:
-                                if isVariable(terms[x - 1]):
-                                    variable = Variable()
-                                    variable.value = terms[x - 1]
-                                    variable.power = [1]
-                                    variable.coefficient = 1
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    tempScope.append(-1)
-                                    variable.scope = tempScope
-                                    power2.append(variable)
-                                elif isNumber(terms[x - 1]):
-                                    variable = Constant()
-                                    variable.value = getNumber(terms[x - 1])
-                                    variable.power = 1
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    tempScope.append(-1)
-                                    variable.scope = tempScope
-                                    power2.append(variable)
+                    if x + 1 < len(terms) and terms[x + 1] == '^':
+                        x += 2
+                        binary2 = 0
+                        nSqrt2 = 0
+                        brackets2 = 0
+                        varSymTokens2 = []
+                        varTerms2 = []
+                        power2 = []
+                        while x < len(terms):
+                            if symTokens[x] != 'Binary' or brackets != 0:
+                                if symTokens[x] == 'Binary':
+                                    if brackets2 == 0:
+                                        binary2 += 1
+                                elif terms[x] == '(':
+                                    brackets2 += 1
+                                elif terms[x] == ')':
+                                    brackets2 -= 1
+                                elif symTokens[x] == 'Sqrt':
+                                    if nSqrt2 == 0:
+                                        nSqrt2 += 1
+                                varTerms2.append(terms[x])
+                                varSymTokens2.append(symTokens[x])
+                                x += 1
                             else:
-                                if binary2 == 0 and nSqrt2 == 0:
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    tempScope.append(-1)
-                                    power2.append(getVariable(
-                                        varTerms2, varSymTokens2, tempScope))
-                                else:
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    tempScope.append(-1)
-                                    power2.append(
-                                        getToken(varTerms2, varSymTokens2, tempScope))
-                            if len(varTerms) == 1:
-                                if isVariable(varTerms[-1]):
-                                    variable = Variable()
-                                    variable.value = [varTerms[-1]]
-                                    variable.power = power2
-                                    variable.coefficient = coeff
-                                    power[-1] = variable
-                                elif isNumber(varTerms[-1]):
-                                    variable = Constant()
-                                    variable.value = coeff * \
-                                        getNumber(varTerms[-1])
-                                    variable.power = power2
-                                    power[-1] = variable
-                            else:
-                                if binary == 0 and nSqrt == 0:
-                                    variable = Variable()
-                                    variable.power = power2
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    variable.value = getVariable(varTerms, varSymTokens, tempScope)
-                                    variable.coefficient = coeff
-                                    power[-1] = variable
-                                else:
-                                    variable = Equation()
-                                    variable.power = power2
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    variable.value = getToken(varTerms, varSymTokens, tempScope)
-                                    variable.coefficient = coeff
-                                    variable.type = "equation"
-                                    power[-1] = variable
-                        else:
-                            if len(varTerms) == 1:
-                                if isVariable(terms[x - 1]):
-                                    variable = Variable()
-                                    variable.value = [terms[x - 1]]
-                                    variable.power = power2
-                                    variable.coefficient = coeff
-                                    power[-1] = variable
-                                elif isNumber(terms[x - 1]):
-                                    power[-1] *= (coeff * getNumber(terms[x - 1]))
-                            else:
-                                if binary == 0 and nSqrt == 0:
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    power[-1] = getVariable(varTerms, varSymTokens, tempScope, coeff)
-                                else:
-                                    tempScope = []
-                                    tempScope.extend(scope)
-                                    tempScope.append(level)
-                                    power[-1] = getToken(varTerms, varSymTokens, tempScope, coeff)
-
-                    else:
-                        if len(varTerms) == 1:
+                                break
+                        if len(varTerms2) == 1:
                             if isVariable(terms[x - 1]):
                                 variable = Variable()
                                 variable.value = [terms[x - 1]]
+                                variable.power = [1]
+                                variable.coefficient = 1
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                tempScope.append(-1)
+                                variable.scope = tempScope
+                                power2.append(variable)
+                            elif isNumber(terms[x - 1]):
+                                variable = Constant()
+                                variable.value = getNumber(terms[x - 1])
+                                variable.power = 1
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                tempScope.append(-1)
+                                variable.scope = tempScope
+                                power2.append(variable)
+                        else:
+                            if binary2 == 0 and nSqrt2 == 0:
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                tempScope.append(-1)
+                                power2.append(getVariable(varTerms2, varSymTokens2, tempScope))
+                            else:
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                tempScope.append(-1)
+                                power2.append(getToken(varTerms2, varSymTokens2, tempScope))
+                        if len(varTerms) == 1:
+                            if isVariable(varTerms[-1]):
+                                variable = Variable()
+                                variable.value = [varTerms[-1]]
                                 variable.power = power2
                                 variable.coefficient = coeff
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                variable.scope = tempScope
                                 power[-1] = variable
-                            elif isNumber(terms[x - 1]):
-                                power[-1] *= (coeff * getNumber(terms[x - 1]))
+                            elif isNumber(varTerms[-1]):
+                                variable = Constant()
+                                variable.value = getNumber(varTerms[-1])
+                                variable.power = power2
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                variable.scope = tempScope
+                                power[-1] = variable
+                        else:
+                            if binary == 0 and nSqrt == 0:
+                                variable = Variable()
+                                variable.power = power2
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                variable.value = getVariable(varTerms, varSymTokens, tempScope)
+                                variable.coefficient = 1
+                                power[-1] = variable
+                            else:
+                                variable = Equation()
+                                variable.power = power2
+                                tempScope = []
+                                tempScope.extend(scope)
+                                tempScope.append(level)
+                                variable.value = getToken(varTerms, varSymTokens, tempScope)
+                                variable.coefficient = 1
+                                power[-1] = variable
+                    else:
+                        if len(varTerms) == 1:
+                            if isVariable(varTerms[0]):
+                                power[-1] = varTerms[0]
+                            elif isNumber(varTerms[0]):
+                                power[-1] *= getNumber(varTerms[0])
                         else:
                             if binary == 0 and nSqrt == 0:
                                 tempScope = []
                                 tempScope.extend(scope)
                                 tempScope.append(level)
-                                power[-1] = getVariable(varTerms, varSymTokens, tempScope, coeff)
+                                power[-1] = getVariable(varTerms, varSymTokens, tempScope)
                             else:
                                 tempScope = []
                                 tempScope.extend(scope)
                                 tempScope.append(level)
-                                power[-1] = getToken(varTerms, varSymTokens, tempScope, coeff)
+                                power[-1] = getToken(varTerms, varSymTokens, tempScope)
                     x += 1
-
                 elif isVariable(terms[x]) or isNumber(terms[x]):
-
                     if x + 1 < len(terms):
                         if terms[x + 1] == '^' or isNumber(terms[x]) or isVariable(terms[x]):
                             varTerms = []
                             varSymTokens = []
                             brackets = 0
-                            binary = 0
                             nSqrt = 0
+                            binary = 0
                             while x < len(terms):
                                 if symTokens[x] != 'Binary' or brackets != 0:
                                     if terms[x] == '(':
@@ -799,12 +580,12 @@ def getVariable(terms, symTokens, scope, coeff=1):
                                 tempScope = []
                                 tempScope.extend(scope)
                                 tempScope.append(level)
-                                power[-1] = getToken(varTerms, varSymTokens, tempScope, coeff)
+                                power[-1] = getToken(varTerms, varSymTokens, tempScope)
                             else:
                                 tempScope = []
                                 tempScope.extend(scope)
                                 tempScope.append(level)
-                                power[-1] = getVariable(varTerms, varSymTokens, tempScope, coeff)
+                                power[-1] = getVariable(varTerms, varSymTokens, tempScope)
 
                         else:
                             if isNumber(terms[x]):
@@ -818,6 +599,225 @@ def getVariable(terms, symTokens, scope, coeff=1):
                         else:
                             power[-1] = terms[x]
                         x += 1
+                elif symTokens[x] == 'Unary':
+                    coeff = 1
+                    if terms[x] == '-':
+                        coeff = -1
+                    x += 1
+                    if terms[x] == '(':
+                        x += 1
+                        binary = 0
+                        varTerms = []
+                        varSymTokens = []
+                        brackets = 0
+                        nSqrt = 0
+                        while x < len(terms):
+                            if terms[x] != ')' or brackets != 0:
+                                if symTokens[x] == 'Binary':
+                                    if brackets == 0:
+                                        binary += 1
+                                if terms[x] == '(':
+                                    brackets += 1
+                                elif terms[x] == ')':
+                                    brackets -= 1
+                                elif symTokens[x] == 'Sqrt':
+                                    if brackets == 0:
+                                        nSqrt += 1
+                                varTerms.append(terms[x])
+                                varSymTokens.append(symTokens[x])
+                                x += 1
+                            else:
+                                break
+                        if x + 1 < len(terms):
+                            if terms[x + 1] == '^':
+                                x += 2
+                                binary2 = 0
+                                nSqrt2 = 0
+                                brackets2 = 0
+                                varSymTokens2 = []
+                                varTerms2 = []
+                                power2 = []
+                                while x < len(terms):
+                                    if symTokens[x] != 'Binary' or brackets != 0:
+                                        if symTokens[x] == 'Binary':
+                                            if brackets2 == 0:
+                                                binary2 += 1
+                                        elif terms[x] == '(':
+                                            brackets2 += 1
+                                        elif terms[x] == ')':
+                                            brackets2 -= 1
+                                        elif symTokens[x] == 'Sqrt':
+                                            if nSqrt2 == 0:
+                                                nSqrt2 += 1
+                                        varTerms2.append(terms[x])
+                                        varSymTokens2.append(symTokens[x])
+                                        x += 1
+                                    else:
+                                        break
+                                if len(varTerms2) == 1:
+                                    if isVariable(terms[x - 1]):
+                                        variable = Variable()
+                                        variable.value = terms[x - 1]
+                                        variable.power = [1]
+                                        variable.coefficient = 1
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        tempScope.append(-1)
+                                        variable.scope = tempScope
+                                        power2.append(variable)
+                                    elif isNumber(terms[x - 1]):
+                                        variable = Constant()
+                                        variable.value = getNumber(terms[x - 1])
+                                        variable.power = 1
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        tempScope.append(-1)
+                                        variable.scope = tempScope
+                                        power2.append(variable)
+                                else:
+                                    if binary2 == 0 and nSqrt2 == 0:
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        tempScope.append(-1)
+                                        power2.append(getVariable(
+                                            varTerms2, varSymTokens2, tempScope))
+                                    else:
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        tempScope.append(-1)
+                                        power2.append(
+                                            getToken(varTerms2, varSymTokens2, tempScope))
+                                if len(varTerms) == 1:
+                                    if isVariable(varTerms[-1]):
+                                        variable = Variable()
+                                        variable.value = [varTerms[-1]]
+                                        variable.power = power2
+                                        variable.coefficient = coeff
+                                        power[-1] = variable
+                                    elif isNumber(varTerms[-1]):
+                                        variable = Constant()
+                                        variable.value = coeff * \
+                                            getNumber(varTerms[-1])
+                                        variable.power = power2
+                                        power[-1] = variable
+                                else:
+                                    if binary == 0 and nSqrt == 0:
+                                        variable = Variable()
+                                        variable.power = power2
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        variable.value = getVariable(varTerms, varSymTokens, tempScope)
+                                        variable.coefficient = coeff
+                                        power[-1] = variable
+                                    else:
+                                        variable = Equation()
+                                        variable.power = power2
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        variable.value = getToken(varTerms, varSymTokens, tempScope)
+                                        variable.coefficient = coeff
+                                        variable.type = "equation"
+                                        power[-1] = variable
+                            else:
+                                if len(varTerms) == 1:
+                                    if isVariable(terms[x - 1]):
+                                        variable = Variable()
+                                        variable.value = [terms[x - 1]]
+                                        variable.power = power2
+                                        variable.coefficient = coeff
+                                        power[-1] = variable
+                                    elif isNumber(terms[x - 1]):
+                                        power[-1] *= (coeff * getNumber(terms[x - 1]))
+                                else:
+                                    if binary == 0 and nSqrt == 0:
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        power[-1] = getVariable(varTerms, varSymTokens, tempScope, coeff)
+                                    else:
+                                        tempScope = []
+                                        tempScope.extend(scope)
+                                        tempScope.append(level)
+                                        power[-1] = getToken(varTerms, varSymTokens, tempScope, coeff)
+
+                        else:
+                            if len(varTerms) == 1:
+                                if isVariable(terms[x - 1]):
+                                    variable = Variable()
+                                    variable.value = [terms[x - 1]]
+                                    variable.power = power2
+                                    variable.coefficient = coeff
+                                    power[-1] = variable
+                                elif isNumber(terms[x - 1]):
+                                    power[-1] *= (coeff * getNumber(terms[x - 1]))
+                            else:
+                                if binary == 0 and nSqrt == 0:
+                                    tempScope = []
+                                    tempScope.extend(scope)
+                                    tempScope.append(level)
+                                    power[-1] = getVariable(varTerms, varSymTokens, tempScope, coeff)
+                                else:
+                                    tempScope = []
+                                    tempScope.extend(scope)
+                                    tempScope.append(level)
+                                    power[-1] = getToken(varTerms, varSymTokens, tempScope, coeff)
+                        x += 1
+
+                    elif isVariable(terms[x]) or isNumber(terms[x]):
+
+                        if x + 1 < len(terms):
+                            if terms[x + 1] == '^' or isNumber(terms[x]) or isVariable(terms[x]):
+                                varTerms = []
+                                varSymTokens = []
+                                brackets = 0
+                                binary = 0
+                                nSqrt = 0
+                                while x < len(terms):
+                                    if symTokens[x] != 'Binary' or brackets != 0:
+                                        if terms[x] == '(':
+                                            brackets += 1
+                                        elif terms[x] == ')':
+                                            brackets -= 1
+                                        elif symTokens[x] == 'Binary':
+                                            if brackets == 0:
+                                                binary += 1
+                                        elif symTokens[x] == 'Sqrt':
+                                            if brackets == 0:
+                                                nSqrt += 1
+                                        varTerms.append(terms[x])
+                                        varSymTokens.append(symTokens[x])
+                                        x += 1
+                                    else:
+                                        break
+                                if binary != 0 or nSqrt != 0:
+                                    tempScope = []
+                                    tempScope.extend(scope)
+                                    tempScope.append(level)
+                                    power[-1] = getToken(varTerms, varSymTokens, tempScope, coeff)
+                                else:
+                                    tempScope = []
+                                    tempScope.extend(scope)
+                                    tempScope.append(level)
+                                    power[-1] = getVariable(varTerms, varSymTokens, tempScope, coeff)
+
+                            else:
+                                if isNumber(terms[x]):
+                                    power[-1] = getNumber(terms[x])
+                                else:
+                                    power[-1] = terms[x]
+                                x += 1
+                        else:
+                            if isNumber(terms[x]):
+                                power[-1] = getNumber(terms[x])
+                            else:
+                                power[-1] = terms[x]
+                            x += 1
     variable.scope = scope
     variable.value = value
     variable.power = power
@@ -933,14 +933,13 @@ def getToken(terms, symTokens, scope=None, coeff=1):
                 varTerms.append(terms[x])
                 varSymTokens.append(symTokens[x])
                 x += 1
-            expression = Expression()
-            expression.tokens.extend(getToken(varTerms, varSymTokens).tokens)
+            expression = Expression(getToken(varTerms, varSymTokens).tokens)
             if len(expression.tokens) == 1:
                 expression = expression.tokens[0]
             # TODO: Add code for case ()^()
             level += 1
             if tokens != []:
-                if isinstance(tokens[-1], Function):
+                if isinstance(tokens[-1], Function) and not isinstance(tokens[-1], Variable) and not isinstance(tokens[-1], Constant):
                     tokens[-1].operand = expression
                 else:
                     tokens.append(expression)
@@ -1370,8 +1369,7 @@ def getToken(terms, symTokens, scope=None, coeff=1):
             level += 1
             tokens.append(operator)
         elif symTokens[x] in funcSyms:
-            # TODO: Added functions tokens
-            operator = Logarithm()
+            operator = copy.deepcopy(funcTokens[funcSyms.index(symTokens[x])])
             tokens.append(operator)
         x += 1
     eqn.scope = scope

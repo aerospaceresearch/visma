@@ -8,7 +8,7 @@ import math
 
 class Sinh(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'sinh'
 
@@ -29,7 +29,7 @@ class Sinh(Function):
 
 class Cosh(Function):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'cosh'
 
@@ -48,7 +48,7 @@ class Cosh(Function):
         return self.coefficient * ((math.cos(val))**self.power)
 
 
-class Tanh:
+class Tanh(Function):
     pass
 
 ################################
@@ -56,13 +56,13 @@ class Tanh:
 ################################
 
 
-class ArcSinh:
+class ArcSinh(Function):
     pass
 
 
-class ArcCosh:
+class ArcCosh(Function):
     pass
 
 
-class ArcTanh:
+class ArcTanh(Function):
     pass
