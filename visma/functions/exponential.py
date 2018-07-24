@@ -1,4 +1,4 @@
-from visma.functions.structure import Function
+from visma.functions.structure import FuncOp
 import math
 
 #########################
@@ -6,33 +6,23 @@ import math
 #########################
 
 
-class Logarithm(Function):
+class Logarithm(FuncOp):
 
     def __init__(self, operand=None):
         super().__init__()
-        self.operand = None
         self.base = 10
-        if operand is not None:
-            self.operand = operand
         self.value = 'log'
-
-    def inverse(self, RHS):
-        super().inverse(RHS)
 
     def differentiate(self):
         super().differentiate()
         self.power = -1
         self.__class__ = self.operand.__class__
 
-    def integrate(self, d):
-        """
-        """
-
     def calculate(self, val):
         return self.coefficient * ((math.log(val, self.base)))
 
 
-class NaturalLog(Function):
+class NaturalLog(FuncOp):
 
     def __init__(self, operand=None):
         super().__init__()
@@ -40,7 +30,7 @@ class NaturalLog(Function):
         self.value = 'ln'
 
 
-class Exponential(Function):
+class Exponential(FuncOp):
 
     def __init__(self):
         super().__init__()

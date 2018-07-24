@@ -43,7 +43,7 @@ class Function(object):
                     if self.power[np][i] != 1:
                         represent += "^" + "{" + str(self.power[np][i]) + "}"
         elif self.operand is not None:
-            represent += "\\" + self.value + " "
+            represent += "\\" + self.value
             if self.power != 1:
                 represent += "^" + "{" + str(self.power) + "}"
             represent += "({" + self.operand.__str__() + "})"
@@ -70,13 +70,6 @@ class Function(object):
         if operator is not None:
             self.operator = operator
 
-    def inverse(self, RHS, wrtVar=None):
-        RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
-        RHS.power /= self.power
-        self.operand = RHS
-        self.coefficient = 1
-        self.power = 1
-
     def differentiate(self):
         self.power = 1
         self.coefficient = 1
@@ -89,6 +82,37 @@ class Function(object):
         while inst.operand is not None:
             inst = inst.operand
         return inst.value
+
+
+##########
+# FuncOp #
+##########
+
+class FuncOp(Function):
+    """Defined for functions of form sin(), log(), exp() etc which take a function(operand) as argument
+    """
+    def __init__(self, operand=None):
+        super().__init__()
+        if operand is not None:
+            self.operand = operand
+
+    def __str__(self):
+        represent = ""
+        represent += "\\" + self.value
+        if self.power != 1:
+            represent += "^" + "{" + str(self.power) + "}"
+        if self.operand is not None:
+            represent += "{(" + str(self.operand) + ")}"
+        return represent
+
+    def inverse(self, rToken, wrtVar):
+        rToken.coefficient /= self.coefficient
+        rToken.power /= self.power
+        invFunc = copy.deepcopy(self.inverseFunction)
+        invFunc.operand = rToken
+        self = self.operand
+        comment = "Applying inverse function on LHS and RHS"
+        return self, rToken, comment
 
 
 ###################
@@ -121,7 +145,7 @@ class Expression(Function):
         if self.power != 1:
             represent += "^" + "{" + str(self.power) + "}"
         if self.operand is not None:
-            represent += "{(" + str(self.operand.__str__) + ")}"
+            represent += "{(" + str(self.operand) + ")}"
         return represent
 
 

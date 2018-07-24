@@ -1,4 +1,4 @@
-from visma.functions.structure import Function
+from visma.functions.structure import FuncOp
 import math
 
 ##########################
@@ -6,7 +6,7 @@ import math
 ##########################
 
 
-class Sine(Function):
+class Sine(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -28,7 +28,7 @@ class Sine(Function):
         return self.coefficient * ((math.sin(val))**self.power)
 
 
-class Cosine(Function):
+class Cosine(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -50,7 +50,7 @@ class Cosine(Function):
         return self.coefficient * ((math.cos(val))**self.power)
 
 
-class Tangent(Function):
+class Tangent(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -73,7 +73,7 @@ class Tangent(Function):
         return self.coefficient * ((math.tan(val))**self.power)
 
 
-class Cotangent(Function):
+class Cotangent(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -99,7 +99,7 @@ class Cotangent(Function):
 
 # Incomplete
 
-class Cosecant(Function):
+class Cosecant(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -120,7 +120,7 @@ class Cosecant(Function):
         return self.coefficient * ((math.cosec(val))**self.power)
 
 
-class Secant(Function):
+class Secant(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -145,25 +145,25 @@ class Secant(Function):
 ##################################
 
 
-class ArcSin(Function):
+class ArcSin(FuncOp):
     pass
 
 
-class ArcCos(Function):
+class ArcCos(FuncOp):
     pass
 
 
-class ArcTan(Function):
+class ArcTan(FuncOp):
     pass
 
 
-class ArcCot(Function):
+class ArcCot(FuncOp):
     pass
 
 
-class ArcSec(Function):
+class ArcSec(FuncOp):
     pass
 
 
-class ArcCsc(Function):
+class ArcCsc(FuncOp):
     pass

@@ -1,4 +1,4 @@
-from visma.functions.structure import Function
+from visma.functions.structure import FuncOp
 import math
 
 ########################
@@ -6,7 +6,7 @@ import math
 ########################
 
 
-class Sinh(Function):
+class Sinh(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -27,7 +27,7 @@ class Sinh(Function):
         return self.coefficient * ((math.sin(val))**self.power)
 
 
-class Cosh(Function):
+class Cosh(FuncOp):
 
     def __init__(self):
         super().__init__()
@@ -48,7 +48,7 @@ class Cosh(Function):
         return self.coefficient * ((math.cos(val))**self.power)
 
 
-class Tanh(Function):
+class Tanh(FuncOp):
     pass
 
 ################################
@@ -56,13 +56,13 @@ class Tanh(Function):
 ################################
 
 
-class ArcSinh(Function):
+class ArcSinh(FuncOp):
     pass
 
 
-class ArcCosh(Function):
+class ArcCosh(FuncOp):
     pass
 
 
-class ArcTanh(Function):
+class ArcTanh(FuncOp):
     pass

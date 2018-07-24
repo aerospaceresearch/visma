@@ -36,70 +36,70 @@ def tokensToLatex(eqTokens):
 
 def tokensToString(tokens):
     # FIXME: tokensToString method
-    token_string = ''
+    tokenString = ''
     for token in tokens:
         if isinstance(token, Constant):
             if isinstance(token.value, list):
                 for j, val in token.value:
                     if token['power'][j] != 1:
-                        token_string += (str(val) + '^(' + str(token.power[j]) + ')')
+                        tokenString += (str(val) + '^(' + str(token.power[j]) + ')')
                     else:
-                        token_string += str(val)
+                        tokenString += str(val)
             elif isNumber(token.value):
                 if token.power != 1:
-                    token_string += (str(token.value) + '^(' + str(token.power) + ')')
+                    tokenString += (str(token.value) + '^(' + str(token.power) + ')')
                 else:
-                    token_string += str(token.value)
+                    tokenString += str(token.value)
         elif isinstance(token, Variable):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
-                token_string += '-'
+                tokenString += '-'
             else:
-                token_string += str(token.coefficient)
+                tokenString += str(token.coefficient)
             for j, val in enumerate(token.value):
                 if token.power[j] != 1:
-                    token_string += (str(val) + '^(' + str(token.power[j]) + ')')
+                    tokenString += (str(val) + '^(' + str(token.power[j]) + ')')
                 else:
-                    token_string += str(val)
+                    tokenString += str(val)
         elif isinstance(token, Binary):
-            token_string += ' ' + str(token.value) + ' '
+            tokenString += ' ' + str(token.value) + ' '
         elif isinstance(token, Expression):
             if token.coefficient != 1:
-                token_string += str(token.coefficient) + '*'
-            token_string += '('
-            token_string += tokensToString(token.tokens)
-            token_string += ')'
+                tokenString += str(token.coefficient) + '*'
+            tokenString += '('
+            tokenString += tokensToString(token.tokens)
+            tokenString += ')'
             if token.power != 1:
-                token_string += '^(' + str(token.power) + ')'
+                tokenString += '^(' + str(token.power) + ')'
         elif isinstance(token, Sqrt):
-            token_string += 'sqrt['
+            tokenString += 'sqrt['
             if isinstance(token.power, Constant):
-                token_string += tokensToString([token.power])
+                tokenString += tokensToString([token.power])
             elif isinstance(token.power, Variable):
-                token_string += tokensToString([token.power])
+                tokenString += tokensToString([token.power])
             elif isinstance(token.power, Expression):
-                token_string += tokensToString(token.power.tokens)
-            token_string += ']('
+                tokenString += tokensToString(token.power.tokens)
+            tokenString += ']('
             if isinstance(token.operand, Constant):
-                token_string += tokensToString([token.operand])
+                tokenString += tokensToString([token.operand])
             elif isinstance(token.operand, Variable):
-                token_string += tokensToString([token.operand])
+                tokenString += tokensToString([token.operand])
             elif isinstance(token.operand, Expression):
-                token_string += tokensToString(token.operand.tokens)
+                tokenString += tokensToString(token.operand.tokens)
 
-            token_string += ')'
+            tokenString += ')'
         elif isinstance(token, Logarithm):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
-                token_string += '-'
+                tokenString += '-'
             else:
-                token_string += str(token.coefficient)
+                tokenString += str(token.coefficient)
             if token.operand is not None:
-                token_string += token.value
+                tokenString += token.value
                 if token.power != 1:
-                    token_string += "^" + "(" + str(token.power) + ")"
-                token_string += "(" + tokensToString([token.operand]) + ")"
+                    tokenString += "^" + "(" + str(token.power) + ")"
+                tokenString += "(" + tokensToString([token.operand]) + ")"
 
-    return token_string
+    return tokenString

@@ -6,10 +6,6 @@ install :
   - pip install pytest
   - pip install coverage
   - pip install coveralls
-  - pip install PyQt5
-  - pip install PySide
-  - pip install matplotlib
-
 
 script :
   - pylama
