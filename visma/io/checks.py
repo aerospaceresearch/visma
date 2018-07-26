@@ -939,7 +939,7 @@ def isTokenInList(token, tokList):
     return False
 
 
-def whichInputType(tokens):
+def getTokensType(tokens):
     for token in tokens:
         if isinstance(token, Binary):
             if token.value == '=':
