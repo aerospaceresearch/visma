@@ -10,18 +10,18 @@ Logic Description:
 
 import sys
 import os
+import webbrowser
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui, QtWidgets
-import webbrowser
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
 from visma.io.checks import checkTypes, findWRTVariable
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
-from visma.gui.plotter import plotFigure  # , plot
+from visma.gui.plotter import plotFigure, plot
 from visma.gui.qsolver import quickSimplify, qSolveFigure, showQSolve
 from visma.gui.steps import stepsFigure, showSteps
 from visma.simplify.simplify import simplify, simplifyEquation
@@ -619,7 +619,7 @@ class WorkSpace(QWidget):
                     cursor = self.textedit.textCursor()
                     cursor.insertText(tokenString)
                 showSteps(self)
-                # plot(self)
+                plot(self)
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
@@ -657,7 +657,7 @@ class WorkSpace(QWidget):
                 cursor = self.textedit.textCursor()
                 cursor.insertText(tokenString)
             showSteps(self)
-            # plot(self)
+            plot(self)
         return calluser
 
 

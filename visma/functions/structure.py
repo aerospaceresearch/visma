@@ -105,10 +105,10 @@ class FuncOp(Function):
             represent += "{(" + str(self.operand) + ")}"
         return represent
 
-    def inverse(self, rToken, wrtVar):
+    def inverse(self, rToken, wrtVar, inverseFunction):
         rToken.coefficient /= self.coefficient
         rToken.power /= self.power
-        invFunc = copy.deepcopy(self.inverseFunction)
+        invFunc = copy.deepcopy(inverseFunction)
         invFunc.operand = rToken
         self = self.operand
         comment = "Applying inverse function on LHS and RHS"

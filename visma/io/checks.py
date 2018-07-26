@@ -286,9 +286,6 @@ def getLevelVariables(tokens):
             skip = False
             for var in variables:
                 if isinstance(var.value, list) and isNumber(var.value[0]):
-                    if isinstance(term.value, list):
-                        term.value = evaluateConstant(term)
-                        term.power = 1
                     if var.power[0] == term.power:
                         var.value.append(term.value)
                         var.power.append(term.power)
@@ -366,7 +363,7 @@ def getLevelVariables(tokens):
                     var.after = []
                     var.afterScope = ['']
                     variables.append(var)
-            elif retType == Variable:
+            elif retType == "variable":
                 skip = False
                 for var in variables:
                     if var.value == val.value:
@@ -444,7 +441,6 @@ def getLevelVariables(tokens):
                             variables.append(var)
                     elif isinstance(v, Expression):
                         variables.append(v)
-
     return variables
 
 
@@ -635,15 +631,20 @@ def getOperationsExpression(variables, tokens):
                 prev = False
                 nxt = False
                 if i != 0:
-                    if tokens[i - 1].__class__ in [Variable, Constant]:
+                    if isinstance(tokens[i - 1], Function):
                         prev = True
                 if i + 1 < len(tokens):
-                    if tokens[i + 1].__class__ in [Variable, Constant]:
+                    if isinstance(tokens[i + 1], Variable) or isinstance(tokens[i + 1], Constant) or isinstance(tokens[i - 1], Expression):
                         nxt = True
                 if nxt and prev:
                     op = token.value
                     if op not in operations:
                         operations.append(op)
+        elif isinstance(token, Expression):
+            ops = getOperationsExpression([], token.tokens)
+            for op in ops:
+                if op not in operations:
+                    operations.append(op)
     for i, variable in enumerate(variables):
         if isinstance(variable, Constant):
             if len(variable.value) > 1:
@@ -683,8 +684,7 @@ def getOperationsExpression(variables, tokens):
                         if not (op in operations):
                             operations.append(op)
         elif isinstance(variable, Expression):
-            ops = getOperationsExpression(
-                variable.value, variable.tokens)
+            ops = getOperationsExpression(variable.value, variable.tokens)
             for op in ops:
                 if op not in operations:
                     operations.append(op)
@@ -937,3 +937,13 @@ def isTokenInList(token, tokList):
         if isTokenInToken(token, tok) is True:
             return True
     return False
+
+
+def whichInputType(tokens):
+    for token in tokens:
+        if isinstance(token, Binary):
+            if token.value == '=':
+                return "equation"
+            elif token.value in ['<', '>', '<=', '>=']:
+                return "inequality"
+    return "expression"

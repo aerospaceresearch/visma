@@ -12,17 +12,9 @@ class Sine(FuncOp):
         super().__init__()
         self.value = 'sin'
 
-    def inverse(self, RHS):
-        super().inverse(RHS)
-        self.__class__ = ArcSin
-
-    def differentiate(self):
-        super().differentiate()
-        self.__class__ = Cosine
-
-    def integrate(self):
-        self.coefficient = -1
-        self.__class__ = Cosine
+    def inverse(self, rToken, wrtVar):
+        inverseFunction = ArcSin()
+        super().inverse(self, rToken, wrtVar, inverseFunction)
 
     def calculate(self, val):
         return self.coefficient * ((math.sin(val))**self.power)
@@ -64,10 +56,6 @@ class Tangent(FuncOp):
         super().differentiate()
         self.power = 2
         self.__class__ = Secant
-
-    def integrate(self):
-        """
-        """
 
     def calculate(self, val):
         return self.coefficient * ((math.tan(val))**self.power)

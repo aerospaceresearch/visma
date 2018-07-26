@@ -1,5 +1,5 @@
-from visma.functions.structure import FuncOp
 import math
+from visma.functions.structure import FuncOp
 
 #########################
 # Exponential Functions #
@@ -13,16 +13,15 @@ class Logarithm(FuncOp):
         self.base = 10
         self.value = 'log'
 
-    def differentiate(self):
-        super().differentiate()
-        self.power = -1
-        self.__class__ = self.operand.__class__
+    def inverse(self, rToken, wrtVar):
+        inverseFunction = Exponential()
+        super().inverse(self, rToken, wrtVar, inverseFunction)
 
     def calculate(self, val):
         return self.coefficient * ((math.log(val, self.base)))
 
 
-class NaturalLog(FuncOp):
+class NaturalLog(Logarithm):
 
     def __init__(self, operand=None):
         super().__init__()
@@ -35,15 +34,6 @@ class Exponential(FuncOp):
     def __init__(self):
         super().__init__()
         self.value = 'exp'
-
-    def inverse(self, RHS):
-        super().inverse(RHS)
-
-    def differentiate(self):
-        super().differentiate()
-
-    def integrate(self, d):
-        pass
 
     def calculate(self, val):
         return self.coefficient * (math.exp(val))
