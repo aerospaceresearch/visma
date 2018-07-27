@@ -187,7 +187,7 @@ class WorkSpace(QWidget):
         if self.textedit.toPlainText() == "":
             self.enableQSolver = True
         if self.enableQSolver:
-            self.qSol = quickSimplify(self.textedit.toPlainText())
+            self.qSol = quickSimplify(self)
             if self.qSol is None:
                 self.qSol = ""
             showQSolve(self)

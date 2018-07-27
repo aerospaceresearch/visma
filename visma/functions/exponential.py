@@ -13,7 +13,7 @@ class Logarithm(FuncOp):
         self.base = 10
         self.value = 'log'
 
-    def inverse(self, rToken, wrtVar):
+    def inverse(self, rToken, wrtVar, inverseFunction=None):
         inverseFunction = Exponential()
         super().inverse(self, rToken, wrtVar, inverseFunction)
 

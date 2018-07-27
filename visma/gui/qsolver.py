@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets
 from visma.io.tokenize import removeSpaces, getTerms, normalize, tokenizeSymbols, removeUnary, getToken, getLHSandRHS
 from visma.io.checks import checkEquation, checkTypes
 from visma.io.parser import tokensToLatex
+# from visma.gui.plotter import plot
 from visma.simplify.simplify import simplify, simplifyEquation
 
 
@@ -13,9 +14,10 @@ from visma.simplify.simplify import simplify, simplifyEquation
 ###########
 
 
-def quickSimplify(input):
+def quickSimplify(workspace):
     # FIXME: Crashes for some cases. Find and fix.
     qSolution = ""
+    input = workspace.textedit.toPlainText()
     cleanInput = removeSpaces(input)
     terms = getTerms(cleanInput)
     normalizedTerms = normalize(terms)
@@ -35,6 +37,9 @@ def quickSimplify(input):
                 _, _, _, _, equationTokens, _ = simplifyEquation(lhs, rhs)
                 qSolution = r'$ ' + '\Rightarrow \ '
             qSolution += tokensToLatex(equationTokens[-1]) + ' $'
+            # workspace.eqToks = equationTokens
+            # plot(workspace)
+            # workspace.eqToks = []
             return qSolution
         else:
             log = "Invalid Expression"

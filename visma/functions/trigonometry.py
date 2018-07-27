@@ -12,7 +12,7 @@ class Sine(FuncOp):
         super().__init__()
         self.value = 'sin'
 
-    def inverse(self, rToken, wrtVar):
+    def inverse(self, rToken, wrtVar, inverseFunction=None):
         inverseFunction = ArcSin()
         super().inverse(self, rToken, wrtVar, inverseFunction)
 
