@@ -21,7 +21,7 @@ class Binary(Operator):
     """
 
     def __init__(self, value=None):
-        super(Binary, self).__init__()
+        super().__init__()
         self.type = 'Binary'
         if value is not None:
             self.value = value
@@ -32,7 +32,7 @@ class Sqrt(Operator):
     """
 
     def __init__(self):
-        super(Sqrt, self).__init__()
+        super().__init__()
         self.power = None
         self.operand = None
         self.type = 'sqrt'
@@ -49,33 +49,33 @@ class Sqrt(Operator):
 class Plus(Binary):
 
     def __init__(self):
-        super(Plus, self).__init__()
+        super().__init__()
         self.value = '+'
 
 
 class Minus(Binary):
 
     def __init__(self):
-        super(Minus, self).__init__()
+        super().__init__()
         self.value = '-'
 
 
 class Multiply(Binary):
 
     def __init__(self):
-        super(Multiply, self).__init__()
+        super().__init__()
         self.value = '*'
 
 
 class Divide(Binary):
 
     def __init__(self):
-        super(Divide, self).__init__()
+        super().__init__()
         self.value = '/'
 
 
 class EqualTo(Binary):
 
     def __init__(self):
-        super(EqualTo, self).__init__()
+        super().__init__()
         self.value = '='

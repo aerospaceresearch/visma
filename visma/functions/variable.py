@@ -12,7 +12,7 @@ class Variable(Function):
     """
 
     def __init__(self, coeff=None, value=None, power=None):
-        super(Variable, self).__init__()
+        super().__init__()
         # Report
         self.coefficient = 1
         if coeff is not None:
@@ -26,19 +26,19 @@ class Variable(Function):
         self.type = 'Variable'
 
     def inverse(self, rToken, wrtVar):
-        rVar = Variable()
+        l2rVar = Variable()
         for i, var in enumerate(self.value):
             if var != wrtVar:
-                rVar.value.append(self.value.pop(i))
-                rVar.power.append(self.power.pop(i))
-        if rVar.value != []:
-            rToken = Expression([rToken, Divide(), rVar])
+                l2rVar.value.append(self.value.pop(i))
+                l2rVar.power.append(self.power.pop(i))
+        if l2rVar.value != []:
+            rToken = Expression([rToken, Divide(), l2rVar])
         rToken.coefficient /= (self.coefficient)**(1/self.power[0])
         rToken.power /= self.power[0]
         self.coefficient = 1
         self.power[0] = 1
         comment = "Therefore, " + r"$" + wrtVar + r"$" + " can be written as:"
-        return rToken, comment
+        return self, rToken, comment
 
     def differentiate(self):
         from visma.functions.constant import Constant

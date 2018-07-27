@@ -92,12 +92,11 @@ def funcInverse(lTokens, rTokens, wrtVar):
     if len(lTokens) == 1:
         rExpr = Expression()
         rExpr.tokens.extend(rTokens)
-        rToken, comment = lTokens[0].inverse(rExpr, wrtVar)
+        lToken, rToken, comment = lTokens[0].inverse(rExpr, wrtVar)
     animation = copy.deepcopy(lTokens)
     animation.append(EqualTo())
     animation.append(rToken)
-    rTokens = [rToken]
-    return lTokens, rTokens, animation, [comment]
+    return [lToken], [rToken], animation, [comment]
 
 
 def isVarInTokensList(tokens, wrtVar):

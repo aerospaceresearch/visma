@@ -6,7 +6,6 @@ install :
   - pip install pytest
   - pip install coverage
   - pip install coveralls
-  - pip install codacy-coverage
 
 script :
   - pylama

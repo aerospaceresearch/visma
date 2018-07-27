@@ -1,5 +1,4 @@
 import copy
-# This module contains classes for all functions
 
 
 class Function(object):
@@ -8,8 +7,8 @@ class Function(object):
         self.tid = None
         self.scope = None
         self.value = None
-        self.coefficient = None
-        self.power = None
+        self.coefficient = 1
+        self.power = 1
         self.operand = None
         self.operator = None
         self.before = None
@@ -44,11 +43,10 @@ class Function(object):
                     if self.power[np][i] != 1:
                         represent += "^" + "{" + str(self.power[np][i]) + "}"
         elif self.operand is not None:
-            for eachOperand in self.operand:
-                represent += "\\" + self.value + " "
-                if self.power != 1:
-                    represent += "^" + "{" + str(self.power) + "}"
-                represent += "({" + eachOperand.__str__() + "})"
+            represent += "\\" + self.value
+            if self.power != 1:
+                represent += "^" + "{" + str(self.power) + "}"
+            represent += "({" + self.operand.__str__() + "})"
         else:
             represent += "{" + str(self.value) + "}"
             if self.power != 1:
@@ -56,7 +54,7 @@ class Function(object):
 
         return represent
 
-    def setProp(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
+    def prop(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
         if tid is not None:
             self.tid = tid
         if scope is not None:
@@ -72,13 +70,6 @@ class Function(object):
         if operator is not None:
             self.operator = operator
 
-    def inverse(self, RHS, wrtVar=None):
-        RHS.coefficient = (RHS.coefficient / self.coefficient)**(1 / self.power)
-        RHS.power /= self.power
-        self.operand = RHS
-        self.coefficient = 1
-        self.power = 1
-
     def differentiate(self):
         self.power = 1
         self.coefficient = 1
@@ -93,6 +84,37 @@ class Function(object):
         return inst.value
 
 
+##########
+# FuncOp #
+##########
+
+class FuncOp(Function):
+    """Defined for functions of form sin(), log(), exp() etc which take a function(operand) as argument
+    """
+    def __init__(self, operand=None):
+        super().__init__()
+        if operand is not None:
+            self.operand = operand
+
+    def __str__(self):
+        represent = ""
+        represent += "\\" + self.value
+        if self.power != 1:
+            represent += "^" + "{" + str(self.power) + "}"
+        if self.operand is not None:
+            represent += "{(" + str(self.operand) + ")}"
+        return represent
+
+    def inverse(self, rToken, wrtVar, inverseFunction):
+        rToken.coefficient /= self.coefficient
+        rToken.power /= self.power
+        invFunc = copy.deepcopy(inverseFunction)
+        invFunc.operand = rToken
+        self = self.operand
+        comment = "Applying inverse function on LHS and RHS"
+        return self, rToken, comment
+
+
 ###################
 # Mixed Functions #
 ###################
@@ -104,7 +126,7 @@ class Expression(Function):
     """
 
     def __init__(self, tokens=None, coefficient=None, power=None):
-        super(Expression, self).__init__()
+        super().__init__()
         self.coefficient = 1
         self.power = 1
         self.tokens = []
@@ -123,7 +145,7 @@ class Expression(Function):
         if self.power != 1:
             represent += "^" + "{" + str(self.power) + "}"
         if self.operand is not None:
-            represent += "{(" + str(self.operand.__str__) + ")}"
+            represent += "{(" + str(self.operand) + ")}"
         return represent
 
 
@@ -132,6 +154,6 @@ class Equation(Expression):
     """
 
     def __init__(self):
-        super(self).__init__()
+        super().__init__()
         self.tokens = None
         self.type = 'Equation'

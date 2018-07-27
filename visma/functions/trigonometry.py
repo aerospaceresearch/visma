@@ -1,4 +1,4 @@
-from visma.functions.structure import Function
+from visma.functions.structure import FuncOp
 import math
 
 ##########################
@@ -6,31 +6,23 @@ import math
 ##########################
 
 
-class Sine(Function):
+class Sine(FuncOp):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'sin'
 
-    def inverse(self, RHS):
-        super().inverse(RHS)
-        self.__class__ = ArcSin
-
-    def differentiate(self):
-        super().differentiate()
-        self.__class__ = Cosine
-
-    def integrate(self):
-        self.coefficient = -1
-        self.__class__ = Cosine
+    def inverse(self, rToken, wrtVar, inverseFunction=None):
+        inverseFunction = ArcSin()
+        super().inverse(self, rToken, wrtVar, inverseFunction)
 
     def calculate(self, val):
         return self.coefficient * ((math.sin(val))**self.power)
 
 
-class Cosine(Function):
+class Cosine(FuncOp):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'cos'
 
@@ -50,9 +42,9 @@ class Cosine(Function):
         return self.coefficient * ((math.cos(val))**self.power)
 
 
-class Tangent(Function):
+class Tangent(FuncOp):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'tan'
 
@@ -65,17 +57,13 @@ class Tangent(Function):
         self.power = 2
         self.__class__ = Secant
 
-    def integrate(self):
-        """
-        """
-
     def calculate(self, val):
         return self.coefficient * ((math.tan(val))**self.power)
 
 
-class Cotangent(Function):
+class Cotangent(FuncOp):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'cot'
 
@@ -99,9 +87,9 @@ class Cotangent(Function):
 
 # Incomplete
 
-class Cosecant(Function):
+class Cosecant(FuncOp):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'csc'
 
@@ -120,9 +108,9 @@ class Cosecant(Function):
         return self.coefficient * ((math.cosec(val))**self.power)
 
 
-class Secant(Function):
+class Secant(FuncOp):
 
-    def __init__(self, arg):
+    def __init__(self):
         super().__init__()
         self.value = 'sec'
 
@@ -145,25 +133,25 @@ class Secant(Function):
 ##################################
 
 
-class ArcSin:
+class ArcSin(FuncOp):
     pass
 
 
-class ArcCos:
+class ArcCos(FuncOp):
     pass
 
 
-class ArcTan:
+class ArcTan(FuncOp):
     pass
 
 
-class ArcCot:
+class ArcCot(FuncOp):
     pass
 
 
-class ArcSec:
+class ArcSec(FuncOp):
     pass
 
 
-class ArcCosec:
+class ArcCsc(FuncOp):
     pass

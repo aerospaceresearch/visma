@@ -55,11 +55,10 @@ def integrateTokens(funclist, wrtVar):
                                 if(funcCopy.power[i] == -1):
                                     log = True
                                     funcLog = Logarithm()
-                                    funcLog.setProp(coeff=1, power=1)
-                                    funcLog.operand.append(Variable())
-                                    funcLog.operand[-1].coefficient = 1
-                                    funcLog.operand[-1].value.append(funcCopy.value[i])
-                                    funcLog.operand[-1].power.append(1)
+                                    funcLog.operand = Variable()
+                                    funcLog.operand.coefficient = 1
+                                    funcLog.operand.value.append(funcCopy.value[i])
+                                    funcLog.operand.power.append(1)
                                     del funcCopy.power[i]
                                     del funcCopy.value[i]
                                     if funcCopy.value == []:
