@@ -9,11 +9,6 @@ from visma.io.parser import tokensToLatex
 from visma.simplify.simplify import simplify, simplifyEquation
 
 
-###########
-# backend #
-###########
-
-
 def quickSimplify(workspace):
     # FIXME: Crashes for some cases. Find and fix.
     qSolution = ""
@@ -39,7 +34,6 @@ def quickSimplify(workspace):
             qSolution += tokensToLatex(equationTokens[-1]) + ' $'
             # workspace.eqToks = equationTokens
             # plot(workspace)
-            # workspace.eqToks = []
             return qSolution
         else:
             log = "Invalid Expression"

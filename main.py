@@ -123,10 +123,14 @@ class WorkSpace(QWidget):
         equationList.tab1.setStatusTip("Track of old equations")
         equationList.setFixedWidth(300)
 
-        inputList = QWidget()
-        inputList.setLayout(self.inputsLayout())
-        inputList.setStatusTip("Input characters")
-        inputList.setFixedHeight(200)
+        inputSpace = QTabWidget()
+        inputSpace.tab1 = QWidget()
+        inputSpace.tab2 = QWidget()
+        inputSpace.addTab(inputSpace.tab1, "input")
+        inputSpace.addTab(inputSpace.tab2, "preferences")
+        inputSpace.tab1.setLayout(self.inputsLayout())
+        inputSpace.tab1.setStatusTip("Input characters")
+        inputSpace.setFixedHeight(200)
 
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
@@ -165,7 +169,7 @@ class WorkSpace(QWidget):
         splitter4 = QSplitter(Qt.Vertical)
         splitter4.addWidget(self.textedit)
         splitter4.addWidget(quickSolve)
-        splitter4.addWidget(inputList)
+        splitter4.addWidget(inputSpace)
 
         splitter3 = QSplitter(Qt.Horizontal)
         splitter3.addWidget(splitter4)
@@ -278,7 +282,7 @@ class WorkSpace(QWidget):
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
-                    if operations[0] not in ['solve', 'integrate', 'differentiate', 'find roots', 'factorize']:
+                    if operations[0] not in ['integrate', 'differentiate', 'find roots', 'factorize']:
                         opButtons = ['simplify']
                 else:
                     opButtons = ['simplify']
