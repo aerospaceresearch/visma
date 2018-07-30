@@ -38,38 +38,8 @@ def plotIn2D(LHStok, RHStok, variables):
     xrange = np.arange(-10, 10, delta)
     yrange = np.arange(-10, 10, delta)
     graphVars = np.meshgrid(xrange, yrange)
-    LHS = 0
-    coeff = 1
-    for token in LHStok:
-        if isinstance(token, Variable):
-            varProduct = 1
-            for value, power in zip(token.value, token.power):
-                varProduct *= graphVars[variables.index(value)]**power
-            LHS += coeff*token.coefficient*varProduct
-        elif isinstance(token, Binary) and token.value == '-':
-            coeff = -1
-        elif isinstance(token, Binary) and token.value == '+':
-            coeff = 1
-        elif isinstance(token, Constant):
-            LHS += coeff*token.value
-    if len(variables) == 2:
-        RHS = 0
-        coeff = 1
-        for token in RHStok:
-            if isinstance(token, Variable):
-                varProduct = 1
-                for value, power in zip(token.value, token.power):
-                    varProduct *= graphVars[variables.index(value)]**power
-                RHS += coeff*token.coefficient*varProduct
-            elif isinstance(token, Binary) and token.value == '-':
-                coeff = -1
-            elif isinstance(token, Binary) and token.value == '+':
-                coeff = 1
-            elif isinstance(token, Constant):
-                RHS += coeff*token.value
-    elif len(variables) == 1:
-        RHS = graphVars[-1]
-    return graphVars, LHS - RHS
+    function = getFunction(LHStok, RHStok, variables, graphVars, 2)
+    return graphVars, function
 
 
 def plotIn3D(LHStok, RHStok, variables):
@@ -79,49 +49,53 @@ def plotIn3D(LHStok, RHStok, variables):
     yrange = np.linspace(ymin, ymax, 25)
     zrange = np.linspace(zmin, zmax, 25)
     graphVars = [xrange, yrange, zrange]
-    func = getFunction(LHStok, RHStok, variables)
-
+    func = get3DFunc(LHStok, RHStok, variables)
     return graphVars, func
 
 
-def getFunction(LHStok, RHStok, variables):
+def get3DFunc(LHStok, RHStok, variables):
 
     def func(x, y, z):
-        funcVars = [x, y, z]
-        LHS = 0
+        graphVars = [x, y, z]
+        return getFunction(LHStok, RHStok, variables, graphVars, 3)
+
+    return func
+
+
+def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
+    LHS = 0
+    coeff = 1
+    for token in LHStok:
+        if isinstance(token, Variable):
+            varProduct = 1
+            for value, power in zip(token.value, token.power):
+                varProduct *= graphVars[eqnVars.index(value)]**power
+            LHS += coeff*token.coefficient*varProduct
+        elif isinstance(token, Binary) and token.value == '-':
+            coeff = -1
+        elif isinstance(token, Binary) and token.value == '+':
+            coeff = 1
+        elif isinstance(token, Constant):
+            LHS += coeff*token.value
+    if len(eqnVars) == dim:
+        RHS = 0
         coeff = 1
-        for token in LHStok:
+        for token in RHStok:
             if isinstance(token, Variable):
                 varProduct = 1
                 for value, power in zip(token.value, token.power):
-                    varProduct *= funcVars[variables.index(value)]**power
-                LHS += coeff*token.coefficient*varProduct
+                    varProduct *= graphVars[eqnVars.index(value)]**power
+                RHS += coeff*token.coefficient*varProduct
             elif isinstance(token, Binary) and token.value == '-':
                 coeff = -1
             elif isinstance(token, Binary) and token.value == '+':
                 coeff = 1
             elif isinstance(token, Constant):
-                LHS += coeff*token.value
-        if len(variables) == 3:
-            RHS = 0
-            coeff = 1
-            for token in RHStok:
-                if isinstance(token, Variable):
-                    varProduct = 1
-                    for value, power in zip(token.value, token.power):
-                        varProduct *= funcVars[variables.index(value)]**power
-                    RHS += coeff*token.coefficient*varProduct
-                elif isinstance(token, Binary) and token.value == '-':
-                    coeff = -1
-                elif isinstance(token, Binary) and token.value == '+':
-                    coeff = 1
-                elif isinstance(token, Constant):
-                    RHS += coeff*token.value
-        elif len(variables) == 2:
-            RHS = funcVars[-1]
-        return LHS - RHS
+                RHS += coeff*token.value
+    elif len(eqnVars) == dim - 1:
+        RHS = graphVars[-1]
+    return LHS - RHS
 
-    return func
 
 #######
 # GUI #
@@ -131,7 +105,6 @@ def getFunction(LHStok, RHStok, variables):
 def plotFigure(workspace):
     workspace.figure = Figure()
     workspace.canvas = FigureCanvas(workspace.figure)
-
     # workspace.figure.patch.set_facecolor('white')
 
     class NavigationCustomToolbar(NavigationToolbar):
@@ -145,7 +118,6 @@ def plotFigure(workspace):
 
 
 def plot(workspace):
-
     graphVars, func, variables = graphPlot(workspace.eqToks[-1])
     workspace.figure.clf()
     if len(graphVars) == 2:

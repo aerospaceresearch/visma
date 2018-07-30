@@ -114,14 +114,14 @@ class WorkSpace(QWidget):
     def initUI(self):
         hbox = QHBoxLayout(self)
 
-        equationList = QTabWidget()
-        equationList.tab1 = QWidget()
-        equationList.tab2 = QWidget()
-        equationList.addTab(equationList.tab1, "history")
-        equationList.addTab(equationList.tab2, "favourites")
-        equationList.tab1.setLayout(self.equationsLayout())
-        equationList.tab1.setStatusTip("Track of old equations")
-        equationList.setFixedWidth(300)
+        self.equationList = QTabWidget()
+        self.equationList.tab1 = QWidget()
+        self.equationList.tab2 = QWidget()
+        self.equationList.addTab(self.equationList.tab1, "history")
+        self.equationList.addTab(self.equationList.tab2, "favourites")
+        self.equationList.tab1.setLayout(self.equationsLayout())
+        self.equationList.tab1.setStatusTip("Track of old equations")
+        self.equationList.setFixedWidth(300)
 
         inputSpace = QTabWidget()
         inputSpace.tab1 = QWidget()
@@ -178,7 +178,7 @@ class WorkSpace(QWidget):
         splitter2 = QSplitter(Qt.Horizontal)
         splitter2.addWidget(tabStepsLogs)
         splitter2.addWidget(tabPlot)
-        splitter2.addWidget(equationList)
+        splitter2.addWidget(self.equationList)
 
         splitter1 = QSplitter(Qt.Vertical)
         splitter1.addWidget(splitter3)
@@ -210,15 +210,17 @@ class WorkSpace(QWidget):
         self.myQListWidget.resize(400, 300)
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
-        # FIXME: Clear button. Clear rightaway.
         self.clearButton = QtWidgets.QPushButton('clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
+        self.clearButton.setStatusTip("Restart UI for clearing history")
+        # FIXME: Clear button. Clear rightaway.
         self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
 
     def clearHistory(self):
         file = open('local/eqn-list.vis', 'w')
         file.truncate()
+        file.close()
 
     def Clicked(self, item):
         _, name = self.equations[self.myQListWidget.currentRow()]
@@ -226,11 +228,9 @@ class WorkSpace(QWidget):
 
     def buttonsLayout(self):
         vbox = QVBoxLayout()
-
         interactionModeLayout = QVBoxLayout()
         vismaButton = QtWidgets.QPushButton('visma')
         interactionModeButton = vismaButton
-
         interactionModeButton.clicked.connect(self.interactionMode)
         interactionModeLayout.addWidget(interactionModeButton)
         interactionModeWidget = QWidget(self)
@@ -252,7 +252,6 @@ class WorkSpace(QWidget):
         permanentButtons.setLayout(documentButtonsLayout)
         """
         topButtonSplitter.addWidget(permanentButtons)
-
         self.bottomButton = QFrame()
         self.buttonSplitter = QSplitter(Qt.Vertical)
         self.buttonSplitter.addWidget(topButtonSplitter)
@@ -276,8 +275,7 @@ class WorkSpace(QWidget):
         lhs, rhs = getLHSandRHS(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
-        operations, self.solutionType = checkTypes(
-            lhs, rhs)
+        operations, self.solutionType = checkTypes(lhs, rhs)
         if isinstance(operations, list):
             opButtons = []
             if len(operations) > 0:
