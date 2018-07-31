@@ -11,6 +11,7 @@ Logic Description:
 import sys
 import os
 import webbrowser
+
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton
 from PyQt5.QtCore import Qt

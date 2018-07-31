@@ -1,1 +1,6 @@
+title: visma
+logo: /assets/img/logo.png
+description: A VISual MAth Solver
+show_downloads: true
+google_analytics:
 theme: jekyll-theme-minimal

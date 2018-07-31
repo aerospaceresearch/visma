@@ -51,14 +51,15 @@ def quickSimplify(workspace):
 
 
 def qSolveFigure(workspace):
+
     bg = workspace.palette().window().color()
     bgcolor = (bg.redF(), bg.greenF(), bg.blueF())
     workspace.qSolveFigure = Figure(edgecolor=bgcolor, facecolor=bgcolor)
     workspace.solcanvas = FigureCanvas(workspace.qSolveFigure)
     workspace.qSolveFigure.clear()
-
     stepslayout = QtWidgets.QVBoxLayout()
     stepslayout.addWidget(workspace.solcanvas)
+
     return stepslayout
 
 

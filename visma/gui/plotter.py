@@ -1,16 +1,17 @@
 import numpy as np
 
-from visma.io.tokenize import getLHSandRHS
-from visma.functions.variable import Variable
-from visma.functions.constant import Constant
-from visma.functions.operator import Binary
-from visma.io.checks import findWRTVariable, getTokensType
-
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtWidgets
+
+from visma.io.checks import findWRTVariable, getTokensType
+from visma.io.tokenize import getLHSandRHS
+from visma.functions.constant import Constant
+from visma.functions.operator import Binary
+from visma.functions.structure import FuncOp
+from visma.functions.variable import Variable
 
 
 def graphPlot(tokens):
@@ -63,38 +64,33 @@ def get3DFunc(LHStok, RHStok, variables):
 
 
 def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
-    LHS = 0
-    coeff = 1
     for token in LHStok:
+        LHS = getFuncExpr(LHStok, eqnVars, graphVars)
+    if len(eqnVars) == dim:
+        RHS = getFuncExpr(RHStok, eqnVars, graphVars)
+    elif len(eqnVars) == dim - 1:
+        RHS = graphVars[-1]
+    return LHS - RHS
+
+
+def getFuncExpr(exprTok, eqnVars, graphVars):
+    expr = 0
+    coeff = 1
+    for token in exprTok:
         if isinstance(token, Variable):
             varProduct = 1
             for value, power in zip(token.value, token.power):
                 varProduct *= graphVars[eqnVars.index(value)]**power
-            LHS += coeff*token.coefficient*varProduct
+            expr += coeff*token.coefficient*varProduct
+        elif isinstance(token, Constant):
+            expr += coeff*token.value
+        elif isinstance(token, FuncOp):
+            pass
         elif isinstance(token, Binary) and token.value == '-':
             coeff = -1
         elif isinstance(token, Binary) and token.value == '+':
             coeff = 1
-        elif isinstance(token, Constant):
-            LHS += coeff*token.value
-    if len(eqnVars) == dim:
-        RHS = 0
-        coeff = 1
-        for token in RHStok:
-            if isinstance(token, Variable):
-                varProduct = 1
-                for value, power in zip(token.value, token.power):
-                    varProduct *= graphVars[eqnVars.index(value)]**power
-                RHS += coeff*token.coefficient*varProduct
-            elif isinstance(token, Binary) and token.value == '-':
-                coeff = -1
-            elif isinstance(token, Binary) and token.value == '+':
-                coeff = 1
-            elif isinstance(token, Constant):
-                RHS += coeff*token.value
-    elif len(eqnVars) == dim - 1:
-        RHS = graphVars[-1]
-    return LHS - RHS
+    return expr
 
 
 #######
