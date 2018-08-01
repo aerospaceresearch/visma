@@ -24,6 +24,7 @@ from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotFigure, plot
 from visma.gui.qsolver import quickSimplify, qSolveFigure, showQSolve
+from visma.gui.settings import preferenceLayout
 from visma.gui.steps import stepsFigure, showSteps
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
@@ -76,6 +77,7 @@ class WorkSpace(QWidget):
     inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g',  'h', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', '\\pi', '.', '0', '=', '<', '>']
 
     mode = 'interaction'
+    showQuickSim = True
     enableQSolver = True
     buttons = {}
     solutionOptionsBox = QGridLayout()
@@ -130,6 +132,7 @@ class WorkSpace(QWidget):
         inputSpace.addTab(inputSpace.tab1, "input")
         inputSpace.addTab(inputSpace.tab2, "preferences")
         inputSpace.tab1.setLayout(self.inputsLayout())
+        inputSpace.tab2.setLayout(preferenceLayout(self))
         inputSpace.tab1.setStatusTip("Input characters")
         inputSpace.setFixedHeight(200)
 
@@ -148,7 +151,7 @@ class WorkSpace(QWidget):
         tabStepsLogs.tab1 = QWidget()
         tabStepsLogs.tab2 = QWidget()
         tabStepsLogs.addTab(tabStepsLogs.tab1, "step-by-step")
-        tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
+        # tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
         tabStepsLogs.tab2.setStatusTip("Logger")
@@ -191,10 +194,13 @@ class WorkSpace(QWidget):
     def textChangeTrigger(self):
         if self.textedit.toPlainText() == "":
             self.enableQSolver = True
-        if self.enableQSolver:
+        if self.enableQSolver and self.showQuickSim:
             self.qSol = quickSimplify(self)
             if self.qSol is None:
                 self.qSol = ""
+            showQSolve(self)
+        elif self.showQuickSim is False:
+            self.qSol = ""
             showQSolve(self)
 
     def equationsLayout(self):
