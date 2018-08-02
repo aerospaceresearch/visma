@@ -22,14 +22,14 @@ class Function(object):
 
     def __str__(self, nv=None, np=None, nc=None):
         """Equation token to string
-        
-        [description]
-        
+
+        Coverts equation tokens to string for text and LaTeX rendering
+
         Keyword Arguments:
             nv {int} -- number of values (default: {None})
             np {int} -- number of powers (default: {None})
             nc {int} -- number of coefficients (default: {None})
-        
+
         Returns:
             represent {string} -- string/latex representation of equation
         """
@@ -72,9 +72,7 @@ class Function(object):
 
     def prop(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
         """Set function token properties
-        
-        [description]
-        
+
         Keyword Arguments:
             tid {[type]} -- Token ID (default: {None})
             scope {int} -- Scope (default: {None})
@@ -122,7 +120,7 @@ class Function(object):
 ##########
 
 class FuncOp(Function):
-    """Defined for functions of form sin(), log(), exp() etc which take a function(operand) as argument
+    """Defined for functions of form sin(...), log(...), exp(...) etc which take a function(operand) as argument
     """
     def __init__(self, operand=None):
         super().__init__()
@@ -140,14 +138,14 @@ class FuncOp(Function):
 
     def inverse(self, rToken, wrtVar, inverseFunction):
         """Returns inverse of function
-        
-        Applies inverse of function to RHS and LHS. 
-        
+
+        Applies inverse of function to RHS and LHS.
+
         Arguments:
             rToken {visma.functions.structure.Function} -- RHS token
             wrtVar {string} -- with respect to variable
             inverseFunction {visma.functions.structure.Function} -- inverse of the function itself
-        
+
         Returns:
             self {visma.functions.structure.Function} -- function itself(operand before inverse)
             rToken {visma.functions.structure.Function} -- new RHS token

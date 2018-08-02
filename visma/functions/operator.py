@@ -1,8 +1,12 @@
-# These classes are for operators (+, -, *, / etc)
-# Not to be confused with 'operator' and 'operand' properties of 'Function' class
-
-
 class Operator(object):
+    """The Operator class is for operators(+, -, *, / etc)
+
+    Example:
+        '+', '-', '*' etc
+
+    Note:
+        Not to be confused with 'operator' and 'operand' properties of 'Function' class
+    """
 
     def __init__(self):
         self.tid = None
@@ -17,7 +21,13 @@ class Operator(object):
 
 
 class Binary(Operator):
-    """Class for binary operator
+    """Binary operator takes two operands
+
+    Example:
+        '2 + 2', '5/6' etc
+
+    Extends:
+        Operator
     """
 
     def __init__(self, value=None):
@@ -28,8 +38,6 @@ class Binary(Operator):
 
 
 class Sqrt(Operator):
-    """Class for sqrt operator
-    """
 
     def __init__(self):
         super().__init__()
@@ -47,6 +55,11 @@ class Sqrt(Operator):
 
 
 class Plus(Binary):
+    """Class for '+'
+
+    Extends:
+        Binary
+    """
 
     def __init__(self):
         super().__init__()
@@ -54,6 +67,11 @@ class Plus(Binary):
 
 
 class Minus(Binary):
+    """Class for '-'
+
+    Extends:
+        Binary
+    """
 
     def __init__(self):
         super().__init__()
@@ -61,6 +79,11 @@ class Minus(Binary):
 
 
 class Multiply(Binary):
+    """Class for '*'
+
+    Extends:
+        Binary
+    """
 
     def __init__(self):
         super().__init__()
@@ -68,6 +91,11 @@ class Multiply(Binary):
 
 
 class Divide(Binary):
+    """Class for '/'
+
+    Extends:
+        Binary
+    """
 
     def __init__(self):
         super().__init__()
@@ -75,6 +103,11 @@ class Divide(Binary):
 
 
 class EqualTo(Binary):
+    """Class for '='
+
+    Extends:
+        Binary
+    """
 
     def __init__(self):
         super().__init__()

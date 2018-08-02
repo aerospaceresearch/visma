@@ -8,7 +8,15 @@ from visma.functions.operator import Divide
 
 
 class Variable(Function):
-    """Class for variable type
+    """Class for variable function type
+
+    Examples:
+        x
+        2x^2
+        3xyz^3
+
+    Extends:
+        Function
     """
 
     def __init__(self, coeff=None, value=None, power=None):
