@@ -10,8 +10,9 @@ class Matrix(object):
         [              1            ,            2xy^2            ;
                       4xy           ,             x+y             ]
         is tokenized to
-        [         [Constant]        ,          [Variable]         ;
-                  [Variable]        , [Variable, Binary, Variable]]
+        [[         [Constant]        ,          [Variable]        ],
+         [         [Variable]        , [Variable, Binary, Variable]]]
+        and stored in matrix.value.
     """
 
     def __init__(self):
@@ -33,7 +34,7 @@ class Matrix(object):
         return represent
 
     def empty(self, dim=None):
-        """Empties the matrix and changes dimension to dim
+        """Empties the matrix into a matrix of dimension dim
 
         Keyword Arguments:
             dim {list} -- dimension of matrix (default: {None})

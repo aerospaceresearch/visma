@@ -19,7 +19,7 @@ def differentiate(tokens, wrtVar):
 
     Returns:
         tokens {list} -- list of differentiated tokens
-        availableOperations {list} -- binary operations list
+        availableOperations {list} -- list of operations
         token_string {string} -- output equation string
         animation {list} -- equation tokens for step-by-step
         comments {list} -- comments for step-by-step

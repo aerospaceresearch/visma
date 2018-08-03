@@ -10,7 +10,7 @@ Logic Description:
 
 import math
 import copy
-from visma.io.checks import evaluateConstant, availableVariables
+from visma.io.checks import evaluateConstant, getVariables
 from visma.io.parser import tokensToString
 from visma.functions.structure import Expression
 from visma.functions.constant import Constant, Zero
@@ -25,12 +25,12 @@ from config.config import ROUNDOFF
 
 def getRoots(coeffs):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         coeffs {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -52,13 +52,13 @@ def getRoots(coeffs):
 
 def quadraticRoots(lTokens, rTokens):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -226,13 +226,13 @@ def quadraticRoots(lTokens, rTokens):
 
 def findQuadraticRoots(lTokens, rTokens):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -280,4 +280,4 @@ def findQuadraticRoots(lTokens, rTokens):
             else:
                 return roots
 
-    return getRoots(coeffs), availableVariables(lTokens)
+    return getRoots(coeffs), getVariables(lTokens)

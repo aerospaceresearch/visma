@@ -3,7 +3,7 @@ from visma.functions.operator import Multiply
 from visma.functions.structure import Expression
 from visma.functions.variable import Variable
 from visma.functions.constant import Constant
-from visma.io.checks import isTokenInToken, findWRTVariable
+from visma.io.checks import isTokenInToken, getVariables
 
 
 def substitute(init_tok, subs_tok, toklist):
@@ -88,8 +88,8 @@ def getPowerRatio(init_tok, given_tok):
     """
     
     if isinstance(init_tok, Variable) and isinstance(given_tok, Variable):
-        varA = findWRTVariable([init_tok])
-        varB = findWRTVariable([given_tok])
+        varA = getVariables([init_tok])
+        varB = getVariables([given_tok])
         if all(var in varB for var in varA):
             ratios = []
             for i, valA in enumerate(init_tok.value):

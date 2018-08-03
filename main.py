@@ -19,7 +19,7 @@ from PyQt5 import QtGui, QtWidgets
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
-from visma.io.checks import checkTypes, findWRTVariable
+from visma.io.checks import checkTypes, getVariables
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotFigure, plot
@@ -602,17 +602,17 @@ class WorkSpace(QWidget):
                 self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = quadraticRoots(self.lTokens, self.rTokens)
             elif name == 'solve':
                 lhs, rhs = getLHSandRHS(self.tokens)
-                variables = findWRTVariable(lhs, rhs)
+                variables = getVariables(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
             elif name == 'integrate':
                 lhs, rhs = getLHSandRHS(self.tokens)
-                variables = findWRTVariable(lhs, rhs)
+                variables = getVariables(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
             elif name == 'differentiate':
                 lhs, rhs = getLHSandRHS(self.tokens)
-                variables = findWRTVariable(lhs, rhs)
+                variables = getVariables(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
                 resultOut = False
             if resultOut:

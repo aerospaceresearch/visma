@@ -133,20 +133,18 @@ def isEquation(lTokens, rTokens):
     return False
 
 
-def findWRTVariable(lTokens, rTokens=None, variables=None):
-    """[summary]
-    
-    [description]
-    
+def getVariables(lTokens, rTokens=None, variables=None):
+    """Finds all the variables present in the expression
+
     Arguments:
-        lTokens {[type]} -- [description]
-    
+        lTokens {list} -- list of function tokens
+
     Keyword Arguments:
-        rTokens {[type]} -- [description] (default: {None})
-        variables {[type]} -- [description] (default: {None})
-    
+        rTokens {list} -- list of function tokens (default: {None})
+        variables {list} -- list of variables (default: {None})
+
     Returns:
-        [type] -- [description]
+        variables {list} -- list of variables
     """
     if rTokens is None:
         rTokens = []
@@ -158,7 +156,7 @@ def findWRTVariable(lTokens, rTokens=None, variables=None):
                 if val not in variables:
                     variables.append(val)
         elif isinstance(token, Expression):
-            variables.extend(findWRTVariable(token.tokens))
+            variables.extend(getVariables(token.tokens))
 
     for token in rTokens:
         if isinstance(token, Variable):
@@ -166,21 +164,20 @@ def findWRTVariable(lTokens, rTokens=None, variables=None):
                 if val not in variables:
                     variables.append(val)
         elif isinstance(token, Expression):
-            variables.extend(findWRTVariable(token.tokens, [], variables))
+            variables.extend(getVariables(token.tokens, [], variables))
     return variables
 
 
 def checkEquation(terms, symTokens):
-    """[summary]
-    
-    [description]
-    
+    """Checks if input is a valid expression or equation
+
     Arguments:
-        terms {[type]} -- [description]
-        symTokens {[type]} -- [description]
-    
+        terms {list} -- list of input terms
+        symTokens {list} -- list of symbol tokens
+
     Returns:
-        bool -- [description]
+        bool -- if valid or not
+        log {string} -- error message if bool is False
     """
     brackets = 0
     sqrBrackets = 0
@@ -963,35 +960,15 @@ def evaluateExpressions(variables):
     return True
 
 
-def availableVariables(tokens):
-    """[summary]
-    
-    [description]
-    
-    Arguments:
-        tokens {[type]} -- [description]
-    
-    Returns:
-        [type] -- [description]
-    """
-    variables = []
-    for token in tokens:
-        if isinstance(token, Variable):
-            for val in token.value:
-                if val not in variables:
-                    variables.append(val)
-    return variables
-
-
 def highestPower(tokens, variable):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         tokens {[type]} -- [description]
         variable {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -1026,20 +1003,20 @@ def isIntegerPower(tokens, variable):
 
 def preprocessCheckPolynomial(lTokens, rTokens):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
-    
+
     Returns:
         bool -- [description]
     """
     from visma.simplify.simplify import simplifyEquation  # Circular import
     lTokens, rTokens, _, _, _, _ = simplifyEquation(lTokens, rTokens)
-    lVariables = availableVariables(lTokens)
-    rVariables = availableVariables(rTokens)
+    lVariables = getVariables(lTokens)
+    rVariables = getVariables(rTokens)
     for token in lTokens:
         if isinstance(token, Binary):
             if token.value in ['*', '/']:
@@ -1125,19 +1102,19 @@ def areTokensEqual(tok1, tok2):
 
 def isTokenInToken(tokA, tokB):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         tokA {[type]} -- [description]
         tokB {[type]} -- [description]
-    
+
     Returns:
         bool -- [description]
     """
     if isinstance(tokA, Variable) and isinstance(tokB, Variable):
-        varA = findWRTVariable([tokA])
-        varB = findWRTVariable([tokB])
+        varA = getVariables([tokA])
+        varB = getVariables([tokB])
         if all(var in varB for var in varA):
             ratios = []
             for iA, valA in enumerate(tokA.value):

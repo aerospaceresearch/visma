@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtWidgets
 
-from visma.io.checks import findWRTVariable, getTokensType
+from visma.io.checks import getVariables, getTokensType
 from visma.io.tokenize import getLHSandRHS
 from visma.functions.constant import Constant
 from visma.functions.operator import Binary
@@ -33,7 +33,7 @@ def graphPlot(tokens):
 
     eqType = getTokensType(tokens)
     LHStok, RHStok = getLHSandRHS(tokens)
-    variables = sorted(findWRTVariable(LHStok, RHStok))
+    variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
     if (dim == 1 and eqType == "expression") or (dim == 2 and eqType == "equation"):
         graphVars, func = plotIn2D(LHStok, RHStok, variables)
