@@ -7,6 +7,21 @@ from visma.io.checks import isNumber
 
 
 def resultLatex(operation, equations, comments, wrtVar=None):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        operation {[type]} -- [description]
+        equations {[type]} -- [description]
+        comments {[type]} -- [description]
+    
+    Keyword Arguments:
+        wrtVar {[type]} -- [description] (default: {None})
+    
+    Returns:
+        [type] -- [description]
+    """
 
     equationLatex = []
     for eqTokens in equations:
@@ -28,6 +43,16 @@ def resultLatex(operation, equations, comments, wrtVar=None):
 
 
 def tokensToLatex(eqTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        eqTokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     eqLatex = ""
     for token in eqTokens:
         eqLatex += token.__str__()
@@ -35,6 +60,16 @@ def tokensToLatex(eqTokens):
 
 
 def tokensToString(tokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     # FIXME: tokensToString method
     tokenString = ''
     for token in tokens:

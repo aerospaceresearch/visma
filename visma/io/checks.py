@@ -39,6 +39,16 @@ class ExpressionCompatibility(object):
 
 
 def isNumber(term):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        term {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     if isinstance(term, int) or isinstance(term, float):
         return True
     else:
@@ -67,8 +77,15 @@ def isNumber(term):
 
 
 def isVariable(term):
-    """
-    Checks if given term is variable
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        term {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
     """
     if term in greek:
         return True
@@ -82,8 +99,15 @@ def isVariable(term):
 
 
 def isFunction(term):
-    """
-    Checks if given term is function
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        term {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
     """
     if term in funcs:
         return True
@@ -91,6 +115,17 @@ def isFunction(term):
 
 
 def isEquation(lTokens, rTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     if len(lTokens) > 0 and len(rTokens) == 1:
         if isinstance(rTokens[0], Constant):
             if rTokens[0].value == 0:
@@ -99,6 +134,20 @@ def isEquation(lTokens, rTokens):
 
 
 def findWRTVariable(lTokens, rTokens=None, variables=None):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+    
+    Keyword Arguments:
+        rTokens {[type]} -- [description] (default: {None})
+        variables {[type]} -- [description] (default: {None})
+    
+    Returns:
+        [type] -- [description]
+    """
     if rTokens is None:
         rTokens = []
     if variables is None:
@@ -122,6 +171,17 @@ def findWRTVariable(lTokens, rTokens=None, variables=None):
 
 
 def checkEquation(terms, symTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        terms {[type]} -- [description]
+        symTokens {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     brackets = 0
     sqrBrackets = 0
     equators = 0
@@ -185,6 +245,17 @@ def checkEquation(terms, symTokens):
 
 
 def checkTypes(lTokens=None, rTokens=None):
+    """[summary]
+    
+    [description]
+    
+    Keyword Arguments:
+        lTokens {[type]} -- [description] (default: {None})
+        rTokens {[type]} -- [description] (default: {None})
+    
+    Returns:
+        [type] -- [description]
+    """
 
     if lTokens is None:
         lTokens = []
@@ -214,6 +285,17 @@ def checkTypes(lTokens=None, rTokens=None):
 
 
 def checkSolveFor(lTokens, rTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     for token in lTokens:
         if isinstance(token, Variable):
             return True
@@ -230,10 +312,30 @@ def checkSolveFor(lTokens, rTokens):
 
 
 def getNumber(term):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        term {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     return float(term)
 
 
 def getLevelVariables(tokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     variables = []
     for i, term in enumerate(tokens):
         if isinstance(term, Variable):
@@ -445,6 +547,19 @@ def getLevelVariables(tokens):
 
 
 def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lVariables {[type]} -- [description]
+        lTokens {[type]} -- [description]
+        rVariables {[type]} -- [description]
+        rTokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     operations = []
     for i, token in enumerate(lTokens):
         if isinstance(token, Binary):
@@ -624,6 +739,17 @@ def getOperationsEquation(lVariables, lTokens, rVariables, rTokens):
 
 
 def getOperationsExpression(variables, tokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        variables {[type]} -- [description]
+        tokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     operations = []
     for i, token in enumerate(tokens):
         if isinstance(token, Binary):
@@ -692,6 +818,13 @@ def getOperationsExpression(variables, tokens):
 
 
 def extractExpression(variable):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        variable {[type]} -- [description]
+    """
     if len(variable) == 1:
         if isinstance(variable[0], Expression):
             _, variable = extractExpression(variable[0].value)
@@ -707,6 +840,16 @@ def extractExpression(variable):
 
 
 def evaluateConstant(constant):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        constant {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     if isinstance(constant, Function):
         if isNumber(constant.value):
             return math.pow(constant.value, constant.power)
@@ -722,6 +865,16 @@ def evaluateConstant(constant):
 
 
 def evaluateExpressions(variables):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        variables {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     var = []
     varPowers = []
     for i, variable in enumerate(variables):
@@ -811,6 +964,16 @@ def evaluateExpressions(variables):
 
 
 def availableVariables(tokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     variables = []
     for token in tokens:
         if isinstance(token, Variable):
@@ -821,6 +984,17 @@ def availableVariables(tokens):
 
 
 def highestPower(tokens, variable):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokens {[type]} -- [description]
+        variable {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     maxPow = 0
     for token in tokens:
         if isinstance(token, Variable):
@@ -831,6 +1005,17 @@ def highestPower(tokens, variable):
 
 
 def isIntegerPower(tokens, variable):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokens {[type]} -- [description]
+        variable {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     for token in tokens:
         if isinstance(token, Variable):
             for i, val in enumerate(token.value):
@@ -840,6 +1025,17 @@ def isIntegerPower(tokens, variable):
 
 
 def preprocessCheckPolynomial(lTokens, rTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     from visma.simplify.simplify import simplifyEquation  # Circular import
     lTokens, rTokens, _, _, _, _ = simplifyEquation(lTokens, rTokens)
     lVariables = availableVariables(lTokens)
@@ -867,6 +1063,17 @@ def preprocessCheckPolynomial(lTokens, rTokens):
 
 
 def commonAttributes(tok1, tok2):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tok1 {[type]} -- [description]
+        tok2 {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     commAttr = {}
     commAttr['Type'] = commAttr['Coeff'] = commAttr['Value'] = commAttr['Power'] = commAttr['Operand'] = False
     commAttr['Type'] = (tok1.__class__ == tok2.__class__)
@@ -898,6 +1105,17 @@ def commonAttributes(tok1, tok2):
 
 
 def areTokensEqual(tok1, tok2):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tok1 {[type]} -- [description]
+        tok2 {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     commAttr = commonAttributes(tok1, tok2)
     for attr in commAttr:
         if commAttr[attr] is False:
@@ -906,6 +1124,17 @@ def areTokensEqual(tok1, tok2):
 
 
 def isTokenInToken(tokA, tokB):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokA {[type]} -- [description]
+        tokB {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     if isinstance(tokA, Variable) and isinstance(tokB, Variable):
         varA = findWRTVariable([tokA])
         varB = findWRTVariable([tokB])
@@ -933,6 +1162,17 @@ def isTokenInToken(tokA, tokB):
 
 
 def isTokenInList(token, tokList):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        token {[type]} -- [description]
+        tokList {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     for tok in tokList:
         if isTokenInToken(token, tok) is True:
             return True
@@ -940,6 +1180,13 @@ def isTokenInList(token, tokList):
 
 
 def getTokensType(tokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokens {[type]} -- [description]
+    """
     for token in tokens:
         if isinstance(token, Binary):
             if token.value == '=':

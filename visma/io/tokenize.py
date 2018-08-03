@@ -37,8 +37,13 @@ funcTokens = [Logarithm(), Logarithm(), NaturalLog(), Exponential(), Sine(), Cos
 
 
 def removeSpaces(eqn):
-    """
-    Gets rid of whitespaces from the input equation
+    """Gets rid of whitespaces from the input equation
+
+    Arguments:
+        eqn {string} -- input equation string
+
+    Returns:
+        cleanEqn {string} -- equation string without spaces
     """
     cleanEqn = ''
     for char in eqn:
@@ -49,10 +54,12 @@ def removeSpaces(eqn):
 
 def getTerms(eqn):
     """Separate terms of the input equation into a list
-    Args:
-        eqn: Input equation
-    Returns
-        terms: List of terms
+
+    Arguments:
+        eqn {string} -- equation string
+
+    Returns:
+        terms {list} -- list of terms{strings}
     """
     x = 0
     terms = []
@@ -316,8 +323,13 @@ def getTerms(eqn):
 
 
 def normalize(terms):
-    """
-    Change input from Latex to Greek
+    """Replace input terms of LaTeX to Greek
+
+    Arguments:
+        terms {list} -- LaTeX/Greek input terms
+
+    Returns:
+        terms {list} -- Greek input terms
     """
     for term in terms:
         for i, x in enumerate(inputLaTeX):
@@ -327,8 +339,15 @@ def normalize(terms):
 
 
 def tokenizeSymbols(terms):
-    """Assigns a token symbol to each term in terms list
+    """Assigns a token symbol to some items in terms list
+
+    Arguments:
+        terms {list} -- input terms
+
+    Returns:
+        symTokens {list} -- symbol tokens for input terms
     """
+
     symTokens = []
     for i, term in enumerate(terms):
         symTokens.append('')
@@ -363,6 +382,20 @@ def tokenizeSymbols(terms):
 
 
 def removeUnary(terms, symTokens):
+    """Removes unary tokens from terms
+
+    Example:
+        -x --> ['-', 'x']
+        after removeUnary -x --> ['-x']
+
+    Arguments:
+        terms {list} -- input terms
+        symTokens {list} -- symbol tokens for terms
+
+    Returns:
+        terms {list} -- input terms
+        symTokens {list} -- symbol tokens for terms
+    """
     for i, symToken in enumerate(symTokens):
         if symToken == 'Unary':
             if i + 1 < len(terms):
@@ -378,6 +411,21 @@ def removeUnary(terms, symTokens):
 
 
 def getVariable(terms, symTokens, scope, coeff=1):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        terms {[type]} -- [description]
+        symTokens {[type]} -- [description]
+        scope {[type]} -- [description]
+
+    Keyword Arguments:
+        coeff {number} -- [description] (default: {1})
+
+    Returns:
+        [type] -- [description]
+    """
     variable = Variable()
     value = []
     coefficient = coeff
@@ -826,6 +874,21 @@ def getVariable(terms, symTokens, scope, coeff=1):
 
 
 def getToken(terms, symTokens, scope=None, coeff=1):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        terms {[type]} -- [description]
+        symTokens {[type]} -- [description]
+
+    Keyword Arguments:
+        scope {[type]} -- [description] (default: {None})
+        coeff {number} -- [description] (default: {1})
+
+    Returns:
+        [type] -- [description]
+    """
     if scope is None:
         scope = []
     eqn = Expression()
@@ -1379,6 +1442,16 @@ def getToken(terms, symTokens, scope=None, coeff=1):
 
 
 def clean(eqn):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        eqn {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     cleanEqn = removeSpaces(eqn)
     terms = getTerms(cleanEqn)
     normalizedTerms = normalize(terms)
@@ -1390,6 +1463,16 @@ def clean(eqn):
 
 
 def constantVariable(variable):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        variable {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
 
     constant = True
 
@@ -1421,6 +1504,16 @@ def constantVariable(variable):
 
 
 def evaluateConstant(constant):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        constant {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     if isinstance(constant, Function):
         if isNumber(constant.value):
             return math.pow(constant.value, constant.power)
@@ -1436,6 +1529,16 @@ def evaluateConstant(constant):
 
 
 def constantConversion(tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     constantExpression = True
     for token in tokens:
         if isinstance(token, Variable):
@@ -1459,11 +1562,35 @@ def constantConversion(tokens):
 
 
 def tokenizer(eqn=" {x-1} * {x+1} = x"):
+    """[summary]
+
+    [description]
+
+    Keyword Arguments:
+        eqn {str} -- [description] (default: {" {x-1} * {x+1}})
+
+    Returns:
+        [type] -- [description]
+    """
     _, tokens = constantConversion(clean(eqn))
     return tokens
 
 
 def changeToken(tokens, variables, scope_times=0):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+        variables {[type]} -- [description]
+
+    Keyword Arguments:
+        scope_times {number} -- [description] (default: {0})
+
+    Returns:
+        [type] -- [description]
+    """
     if len(variables) != 0:
         if variables[0].scope is not None:
             for changeVariable in variables:
@@ -1496,6 +1623,20 @@ def changeToken(tokens, variables, scope_times=0):
 
 
 def removeToken(tokens, scope, scope_times=0):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+        scope {[type]} -- [description]
+
+    Keyword Arguments:
+        scope_times {number} -- [description] (default: {0})
+
+    Returns:
+        [type] -- [description]
+    """
     for remScope in scope:
         for i, token in enumerate(tokens):
             if isinstance(token, Constant) or isinstance(token, Variable):
@@ -1520,6 +1661,16 @@ def removeToken(tokens, scope, scope_times=0):
 
 
 def getLHSandRHS(tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Returns:
+        bool -- [description]
+    """
     lhs = []
     rhs = []
     eqn = False

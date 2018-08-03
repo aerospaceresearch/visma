@@ -8,7 +8,18 @@ from visma.io.checks import isTokenInToken, findWRTVariable
 
 def substitute(init_tok, subs_tok, toklist):
     """Substitute given token in token list
+    
+    [description]
+    
+    Arguments:
+        init_tok {[type]} -- [description]
+        subs_tok {[type]} -- [description]
+        toklist {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
     """
+    
     for i, token in enumerate(toklist):
         if isTokenInToken(init_tok, token):
             toklist[i] = substituteTokens(init_tok, subs_tok, token)
@@ -17,9 +28,19 @@ def substitute(init_tok, subs_tok, toklist):
 
 def substituteTokens(init_tok, subs_tok, given_tok):
     """Substitute some init_tok with subs_tok in a given_tok.
+    
     For example: substitute x(init_tok) with wyz^2(subs_tok) in xyz(given_tok)
     i.e. final_tok will be wy^2z^3
+    
+    Arguments:
+        init_tok {[type]} -- [description]
+        subs_tok {[type]} -- [description]
+        given_tok {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
     """
+    
     if isinstance(given_tok, Variable):
         if isinstance(init_tok, Variable):
             power = getPowerRatio(init_tok, given_tok)
@@ -55,7 +76,17 @@ def substituteTokens(init_tok, subs_tok, given_tok):
 
 def getPowerRatio(init_tok, given_tok):
     """returns given_tok.power / init_tok.power
+    
+    [description]
+    
+    Arguments:
+        init_tok {[type]} -- [description]
+        given_tok {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
     """
+    
     if isinstance(init_tok, Variable) and isinstance(given_tok, Variable):
         varA = findWRTVariable([init_tok])
         varB = findWRTVariable([given_tok])
@@ -72,6 +103,17 @@ def getPowerRatio(init_tok, given_tok):
 
 
 def removeValues(init_tok, given_tok):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        init_tok {[type]} -- [description]
+        given_tok {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     for valI in init_tok.value:
         for i, valG in enumerate(given_tok.value):
             if valI == valG:
@@ -82,6 +124,19 @@ def removeValues(init_tok, given_tok):
 
 
 def replaceValues(init_tok, subs_tok, given_tok, power):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        init_tok {[type]} -- [description]
+        subs_tok {[type]} -- [description]
+        given_tok {[type]} -- [description]
+        power {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     given_tok = removeValues(init_tok, given_tok)
     subs_copy = copy.deepcopy(subs_tok)
     subs_copy.power = [pow * power for pow in subs_copy.power]

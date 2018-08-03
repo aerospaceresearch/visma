@@ -33,7 +33,7 @@ class Matrix(object):
         return represent
 
     def empty(self, dim=None):
-        """Empties the matrix into a matrix of dimension dim
+        """Empties the matrix and changes dimension to dim
 
         Keyword Arguments:
             dim {list} -- dimension of matrix (default: {None})
@@ -81,26 +81,6 @@ class Matrix(object):
         """
         self.dim[0] = len(self.value)
         self.dim[1] = len(self.value[0])
-
-
-class ValMat(Matrix):
-    """[summary]
-
-    [description]
-
-    Extends:
-        Matrix
-    """
-    def __init__(self, dim, token):
-        super().__init__()
-        for i in range(0, dim[0]):
-            row = []
-            for j in range(0, dim[1]):
-                if i == j:
-                    row.append(token)
-                else:
-                    row.append(token)
-            self.value.append(row)
 
 
 class SquareMat(Matrix):

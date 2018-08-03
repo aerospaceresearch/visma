@@ -24,6 +24,16 @@ from config.config import ROUNDOFF
 
 
 def getRoots(coeffs):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        coeffs {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     roots = []
     if len(coeffs) == 3:
         d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
@@ -41,6 +51,17 @@ def getRoots(coeffs):
 
 
 def quadraticRoots(lTokens, rTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     lTokens, rTokens, _, token_string, animation, comments = simplifyEquation(
         lTokens, rTokens)
     roots, var = findQuadraticRoots(lTokens, rTokens)
@@ -204,6 +225,17 @@ def quadraticRoots(lTokens, rTokens):
 
 
 def findQuadraticRoots(lTokens, rTokens):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     roots = []
     if len(rTokens) > 0:
         lTokens, rTokens = moveRTokensToLTokens(

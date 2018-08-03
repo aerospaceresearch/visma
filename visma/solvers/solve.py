@@ -15,6 +15,18 @@ import copy
 
 
 def solveFor(lTokens, rTokens, wrtVar):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+        wrtVar {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
 
     lTokens, rTokens, availableOperations, token_string, animation, comments = simplifyEquation(lTokens, rTokens)
 
@@ -32,6 +44,18 @@ def solveFor(lTokens, rTokens, wrtVar):
 
 
 def solveTokens(lTokens, rTokens, wrtVar):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+        wrtVar {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     animNew = []
     commentsNew = []
 
@@ -53,6 +77,18 @@ def solveTokens(lTokens, rTokens, wrtVar):
 
 
 def moveToRHS(lTokens, rTokens, wrtVar):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+        wrtVar {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
 
     comment = "Moving "
     i = 0
@@ -89,6 +125,15 @@ def moveToRHS(lTokens, rTokens, wrtVar):
 
 
 def funcInverse(lTokens, rTokens, wrtVar):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+        wrtVar {[type]} -- [description]
+    """
     if len(lTokens) == 1:
         rExpr = Expression()
         rExpr.tokens.extend(rTokens)
@@ -100,6 +145,17 @@ def funcInverse(lTokens, rTokens, wrtVar):
 
 
 def isVarInTokensList(tokens, wrtVar):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        tokens {[type]} -- [description]
+        wrtVar {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     for token in tokens:
         if isVarInToken(token, wrtVar) is True:
             return True
@@ -107,6 +163,13 @@ def isVarInTokensList(tokens, wrtVar):
 
 
 def checkOnlyVarTermsInList(tokens, wrtVar):  # Rename func
+    """[summary]
+    
+    [description]
+    
+    Returns:
+        bool -- [description]
+    """
     for token in tokens:
         if isVarInToken(token, wrtVar) is False:
             return False
@@ -114,6 +177,17 @@ def checkOnlyVarTermsInList(tokens, wrtVar):  # Rename func
 
 
 def isVarInToken(token, wrtVar):
+    """[summary]
+    
+    [description]
+    
+    Arguments:
+        token {[type]} -- [description]
+        wrtVar {[type]} -- [description]
+    
+    Returns:
+        bool -- [description]
+    """
     if isinstance(token, Constant):
         return False
     elif isinstance(token, Variable):
