@@ -8,6 +8,14 @@ from PyQt5 import QtWidgets
 
 
 def stepsFigure(workspace):
+    """GUI layout for step-by-step solution
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        stepslayout {QtWidgets.QVBoxLayout} -- step-by-step solution layout
+    """
     workspace.stepsfigure = Figure()
     workspace.stepscanvas = FigureCanvas(workspace.stepsfigure)
     workspace.stepsfigure.clear()
@@ -18,6 +26,11 @@ def stepsFigure(workspace):
 
 
 def showSteps(workspace):
+    """Renders step-by-step solution in matplotlib figure
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+    """
     workspace.stepsfigure.suptitle(workspace.output, y=0.98,
                                    horizontalalignment='center',
                                    verticalalignment='top')

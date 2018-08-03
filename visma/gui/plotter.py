@@ -15,6 +15,21 @@ from visma.functions.variable import Variable
 
 
 def graphPlot(tokens):
+    """Function for plotting graphs in 2D and 3D space
+
+    2D graphs are plotted for expression in one variable and equations in two variables. 3D graphs are plotted for expressions in two variables and equations in three variables.
+
+    Arguments:
+        tokens {list} -- list of function tokens
+
+    Returns:
+        graphVars {list} -- variables to be plotted on the graph
+        func {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
+        variables {list} -- variables in given equation
+
+    Note:
+        The func obtained from graphPlot() funtion is of different type for 2D and 3D plots. For 2D func is a numpy array and for 3D func is a function.
+    """
 
     eqType = getTokensType(tokens)
     LHStok, RHStok = getLHSandRHS(tokens)
@@ -34,6 +49,17 @@ def graphPlot(tokens):
 
 
 def plotIn2D(LHStok, RHStok, variables):
+    """Returns function array for 2D plots
+
+    Arguments:
+        LHStok {list} -- expression tokens
+        RHStok {list} -- expression tokens
+        variables {list} -- variables in equation
+
+    Returns:
+        graphVars {list} -- variables for plotting
+        func {numpy.array} -- equation to be plotted in 3D
+    """
 
     delta = 0.1
     xrange = np.arange(-10, 10, delta)
@@ -44,26 +70,44 @@ def plotIn2D(LHStok, RHStok, variables):
 
 
 def plotIn3D(LHStok, RHStok, variables):
+    """Returns function for 3D plots
+
+    Arguments:
+        LHStok {list} -- expression tokens
+        RHStok {list} -- expression tokens
+        variables {list} -- variables in equation
+
+    Returns:
+        graphVars {list} -- variables for plotting
+        func {function} -- equation to be plotted in 3D
+    """
 
     xmin, xmax, ymin, ymax, zmin, zmax = (-10, 10)*3
     xrange = np.linspace(xmin, xmax, 25)
     yrange = np.linspace(ymin, ymax, 25)
     zrange = np.linspace(zmin, zmax, 25)
     graphVars = [xrange, yrange, zrange]
-    func = get3DFunc(LHStok, RHStok, variables)
-    return graphVars, func
-
-
-def get3DFunc(LHStok, RHStok, variables):
 
     def func(x, y, z):
         graphVars = [x, y, z]
         return getFunction(LHStok, RHStok, variables, graphVars, 3)
 
-    return func
+    return graphVars, func
 
 
 def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
+    """Returns function for plotting
+
+    Arguments:
+        LHStok {list} -- expression tokens
+        RHStok {list} -- expression tokens
+        eqnVars {list} -- variables in equation
+        graphVars {list} -- variables for plotting
+        dim {int} -- dimenion of plot
+
+    Returns:
+        (LHS - RHS) {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
+    """
     for token in LHStok:
         LHS = getFuncExpr(LHStok, eqnVars, graphVars)
     if len(eqnVars) == dim:
@@ -74,6 +118,16 @@ def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
 
 
 def getFuncExpr(exprTok, eqnVars, graphVars):
+    """Allocates variables in equation to graph variables to give final function compatible for plotting
+
+    Arguments:
+        exprTok {list} -- expression tokens
+        eqnVars {list} -- variables in equation
+        graphVars {list} -- variables for plotting
+
+    Returns:
+        expr {numpy.array(2D)/function(3D)} -- expression converted to compatible data type for plotting
+    """
     expr = 0
     coeff = 1
     for token in exprTok:
@@ -99,6 +153,14 @@ def getFuncExpr(exprTok, eqnVars, graphVars):
 
 
 def plotFigure(workspace):
+    """GUI layout for plot figure
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        layout {QtWidgets.QVBoxLayout} -- contains matplot figure
+    """
     workspace.figure = Figure()
     workspace.canvas = FigureCanvas(workspace.figure)
     # workspace.figure.patch.set_facecolor('white')
@@ -114,6 +176,13 @@ def plotFigure(workspace):
 
 
 def plot(workspace):
+    """Renders plot for functions in 2D and 3D
+
+    Maps points from the numpy arrays for variables in given equation on the 2D/3D plot figure
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+    """
     graphVars, func, variables = graphPlot(workspace.eqToks[-1])
     workspace.figure.clf()
     if len(graphVars) == 2:

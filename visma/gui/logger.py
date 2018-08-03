@@ -1,1 +1,1 @@
-# TODO: Initialized logger
+# TODO: Initialize logger

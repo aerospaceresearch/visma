@@ -1,7 +1,19 @@
 from PyQt5.QtWidgets import QHBoxLayout, QRadioButton
 
+#######
+# GUI #
+#######
+
 
 def preferenceLayout(workspace):
+    """GUI layout for preferences
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        hbox {QtWidgets.QHBoxLayout} -- preferences layout
+    """
 
     hbox = QHBoxLayout()
     workspace.button1 = QRadioButton("Enable")
@@ -18,6 +30,12 @@ def preferenceLayout(workspace):
 
 
 def buttonState(button, workspace):
+    """Takes action according to button and its state change trigger
+
+    Arguments:
+        button {QtWidgets.QRadioButton} -- preference button
+        workspace {QtWidgets.QWidget} -- main layout
+    """
 
     if button.text() == "Enable":
         if button.isChecked() is True:
@@ -26,3 +44,5 @@ def buttonState(button, workspace):
     if button.text() == "Disable":
         if button.isChecked() is True:
             workspace.showQuickSim = False
+
+    workspace.textedit.setText("")
