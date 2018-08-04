@@ -16,14 +16,14 @@ import copy
 
 def solveFor(lTokens, rTokens, wrtVar):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
         wrtVar {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -45,14 +45,14 @@ def solveFor(lTokens, rTokens, wrtVar):
 
 def solveTokens(lTokens, rTokens, wrtVar):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
         wrtVar {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -78,14 +78,14 @@ def solveTokens(lTokens, rTokens, wrtVar):
 
 def moveToRHS(lTokens, rTokens, wrtVar):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
         wrtVar {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -126,9 +126,9 @@ def moveToRHS(lTokens, rTokens, wrtVar):
 
 def funcInverse(lTokens, rTokens, wrtVar):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
@@ -146,13 +146,13 @@ def funcInverse(lTokens, rTokens, wrtVar):
 
 def isVarInTokensList(tokens, wrtVar):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         tokens {[type]} -- [description]
         wrtVar {[type]} -- [description]
-    
+
     Returns:
         bool -- [description]
     """
@@ -164,9 +164,9 @@ def isVarInTokensList(tokens, wrtVar):
 
 def checkOnlyVarTermsInList(tokens, wrtVar):  # Rename func
     """[summary]
-    
+
     [description]
-    
+
     Returns:
         bool -- [description]
     """
@@ -178,13 +178,13 @@ def checkOnlyVarTermsInList(tokens, wrtVar):  # Rename func
 
 def isVarInToken(token, wrtVar):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         token {[type]} -- [description]
         wrtVar {[type]} -- [description]
-    
+
     Returns:
         bool -- [description]
     """

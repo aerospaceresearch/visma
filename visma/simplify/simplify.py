@@ -21,13 +21,13 @@ from visma.simplify.muldiv import multiplication, multiplicationEquation, divisi
 
 def moveRTokensToLTokens(lTokens, rTokens):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lTokens {[type]} -- [description]
         rTokens {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -74,13 +74,13 @@ def moveRTokensToLTokens(lTokens, rTokens):
 
 def simplifyEquation(lToks, rToks):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lToks {[type]} -- [description]
         rToks {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -164,12 +164,12 @@ def simplifyEquation(lToks, rToks):
 
 def simplify(tokens):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         tokens {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """

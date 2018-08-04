@@ -14,15 +14,15 @@ from visma.io.tokenize import removeToken
 
 def multiplication(tokens, direct=False):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         tokens {[type]} -- [description]
-    
+
     Keyword Arguments:
         direct {bool} -- [description] (default: {False})
-    
+
     Returns:
         [type] -- [description]
     """
@@ -47,13 +47,13 @@ def multiplication(tokens, direct=False):
 
 def expressionMultiplication(variables, tokens):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         variables {[type]} -- [description]
         tokens {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -142,9 +142,9 @@ def expressionMultiplication(variables, tokens):
 
 def multiplyExpressions(expression1, expression2):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         expression1 {[type]} -- [description]
         expression2 {[type]} -- [description]
@@ -188,16 +188,16 @@ def multiplyExpressions(expression1, expression2):
 
 def multiplicationEquation(lToks, rToks, direct=False):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lToks {[type]} -- [description]
         rToks {[type]} -- [description]
-    
+
     Keyword Arguments:
         direct {bool} -- [description] (default: {False})
-    
+
     Returns:
         [type] -- [description]
     """
@@ -288,16 +288,16 @@ def multiplicationEquation(lToks, rToks, direct=False):
 
 def multiplySelect(token1, token2, coeff=1):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         token1 {[type]} -- [description]
         token2 {[type]} -- [description]
-    
+
     Keyword Arguments:
         coeff {number} -- [description] (default: {1})
-    
+
     Returns:
         [type] -- [description]
     """
@@ -313,14 +313,14 @@ def multiplySelect(token1, token2, coeff=1):
 
 def multiplyConstants(constant1, constant2, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant1 {[type]} -- [description]
         constant2 {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -393,14 +393,14 @@ def multiplyConstants(constant1, constant2, coeff):
 
 def multiplyVariables(variable1, variable2, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         variable1 {[type]} -- [description]
         variable2 {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -435,14 +435,14 @@ def multiplyVariables(variable1, variable2, coeff):
 
 def multiplyVariableConstant(constant, variable, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant {[type]} -- [description]
         variable {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -472,15 +472,15 @@ def multiplyVariableConstant(constant, variable, coeff):
 
 def division(tokens, direct=False):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         tokens {[type]} -- [description]
-    
+
     Keyword Arguments:
         direct {bool} -- [description] (default: {False})
-    
+
     Returns:
         [type] -- [description]
     """
@@ -504,16 +504,16 @@ def division(tokens, direct=False):
 
 def divisionEquation(lToks, rToks, direct=False):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         lToks {[type]} -- [description]
         rToks {[type]} -- [description]
-    
+
     Keyword Arguments:
         direct {bool} -- [description] (default: {False})
-    
+
     Returns:
         [type] -- [description]
     """
@@ -604,13 +604,13 @@ def divisionEquation(lToks, rToks, direct=False):
 
 def expressionDivision(variables, tokens):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         variables {[type]} -- [description]
         tokens {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -728,14 +728,14 @@ def expressionDivision(variables, tokens):
 
 def multiply_expression_constant(constant, expression, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant {[type]} -- [description]
         expression {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -746,14 +746,14 @@ def multiply_expression_constant(constant, expression, coeff):
 
 def multiply_expression_variable(variable, expression, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         variable {[type]} -- [description]
         expression {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -775,14 +775,14 @@ def multiply_expression_variable(variable, expression, coeff):
 
 def division_variables(variable1, variable2, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         variable1 {[type]} -- [description]
         variable2 {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -807,14 +807,14 @@ def division_variables(variable1, variable2, coeff):
 
 def division_constants(constant1, constant2, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant1 {[type]} -- [description]
         constant2 {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -888,14 +888,14 @@ def division_constants(constant1, constant2, coeff):
 
 def division_variable_constant(constant, variable, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant {[type]} -- [description]
         variable {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -910,14 +910,14 @@ def division_variable_constant(constant, variable, coeff):
 
 def division_constantVariable(constant, variable, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant {[type]} -- [description]
         variable {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -934,14 +934,14 @@ def division_constantVariable(constant, variable, coeff):
 
 def division_expression_constant(constant, expression, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant {[type]} -- [description]
         expression {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -953,9 +953,9 @@ def division_expression_constant(constant, expression, coeff):
 
 def division_constant_expression(constant, expression, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         constant {[type]} -- [description]
         expression {[type]} -- [description]
@@ -966,14 +966,14 @@ def division_constant_expression(constant, expression, coeff):
 
 def division_expression_variable(variable, expression, coeff):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         variable {[type]} -- [description]
         expression {[type]} -- [description]
         coeff {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
     """
@@ -999,16 +999,16 @@ def division_variable_expression(variable, expression, coeff):
 
 def division_select(token1, token2, coeff=1):
     """[summary]
-    
+
     [description]
-    
+
     Arguments:
         token1 {[type]} -- [description]
         token2 {[type]} -- [description]
-    
+
     Keyword Arguments:
         coeff {number} -- [description] (default: {1})
-    
+
     Returns:
         [type] -- [description]
     """

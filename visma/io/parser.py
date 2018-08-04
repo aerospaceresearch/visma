@@ -7,20 +7,18 @@ from visma.io.checks import isNumber
 
 
 def resultLatex(operation, equations, comments, wrtVar=None):
-    """[summary]
-    
-    [description]
-    
+    """Converts tokens to LaTeX format for displaying in step-by-step solution figure
+
     Arguments:
-        operation {[type]} -- [description]
-        equations {[type]} -- [description]
-        comments {[type]} -- [description]
-    
+        operation {string} -- operation performed on input
+        equations {list} -- list of tokens list
+        comments {list} -- list of comments
+
     Keyword Arguments:
-        wrtVar {[type]} -- [description] (default: {None})
-    
+        wrtVar {string} -- with respect to variable (default: {None})
+
     Returns:
-        [type] -- [description]
+        finalSteps {string} -- final result in LaTeX
     """
 
     equationLatex = []
@@ -43,15 +41,13 @@ def resultLatex(operation, equations, comments, wrtVar=None):
 
 
 def tokensToLatex(eqTokens):
-    """[summary]
-    
-    [description]
-    
+    """Converts tokens to LaTeX string
+
     Arguments:
-        eqTokens {[type]} -- [description]
-    
+        eqTokens {list} -- list of function tokens
+
     Returns:
-        [type] -- [description]
+        eqLatex {string} -- equation string in LaTeX
     """
     eqLatex = ""
     for token in eqTokens:
@@ -60,15 +56,13 @@ def tokensToLatex(eqTokens):
 
 
 def tokensToString(tokens):
-    """[summary]
-    
-    [description]
-    
+    """Converts tokens to text string
+
     Arguments:
-        tokens {[type]} -- [description]
-    
+        tokens {list} -- list of function tokens
+
     Returns:
-        [type] -- [description]
+        tokenString {string} -- equation string
     """
     # FIXME: tokensToString method
     tokenString = ''

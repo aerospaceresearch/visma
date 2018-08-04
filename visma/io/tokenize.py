@@ -1561,7 +1561,7 @@ def constantConversion(tokens):
     return constantExpression, tokens
 
 
-def tokenizer(eqn=" {x-1} * {x+1} = x"):
+def tokenizer(eqnString):
     """[summary]
 
     [description]
@@ -1572,7 +1572,7 @@ def tokenizer(eqn=" {x-1} * {x+1} = x"):
     Returns:
         [type] -- [description]
     """
-    _, tokens = constantConversion(clean(eqn))
+    _, tokens = constantConversion(clean(eqnString))
     return tokens
 
 
@@ -1623,19 +1623,17 @@ def changeToken(tokens, variables, scope_times=0):
 
 
 def removeToken(tokens, scope, scope_times=0):
-    """[summary]
-
-    [description]
+    """Removes a token given scope from tokens list
 
     Arguments:
-        tokens {[type]} -- [description]
-        scope {[type]} -- [description]
+        tokens {list} -- list of function tokens
+        scope {int} -- scope number of token to be removed
 
     Keyword Arguments:
         scope_times {number} -- [description] (default: {0})
 
     Returns:
-        [type] -- [description]
+        tokens {list} -- list of function tokens after removing token
     """
     for remScope in scope:
         for i, token in enumerate(tokens):
@@ -1661,15 +1659,16 @@ def removeToken(tokens, scope, scope_times=0):
 
 
 def getLHSandRHS(tokens):
-    """[summary]
-
-    [description]
+    """Returns LHS and RHS tokens
 
     Arguments:
-        tokens {[type]} -- [description]
+        tokens {list} -- list of function tokens
 
     Returns:
-        bool -- [description]
+        lhs {list} -- list of lhs function tokens
+        rhs {list} -- list of rhs function tokens
+        or
+        bool -- False if not tokens list
     """
     lhs = []
     rhs = []
