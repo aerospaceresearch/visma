@@ -4,6 +4,7 @@ from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
 from visma.io.checks import isNumber
+from visma.matrix.structure import Matrix
 
 
 def resultLatex(operation, equations, comments, wrtVar=None):
@@ -130,5 +131,13 @@ def tokensToString(tokens):
                 if token.power != 1:
                     tokenString += "^" + "(" + str(token.power) + ")"
                 tokenString += "(" + tokensToString([token.operand]) + ")"
+        elif isinstance(token, Matrix):
+            tokenString += "["
+            for i in range(token.dim[0]):
+                for j in range(token.dim[1]):
+                    tokenString += tokensToString(token.value[i][j])
+                    tokenString += ","
+                tokenString = tokenString[:-1] + ";"
+            tokenString = tokenString[:-1] + "]"
 
     return tokenString

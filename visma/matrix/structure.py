@@ -77,8 +77,8 @@ class Matrix(object):
     def dimension(self):
         """Gets the dimension of the matrix
 
-        dim[0] -- no of rows
-        dim[1] -- no of columns
+        dim[0] -- number of rows
+        dim[1] -- number of columns
         """
         self.dim[0] = len(self.value)
         self.dim[1] = len(self.value[0])

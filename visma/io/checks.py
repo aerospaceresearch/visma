@@ -501,7 +501,6 @@ def getLevelVariables(tokens):
                             variables.append(var)
                     elif isinstance(v, Expression):
                         variables.append(v)
-    print(variables)
     return variables
 
 

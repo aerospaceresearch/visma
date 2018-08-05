@@ -1,4 +1,5 @@
 from visma.io.checks import getVariables, areTokensEqual, isTokenInToken
+from visma.io.parser import tokensToString
 from visma.io.tokenize import getTerms
 from visma.functions.operator import Operator, Plus
 from visma.functions.structure import Expression
@@ -56,6 +57,17 @@ def test_isTokenInToken():
 #############
 # io.parser #
 #############
+
+
+def test_tokensToString():
+
+    # Matrix token to string
+    mat = getTokens("[1+x, 2; \
+                      3  , 4]")
+    assert tokensToString([mat]) == "[1.0 + x,2.0;3.0,4.0]"
+
+    mat = getTokens("[1+x, 2] + [1, y + z^2]")
+    assert tokensToString(mat) == "[1.0 + x,2.0] + [1.0,y + z^(2.0)]"
 
 
 ###############
