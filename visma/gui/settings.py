@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QHBoxLayout, QRadioButton
+from PyQt5.QtWidgets import QHBoxLayout, QCheckBox
 
 #######
 # GUI #
@@ -16,15 +16,22 @@ def preferenceLayout(workspace):
     """
 
     hbox = QHBoxLayout()
-    workspace.button1 = QRadioButton("Enable")
-    workspace.button1.setChecked(True)
-    workspace.button1.toggled.connect(lambda: buttonState(workspace.button1, workspace))
-    hbox.addWidget(workspace.button1)
 
-    workspace.button2 = QRadioButton("Disable")
-    workspace.button2.toggled.connect(lambda: buttonState(workspace.button2, workspace))
+    workspace.QSCheckBox = QCheckBox("Quick Simplifier")
+    workspace.QSCheckBox.setChecked(True)
+    workspace.QSCheckBox.toggled.connect(lambda: buttonState(workspace.QSCheckBox, workspace))
 
-    hbox.addWidget(workspace.button2)
+    workspace.SSSCheckBox = QCheckBox("Step-by-step Solution")
+    workspace.SSSCheckBox.setChecked(True)
+    workspace.SSSCheckBox.toggled.connect(lambda: buttonState(workspace.SSSCheckBox, workspace))
+
+    workspace.GPCheckBox = QCheckBox("Graph Plotter")
+    workspace.GPCheckBox.setChecked(True)
+    workspace.GPCheckBox.toggled.connect(lambda: buttonState(workspace.GPCheckBox, workspace))
+
+    hbox.addWidget(workspace.QSCheckBox)  # Quick Simplifier
+    hbox.addWidget(workspace.SSSCheckBox)  # Step-by-step Solution
+    hbox.addWidget(workspace.GPCheckBox)  # Graph Plotter
 
     return hbox
 
@@ -33,16 +40,26 @@ def buttonState(button, workspace):
     """Takes action according to button and its state change trigger
 
     Arguments:
-        button {QtWidgets.QRadioButton} -- preference button
+        button {QtWidgets.QCheckBox} -- preference checkbox
         workspace {QtWidgets.QWidget} -- main layout
     """
 
-    if button.text() == "Enable":
+    workspace.clearAll()
+
+    if button.text() == "Quick Simplifier":
         if button.isChecked() is True:
             workspace.showQuickSim = True
-
-    if button.text() == "Disable":
-        if button.isChecked() is True:
+        else:
             workspace.showQuickSim = False
 
-    workspace.textedit.setText("")
+    elif button.text() == "Step-by-step Solution":
+        if button.isChecked() is True:
+            workspace.showStepByStep = True
+        else:
+            workspace.showStepByStep = False
+
+    elif button.text() == "Graph Plotter":
+        if button.isChecked() is True:
+            workspace.showPlotter = True
+        else:
+            workspace.showPlotter = False

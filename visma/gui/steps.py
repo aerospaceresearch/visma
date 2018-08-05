@@ -43,20 +43,21 @@ def showSteps(workspace):
 
 
 def stepsPref(workspace):
+
     prefLayout = QVBoxLayout()
     workspace.sizeChangeText = QLabel("Font Size: " + str(round(workspace.fontPointSize, 1)) + "x")
-    sizeChangeBox = QDoubleSpinBox()
-    sizeChangeBox.setRange(0.1, 10)
-    sizeChangeBox.setValue(1)
-    sizeChangeBox.setSingleStep(0.1)
-    sizeChangeBox.setSuffix('x')
+    workspace.sizeChangeBox = QDoubleSpinBox()
+    workspace.sizeChangeBox.setRange(0.1, 10)
+    workspace.sizeChangeBox.setValue(1)
+    workspace.sizeChangeBox.setSingleStep(0.1)
+    workspace.sizeChangeBox.setSuffix('x')
     prefLayout.addWidget(workspace.sizeChangeText)
-    prefLayout.addWidget(sizeChangeBox)
-    sizeChangeBox.valueChanged.connect(lambda: sizeChange(workspace, sizeChangeBox))
+    prefLayout.addWidget(workspace.sizeChangeBox)
+    workspace.sizeChangeBox.valueChanged.connect(lambda: sizeChange(workspace))
     return prefLayout
 
 
-def sizeChange(workspace, sizeChangeBox):
-    workspace.sizeChangeText.setText("Font Size: " + str(round(sizeChangeBox.value(), 1)) + "x")
-    workspace.fontPointSize = sizeChangeBox.value()
+def sizeChange(workspace):
+    workspace.sizeChangeText.setText("Font Size: " + str(round(workspace.sizeChangeBox.value(), 1)) + "x")
+    workspace.fontPointSize = workspace.sizeChangeBox.value()
     showSteps(workspace)

@@ -78,6 +78,8 @@ class WorkSpace(QWidget):
 
     mode = 'interaction'
     showQuickSim = True
+    showStepByStep = True
+    showPlotter = True
     enableQSolver = True
     buttons = {}
     solutionOptionsBox = QGridLayout()
@@ -86,8 +88,8 @@ class WorkSpace(QWidget):
     selectedCombo = "Greek"
     equations = []
     fontPointSize = 1
-    range2D = [10, 10]
-    range3D = [10, 10, 10]
+    axisRange = [10, 10, 10, 25]  # axisRange[-1] --> MeshDensity in 3D graphs
+    resultOut = False
 
     try:
         with open('local/eqn-list.vis', 'r+') as fp:
@@ -122,9 +124,9 @@ class WorkSpace(QWidget):
 
         self.equationList = QTabWidget()
         self.equationList.tab1 = QWidget()
-        self.equationList.tab2 = QWidget()
+        # self.equationList.tab2 = QWidget()
         self.equationList.addTab(self.equationList.tab1, "history")
-        self.equationList.addTab(self.equationList.tab2, "favourites")
+        # self.equationList.addTab(self.equationList.tab2, "favourites")
         self.equationList.tab1.setLayout(self.equationsLayout())
         self.equationList.tab1.setStatusTip("Track of old equations")
         self.equationList.setFixedWidth(300)
@@ -133,7 +135,7 @@ class WorkSpace(QWidget):
         inputSpace.tab1 = QWidget()
         inputSpace.tab2 = QWidget()
         inputSpace.addTab(inputSpace.tab1, "input")
-        inputSpace.addTab(inputSpace.tab2, "preferences")
+        inputSpace.addTab(inputSpace.tab2, "settings")
         inputSpace.tab1.setLayout(self.inputsLayout())
         inputSpace.tab2.setLayout(preferenceLayout(self))
         inputSpace.tab1.setStatusTip("Input characters")
@@ -148,17 +150,17 @@ class WorkSpace(QWidget):
         tabPlot.tab1 = QWidget()
         tabPlot.tab2 = QWidget()
         tabPlot.addTab(tabPlot.tab1, "plotter")
-        tabPlot.addTab(tabPlot.tab2, "preferences")
+        tabPlot.addTab(tabPlot.tab2, "settings")
         tabPlot.tab1.setLayout(plotFigure(self))
-        tabPlot.tab1.setLayout(plotPref(self))
         tabPlot.tab1.setStatusTip("Visualize graph")
-        tabPlot.tab1.setStatusTip("Plot Preferences")
+        tabPlot.tab2.setLayout(plotPref(self))
+        tabPlot.tab2.setStatusTip("Plot Preferences")
 
         tabStepsLogs = QTabWidget()
         tabStepsLogs.tab1 = QWidget()
         tabStepsLogs.tab2 = QWidget()
         tabStepsLogs.addTab(tabStepsLogs.tab1, "step-by-step")
-        tabStepsLogs.addTab(tabStepsLogs.tab2, "preferences")
+        tabStepsLogs.addTab(tabStepsLogs.tab2, "settings")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
         tabStepsLogs.tab2.setLayout(stepsPref(self))
@@ -210,6 +212,13 @@ class WorkSpace(QWidget):
         elif self.showQuickSim is False:
             self.qSol = ""
             showQSolve(self)
+
+    def clearAll(self):
+        self.textedit.clear()
+        self.eqToks = [[]]
+        self.output = ""
+        showSteps(self)
+        plot(self)
 
     def equationsLayout(self):
         self.myQListWidget = QtWidgets.QListWidget(self)
@@ -557,7 +566,7 @@ class WorkSpace(QWidget):
     def onInputPress(self, name):
         def calluser():
             if name == 'C':
-                self.textedit.clear()
+                self.clearAll()
             elif name == 'DEL':
                 cursor = self.textedit.textCursor()
                 cursor.deletePreviousChar()
@@ -570,7 +579,7 @@ class WorkSpace(QWidget):
             availableOperations = []
             tokenString = ''
             equationTokens = []
-            resultOut = True
+            self.resultOut = True
             if name == 'addition':
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, tokenString, equationTokens, comments = addition(
@@ -612,18 +621,18 @@ class WorkSpace(QWidget):
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = getVariables(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
-                resultOut = False
+                self.resultOut = False
             elif name == 'integrate':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = getVariables(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
-                resultOut = False
+                self.resultOut = False
             elif name == 'differentiate':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = getVariables(lhs, rhs)
                 self.wrtVariableButtons(variables, name)
-                resultOut = False
-            if resultOut:
+                self.resultOut = False
+            if self.resultOut:
                 self.eqToks = equationTokens
                 self.output = resultLatex(name, equationTokens, comments)
                 if len(availableOperations) == 0:
@@ -635,8 +644,10 @@ class WorkSpace(QWidget):
                 elif self.mode == 'interaction':
                     cursor = self.textedit.textCursor()
                     cursor.insertText(tokenString)
-                showSteps(self)
-                plot(self)
+                if self.showStepByStep is True:
+                    showSteps(self)
+                if self.showPlotter is True:
+                    plot(self)
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
@@ -673,8 +684,10 @@ class WorkSpace(QWidget):
             elif self.mode == 'interaction':
                 cursor = self.textedit.textCursor()
                 cursor.insertText(tokenString)
-            showSteps(self)
-            plot(self)
+            if self.showStepByStep is True:
+                showSteps(self)
+            if self.showPlotter is True:
+                plot(self)
         return calluser
 
 
