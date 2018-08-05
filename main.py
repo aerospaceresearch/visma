@@ -22,10 +22,10 @@ from visma.calculus.integration import integrate
 from visma.io.checks import checkTypes, getVariables
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
-from visma.gui.plotter import plotFigure, plot
+from visma.gui.plotter import plotFigure, plot, plotPref
 from visma.gui.qsolver import quickSimplify, qSolveFigure, showQSolve
 from visma.gui.settings import preferenceLayout
-from visma.gui.steps import stepsFigure, showSteps
+from visma.gui.steps import stepsFigure, showSteps, stepsPref
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
@@ -85,6 +85,9 @@ class WorkSpace(QWidget):
     inputBox = QGridLayout()
     selectedCombo = "Greek"
     equations = []
+    fontPointSize = 1
+    range2D = [10, 10]
+    range3D = [10, 10, 10]
 
     try:
         with open('local/eqn-list.vis', 'r+') as fp:
@@ -143,18 +146,23 @@ class WorkSpace(QWidget):
 
         tabPlot = QTabWidget()
         tabPlot.tab1 = QWidget()
+        tabPlot.tab2 = QWidget()
         tabPlot.addTab(tabPlot.tab1, "plotter")
+        tabPlot.addTab(tabPlot.tab2, "preferences")
         tabPlot.tab1.setLayout(plotFigure(self))
+        tabPlot.tab1.setLayout(plotPref(self))
         tabPlot.tab1.setStatusTip("Visualize graph")
+        tabPlot.tab1.setStatusTip("Plot Preferences")
 
         tabStepsLogs = QTabWidget()
         tabStepsLogs.tab1 = QWidget()
         tabStepsLogs.tab2 = QWidget()
         tabStepsLogs.addTab(tabStepsLogs.tab1, "step-by-step")
-        # tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
+        tabStepsLogs.addTab(tabStepsLogs.tab2, "preferences")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
-        tabStepsLogs.tab2.setStatusTip("Logger")
+        tabStepsLogs.tab2.setLayout(stepsPref(self))
+        tabStepsLogs.tab2.setStatusTip("Steps Figure Preferences")
 
         font = QtGui.QFont()
         font.setPointSize(16)

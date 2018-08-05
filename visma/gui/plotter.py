@@ -4,7 +4,7 @@ from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSpinBox
 
 from visma.io.checks import getVariables, getTokensType
 from visma.io.tokenize import getLHSandRHS
@@ -58,12 +58,16 @@ def plotIn2D(LHStok, RHStok, variables):
 
     Returns:
         graphVars {list} -- variables for plotting
-        func {numpy.array} -- equation to be plotted in 3D
+        func {numpy.array} -- equation to be plotted in 2D
     """
-
-    delta = 0.1
-    xrange = np.arange(-10, 10, delta)
-    yrange = np.arange(-10, 10, delta)
+    xmin = -20
+    xmax = 20
+    ymin = -10
+    ymax = 10
+    xdelta = 0.01*(xmax-xmin)
+    ydelta = 0.01*(ymax-ymin)
+    xrange = np.arange(xmin, xmax, xdelta)
+    yrange = np.arange(ymin, ymax, ydelta)
     graphVars = np.meshgrid(xrange, yrange)
     function = getFunction(LHStok, RHStok, variables, graphVars, 2)
     return graphVars, function
@@ -169,7 +173,7 @@ def plotFigure(workspace):
         toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom')]
 
     workspace.toolbar = NavigationCustomToolbar(workspace.canvas, workspace)
-    layout = QtWidgets.QVBoxLayout()
+    layout = QVBoxLayout()
     layout.addWidget(workspace.canvas)
     layout.addWidget(workspace.toolbar)
     return layout
@@ -219,3 +223,26 @@ def plot(workspace):
         ax.set_ylabel(r'$' + variables[1] + '$')
         ax.set_zlabel(r'$' + variables[2] + '$')
     workspace.canvas.draw()
+
+
+###############
+# preferences #
+###############
+
+
+def plotPref(workspace):
+    prefLayout = QVBoxLayout()
+    workspace.l1 = QLabel("x-axis range: (-" + str(workspace.xRange) + ", " + + str(workspace.xRange) + ")")
+    xRangeBox = QSpinBox()
+    xRangeBox.setRange(1, 1000)
+    xRangeBox.setValue(1)
+    prefLayout.addWidget(workspace.l1)
+    prefLayout.addWidget(xRangeBox)
+    xRangeBox.valueChanged.connect(lambda: valuechange(workspace, xRangeBox))
+    return prefLayout
+
+
+def valuechange(workspace, xRangeBox):
+    workspace.l1.setText("Font Size: " + str(xRangeBox.value()) + "x")
+    workspace.xRange = int(xRangeBox.value())
+    plot(workspace)
