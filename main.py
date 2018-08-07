@@ -88,7 +88,7 @@ class WorkSpace(QWidget):
     selectedCombo = "Greek"
     equations = []
     fontPointSize = 1
-    axisRange = [10, 10, 10, 25]  # axisRange[-1] --> MeshDensity in 3D graphs
+    axisRange = [10, 10, 10, 30]  # axisRange[-1] --> MeshDensity in 3D graphs
     resultOut = False
 
     try:

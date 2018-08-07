@@ -57,6 +57,7 @@ def plotIn2D(LHStok, RHStok, variables, axisRange):
         LHStok {list} -- expression tokens
         RHStok {list} -- expression tokens
         variables {list} -- variables in equation
+        axisRange {list} -- axis limits
 
     Returns:
         graphVars {list} -- variables for plotting
@@ -66,8 +67,8 @@ def plotIn2D(LHStok, RHStok, variables, axisRange):
     xmax = axisRange[0]
     ymin = -axisRange[1]
     ymax = axisRange[1]
-    xdelta = 0.01*(xmax-xmin)
-    ydelta = 0.01*(ymax-ymin)
+    xdelta = 0.01 * (xmax - xmin)
+    ydelta = 0.01 * (ymax - ymin)
     xrange = np.arange(xmin, xmax, xdelta)
     yrange = np.arange(ymin, ymax, ydelta)
     graphVars = np.meshgrid(xrange, yrange)
@@ -82,6 +83,7 @@ def plotIn3D(LHStok, RHStok, variables, axisRange):
         LHStok {list} -- expression tokens
         RHStok {list} -- expression tokens
         variables {list} -- variables in equation
+        axisRange {list} -- axis limits
 
     Returns:
         graphVars {list} -- variables for plotting
@@ -147,9 +149,9 @@ def getFuncExpr(exprTok, eqnVars, graphVars):
             varProduct = 1
             for value, power in zip(token.value, token.power):
                 varProduct *= graphVars[eqnVars.index(value)]**power
-            expr += coeff*token.coefficient*varProduct
+            expr += coeff * token.coefficient * varProduct
         elif isinstance(token, Constant):
-            expr += coeff*token.value
+            expr += coeff * token.value
         elif isinstance(token, FuncOp):
             pass
         elif isinstance(token, Binary) and token.value == '-':
@@ -214,15 +216,15 @@ def plot(workspace):
         for z in zrange:
             X, Y = np.meshgrid(xrange, yrange)
             Z = func(X, Y, z)
-            ax.contour(X, Y, Z+z, [z], zdir='z')
+            ax.contour(X, Y, Z + z, [z], zdir='z')
         for y in yrange:
             X, Z = np.meshgrid(xrange, zrange)
             Y = func(X, y, Z)
-            ax.contour(X, Y+y, Z, [y], zdir='y')
+            ax.contour(X, Y + y, Z, [y], zdir='y')
         for x in xrange:
             Y, Z = np.meshgrid(yrange, zrange)
             X = func(x, Y, Z)
-            ax.contour(X+x, Y, Z, [x], zdir='x')
+            ax.contour(X + x, Y, Z, [x], zdir='x')
         axisRange = workspace.axisRange
         xmin = -axisRange[0]
         xmax = axisRange[0]
@@ -253,9 +255,12 @@ def plotPref(workspace):
 
     prefLayout = QVBoxLayout()
 
-    workspace.xLimitValue = QLabel("X-axis range: (-" + str(workspace.axisRange[0]) + ", " + str(workspace.axisRange[0]) + ")")
-    workspace.yLimitValue = QLabel("Y-axis range: (-" + str(workspace.axisRange[1]) + ", " + str(workspace.axisRange[1]) + ")")
-    workspace.zLimitValue = QLabel("Z-axis range: (-" + str(workspace.axisRange[2]) + ", " + str(workspace.axisRange[2]) + ")")
+    workspace.xLimitValue = QLabel(
+        "X-axis range: (-" + str(workspace.axisRange[0]) + ", " + str(workspace.axisRange[0]) + ")")
+    workspace.yLimitValue = QLabel(
+        "Y-axis range: (-" + str(workspace.axisRange[1]) + ", " + str(workspace.axisRange[1]) + ")")
+    workspace.zLimitValue = QLabel(
+        "Z-axis range: (-" + str(workspace.axisRange[2]) + ", " + str(workspace.axisRange[2]) + ")")
 
     def customSlider():
         limitSlider = QSlider(Qt.Horizontal)
@@ -271,10 +276,11 @@ def plotPref(workspace):
     workspace.yLimitSlider = customSlider()
     workspace.zLimitSlider = customSlider()
 
-    workspace.meshDensityValue = QLabel("Mesh Layers: " + str(workspace.axisRange[3]))
+    workspace.meshDensityValue = QLabel(
+        "Mesh Layers: " + str(workspace.axisRange[3]))
     workspace.meshDensity = QSpinBox()
-    workspace.meshDensity.setRange(10, 50)
-    workspace.meshDensity.setValue(25)
+    workspace.meshDensity.setRange(10, 75)
+    workspace.meshDensity.setValue(30)
     workspace.meshDensity.valueChanged.connect(lambda: valueChange(workspace))
     workspace.note = QLabel("*Increment above value for a more dense mesh.")
 
@@ -303,7 +309,11 @@ def valueChange(workspace):
     meshLayers = workspace.meshDensity.value()
     workspace.axisRange = [xlimit, ylimit, zlimit, meshLayers]
 
-    workspace.xLimitValue.setText("X-axis range: (-" + str(workspace.axisRange[0]) + ", " + str(workspace.axisRange[0]) + ")")
-    workspace.yLimitValue.setText("Y-axis range: (-" + str(workspace.axisRange[1]) + ", " + str(workspace.axisRange[1]) + ")")
-    workspace.zLimitValue.setText("Z-axis range: (-" + str(workspace.axisRange[2]) + ", " + str(workspace.axisRange[2]) + ")")
-    workspace.meshDensityValue.setText("Mesh Layers: " + str(workspace.axisRange[3]))
+    workspace.xLimitValue.setText(
+        "X-axis range: (-" + str(workspace.axisRange[0]) + ", " + str(workspace.axisRange[0]) + ")")
+    workspace.yLimitValue.setText(
+        "Y-axis range: (-" + str(workspace.axisRange[1]) + ", " + str(workspace.axisRange[1]) + ")")
+    workspace.zLimitValue.setText(
+        "Z-axis range: (-" + str(workspace.axisRange[2]) + ", " + str(workspace.axisRange[2]) + ")")
+    workspace.meshDensityValue.setText(
+        "Mesh Layers: " + str(workspace.axisRange[3]))

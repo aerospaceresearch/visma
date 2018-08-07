@@ -8,6 +8,3 @@ htmlcov
 local
 visweb
 __pycache__
-docs/_site
-docs/.sass-cache
-docs/Gemfile.lock
