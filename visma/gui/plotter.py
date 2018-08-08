@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSlider, QSpinBox, QPushButton
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSlider, QSpinBox, QPushButton, QSplitter
 
 from visma.io.checks import getVariables, getTokensType
 from visma.io.tokenize import getLHSandRHS
@@ -253,7 +253,7 @@ def refreshPlot(workspace):
 
 def plotPref(workspace):
 
-    prefLayout = QVBoxLayout()
+    prefLayout = QSplitter(Qt.Horizontal)
 
     workspace.xLimitValue = QLabel(
         "X-axis range: (-" + str(workspace.axisRange[0]) + ", " + str(workspace.axisRange[0]) + ")")
@@ -270,6 +270,7 @@ def plotPref(workspace):
         limitSlider.setTickPosition(QSlider.TicksBothSides)
         limitSlider.setTickInterval(1)
         limitSlider.valueChanged.connect(lambda: valueChange(workspace))
+        limitSlider.setStatusTip("Change axes limit")
         return limitSlider
 
     workspace.xLimitSlider = customSlider()
@@ -278,25 +279,37 @@ def plotPref(workspace):
 
     workspace.meshDensityValue = QLabel(
         "Mesh Layers: " + str(workspace.axisRange[3]))
+    workspace.meshDensityValue.setStatusTip("Increment for a denser mesh in 3D plot")
     workspace.meshDensity = QSpinBox()
+    workspace.meshDensity.setFixedSize(200, 30)
     workspace.meshDensity.setRange(10, 75)
     workspace.meshDensity.setValue(30)
     workspace.meshDensity.valueChanged.connect(lambda: valueChange(workspace))
-    workspace.note = QLabel("*Increment above value for a more dense mesh.")
+    workspace.meshDensity.setStatusTip("Incrementing mesh density may affect performance")
 
+    refreshPlotterText = QLabel("Apply plotter settings")
     refreshPlotter = QPushButton('Apply')
+    refreshPlotter.setFixedSize(200, 30)
     refreshPlotter.clicked.connect(lambda: refreshPlot(workspace))
+    refreshPlotter.setStatusTip("Apply modified settings to plotter.")
 
-    prefLayout.addWidget(workspace.xLimitValue)
-    prefLayout.addWidget(workspace.xLimitSlider)
-    prefLayout.addWidget(workspace.yLimitValue)
-    prefLayout.addWidget(workspace.yLimitSlider)
-    prefLayout.addWidget(workspace.zLimitValue)
-    prefLayout.addWidget(workspace.zLimitSlider)
-    prefLayout.addWidget(workspace.meshDensityValue)
-    prefLayout.addWidget(workspace.meshDensity)
-    prefLayout.addWidget(workspace.note)
-    prefLayout.addWidget(refreshPlotter)
+    axisPref = QSplitter(Qt.Vertical)
+    axisPref.addWidget(workspace.xLimitValue)
+    axisPref.addWidget(workspace.xLimitSlider)
+    axisPref.addWidget(workspace.yLimitValue)
+    axisPref.addWidget(workspace.yLimitSlider)
+    axisPref.addWidget(workspace.zLimitValue)
+    axisPref.addWidget(workspace.zLimitSlider)
+
+    plotSetPref = QSplitter(Qt.Vertical)
+    plotSetPref.addWidget(workspace.meshDensityValue)
+    plotSetPref.addWidget(workspace.meshDensity)
+    plotSetPref.addWidget(refreshPlotterText)
+    plotSetPref.addWidget(refreshPlotter)
+
+    prefLayout.addWidget(plotSetPref)
+    prefLayout.addWidget(axisPref)
+    prefLayout.setFixedWidth(400)
 
     return prefLayout
 

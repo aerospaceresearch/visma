@@ -22,10 +22,10 @@ from visma.calculus.integration import integrate
 from visma.io.checks import checkTypes, getVariables
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
-from visma.gui.plotter import plotFigure, plot, plotPref
+from visma.gui.plotter import plotFigure, plot
 from visma.gui.qsolver import quickSimplify, qSolveFigure, showQSolve
 from visma.gui.settings import preferenceLayout
-from visma.gui.steps import stepsFigure, showSteps, stepsPref
+from visma.gui.steps import stepsFigure, showSteps
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
@@ -66,7 +66,9 @@ class Window(QtWidgets.QMainWindow):
         helpMenu.addAction(wikiAction)
         self.workSpace = WorkSpace()
         self.setCentralWidget(self.workSpace)
-        self.setGeometry(300, 300, 1000, 800)
+        self.GUIwidth = 1300
+        self.GUIheight = 900
+        self.setGeometry(300, 300, self.GUIwidth, self.GUIheight)
         self.setWindowTitle('VISual MAth')
         self.show()
 
@@ -87,7 +89,7 @@ class WorkSpace(QWidget):
     inputBox = QGridLayout()
     selectedCombo = "Greek"
     equations = []
-    fontPointSize = 1
+    stepsFontSize = 1
     axisRange = [10, 10, 10, 30]  # axisRange[-1] --> MeshDensity in 3D graphs
     resultOut = False
 
@@ -153,7 +155,7 @@ class WorkSpace(QWidget):
         tabPlot.addTab(tabPlot.tab2, "settings")
         tabPlot.tab1.setLayout(plotFigure(self))
         tabPlot.tab1.setStatusTip("Visualize graph")
-        tabPlot.tab2.setLayout(plotPref(self))
+        # tabPlot.tab2.setLayout(plotPref(self))
         tabPlot.tab2.setStatusTip("Plot Preferences")
 
         tabStepsLogs = QTabWidget()
@@ -163,7 +165,6 @@ class WorkSpace(QWidget):
         tabStepsLogs.addTab(tabStepsLogs.tab2, "settings")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
-        tabStepsLogs.tab2.setLayout(stepsPref(self))
         tabStepsLogs.tab2.setStatusTip("Steps Figure Preferences")
 
         font = QtGui.QFont()
@@ -208,10 +209,10 @@ class WorkSpace(QWidget):
             self.qSol = quickSimplify(self)
             if self.qSol is None:
                 self.qSol = ""
-            showQSolve(self)
+            showQSolve(self, self.showQuickSim)
         elif self.showQuickSim is False:
             self.qSol = ""
-            showQSolve(self)
+            showQSolve(self, self.showQuickSim)
 
     def clearAll(self):
         self.textedit.clear()
@@ -253,8 +254,7 @@ class WorkSpace(QWidget):
     def buttonsLayout(self):
         vbox = QVBoxLayout()
         interactionModeLayout = QVBoxLayout()
-        vismaButton = QtWidgets.QPushButton('visma')
-        interactionModeButton = vismaButton
+        interactionModeButton = QtWidgets.QPushButton('visma')
         interactionModeButton.clicked.connect(self.interactionMode)
         interactionModeLayout.addWidget(interactionModeButton)
         interactionModeWidget = QWidget(self)
@@ -285,6 +285,7 @@ class WorkSpace(QWidget):
 
     def interactionMode(self):
         self.enableQSolver = False
+        showQSolve(self, self.enableQSolver)
         cursor = self.textedit.textCursor()
         interactionText = cursor.selectedText()
         if str(interactionText) == '':
@@ -495,23 +496,8 @@ class WorkSpace(QWidget):
         return self.equationListVbox
 
     def inputsLayout(self, loadList="Greek"):
+
         inputLayout = QHBoxLayout(self)
-        # TODO: Move input type to config menu
-        # comboLabel = QtWidgets.QLabel()
-        # comboLabel.setText("Input Type:")
-        # comboLabel.setFixedSize(100, 30)
-
-        # combo = QtWidgets.QComboBox(self)
-        # combo.addItem("Greek")
-        # combo.addItem("LaTeX")
-        # combo.setFixedSize(100, 30)
-        # combo.activated[str].connect(self.onActivated)
-
-        # inputTypeSplitter = QSplitter(Qt.Horizontal)
-        # inputTypeSplitter.addWidget(comboLabel)
-        # inputTypeSplitter.addWidget(combo)
-
-        # inputSplitter = QSplitter(Qt.Vertical)
         inputWidget = QWidget()
         self.selectedCombo = str(loadList)
         for i in range(4):
@@ -738,4 +724,5 @@ def main():
 
 
 if __name__ == '__main__':
+
     main()

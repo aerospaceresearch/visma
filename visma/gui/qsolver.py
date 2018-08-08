@@ -79,13 +79,17 @@ def qSolveFigure(workspace):
     return qSolLayout
 
 
-def showQSolve(workspace):
+def showQSolve(workspace, showQuickSim):
     """Renders quick solution in matplotlib figure
 
     Arguments:
         workspace {QtWidgets.QWidget} -- main layout
     """
-    workspace.qSolveFigure.suptitle(workspace.qSol, x=0.01,
+    if showQuickSim is True:
+        quickSolution = workspace.qSol
+    else:
+        quickSolution = ""
+    workspace.qSolveFigure.suptitle(quickSolution, x=0.01,
                                     horizontalalignment='left',
                                     verticalalignment='top')
     #                               size=qApp.font().pointSize()*1.5)
