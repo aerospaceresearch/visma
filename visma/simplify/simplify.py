@@ -20,6 +20,17 @@ from visma.simplify.muldiv import multiplication, multiplicationEquation, divisi
 
 
 def moveRTokensToLTokens(lTokens, rTokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        lTokens {[type]} -- [description]
+        rTokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     if len(lTokens) == 0 and len(rTokens) > 0:
         return rTokens, lTokens
     elif isEquation(lTokens, rTokens):
@@ -62,6 +73,17 @@ def moveRTokensToLTokens(lTokens, rTokens):
 
 
 def simplifyEquation(lToks, rToks):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        lToks {[type]} -- [description]
+        rToks {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     animation = []
@@ -141,6 +163,16 @@ def simplifyEquation(lToks, rToks):
 
 
 def simplify(tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     tokens_orig = copy.deepcopy(tokens)
     animation = [tokens_orig]
     variables = []

@@ -7,6 +7,11 @@ import math
 
 
 class Sinh(FuncOp):
+    """Class for sinh function -- sinh(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()
@@ -28,6 +33,11 @@ class Sinh(FuncOp):
 
 
 class Cosh(FuncOp):
+    """Class for cosh function -- cosh(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()

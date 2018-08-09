@@ -8,7 +8,13 @@ from visma.functions.variable import Variable
 
 
 class Constant(Function):
-    """Class for constant type
+    """Class for constant type tokens
+
+    Example:
+        1, -2, 3.14, 4i + 5 etc
+
+    Extends:
+        Function
     """
 
     def __init__(self, value=None):

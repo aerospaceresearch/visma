@@ -13,6 +13,19 @@ from visma.io.tokenize import changeToken, removeToken
 
 
 def addition(tokens, direct=False):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Keyword Arguments:
+        direct {bool} -- [description] (default: {False})
+
+    Returns:
+        [type] -- [description]
+    """
     animation = [copy.deepcopy(tokens)]
     variables = []
     comments = []
@@ -32,6 +45,20 @@ def addition(tokens, direct=False):
 
 
 def additionEquation(lToks, rToks, direct=False):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        lToks {[type]} -- [description]
+        rToks {[type]} -- [description]
+
+    Keyword Arguments:
+        direct {bool} -- [description] (default: {False})
+
+    Returns:
+        [type] -- [description]
+    """
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     comments = []
@@ -140,6 +167,17 @@ def additionEquation(lToks, rToks, direct=False):
 
 
 def expressionAddition(variables, tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        variables {[type]} -- [description]
+        tokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     removeScopes = []
     change = []
     comments = []
@@ -420,6 +458,19 @@ def expressionAddition(variables, tokens):
 
 
 def equationAddition(lVariables, lTokens, rVariables, rTokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        lVariables {[type]} -- [description]
+        lTokens {[type]} -- [description]
+        rVariables {[type]} -- [description]
+        rTokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     lRemoveScopes = []
     rRemoveScopes = []
     lChange = []
@@ -534,6 +585,19 @@ def equationAddition(lVariables, lTokens, rVariables, rTokens):
 
 
 def subtraction(tokens, direct=False):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Keyword Arguments:
+        direct {bool} -- [description] (default: {False})
+
+    Returns:
+        [type] -- [description]
+    """
     animation = [copy.deepcopy(tokens)]
     comments = []
     if direct:
@@ -553,6 +617,20 @@ def subtraction(tokens, direct=False):
 
 
 def subtractionEquation(lToks, rToks, direct=False):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        lToks {[type]} -- [description]
+        rToks {[type]} -- [description]
+
+    Keyword Arguments:
+        direct {bool} -- [description] (default: {False})
+
+    Returns:
+        [type] -- [description]
+    """
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     comments = []
@@ -663,6 +741,17 @@ def subtractionEquation(lToks, rToks, direct=False):
 
 
 def expressionSubtraction(variables, tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        variables {[type]} -- [description]
+        tokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     removeScopes = []
     change = []
     comments = []
@@ -939,6 +1028,19 @@ def expressionSubtraction(variables, tokens):
 
 
 def equationSubtraction(lVariables, lTokens, rVariables, rTokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        lVariables {[type]} -- [description]
+        lTokens {[type]} -- [description]
+        rVariables {[type]} -- [description]
+        rTokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     lRemoveScopes = []
     rRemoveScopes = []
     lChange = []

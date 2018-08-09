@@ -9,6 +9,16 @@ from visma.utils.polynomials import syntheticDivision
 
 
 def factorize(tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
 
     tokens, availableOperations, token_string, animation, comments = simplify(tokens)
 
@@ -22,6 +32,16 @@ def factorize(tokens):
 
 
 def factorizeTokens(tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     coeffs, var = getPolyCoeffs(tokens)
     gcf, roots, polynomial = factor(coeffs)
     if roots != []:
@@ -67,10 +87,22 @@ def factorizeTokens(tokens):
             tokens.pop()
     else:
         comment = None
-    return tokens, [tokens], [comment]
+    animation = [tokens]
+    comments = [comment]
+    return tokens, animation, comments
 
 
 def getPolyCoeffs(tokens):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        tokens {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     degree = 0
     for token in tokens:
         if isinstance(token, Variable) and token.power[0] > degree:
@@ -91,6 +123,16 @@ def getPolyCoeffs(tokens):
 
 
 def factor(coefficients):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        coefficients {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     gcf = gcd(coefficients)
     coefficients = [coefficient / gcf for coefficient in coefficients]
     polynomial = coefficients
@@ -104,6 +146,16 @@ def factor(coefficients):
 
 
 def extractRoots(coefficients):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        coefficients {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     factorsLeading = factors(coefficients[0])
     factorsConstant = factors(coefficients[-1])
     roots = possibleRoots(factorsConstant, factorsLeading)
@@ -115,6 +167,17 @@ def extractRoots(coefficients):
 
 
 def possibleRoots(listA, listB):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        listA {[type]} -- [description]
+        listB {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     roots = []
     listA = [float(i) for i in listA]
     listB = [float(i) for i in listB]
@@ -126,6 +189,16 @@ def possibleRoots(listA, listB):
 
 
 def removeDuplicates(extraRoots):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        extraRoots {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
     roots = []
     for x in extraRoots:
         if x not in roots:

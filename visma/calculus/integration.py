@@ -6,12 +6,25 @@ from visma.functions.exponential import Logarithm
 from visma.functions.operator import Operator, Binary
 from visma.simplify.simplify import simplify
 
-###################
+###############
 # Integration #
-###################
+###############
 
 
 def integrate(tokens, wrtVar):
+    """Simplifies and then integrates given tokens wrt given variable
+
+    Arguments:
+        tokens {list} -- list of funtion tokens
+        wrtVar {string} -- with respect to variable
+
+    Returns:
+        tokens {list} -- list of integrated tokens
+        availableOperations {list} -- list of operations
+        token_string {string} -- output equation string
+        animation {list} -- equation tokens for step-by-step
+        comments {list} -- comments for step-by-step
+    """
 
     tokens, availableOperations, token_string, animation, comments = simplify(tokens)
 
@@ -33,9 +46,20 @@ def integrate(tokens, wrtVar):
 # This is only applicable to Variable and Constant type
 # Kind of hacky as of now
 # Must be modified to accomodate other function types
-# Will add integrate class method later
+# Have to add integrate class method to individual functions
 
 def integrateTokens(funclist, wrtVar):
+    """Integrates given tokens wrt given variable
+
+    Arguments:
+        funclist {list} -- list of funtion tokens
+        wrtVar {string} -- with respect to variable
+
+    Returns:
+        intFunc {list} -- list of integrated tokens
+        animNew {list} -- equation tokens for step-by-step
+        commentsNew {list} -- comments for step-by-step
+    """
     intFunc = []
     animNew = []
     commentsNew = ["Integrating with respect to " + r"$" + wrtVar + r"$" + "\n"]

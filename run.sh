@@ -26,7 +26,7 @@ if [ $(uname -s) == "Linux" ]; then
       "0")
       echo "-- apt-get install --"
       sudo apt-get install python3.6-dev python-pip -y
-      sudo apt-get install libxext-dev python3-qt5 qtdeclarative5-dev build-essential  -y
+      sudo apt-get install libxext-dev python3-pyqt5 qtdeclarative5-dev build-essential  -y
       sudo apt-get install freeglut3-dev libboost-python-dev -y
       sudo apt install libftgl-dev ftgl-dev -y
       sudo apt install python-opengl -y

@@ -5,6 +5,14 @@ from visma.matrix.structure import Matrix
 
 
 def simplifyMatrix(mat):
+    """Simplifies each element in the matrix
+
+    Arguments:
+        mat {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        mat {visma.matrix.structure.Matrix} -- simplified matrix token
+    """
     for i in range(mat.dim[0]):
         for j in range(mat.dim[1]):
             mat.value[i][j], _, _, _, _ = simplify(mat.value[i][j])
@@ -12,6 +20,18 @@ def simplifyMatrix(mat):
 
 
 def addMatrix(matA, matB):
+    """Adds two matrices
+
+    Arguments:
+        matA {visma.matrix.structure.Matrix} -- matrix token
+        matB {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        matSum {visma.matrix.structure.Matrix} -- sum matrix token
+
+    Note:
+        Make dimCheck before calling addMatrix
+    """
     matSum = Matrix()
     matSum.empty(matA.dim)
     for i in range(matA.dim[0]):
@@ -24,6 +44,19 @@ def addMatrix(matA, matB):
 
 
 def multiplyMatrix(matA, matB):
+    """Multiplies two matrices
+
+    Arguments:
+        matA {visma.matrix.structure.Matrix} -- matrix token
+        matB {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        matPro {visma.matrix.structure.Matrix} -- product matrix token
+
+    Note:
+        Make mulitplyCheck before calling multiplyMatrix
+        Not commutative
+    """
     matPro = Matrix()
     matPro.empty([matA.dim[0], matB.dim[1]])
     for i in range(matA.dim[0]):

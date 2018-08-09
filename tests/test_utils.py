@@ -24,6 +24,6 @@ def test_factors():
 
 def test_syntheticDivision():
     assert syntheticDivision([1, 2, 1], -1) == ([1.0, 1.0], 0.0)
-    # (x^2 + 2x + 2)/(x+1)
+    # (x^2 + 2x + 1)/(x+1)
     assert syntheticDivision([3, 2, 1, 3], 2) == ([3.0, 8.0, 17.0], 37.0)
     # (3x^2 + 2x + x + 3)/(x-2)

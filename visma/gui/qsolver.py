@@ -9,12 +9,15 @@ from visma.io.parser import tokensToLatex
 from visma.simplify.simplify import simplify, simplifyEquation
 
 
-###########
-# backend #
-###########
-
-
 def quickSimplify(workspace):
+    """Dynamic simplifier for simplifying expression as it is being typed
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        qSolution/log {string} -- quick solution or error log
+    """
     # FIXME: Crashes for some cases. Find and fix.
     qSolution = ""
     input = workspace.textedit.toPlainText()
@@ -39,7 +42,6 @@ def quickSimplify(workspace):
             qSolution += tokensToLatex(equationTokens[-1]) + ' $'
             # workspace.eqToks = equationTokens
             # plot(workspace)
-            # workspace.eqToks = []
             return qSolution
         else:
             log = "Invalid Expression"
@@ -57,19 +59,37 @@ def quickSimplify(workspace):
 
 
 def qSolveFigure(workspace):
+    """GUI layout for quick simplifier
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        qSolLayout {QtWidgets.QVBoxLayout} -- quick simplifier layout
+    """
+
     bg = workspace.palette().window().color()
     bgcolor = (bg.redF(), bg.greenF(), bg.blueF())
     workspace.qSolveFigure = Figure(edgecolor=bgcolor, facecolor=bgcolor)
     workspace.solcanvas = FigureCanvas(workspace.qSolveFigure)
     workspace.qSolveFigure.clear()
+    qSolLayout = QtWidgets.QVBoxLayout()
+    qSolLayout.addWidget(workspace.solcanvas)
 
-    stepslayout = QtWidgets.QVBoxLayout()
-    stepslayout.addWidget(workspace.solcanvas)
-    return stepslayout
+    return qSolLayout
 
 
-def showQSolve(workspace):
-    workspace.qSolveFigure.suptitle(workspace.qSol, x=0.01,
+def showQSolve(workspace, showQuickSim):
+    """Renders quick solution in matplotlib figure
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+    """
+    if showQuickSim is True:
+        quickSolution = workspace.qSol
+    else:
+        quickSolution = ""
+    workspace.qSolveFigure.suptitle(quickSolution, x=0.01,
                                     horizontalalignment='left',
                                     verticalalignment='top')
     #                               size=qApp.font().pointSize()*1.5)

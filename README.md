@@ -1,10 +1,25 @@
-# **visma** - VISual MAth
+<h1 align="center">
+  visma - VISual MAth
+</h1>
 
-[![Build Status](https://img.shields.io/travis/8hantanu/visma.svg?style=for-the-badge)](https://travis-ci.org/8hantanu/visma)
-[![Codacy Badge](https://img.shields.io/codacy/grade/d8523777601e464ca7ede4ad85892c34.svg?style=for-the-badge)](https://www.codacy.com/app/8hantanu/visma?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=8hantanu/visma&amp;utm_campaign=Badge_Grade)
-[![Coveralls github](https://img.shields.io/coveralls/github/8hantanu/visma.svg?style=for-the-badge)](https://coveralls.io/github/8hantanu/visma)
+<h4 align="center">
+A math equation solver and visualizer
+</h4>
 
 ![visma](/assets/banner.png)
+
+<p align="center">
+  <a href="https://travis-ci.org/8hantanu/visma">
+    <img alt="Build Status" src="https://img.shields.io/travis/8hantanu/visma.svg?style=for-the-badge">
+  </a>
+  <a href="https://www.codacy.com/app/8hantanu/visma">
+    <img alt="Codacy Badge" src="https://img.shields.io/codacy/grade/d8523777601e464ca7ede4ad85892c34.svg?style=for-the-badge">
+  </a>
+  <a href="https://coveralls.io/github/8hantanu/visma">
+    <img alt="Coveralls Coverage" src="https://img.shields.io/coveralls/github/8hantanu/visma.svg?style=for-the-badge">
+  </a>
+</p>
+
 
 A visual equation solver, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
 

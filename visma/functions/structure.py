@@ -2,6 +2,10 @@ import copy
 
 
 class Function(object):
+    """Basis function class for all functions
+
+    The Function class forms the basis for the functions tokens of all types.
+    """
 
     def __init__(self):
         self.tid = None
@@ -17,6 +21,18 @@ class Function(object):
         self.afterScope = None
 
     def __str__(self, nv=None, np=None, nc=None):
+        """Equation token to string
+
+        Coverts equation tokens to string for text and LaTeX rendering
+
+        Keyword Arguments:
+            nv {int} -- number of values (default: {None})
+            np {int} -- number of powers (default: {None})
+            nc {int} -- number of coefficients (default: {None})
+
+        Returns:
+            represent {string} -- string/latex representation of equation
+        """
         # OPTIMIZE: Works but a mess. Organize and add comments
         represent = ""
 
@@ -55,6 +71,17 @@ class Function(object):
         return represent
 
     def prop(self, tid=None, scope=None, value=None, coeff=None, power=None, operand=None, operator=None):
+        """Set function token properties
+
+        Keyword Arguments:
+            tid {[type]} -- Token ID (default: {None})
+            scope {int} -- Scope (default: {None})
+            value {int or list} -- Value (default: {None})
+            coeff {int} -- Coefficient (default: {None})
+            power {int or list} -- Power (default: {None})
+            operand {visma.functions.structure.Function} -- Operand (default: {None})
+            operator {visma.functions.structure.Function} -- Operator (default: {None})
+        """
         if tid is not None:
             self.tid = tid
         if scope is not None:
@@ -71,11 +98,15 @@ class Function(object):
             self.operator = operator
 
     def differentiate(self):
+        """Differentiate function token
+        """
         self.power = 1
         self.coefficient = 1
 
     def level(self):
-        return (int((len(self.tid)) / 2))
+        """Level of function token
+        """
+        return (int((len(self.tid)) / 2)), 5
 
     def functionOf(self):
         inst = copy.deepcopy(self)
@@ -89,7 +120,7 @@ class Function(object):
 ##########
 
 class FuncOp(Function):
-    """Defined for functions of form sin(), log(), exp() etc which take a function(operand) as argument
+    """Defined for functions of form sin(...), log(...), exp(...) etc which take a function(operand) as argument
     """
     def __init__(self, operand=None):
         super().__init__()
@@ -106,6 +137,20 @@ class FuncOp(Function):
         return represent
 
     def inverse(self, rToken, wrtVar, inverseFunction):
+        """Returns inverse of function
+
+        Applies inverse of function to RHS and LHS.
+
+        Arguments:
+            rToken {visma.functions.structure.Function} -- RHS token
+            wrtVar {string} -- with respect to variable
+            inverseFunction {visma.functions.structure.Function} -- inverse of the function itself
+
+        Returns:
+            self {visma.functions.structure.Function} -- function itself(operand before inverse)
+            rToken {visma.functions.structure.Function} -- new RHS token
+            comment {string} -- steps comment
+        """
         rToken.coefficient /= self.coefficient
         rToken.power /= self.power
         invFunc = copy.deepcopy(inverseFunction)
@@ -120,6 +165,7 @@ class FuncOp(Function):
 ###################
 # For example: sec(x)*tan(x) or sin(x)*log(x) or e^(x)*cot(x)
 # Will be taken care by function Expression
+
 
 class Expression(Function):
     """Class for expression type

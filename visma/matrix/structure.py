@@ -2,6 +2,18 @@ from visma.functions.constant import Constant
 
 
 class Matrix(object):
+    """Class for matrix type
+
+    The elements in the matrix are function tokens.
+
+    Example:
+        [              1            ,            2xy^2            ;
+                      4xy           ,             x+y             ]
+        is tokenized to
+        [[         [Constant]        ,          [Variable]        ],
+         [         [Variable]        , [Variable, Binary, Variable]]]
+        and stored in matrix.value.
+    """
 
     def __init__(self):
         self.scope = None
@@ -22,6 +34,11 @@ class Matrix(object):
         return represent
 
     def empty(self, dim=None):
+        """Empties the matrix into a matrix of dimension dim
+
+        Keyword Arguments:
+            dim {list} -- dimension of matrix (default: {None})
+        """
         if dim is not None:
             self.dim = dim
         self.value = [[[] for _ in range(self.dim[1])] for _ in range(self.dim[0])]
@@ -37,6 +54,11 @@ class Matrix(object):
             self.power = power
 
     def isSquare(self):
+        """Checks if matrix is square
+
+        Returns:
+            bool -- if square matrix or not
+        """
         if self.dim[0] == self.dim[1]:
             self.__class__ = SquareMat
             return True
@@ -53,22 +75,13 @@ class Matrix(object):
         pass
 
     def dimension(self):
+        """Gets the dimension of the matrix
+
+        dim[0] -- number of rows
+        dim[1] -- number of columns
+        """
         self.dim[0] = len(self.value)
         self.dim[1] = len(self.value[0])
-
-
-class ValMat(Matrix):
-
-    def __init__(self, dim, token):
-        super().__init__()
-        for i in range(0, dim[0]):
-            row = []
-            for j in range(0, dim[1]):
-                if i == j:
-                    row.append(token)
-                else:
-                    row.append(token)
-            self.value.append(row)
 
 
 class SquareMat(Matrix):
@@ -78,6 +91,13 @@ class SquareMat(Matrix):
 
 
 class IdenMat(SquareMat):
+    """Class for identity matrix
+
+    Identity matrix is a square matrix with all elements as 0 except for the diagonal elements which are 1.
+
+    Extends:
+        SquareMat
+    """
 
     def __init__(self, dim):
         super().__init__()

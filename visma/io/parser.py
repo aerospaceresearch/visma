@@ -4,9 +4,23 @@ from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
 from visma.io.checks import isNumber
+from visma.matrix.structure import Matrix
 
 
 def resultLatex(operation, equations, comments, wrtVar=None):
+    """Converts tokens to LaTeX format for displaying in step-by-step solution figure
+
+    Arguments:
+        operation {string} -- operation performed on input
+        equations {list} -- list of tokens list
+        comments {list} -- list of comments
+
+    Keyword Arguments:
+        wrtVar {string} -- with respect to variable (default: {None})
+
+    Returns:
+        finalSteps {string} -- final result in LaTeX
+    """
 
     equationLatex = []
     for eqTokens in equations:
@@ -28,6 +42,14 @@ def resultLatex(operation, equations, comments, wrtVar=None):
 
 
 def tokensToLatex(eqTokens):
+    """Converts tokens to LaTeX string
+
+    Arguments:
+        eqTokens {list} -- list of function tokens
+
+    Returns:
+        eqLatex {string} -- equation string in LaTeX
+    """
     eqLatex = ""
     for token in eqTokens:
         eqLatex += token.__str__()
@@ -35,6 +57,14 @@ def tokensToLatex(eqTokens):
 
 
 def tokensToString(tokens):
+    """Converts tokens to text string
+
+    Arguments:
+        tokens {list} -- list of function tokens
+
+    Returns:
+        tokenString {string} -- equation string
+    """
     # FIXME: tokensToString method
     tokenString = ''
     for token in tokens:
@@ -101,5 +131,13 @@ def tokensToString(tokens):
                 if token.power != 1:
                     tokenString += "^" + "(" + str(token.power) + ")"
                 tokenString += "(" + tokensToString([token.operand]) + ")"
+        elif isinstance(token, Matrix):
+            tokenString += "["
+            for i in range(token.dim[0]):
+                for j in range(token.dim[1]):
+                    tokenString += tokensToString(token.value[i][j])
+                    tokenString += ","
+                tokenString = tokenString[:-1] + ";"
+            tokenString = tokenString[:-1] + "]"
 
     return tokenString

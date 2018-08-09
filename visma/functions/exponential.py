@@ -7,6 +7,15 @@ from visma.functions.structure import FuncOp
 
 
 class Logarithm(FuncOp):
+    """Class for log function -- log(...)
+
+    Input examples:
+        log(2) [without base, default base 10]
+        log_4(x+y) [with base]
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self, operand=None):
         super().__init__()
@@ -22,6 +31,11 @@ class Logarithm(FuncOp):
 
 
 class NaturalLog(Logarithm):
+    """Class for ln function -- ln(...) or use log_e(...)
+
+    Extends:
+        Logarithm
+    """
 
     def __init__(self, operand=None):
         super().__init__()
@@ -30,6 +44,11 @@ class NaturalLog(Logarithm):
 
 
 class Exponential(FuncOp):
+    """Class for exponential function -- exp(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()

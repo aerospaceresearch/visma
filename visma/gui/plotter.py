@@ -1,34 +1,48 @@
 import numpy as np
 
-from visma.io.tokenize import getLHSandRHS
-from visma.functions.variable import Variable
-from visma.functions.constant import Constant
-from visma.functions.operator import Binary
-from visma.io.checks import findWRTVariable, getTokensType
-
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSlider, QSpinBox, QPushButton, QSplitter
 
-###########
-# backend #
-###########
+from visma.io.checks import getVariables, getTokensType
+from visma.io.tokenize import getLHSandRHS
+from visma.functions.constant import Constant
+from visma.functions.operator import Binary
+from visma.functions.structure import FuncOp
+from visma.functions.variable import Variable
 
 
-def graphPlot(tokens):
+def graphPlot(workspace):
+    """Function for plotting graphs in 2D and 3D space
 
+    2D graphs are plotted for expression in one variable and equations in two variables. 3D graphs are plotted for expressions in two variables and equations in three variables.
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        graphVars {list} -- variables to be plotted on the graph
+        func {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
+        variables {list} -- variables in given equation
+
+    Note:
+        The func obtained from graphPlot() funtion is of different type for 2D and 3D plots. For 2D func is a numpy array and for 3D func is a function.
+    """
+    tokens = workspace.eqToks[-1]
+    axisRange = workspace.axisRange
     eqType = getTokensType(tokens)
     LHStok, RHStok = getLHSandRHS(tokens)
-    variables = sorted(findWRTVariable(LHStok, RHStok))
+    variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
     if (dim == 1 and eqType == "expression") or (dim == 2 and eqType == "equation"):
-        graphVars, func = plotIn2D(LHStok, RHStok, variables)
+        graphVars, func = plotIn2D(LHStok, RHStok, variables, axisRange)
         if dim == 1:
             variables.append('f(' + variables[0] + ')')
     elif (dim == 2 and eqType == "expression") or (dim == 3 and eqType == "equation"):
-        graphVars, func = plotIn3D(LHStok, RHStok, variables)
+        graphVars, func = plotIn3D(LHStok, RHStok, variables, axisRange)
         if dim == 2:
             variables.append('f(' + variables[0] + ',' + variables[1] + ')')
     else:
@@ -36,96 +50,116 @@ def graphPlot(tokens):
     return graphVars, func, variables
 
 
-def plotIn2D(LHStok, RHStok, variables):
+def plotIn2D(LHStok, RHStok, variables, axisRange):
+    """Returns function array for 2D plots
 
-    delta = 0.1
-    xrange = np.arange(-10, 10, delta)
-    yrange = np.arange(-10, 10, delta)
+    Arguments:
+        LHStok {list} -- expression tokens
+        RHStok {list} -- expression tokens
+        variables {list} -- variables in equation
+        axisRange {list} -- axis limits
+
+    Returns:
+        graphVars {list} -- variables for plotting
+        func {numpy.array} -- equation to be plotted in 2D
+    """
+    xmin = -axisRange[0]
+    xmax = axisRange[0]
+    ymin = -axisRange[1]
+    ymax = axisRange[1]
+    xdelta = 0.01 * (xmax - xmin)
+    ydelta = 0.01 * (ymax - ymin)
+    xrange = np.arange(xmin, xmax, xdelta)
+    yrange = np.arange(ymin, ymax, ydelta)
     graphVars = np.meshgrid(xrange, yrange)
-    LHS = 0
-    coeff = 1
-    for token in LHStok:
-        if isinstance(token, Variable):
-            varProduct = 1
-            for value, power in zip(token.value, token.power):
-                varProduct *= graphVars[variables.index(value)]**power
-            LHS += coeff*token.coefficient*varProduct
-        elif isinstance(token, Binary) and token.value == '-':
-            coeff = -1
-        elif isinstance(token, Binary) and token.value == '+':
-            coeff = 1
-        elif isinstance(token, Constant):
-            LHS += coeff*token.value
-    if len(variables) == 2:
-        RHS = 0
-        coeff = 1
-        for token in RHStok:
-            if isinstance(token, Variable):
-                varProduct = 1
-                for value, power in zip(token.value, token.power):
-                    varProduct *= graphVars[variables.index(value)]**power
-                RHS += coeff*token.coefficient*varProduct
-            elif isinstance(token, Binary) and token.value == '-':
-                coeff = -1
-            elif isinstance(token, Binary) and token.value == '+':
-                coeff = 1
-            elif isinstance(token, Constant):
-                RHS += coeff*token.value
-    elif len(variables) == 1:
-        RHS = graphVars[-1]
-    return graphVars, LHS - RHS
+    function = getFunction(LHStok, RHStok, variables, graphVars, 2)
+    return graphVars, function
 
 
-def plotIn3D(LHStok, RHStok, variables):
+def plotIn3D(LHStok, RHStok, variables, axisRange):
+    """Returns function for 3D plots
 
-    xmin, xmax, ymin, ymax, zmin, zmax = (-10, 10)*3
-    xrange = np.linspace(xmin, xmax, 25)
-    yrange = np.linspace(ymin, ymax, 25)
-    zrange = np.linspace(zmin, zmax, 25)
+    Arguments:
+        LHStok {list} -- expression tokens
+        RHStok {list} -- expression tokens
+        variables {list} -- variables in equation
+        axisRange {list} -- axis limits
+
+    Returns:
+        graphVars {list} -- variables for plotting
+        func {function} -- equation to be plotted in 3D
+    """
+
+    xmin = -axisRange[0]
+    xmax = axisRange[0]
+    ymin = -axisRange[1]
+    ymax = axisRange[1]
+    zmin = -axisRange[2]
+    zmax = axisRange[2]
+    meshLayers = axisRange[3]
+    xrange = np.linspace(xmin, xmax, meshLayers)
+    yrange = np.linspace(ymin, ymax, meshLayers)
+    zrange = np.linspace(zmin, zmax, meshLayers)
     graphVars = [xrange, yrange, zrange]
-    func = getFunction(LHStok, RHStok, variables)
+
+    def func(x, y, z):
+        graphVars = [x, y, z]
+        return getFunction(LHStok, RHStok, variables, graphVars, 3)
 
     return graphVars, func
 
 
-def getFunction(LHStok, RHStok, variables):
+def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
+    """Returns function for plotting
 
-    def func(x, y, z):
-        funcVars = [x, y, z]
-        LHS = 0
-        coeff = 1
-        for token in LHStok:
-            if isinstance(token, Variable):
-                varProduct = 1
-                for value, power in zip(token.value, token.power):
-                    varProduct *= funcVars[variables.index(value)]**power
-                LHS += coeff*token.coefficient*varProduct
-            elif isinstance(token, Binary) and token.value == '-':
-                coeff = -1
-            elif isinstance(token, Binary) and token.value == '+':
-                coeff = 1
-            elif isinstance(token, Constant):
-                LHS += coeff*token.value
-        if len(variables) == 3:
-            RHS = 0
+    Arguments:
+        LHStok {list} -- expression tokens
+        RHStok {list} -- expression tokens
+        eqnVars {list} -- variables in equation
+        graphVars {list} -- variables for plotting
+        dim {int} -- dimenion of plot
+
+    Returns:
+        (LHS - RHS) {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
+    """
+    for token in LHStok:
+        LHS = getFuncExpr(LHStok, eqnVars, graphVars)
+    if len(eqnVars) == dim:
+        RHS = getFuncExpr(RHStok, eqnVars, graphVars)
+    elif len(eqnVars) == dim - 1:
+        RHS = graphVars[-1]
+    return LHS - RHS
+
+
+def getFuncExpr(exprTok, eqnVars, graphVars):
+    """Allocates variables in equation to graph variables to give final function compatible for plotting
+
+    Arguments:
+        exprTok {list} -- expression tokens
+        eqnVars {list} -- variables in equation
+        graphVars {list} -- variables for plotting
+
+    Returns:
+        expr {numpy.array(2D)/function(3D)} -- expression converted to compatible data type for plotting
+    """
+    expr = 0
+    coeff = 1
+    for token in exprTok:
+        if isinstance(token, Variable):
+            varProduct = 1
+            for value, power in zip(token.value, token.power):
+                varProduct *= graphVars[eqnVars.index(value)]**power
+            expr += coeff * token.coefficient * varProduct
+        elif isinstance(token, Constant):
+            expr += coeff * token.value
+        elif isinstance(token, FuncOp):
+            pass
+        elif isinstance(token, Binary) and token.value == '-':
+            coeff = -1
+        elif isinstance(token, Binary) and token.value == '+':
             coeff = 1
-            for token in RHStok:
-                if isinstance(token, Variable):
-                    varProduct = 1
-                    for value, power in zip(token.value, token.power):
-                        varProduct *= funcVars[variables.index(value)]**power
-                    RHS += coeff*token.coefficient*varProduct
-                elif isinstance(token, Binary) and token.value == '-':
-                    coeff = -1
-                elif isinstance(token, Binary) and token.value == '+':
-                    coeff = 1
-                elif isinstance(token, Constant):
-                    RHS += coeff*token.value
-        elif len(variables) == 2:
-            RHS = funcVars[-1]
-        return LHS - RHS
+    return expr
 
-    return func
 
 #######
 # GUI #
@@ -133,24 +167,37 @@ def getFunction(LHStok, RHStok, variables):
 
 
 def plotFigure(workspace):
+    """GUI layout for plot figure
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        layout {QtWidgets.QVBoxLayout} -- contains matplot figure
+    """
     workspace.figure = Figure()
     workspace.canvas = FigureCanvas(workspace.figure)
-
     # workspace.figure.patch.set_facecolor('white')
 
     class NavigationCustomToolbar(NavigationToolbar):
-        toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ('Home', 'Pan', 'Zoom')]
+        toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ()]
 
     workspace.toolbar = NavigationCustomToolbar(workspace.canvas, workspace)
-    layout = QtWidgets.QVBoxLayout()
+    layout = QVBoxLayout()
     layout.addWidget(workspace.canvas)
     layout.addWidget(workspace.toolbar)
     return layout
 
 
 def plot(workspace):
+    """Renders plot for functions in 2D and 3D
 
-    graphVars, func, variables = graphPlot(workspace.eqToks[-1])
+    Maps points from the numpy arrays for variables in given equation on the 2D/3D plot figure
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+    """
+    graphVars, func, variables = graphPlot(workspace)
     workspace.figure.clf()
     if len(graphVars) == 2:
         X, Y = graphVars[0], graphVars[1]
@@ -169,16 +216,22 @@ def plot(workspace):
         for z in zrange:
             X, Y = np.meshgrid(xrange, yrange)
             Z = func(X, Y, z)
-            ax.contour(X, Y, Z+z, [z], zdir='z')
+            ax.contour(X, Y, Z + z, [z], zdir='z')
         for y in yrange:
             X, Z = np.meshgrid(xrange, zrange)
             Y = func(X, y, Z)
-            ax.contour(X, Y+y, Z, [y], zdir='y')
+            ax.contour(X, Y + y, Z, [y], zdir='y')
         for x in xrange:
             Y, Z = np.meshgrid(yrange, zrange)
             X = func(x, Y, Z)
-            ax.contour(X+x, Y, Z, [x], zdir='x')
-        xmin, xmax, ymin, ymax, zmin, zmax = (-10, 10)*3
+            ax.contour(X + x, Y, Z, [x], zdir='x')
+        axisRange = workspace.axisRange
+        xmin = -axisRange[0]
+        xmax = axisRange[0]
+        ymin = -axisRange[1]
+        ymax = axisRange[1]
+        zmin = -axisRange[2]
+        zmax = axisRange[2]
         ax.set_xlim3d(xmin, xmax)
         ax.set_ylim3d(ymin, ymax)
         ax.set_zlim3d(zmin, zmax)
@@ -186,3 +239,94 @@ def plot(workspace):
         ax.set_ylabel(r'$' + variables[1] + '$')
         ax.set_zlabel(r'$' + variables[2] + '$')
     workspace.canvas.draw()
+
+
+def refreshPlot(workspace):
+    if workspace.resultOut is True and workspace.showPlotter is True:
+        plot(workspace)
+
+
+###############
+# preferences #
+###############
+# TODO: Add status tips, Fix docstrings
+
+def plotPref(workspace):
+
+    prefLayout = QSplitter(Qt.Horizontal)
+
+    workspace.xLimitValue = QLabel(
+        "X-axis range: (-" + str(workspace.axisRange[0]) + ", " + str(workspace.axisRange[0]) + ")")
+    workspace.yLimitValue = QLabel(
+        "Y-axis range: (-" + str(workspace.axisRange[1]) + ", " + str(workspace.axisRange[1]) + ")")
+    workspace.zLimitValue = QLabel(
+        "Z-axis range: (-" + str(workspace.axisRange[2]) + ", " + str(workspace.axisRange[2]) + ")")
+
+    def customSlider():
+        limitSlider = QSlider(Qt.Horizontal)
+        limitSlider.setMinimum(-3)
+        limitSlider.setMaximum(3)
+        limitSlider.setValue(1)
+        limitSlider.setTickPosition(QSlider.TicksBothSides)
+        limitSlider.setTickInterval(1)
+        limitSlider.valueChanged.connect(lambda: valueChange(workspace))
+        limitSlider.setStatusTip("Change axes limit")
+        return limitSlider
+
+    workspace.xLimitSlider = customSlider()
+    workspace.yLimitSlider = customSlider()
+    workspace.zLimitSlider = customSlider()
+
+    workspace.meshDensityValue = QLabel(
+        "Mesh Layers: " + str(workspace.axisRange[3]))
+    workspace.meshDensityValue.setStatusTip("Increment for a denser mesh in 3D plot")
+    workspace.meshDensity = QSpinBox()
+    workspace.meshDensity.setFixedSize(200, 30)
+    workspace.meshDensity.setRange(10, 75)
+    workspace.meshDensity.setValue(30)
+    workspace.meshDensity.valueChanged.connect(lambda: valueChange(workspace))
+    workspace.meshDensity.setStatusTip("Incrementing mesh density may affect performance")
+
+    refreshPlotterText = QLabel("Apply plotter settings")
+    refreshPlotter = QPushButton('Apply')
+    refreshPlotter.setFixedSize(200, 30)
+    refreshPlotter.clicked.connect(lambda: refreshPlot(workspace))
+    refreshPlotter.setStatusTip("Apply modified settings to plotter.")
+
+    axisPref = QSplitter(Qt.Vertical)
+    axisPref.addWidget(workspace.xLimitValue)
+    axisPref.addWidget(workspace.xLimitSlider)
+    axisPref.addWidget(workspace.yLimitValue)
+    axisPref.addWidget(workspace.yLimitSlider)
+    axisPref.addWidget(workspace.zLimitValue)
+    axisPref.addWidget(workspace.zLimitSlider)
+
+    plotSetPref = QSplitter(Qt.Vertical)
+    plotSetPref.addWidget(workspace.meshDensityValue)
+    plotSetPref.addWidget(workspace.meshDensity)
+    plotSetPref.addWidget(refreshPlotterText)
+    plotSetPref.addWidget(refreshPlotter)
+
+    prefLayout.addWidget(plotSetPref)
+    prefLayout.addWidget(axisPref)
+    prefLayout.setFixedWidth(400)
+
+    return prefLayout
+
+
+def valueChange(workspace):
+
+    xlimit = 10**workspace.xLimitSlider.value()
+    ylimit = 10**workspace.yLimitSlider.value()
+    zlimit = 10**workspace.zLimitSlider.value()
+    meshLayers = workspace.meshDensity.value()
+    workspace.axisRange = [xlimit, ylimit, zlimit, meshLayers]
+
+    workspace.xLimitValue.setText(
+        "X-axis range: (-" + str(workspace.axisRange[0]) + ", " + str(workspace.axisRange[0]) + ")")
+    workspace.yLimitValue.setText(
+        "Y-axis range: (-" + str(workspace.axisRange[1]) + ", " + str(workspace.axisRange[1]) + ")")
+    workspace.zLimitValue.setText(
+        "Z-axis range: (-" + str(workspace.axisRange[2]) + ", " + str(workspace.axisRange[2]) + ")")
+    workspace.meshDensityValue.setText(
+        "Mesh Layers: " + str(workspace.axisRange[3]))

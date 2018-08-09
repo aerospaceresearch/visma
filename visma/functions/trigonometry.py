@@ -7,6 +7,11 @@ import math
 
 
 class Sine(FuncOp):
+    """Class for sin function -- sin(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()
@@ -21,6 +26,11 @@ class Sine(FuncOp):
 
 
 class Cosine(FuncOp):
+    """Class for cos function -- cos(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()
@@ -43,6 +53,11 @@ class Cosine(FuncOp):
 
 
 class Tangent(FuncOp):
+    """Class for tan function -- tan(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()
@@ -62,6 +77,11 @@ class Tangent(FuncOp):
 
 
 class Cotangent(FuncOp):
+    """Class for cot function -- cot(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()
@@ -88,6 +108,11 @@ class Cotangent(FuncOp):
 # Incomplete
 
 class Cosecant(FuncOp):
+    """Class for csc function -- csc(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()
@@ -109,6 +134,11 @@ class Cosecant(FuncOp):
 
 
 class Secant(FuncOp):
+    """Class for sec function -- sec(...)
+
+    Extends:
+        FuncOp
+    """
 
     def __init__(self):
         super().__init__()
