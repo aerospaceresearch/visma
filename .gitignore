@@ -4,7 +4,9 @@
 .coverage
 .pytest_cache
 coverage.xml
-htmlcov
-local
-visweb
+dist/
+build/
+htmlcov/
+local/
+visma.egg-info/
 __pycache__
