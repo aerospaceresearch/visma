@@ -22,7 +22,7 @@ from visma.calculus.integration import integrate
 from visma.io.checks import checkTypes, getVariables
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
-from visma.gui.plotter import plotFigure, plot
+from visma.gui.plotter import plotFigure2D, plotFigure3D, plot
 from visma.gui.qsolver import quickSimplify, qSolveFigure, showQSolve
 from visma.gui.settings import preferenceLayout
 from visma.gui.steps import stepsFigure, showSteps
@@ -148,24 +148,24 @@ class WorkSpace(QWidget):
         buttonSpace.setFixedWidth(300)
         buttonSpace.setStatusTip("Interact")
 
-        tabPlot = QTabWidget()
-        tabPlot.tab1 = QWidget()
-        tabPlot.tab2 = QWidget()
-        tabPlot.addTab(tabPlot.tab1, "plotter")
-        tabPlot.addTab(tabPlot.tab2, "settings")
-        tabPlot.tab1.setLayout(plotFigure(self))
-        tabPlot.tab1.setStatusTip("Visualize graph")
-        # tabPlot.tab2.setLayout(plotPref(self))
-        tabPlot.tab2.setStatusTip("Plot Preferences")
+        self.tabPlot = QTabWidget()
+        self.tabPlot.tab1 = QWidget()
+        self.tabPlot.tab2 = QWidget()
+        self.tabPlot.addTab(self.tabPlot.tab1, "2D-plot")
+        self.tabPlot.addTab(self.tabPlot.tab2, "3D-plot")
+        self.tabPlot.tab1.setLayout(plotFigure2D(self))
+        self.tabPlot.tab1.setStatusTip("Visualize equation in 2D")
+        self.tabPlot.tab2.setLayout(plotFigure3D(self))
+        self.tabPlot.tab2.setStatusTip("Visualize equation in 3D")
 
         tabStepsLogs = QTabWidget()
         tabStepsLogs.tab1 = QWidget()
         tabStepsLogs.tab2 = QWidget()
         tabStepsLogs.addTab(tabStepsLogs.tab1, "step-by-step")
-        tabStepsLogs.addTab(tabStepsLogs.tab2, "settings")
+        # tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
-        tabStepsLogs.tab2.setStatusTip("Steps Figure Preferences")
+        # tabStepsLogs.tab2.setStatusTip("Logger")
 
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -192,7 +192,7 @@ class WorkSpace(QWidget):
 
         splitter2 = QSplitter(Qt.Horizontal)
         splitter2.addWidget(tabStepsLogs)
-        splitter2.addWidget(tabPlot)
+        splitter2.addWidget(self.tabPlot)
         splitter2.addWidget(self.equationList)
 
         splitter1 = QSplitter(Qt.Vertical)
