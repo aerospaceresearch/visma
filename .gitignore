@@ -8,5 +8,5 @@ dist/
 build/
 htmlcov/
 local/
-visma.egg-info/
+VISualMAth.egg-info/
 __pycache__

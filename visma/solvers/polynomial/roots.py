@@ -18,7 +18,7 @@ from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.simplify.simplify import simplifyEquation, moveRTokensToLTokens
 
-from config.config import ROUNDOFF
+from visma.config.define import ROUNDOFF
 
 # FIXME: Extend to polynomials of all degrees
 

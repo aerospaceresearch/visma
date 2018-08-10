@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if [ $(uname -s) == "Linux" ]; then
   declare -a distributions=("Manjaro" "Ubuntu" "Arch");
   declare -a distpackagemgrs=("1" "0" "1");

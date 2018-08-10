@@ -716,7 +716,7 @@ class PicButton(QAbstractButton):
         return self.pixmap.size()
 
 
-def main():
+def initGUI():
     app = QApplication(sys.argv)
     ex = Window()
     ex.initUI()
@@ -724,5 +724,4 @@ def main():
 
 
 if __name__ == '__main__':
-
-    main()
+    initGUI()

@@ -1,7 +1,8 @@
 #!/bin/bash
+
 echo "Python Syntax Test..."
 pylama
-echo "Python Tests..."
+echo "Python Modules Test..."
 if [ "$1" != "" ] && [ $1 != "report" ];
 then
     coverage run --source ./ -m pytest $1 -v
@@ -10,7 +11,7 @@ else
 fi
 coverage report
 coverage html
-if [ "$1" == "report" ];
+if [ "$1" == "report" ] || [ "$2" == "report" ];
     then
     nohup xdg-open ./htmlcov/index.html &
 fi
