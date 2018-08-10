@@ -234,7 +234,6 @@ def plot(workspace):
         workspace.figure2D.set_tight_layout({"pad": 1})  # removes extra padding
         workspace.canvas2D.draw()
         workspace.tabPlot.setCurrentIndex(0)
-        workspace.tabPlot.setTabEnabled(1, False)
     elif len(graphVars) == 3:
         xrange = graphVars[0]
         yrange = graphVars[1]
@@ -267,7 +266,6 @@ def plot(workspace):
         ax.set_zlabel(r'$' + variables[2] + '$')
         workspace.canvas3D.draw()
         workspace.tabPlot.setCurrentIndex(1)
-        workspace.tabPlot.setTabEnabled(0, False)
 
 
 def refreshPlot(workspace):
