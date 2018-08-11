@@ -21,53 +21,60 @@ A math equation solver and visualizer
 </p>
 
 
-A visual equation solver, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
+An equation solver and visualizer, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
 
 
 ## Installation
 
-**Note:** VISualMAth is supported for python >= 3 only
+**NOTE:** VISualMAth is supported for python3 and above only
 
-The recommended installation method is through pip. To install do
+The recommended installation method is through pip/pip3. To install do
 
 ```shell
-$ pip install VISualMAth
+$ pip3 install VISualMAth
 ```
 
 This sets up the environment to run on your computer.
 
-For every subsequent launch, you can use:
+For launching visma do
 
 ```shell
 $ visma
 ```
 
-**Note:** For windows user the above launching option is not available. To launch visma GUI, do the following in windows shell:
+**Note:** For windowss user (and those for whom) the above launching option is not available, to launch visma GUI do
 
 ```shell
-$ python
+$ python3
 >>> from visma.main import initGUI
 >>> initGUI()
 ```
 
 ## Download:
 
-If visma is not to be installed system-wide, download the source zip.
+If visma is to be installed locally or for development, download the source zip.
 
-For installing dependecies use the following:
+For installing dependencies use the following:
 
 ```shell
-$ pip install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
 For launching do
 
 ```shell
-$ python main.py
+$ python3 main.py
 ```
 
 ![Github All Releases](https://img.shields.io/github/downloads/aerospaceresearch/visma/total.svg?style=for-the-badge)
 ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/aerospaceresearch/visma.svg?style=for-the-badge)
+
+
+**NOTE:** If using pip instead of pip3 for installing, make sure to check if the pip exists in python3 library by checking the pip version.
+
+```shell
+$ pip --version
+```
 
 
 ## Demo
@@ -76,7 +83,6 @@ $ python main.py
 
 
 ## Contribute:
-
 
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/issues)

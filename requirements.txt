@@ -1,6 +1,8 @@
-matplotlib
-numpy
-coverage
+# required
+matplotlib>=2.0.0
+numpy>=1.12
 PyQt5>=5
-PyQt5-sip>=4
+
+# for testing
 pytest>=3.5
+coverage>=4.0

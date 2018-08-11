@@ -1,60 +1,89 @@
 #!/bin/bash
 
-if [ $(uname -s) == "Linux" ]; then
-  declare -a distributions=("Manjaro" "Ubuntu" "Arch");
-  declare -a distpackagemgrs=("1" "0" "1");
-  declare -a packagemgr=("apt-get" "pacman");
+if [ "$1" == "" ];
+then
+    echo ""
+    echo "Enter command arguments with run"
+    echo "    ./run install - Install all dependencies for visma"
+    echo "    ./run visma - Open visma GUI"
+    echo "    ./run test - Run all the tests and generates coverage report"
+    echo "    ./run test path/to/test_file.py - Runs all tests and shows coverage for given file"
+    echo "    ./run test syntax - Run syntax test using pylama"
+    echo "    ./run test modules - Run tests using pytest for all modules"
+    echo "    ./run test coverage - After running all the tests, open coverage report"
+    echo "    ./run pack - Generate builds for visma package"
+    echo "    ./run pack upload - Generate builds and then upload to test.pypi.org"
+    echo "    ./run pack final - Generate builds and upload final build to pypi.org"
+    echo "    ./run clean - Clean all cache, reports and builds"
+    echo ""
 
-  dist_count=${#distributions[*]}
-  usable_mgr="-1"
 
-  dist_name=$(lsb_release -a);
+elif [ "$1" == "install" ];
+then
+    python3 -m pip install -r requirements.txt
 
-  for (( i=0; i<=$(( dist_count -1 )); i++ ))
-  do
-      if [ $(echo "$dist_name" | grep -c "${distributions[$i]}") -gt 0 ]; then
-          usable_mgr=${distpackagemgrs[$i]}
-          echo "Found Distribution ${distributions[$i]}, will use ${packagemgr[usable_mgr]}"
-      fi
-  done
 
-  if [ $usable_mgr == "-1" ]; then
-      echo "Err: Linux distibution unknown, will use apt-get"
-      usable_mgr="0"
-  fi
+elif [ "$1" == "visma" ];
+then
+    python3 main.py
 
-  case $usable_mgr in
-      "0")
-      echo "-- apt-get install --"
-      sudo apt-get install python3.6-dev python-pip -y
-      sudo apt-get install libxext-dev python3-pyqt5 qtdeclarative5-dev build-essential  -y
-      sudo apt-get install freeglut3-dev libboost-python-dev -y
-      sudo apt install libftgl-dev ftgl-dev -y
-      sudo apt install python-opengl -y
-      ;;
-      "1")
-      echo "-- pacman installation --"
-      sudo pacman -S python3 python-pip -y
-      sudo pacman -S libxext python3-pyqt5 base-devel -y
-      sudo pacman -S freeglut boost -y
-      sudo pacman -S ftgl -y
-      sudo pacman -S python-opengl -y
-      ;;
-  esac
+
+elif [ "$1" == "test" ];
+then
+
+    if [ "$2" == "" ] || [ "$2" == "syntax" ];
+    then
+        echo "Python Syntax Test..."
+        pylama
+    fi
+    if [ "$2" == "" ] || [ "$2" == "modules" ];
+    then
+        echo "Python Modules Test..."
+    fi
+
+    if [ "$2" == "modules" ];
+    then
+        pytest
+    elif [ "$2" == "coverage" ];
+    then
+        nohup xdg-open ./htmlcov/index.html &
+    fi
+
+    if [ "$2" != "" ] && [ $2 != "coverage" ] && [ $2 != "syntax" ] && [ $2 != "modules" ];
+    then
+        coverage run --source ./ -m pytest $1 -v
+    elif [ "$2" == "" ];
+    then
+        coverage run --source ./ -m pytest -v
+    fi
+
+    if [ "$2" == "" ];
+    then
+        coverage report
+        coverage html
+    fi
+
+
+elif [ "$1" == "pack" ];
+then
+    mv ./main.py ./visma
+    python3 setup.py sdist bdist_wheel
+    mv ./visma/main.py ./
+
+    if [ "$2" == "upload" ];
+        then
+        twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    elif [ "$2" == "final" ];
+        then
+        twine upload dist/*
+    fi
+
+
+elif [ "$1" == "clean" ];
+then
+    git clean -xdf
+
+
+else
+    echo "Invalid arguments"
 fi
-
-if [ $(uname -s) == "Darwin" ]; then
-  sudo easy_install pip
-  sudo brew install qt5 -y
-  sudo brew install sip --with-python3.6 -y
-  sudo brew install pyqt5 --with-python3.6 -y
-  sudo brew install freeglut -y
-  sudo brew install ftgl -y
-fi
-
-sudo pip install simplejson
-sudo pip install pyopengl
-sudo pip install matplotlib
-
-mkdir local
-chmod -R 777 local
