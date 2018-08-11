@@ -7,7 +7,6 @@ About: This module aims to create a 3D graph with X, Y and Z axis, using OpenGL 
     This module is just a rough implementation for now, and can be (and most probably will be) completely changed according to need.
 Note: Please try to maintain proper documentation
 Logic Description:
-"""
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -86,7 +85,7 @@ def scenemodel():
 # --------
 
 def printHelp():
-    print("""\n\n
+    print('''\n\n
          -------------------------------------------------------------------\n
          Left Mousebutton       - move eye position (+ Shift for third axis)\n
          Middle Mousebutton     - translate the scene\n
@@ -94,7 +93,7 @@ def printHelp():
          R Key                - reset viewpoint\n
          Q Key                - exit the program\n
          -------------------------------------------------------------------\n
-         \n""")
+         \n''')
 
 
 def init():
@@ -157,7 +156,7 @@ def polarView():
 
 
 def keyboard(key, x, y):
-    global zTr, yTr, xTr
+    global xTr, yTr, zTr
     if(key == 'r'):
         resetView()
     if(key == 'q'):
@@ -225,3 +224,4 @@ if __name__ == "__main__":
     printHelp()
     # Turn the flow of control over to GLUT
     glutMainLoop()
+"""

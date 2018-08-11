@@ -1,13 +1,13 @@
-###############
-# ID printing #
-###############
+############
+# Token ID #
+############
 
 '''
-Following is a list of random IDs (func.id property of func class) of a functions generated during calculations/simplifications
+Following is an example list of IDs (func.tid property of Function class) of the functions generated during calculations/simplifications
 Only + and * are used as binary operations, the - and / will be taken care by func.coefficient and func.power respectively.
 '''
 
-# TODO: Handle functions in exponentials
+# Using nested expressions instead of ID. Leaving here for future use.
 
 random = ['a0', 'b0', 'b0a2', 'b0a1', 'b0a3',
           'b0b0', 'a0b0', 'a0a1', 'a0a2', 'a0a2a0', 'a0a3', 'c1', 'c2']
@@ -48,10 +48,12 @@ for func in random:
 
     levelold = level
 
+# FIXME: Find a way to handle functions in exponentials Ex: f1^(f2+f3)
+
 for i in range(0, openbrac - closebrac):
     final.append(')')
-
+eqstring = ""
 for func in final:
-    print(func, end=' ')
+    eqstring += str(func)
 
-print()
+print(eqstring)

@@ -1,21 +1,24 @@
-from visma.functions.structure import *
+from visma.functions.structure import FuncOp
+import math
 
 ########################
 # Hyberbolic Functions #
 ########################
 
 
-class Sinh(Function):
+class Sinh(FuncOp):
+    """Class for sinh function -- sinh(...)
 
-    def __init__(self, arg):
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
         super().__init__()
         self.value = 'sinh'
 
-    def set(args):
-        super().set()
-
     def inverse(self, RHS):
-        super().inverse()
+        super().inverse(RHS)
         self.__class__ = ArcSinh
 
     def differentiate(self):
@@ -25,22 +28,24 @@ class Sinh(Function):
     def integrate(self):
         self.__class__ = Cosh
 
-    def calculate(self, input):
-        return coefficient * ((math.sin(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.sin(val))**self.power)
 
 
-class Cosh(Function):
+class Cosh(FuncOp):
+    """Class for cosh function -- cosh(...)
 
-    def __init__(self, arg):
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
         super().__init__()
         self.value = 'cosh'
 
-    def set(args):
-        super().set()
-
     def inverse(self, RHS):
-        super().inverse()
-        self.__class__ = ArcCosine
+        super().inverse(RHS)
+        self.__class__ = ArcCosh
 
     def differentiate(self):
         super().differentiate()
@@ -49,10 +54,25 @@ class Cosh(Function):
     def integrate(self):
         self.__class__ = Sinh
 
-    def calculate(self, input):
-        return coefficient * ((math.cos(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.cos(val))**self.power)
 
+
+class Tanh(FuncOp):
+    pass
 
 ################################
 # Inverse Hyperbolic Functions #
 ################################
+
+
+class ArcSinh(FuncOp):
+    pass
+
+
+class ArcCosh(FuncOp):
+    pass
+
+
+class ArcTanh(FuncOp):
+    pass

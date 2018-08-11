@@ -1,27 +1,91 @@
-# VisMa
+<h1 align="center">
+  visma - VISual MAth
+</h1>
 
-[![Build Status](https://travis-ci.org/8hantanu/VisMa.svg?branch=master)](https://travis-ci.org/8hantanu/VisMa)
+<h4 align="center">
+A math equation solver and visualizer
+</h4>
 
-A visual equation solver, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
+![visma](https://github.com/aerospaceresearch/visma/tree/master/assets/banner.png)
 
-Project Idea: https://summerofcode.withgoogle.com/projects/#6347577401278464
+<p align="center">
+  <a href="https://travis-ci.org/aerospaceresearch/visma">
+    <img alt="Build Status" src="https://img.shields.io/travis/aerospaceresearch/visma.svg?style=for-the-badge">
+  </a>
+  <a href="https://www.codacy.com/app/aerospaceresearch/visma">
+    <img alt="Codacy Badge" src="https://img.shields.io/codacy/grade/bed991e6ae14471d858c0890510ca8d2.svg?style=for-the-badge">
+  </a>
+  <a href="https://coveralls.io/github/aerospaceresearch/visma">
+    <img alt="Coveralls Coverage" src="https://img.shields.io/coveralls/github/aerospaceresearch/visma.svg?style=for-the-badge">
+  </a>
+</p>
 
-Project Resources such as mock-up and planning document: https://goo.gl/imySCH
 
-**Note:** Refer to to [VisMa's GitHub Wiki](https://github.com/aerospaceresearch/VisMa/wiki) for learning the functionalities and how to use VisMa.
+An equation solver and visualizer, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
 
-To run the program for the first time, open your terminal, and navigate to the folder containing these files, and type:
 
+## Installation
+
+**NOTE:** VISualMAth is supported for python3 and above only
+
+The recommended installation method is through pip/pip3. To install do
+
+```shell
+$ pip3 install VISualMAth
 ```
-./run.sh
-```
-
-**Note:** MacOS users need to have Homebrew installed for this script to work.  
 
 This sets up the environment to run on your computer.
 
-For every subsequent launch, you can use:
+For launching visma do
 
+```shell
+$ visma
 ```
-python main.py
+
+**Note:** For windowss user (and those for whom) the above launching option is not available, to launch visma GUI do
+
+```shell
+$ python3
+>>> from visma.main import initGUI
+>>> initGUI()
 ```
+
+## Download:
+
+If visma is to be installed locally or for development, download the source zip.
+
+For installing dependencies use the following:
+
+```shell
+$ pip3 install -r requirements.txt
+```
+
+For launching do
+
+```shell
+$ python3 main.py
+```
+
+![Github All Releases](https://img.shields.io/github/downloads/aerospaceresearch/visma/total.svg?style=for-the-badge)
+![GitHub repo size in bytes](https://img.shields.io/github/repo-size/aerospaceresearch/visma.svg?style=for-the-badge)
+
+
+**NOTE:** If using pip instead of pip3 for installing, make sure to check if the pip exists in python3 library by checking the pip version.
+
+```shell
+$ pip --version
+```
+
+
+## Demo
+
+![visma](https://github.com/aerospaceresearch/visma/tree/master/assets/demo.gif)
+
+
+## Contribute:
+
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/pulls)
+[![GitHub issues](https://img.shields.io/github/issues/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/issues)
+
+## License:
+[![License: GPL v3](https://img.shields.io/github/license/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/blob/master/LICENSE)

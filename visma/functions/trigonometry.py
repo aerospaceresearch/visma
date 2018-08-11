@@ -1,47 +1,44 @@
-from visma.functions.structure import *
+from visma.functions.structure import FuncOp
+import math
 
 ##########################
 # Trignometric Functions #
 ##########################
 
 
-class Sine(Function):
+class Sine(FuncOp):
+    """Class for sin function -- sin(...)
 
-    def __init__(self, arg):
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
         super().__init__()
         self.value = 'sin'
 
-    def set(args):
-        super().set()
+    def inverse(self, rToken, wrtVar, inverseFunction=None):
+        inverseFunction = ArcSin()
+        super().inverse(self, rToken, wrtVar, inverseFunction)
 
-    def inverse(self, RHS):
-        super().inverse()
-        self.__class__ = ArcSine
-
-    def differentiate(self):
-        super().differentiate()
-        self.__class__ = Cosine
-
-    def integrate(self):
-        self.coefficient = -1
-        self.__class__ = Cosine
-
-    def calculate(self, input):
-        return coefficient * ((math.sin(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.sin(val))**self.power)
 
 
-class Cosine(Function):
+class Cosine(FuncOp):
+    """Class for cos function -- cos(...)
 
-    def __init__(self, arg):
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
         super().__init__()
         self.value = 'cos'
 
-    def set(args):
-        super().set()
-
     def inverse(self, RHS):
-        super().inverse()
-        self.__class__ = ArcCosine
+        super().inverse(RHS)
+        self.__class__ = ArcCos
 
     def differentiate(self):
         super().differentiate()
@@ -51,47 +48,47 @@ class Cosine(Function):
     def integrate(self):
         self.__class__ = Sine
 
-    def calculate(self, input):
-        return coefficient * ((math.cos(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.cos(val))**self.power)
 
 
-class Tangent(Function):
+class Tangent(FuncOp):
+    """Class for tan function -- tan(...)
 
-    def __init__(self, arg):
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
         super().__init__()
         self.value = 'tan'
 
-    def set(args):
-        super().set()
-
     def inverse(self, RHS):
-        super().inverse()
-        self.__class__ = ArcTangent
+        super().inverse(RHS)
+        self.__class__ = ArcTan
 
     def differentiate(self):
         super().differentiate()
         self.power = 2
         self.__class__ = Secant
 
-    def integrate(self):
-        """
-        """
-
-    def calculate(self, input):
-        return coefficient * ((math.tan(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.tan(val))**self.power)
 
 
-class Cotangent(Function):
+class Cotangent(FuncOp):
+    """Class for cot function -- cot(...)
 
-    def __init__(self, arg):
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
         super().__init__()
         self.value = 'cot'
 
-    def set(args):
-        super().set()
-
     def inverse(self, RHS):
-        super().inverse()
+        super().inverse(RHS)
         self.__class__ = ArcCot
 
     def differentiate(self):
@@ -104,23 +101,51 @@ class Cotangent(Function):
         """
         """
 
-    def calculate(self, input):
-        return coefficient * ((math.cot(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.cot(val))**self.power)
 
 
 # Incomplete
 
-class Secant(Function):
+class Cosecant(FuncOp):
+    """Class for csc function -- csc(...)
 
-    def __init__(self, arg):
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
         super().__init__()
-        self.value = 'cot'
-
-    def set(args):
-        super().set()
+        self.value = 'csc'
 
     def inverse(self, RHS):
-        super().inverse()
+        super().inverse(RHS)
+        self.__class__ = ArcCosec
+
+    def differentiate(self):
+        super().differentiate()
+
+    def integrate(self):
+        """
+        """
+
+    def calculate(self, val):
+        return self.coefficient * ((math.cosec(val))**self.power)
+
+
+class Secant(FuncOp):
+    """Class for sec function -- sec(...)
+
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.value = 'sec'
+
+    def inverse(self, RHS):
+        super().inverse(RHS)
         self.__class__ = ArcSec
 
     def differentiate(self):
@@ -130,9 +155,33 @@ class Secant(Function):
         """
         """
 
-    def calculate(self, input):
-        return coefficient * ((math.cot(input))**power)
+    def calculate(self, val):
+        return self.coefficient * ((math.sec(val))**self.power)
 
 ##################################
 # Inverse Trignometric Functions #
 ##################################
+
+
+class ArcSin(FuncOp):
+    pass
+
+
+class ArcCos(FuncOp):
+    pass
+
+
+class ArcTan(FuncOp):
+    pass
+
+
+class ArcCot(FuncOp):
+    pass
+
+
+class ArcSec(FuncOp):
+    pass
+
+
+class ArcCsc(FuncOp):
+    pass

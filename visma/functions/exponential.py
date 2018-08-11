@@ -1,53 +1,58 @@
-from visma.functions.structure import *
+import math
+from visma.functions.structure import FuncOp
 
 #########################
 # Exponential Functions #
 #########################
 
 
-class Logarithm(Function):
+class Logarithm(FuncOp):
+    """Class for log function -- log(...)
 
-    def __init__(self, arg):
+    Input examples:
+        log(2) [without base, default base 10]
+        log_4(x+y) [with base]
+
+    Extends:
+        FuncOp
+    """
+
+    def __init__(self, operand=None):
         super().__init__()
-        self.value = []
+        self.base = 10
+        self.value = 'log'
 
-    def set(args):
-        super().set()
+    def inverse(self, rToken, wrtVar, inverseFunction=None):
+        inverseFunction = Exponential()
+        super().inverse(self, rToken, wrtVar, inverseFunction)
 
-    def inverse(self, RHS):
-        super().inverse()
-
-    def differentiate(self):
-        super().differentiate()
-        self.power = -1
-        self.__class__ = operand.__class__
-
-    def integrate(self, d):
-        """
-        """
-
-    def calculate(self, input):
-        return self.coefficient * ((math.log(input, self.base)))
+    def calculate(self, val):
+        return self.coefficient * ((math.log(val, self.base)))
 
 
-class Exponential(Function):
+class NaturalLog(Logarithm):
+    """Class for ln function -- ln(...) or use log_e(...)
 
-    def __init__(self, arg):
+    Extends:
+        Logarithm
+    """
+
+    def __init__(self, operand=None):
         super().__init__()
-        self.value = []
+        self.base = math.exp(1)
+        self.value = 'ln'
 
-    def set(args):
-        super().set()
 
-    def inverse(self, RHS):
-        super().inverse()
+class Exponential(FuncOp):
+    """Class for exponential function -- exp(...)
 
-    def differentiate(self):
-        super().differentiate()
+    Extends:
+        FuncOp
+    """
 
-    def integrate(self, d):
-        """
-        """
+    def __init__(self):
+        super().__init__()
+        self.value = 'exp'
 
-    def calculate(self, input):
-        return self.coefficient * ((math.exp(input)))
+    def calculate(self, val):
+        return self.coefficient * (math.exp(val))
