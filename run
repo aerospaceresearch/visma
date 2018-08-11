@@ -1,0 +1,89 @@
+#!/bin/bash
+
+if [ "$1" == "" ];
+then
+    echo ""
+    echo "Enter command arguments with run"
+    echo "    ./run install - Install all dependencies for visma"
+    echo "    ./run visma - Open visma GUI"
+    echo "    ./run test - Run all the tests and generates coverage report"
+    echo "    ./run test path/to/test_file.py - Runs all tests and shows coverage for given file"
+    echo "    ./run test syntax - Run syntax test using pylama"
+    echo "    ./run test modules - Run tests using pytest for all modules"
+    echo "    ./run test coverage - After running all the tests, open coverage report"
+    echo "    ./run pack - Generate builds for visma package"
+    echo "    ./run pack upload - Generate builds and then upload to test.pypi.org"
+    echo "    ./run pack final - Generate builds and upload final build to pypi.org"
+    echo "    ./run clean - Clean all cache, reports and builds"
+    echo ""
+
+
+elif [ "$1" == "install" ];
+then
+    python3 -m pip install -r requirements.txt
+
+
+elif [ "$1" == "visma" ];
+then
+    python3 main.py
+
+
+elif [ "$1" == "test" ];
+then
+
+    if [ "$2" == "" ] || [ "$2" == "syntax" ];
+    then
+        echo "Python Syntax Test..."
+        pylama
+    fi
+    if [ "$2" == "" ] || [ "$2" == "modules" ];
+    then
+        echo "Python Modules Test..."
+    fi
+
+    if [ "$2" == "modules" ];
+    then
+        pytest
+    elif [ "$2" == "coverage" ];
+    then
+        nohup xdg-open ./htmlcov/index.html &
+    fi
+
+    if [ "$2" != "" ] && [ $2 != "coverage" ] && [ $2 != "syntax" ] && [ $2 != "modules" ];
+    then
+        coverage run --source ./ -m pytest $1 -v
+    elif [ "$2" == "" ];
+    then
+        coverage run --source ./ -m pytest -v
+    fi
+
+    if [ "$2" == "" ];
+    then
+        coverage report
+        coverage html
+    fi
+
+
+elif [ "$1" == "pack" ];
+then
+    mv ./main.py ./visma
+    python3 setup.py sdist bdist_wheel
+    mv ./visma/main.py ./
+
+    if [ "$2" == "upload" ];
+        then
+        twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    elif [ "$2" == "final" ];
+        then
+        twine upload dist/*
+    fi
+
+
+elif [ "$1" == "clean" ];
+then
+    git clean -xdf
+
+
+else
+    echo "Invalid arguments"
+fi

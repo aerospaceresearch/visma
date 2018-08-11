@@ -37,11 +37,11 @@ def graphPlot(workspace):
     LHStok, RHStok = getLHSandRHS(tokens)
     variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
-    if (dim == 1 and eqType == "expression") or (dim == 2 and eqType == "equation"):
+    if (dim == 1 and eqType == "expression") or ((dim == 2) and eqType == "equation"):
         graphVars, func = plotIn2D(LHStok, RHStok, variables, axisRange)
         if dim == 1:
             variables.append('f(' + variables[0] + ')')
-    elif (dim == 2 and eqType == "expression") or (dim == 3 and eqType == "equation"):
+    elif (dim == 2 and eqType == "expression") or ((dim == 3) and eqType == "equation"):
         graphVars, func = plotIn3D(LHStok, RHStok, variables, axisRange)
         if dim == 2:
             variables.append('f(' + variables[0] + ',' + variables[1] + ')')
@@ -166,7 +166,7 @@ def getFuncExpr(exprTok, eqnVars, graphVars):
 #######
 
 
-def plotFigure(workspace):
+def plotFigure2D(workspace):
     """GUI layout for plot figure
 
     Arguments:
@@ -175,17 +175,40 @@ def plotFigure(workspace):
     Returns:
         layout {QtWidgets.QVBoxLayout} -- contains matplot figure
     """
-    workspace.figure = Figure()
-    workspace.canvas = FigureCanvas(workspace.figure)
-    # workspace.figure.patch.set_facecolor('white')
+    workspace.figure2D = Figure()
+    workspace.canvas2D = FigureCanvas(workspace.figure2D)
+    # workspace.figure2D.patch.set_facecolor('white')
 
     class NavigationCustomToolbar(NavigationToolbar):
         toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ()]
 
-    workspace.toolbar = NavigationCustomToolbar(workspace.canvas, workspace)
+    workspace.toolbar2D = NavigationCustomToolbar(workspace.canvas2D, workspace)
     layout = QVBoxLayout()
-    layout.addWidget(workspace.canvas)
-    layout.addWidget(workspace.toolbar)
+    layout.addWidget(workspace.canvas2D)
+    layout.addWidget(workspace.toolbar2D)
+    return layout
+
+
+def plotFigure3D(workspace):
+    """GUI layout for plot figure
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+
+    Returns:
+        layout {QtWidgets.QVBoxLayout} -- contains matplot figure
+    """
+    workspace.figure3D = Figure()
+    workspace.canvas3D = FigureCanvas(workspace.figure3D)
+    # workspace.figure3D.patch.set_facecolor('white')
+
+    class NavigationCustomToolbar(NavigationToolbar):
+        toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ()]
+
+    workspace.toolbar3D = NavigationCustomToolbar(workspace.canvas3D, workspace)
+    layout = QVBoxLayout()
+    layout.addWidget(workspace.canvas3D)
+    layout.addWidget(workspace.toolbar3D)
     return layout
 
 
@@ -197,22 +220,25 @@ def plot(workspace):
     Arguments:
         workspace {QtWidgets.QWidget} -- main layout
     """
+    workspace.figure2D.clear()
+    workspace.figure3D.clear()
     graphVars, func, variables = graphPlot(workspace)
-    workspace.figure.clf()
     if len(graphVars) == 2:
         X, Y = graphVars[0], graphVars[1]
-        ax = workspace.figure.add_subplot(111)
+        ax = workspace.figure2D.add_subplot(111)
         ax.clear()
         ax.contour(X, Y, func, [0])
         ax.grid()
         ax.set_xlabel(r'$' + variables[0] + '$')
         ax.set_ylabel(r'$' + variables[1] + '$')
-        workspace.figure.set_tight_layout({"pad": 1})  # removes extra padding
+        workspace.figure2D.set_tight_layout({"pad": 1})  # removes extra padding
+        workspace.canvas2D.draw()
+        workspace.tabPlot.setCurrentIndex(0)
     elif len(graphVars) == 3:
         xrange = graphVars[0]
         yrange = graphVars[1]
         zrange = graphVars[2]
-        ax = Axes3D(workspace.figure)
+        ax = Axes3D(workspace.figure3D)
         for z in zrange:
             X, Y = np.meshgrid(xrange, yrange)
             Z = func(X, Y, z)
@@ -238,7 +264,8 @@ def plot(workspace):
         ax.set_xlabel(r'$' + variables[0] + '$')
         ax.set_ylabel(r'$' + variables[1] + '$')
         ax.set_zlabel(r'$' + variables[2] + '$')
-    workspace.canvas.draw()
+        workspace.canvas3D.draw()
+        workspace.tabPlot.setCurrentIndex(1)
 
 
 def refreshPlot(workspace):

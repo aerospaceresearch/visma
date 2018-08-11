@@ -1,6 +1,6 @@
 import math
 import copy
-from config.config import ROUNDOFF
+from visma.config.define import ROUNDOFF
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
