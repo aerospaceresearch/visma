@@ -33,34 +33,33 @@ then
 
     if [ "$2" == "" ] || [ "$2" == "syntax" ];
     then
-        echo "Python Syntax Test..."
+        echo "Python Syntax Test ..."
         pylama
-    fi
-    if [ "$2" == "" ] || [ "$2" == "modules" ];
+    elif [ "$2" == "modules" ];
     then
-        echo "Python Modules Test..."
-    fi
-
-    if [ "$2" == "modules" ];
-    then
+        echo "Python Modules Test ..."
         pytest
-    elif [ "$2" == "coverage" ];
-    then
-        nohup xdg-open ./htmlcov/index.html &
     fi
 
     if [ "$2" != "" ] && [ $2 != "coverage" ] && [ $2 != "syntax" ] && [ $2 != "modules" ];
     then
-        coverage run --source ./ -m pytest $1 -v
+        echo "Python Test for $2 ..."
+        coverage run --source ./ -m pytest $2 -v
     elif [ "$2" == "" ];
     then
+        echo "Python Modules Test with Coverage ..."
         coverage run --source ./ -m pytest -v
     fi
 
-    if [ "$2" == "" ];
+    if [ "$2" == "" ] || [ "$2" == "coverage" ] || [ "$3" == "coverage" ];
     then
         coverage report
         coverage html
+    fi
+
+    if [ "$2" == "coverage" ] || [ "$3" == "coverage" ];
+    then
+        nohup xdg-open ./htmlcov/index.html &
     fi
 
 

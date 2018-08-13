@@ -31,7 +31,7 @@ def preferenceLayout(workspace):
     workspace.SSSCheckBox.toggled.connect(lambda: buttonState(workspace.SSSCheckBox, workspace))
 
     workspace.GPCheckBox = QCheckBox("Graph Plotter")
-    workspace.GPCheckBox.setChecked(True)
+    workspace.GPCheckBox.setChecked(False)
     workspace.GPCheckBox.toggled.connect(lambda: buttonState(workspace.GPCheckBox, workspace))
 
     splitter1 = QSplitter(Qt.Vertical)

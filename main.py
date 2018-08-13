@@ -81,7 +81,7 @@ class WorkSpace(QWidget):
     mode = 'interaction'
     showQuickSim = True
     showStepByStep = True
-    showPlotter = True
+    showPlotter = False
     enableQSolver = True
     buttons = {}
     solutionOptionsBox = QGridLayout()
