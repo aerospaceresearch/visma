@@ -18,22 +18,13 @@ from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.simplify.simplify import simplifyEquation, moveRTokensToLTokens
 
-from visma.config.define import ROUNDOFF
+from visma.config.values import ROUNDOFF
 
 # FIXME: Extend to polynomials of all degrees
 
 
 def getRoots(coeffs):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        coeffs {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     roots = []
     if len(coeffs) == 3:
         d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
@@ -51,17 +42,7 @@ def getRoots(coeffs):
 
 
 def quadraticRoots(lTokens, rTokens):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        lTokens {[type]} -- [description]
-        rTokens {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     lTokens, rTokens, _, token_string, animation, comments = simplifyEquation(
         lTokens, rTokens)
     roots, var = findQuadraticRoots(lTokens, rTokens)
@@ -225,17 +206,7 @@ def quadraticRoots(lTokens, rTokens):
 
 
 def findQuadraticRoots(lTokens, rTokens):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        lTokens {[type]} -- [description]
-        rTokens {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     roots = []
     if len(rTokens) > 0:
         lTokens, rTokens = moveRTokensToLTokens(

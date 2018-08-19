@@ -1,6 +1,6 @@
 import math
 import copy
-from visma.config.define import ROUNDOFF
+from visma.config.values import ROUNDOFF
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
@@ -793,15 +793,13 @@ def extractExpression(variable):
 
 
 def evaluateConstant(constant):
-    """[summary]
-
-    [description]
+    """Returns constant value for a given visma.functions.Function or constant term
 
     Arguments:
-        constant {[type]} -- [description]
+        constant {visma.functions.Function/string} -- input term
 
     Returns:
-        [type] -- [description]
+       constant value -- value of input term
     """
     if isinstance(constant, Function):
         if isNumber(constant.value):
@@ -818,16 +816,7 @@ def evaluateConstant(constant):
 
 
 def evaluateExpressions(variables):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        variables {[type]} -- [description]
-
-    Returns:
-        bool -- [description]
-    """
     var = []
     varPowers = []
     for i, variable in enumerate(variables):
