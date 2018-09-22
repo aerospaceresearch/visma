@@ -34,7 +34,10 @@ def showSteps(workspace):
     workspace.stepsfigure.suptitle(workspace.output, y=0.98,
                                    horizontalalignment='center',
                                    verticalalignment='top', size=qApp.font().pointSize()*workspace.stepsFontSize)
-    workspace.stepscanvas.draw()
+    try:
+        workspace.stepscanvas.draw()
+    except Exception as e:
+        print("[INFO]: Please give some input. \nError: {}".format(e))
 
 
 ###############
