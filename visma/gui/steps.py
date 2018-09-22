@@ -38,7 +38,7 @@ def showSteps(workspace):
         workspace.stepscanvas.draw()
     except Exception as e:
         print("[INFO]: Please give some input. \nError: {}".format(e))
-
+    # TODO: Disable 'visma' button for invalid and null input
 
 ###############
 # preferences #

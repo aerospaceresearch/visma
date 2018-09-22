@@ -25,7 +25,7 @@ def quickSimplify(workspace):
     terms = getTerms(cleanInput)
     normalizedTerms = normalize(terms)
     symTokens = tokenizeSymbols(normalizedTerms)
-    terms, symTokens = removeUnary(normalizedTerms, symTokens)
+    normalizedTerms, symTokens = removeUnary(normalizedTerms, symTokens)
     if checkEquation(normalizedTerms, symTokens) is True and input != "":
         if symTokens[-1] is not False:
             tokens = getToken(normalizedTerms, symTokens)

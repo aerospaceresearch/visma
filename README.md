@@ -105,7 +105,7 @@ To see all features of **visma**, check [this](https://github.com/aerospaceresea
 [![GitHub issues](https://img.shields.io/github/issues/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/issues)
 [![Gitter](https://img.shields.io/gitter/room/aerospaceresearch/visma.svg?style=for-the-badge)](https://gitter.im/aerospaceresearch/visma)
 
-PRs are welcomed. For contributing to **visma** refer the [Dev Manual](https://github.com/aerospaceresearch/visma/wiki/DevMan). If there are any issues or ideas they can be addressed through the [issues](https://github.com/aerospaceresearch/visma/issues) or in [chat room](https://gitter.im/aerospaceresearch/visma).
+PRs are welcomed. For contributing to **visma** refer the [dev guide](https://github.com/aerospaceresearch/visma/wiki/Guidelines). If there are any issues or ideas they can be addressed through the [issues](https://github.com/aerospaceresearch/visma/issues) or in [chat room](https://gitter.im/aerospaceresearch/visma).
 
 
 ## License:
