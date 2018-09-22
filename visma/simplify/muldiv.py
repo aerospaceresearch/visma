@@ -13,19 +13,7 @@ from visma.io.tokenize import removeToken
 
 
 def multiplication(tokens, direct=False):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        tokens {[type]} -- [description]
-
-    Keyword Arguments:
-        direct {bool} -- [description] (default: {False})
-
-    Returns:
-        [type] -- [description]
-    """
     # FIXME: Fix multiplication for variables (Ex: x^-1 * x^2)
     animation = [copy.deepcopy(tokens)]
     comments = []
@@ -46,17 +34,7 @@ def multiplication(tokens, direct=False):
 
 
 def expressionMultiplication(variables, tokens):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        variables {[type]} -- [description]
-        tokens {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     removeScopes = []
     comments = []
     for i, token in enumerate(tokens):
@@ -141,14 +119,7 @@ def expressionMultiplication(variables, tokens):
 
 
 def multiplyExpressions(expression1, expression2):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        expression1 {[type]} -- [description]
-        expression2 {[type]} -- [description]
-    """
     tokens = []
     tokens1 = expression1.tokens
     tokens2 = expression2.tokens
@@ -187,20 +158,7 @@ def multiplyExpressions(expression1, expression2):
 
 
 def multiplicationEquation(lToks, rToks, direct=False):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        lToks {[type]} -- [description]
-        rToks {[type]} -- [description]
-
-    Keyword Arguments:
-        direct {bool} -- [description] (default: {False})
-
-    Returns:
-        [type] -- [description]
-    """
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     comments = []
@@ -287,20 +245,7 @@ def multiplicationEquation(lToks, rToks, direct=False):
 
 
 def multiplySelect(token1, token2, coeff=1):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        token1 {[type]} -- [description]
-        token2 {[type]} -- [description]
-
-    Keyword Arguments:
-        coeff {number} -- [description] (default: {1})
-
-    Returns:
-        [type] -- [description]
-    """
     if isinstance(token1, Variable) and isinstance(token2, Variable):
         return multiplyVariables(token1, token2, coeff)
     elif isinstance(token1, Variable) and isinstance(token2, Constant):
@@ -312,18 +257,7 @@ def multiplySelect(token1, token2, coeff=1):
 
 
 def multiplyConstants(constant1, constant2, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant1 {[type]} -- [description]
-        constant2 {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     no_1 = False
     no_2 = False
     constant = Constant()
@@ -392,18 +326,7 @@ def multiplyConstants(constant1, constant2, coeff):
 
 
 def multiplyVariables(variable1, variable2, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        variable1 {[type]} -- [description]
-        variable2 {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     variable = Variable()
     variable.value = []
     variable.value.extend(variable1.value)
@@ -434,18 +357,7 @@ def multiplyVariables(variable1, variable2, coeff):
 
 
 def multiplyVariableConstant(constant, variable, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant {[type]} -- [description]
-        variable {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     variable1 = Variable()
     variable1.value = []
     variable1.value.extend(variable.value)
@@ -471,19 +383,7 @@ def multiplyVariableConstant(constant, variable, coeff):
 
 
 def division(tokens, direct=False):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        tokens {[type]} -- [description]
-
-    Keyword Arguments:
-        direct {bool} -- [description] (default: {False})
-
-    Returns:
-        [type] -- [description]
-    """
     animation = [copy.deepcopy(tokens)]
     comments = []
     if direct:
@@ -503,20 +403,7 @@ def division(tokens, direct=False):
 
 
 def divisionEquation(lToks, rToks, direct=False):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        lToks {[type]} -- [description]
-        rToks {[type]} -- [description]
-
-    Keyword Arguments:
-        direct {bool} -- [description] (default: {False})
-
-    Returns:
-        [type] -- [description]
-    """
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     animation = []
@@ -603,17 +490,7 @@ def divisionEquation(lToks, rToks, direct=False):
 
 
 def expressionDivision(variables, tokens):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        variables {[type]} -- [description]
-        tokens {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     removeScopes = []
     comments = []
     for i, token in enumerate(tokens):
@@ -721,42 +598,20 @@ def expressionDivision(variables, tokens):
     return variables, tokens, removeScopes, comments
 
 
-#######################
-# Not implemented yet #
-#######################
+#####################
+# To be implemented #
+#####################
 
 
 def multiply_expression_constant(constant, expression, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant {[type]} -- [description]
-        expression {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     tokens = copy.deepcopy(expression)
     tokens.coefficient *= (evaluateConstant(constant) * coeff)
     return tokens
 
 
 def multiply_expression_variable(variable, expression, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        variable {[type]} -- [description]
-        expression {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     tokens = []
     for token in expression.tokens:
         if isinstance(token, Variable):
@@ -774,18 +629,7 @@ def multiply_expression_variable(variable, expression, coeff):
 
 
 def division_variables(variable1, variable2, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        variable1 {[type]} -- [description]
-        variable2 {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     variable = copy.deepcopy(variable1)
     for j, var in enumerate(variable.value):
         found = False
@@ -806,18 +650,7 @@ def division_variables(variable1, variable2, coeff):
 
 
 def division_constants(constant1, constant2, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant1 {[type]} -- [description]
-        constant2 {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     no_1 = False
     no_2 = False
     constant = Constant()
@@ -887,18 +720,7 @@ def division_constants(constant1, constant2, coeff):
 
 
 def division_variable_constant(constant, variable, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant {[type]} -- [description]
-        variable {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     variable1 = copy.deepcopy(variable)
 
     variable1.coefficient /= evaluateConstant(constant)
@@ -909,18 +731,7 @@ def division_variable_constant(constant, variable, coeff):
 
 
 def division_constantVariable(constant, variable, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant {[type]} -- [description]
-        variable {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     variable1 = Variable()
     variable1.coefficient = (evaluateConstant(
         constant) / variable.coefficient) * coeff
@@ -933,18 +744,7 @@ def division_constantVariable(constant, variable, coeff):
 
 
 def division_expression_constant(constant, expression, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant {[type]} -- [description]
-        expression {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     tokens = copy.deepcopy(expression)
     tokens.coefficient /= (evaluateConstant(constant))
     tokens.coefficient *= coeff
@@ -952,31 +752,12 @@ def division_expression_constant(constant, expression, coeff):
 
 
 def division_constant_expression(constant, expression, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        constant {[type]} -- [description]
-        expression {[type]} -- [description]
-        coeff {[type]} -- [description]
-    """
     pass
 
 
 def division_expression_variable(variable, expression, coeff):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        variable {[type]} -- [description]
-        expression {[type]} -- [description]
-        coeff {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     tokens = []
     for token in expression.tokens:
         if isinstance(token, Variable):
@@ -998,20 +779,7 @@ def division_variable_expression(variable, expression, coeff):
 
 
 def division_select(token1, token2, coeff=1):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        token1 {[type]} -- [description]
-        token2 {[type]} -- [description]
-
-    Keyword Arguments:
-        coeff {number} -- [description] (default: {1})
-
-    Returns:
-        [type] -- [description]
-    """
     if isinstance(token1, Variable) and isinstance(token2, Variable):
         return division_variables(token1, token2, coeff)
     elif isinstance(token1, Variable) and isinstance(token2, Constant):

@@ -4,5 +4,6 @@ numpy>=1.12
 PyQt5>=5
 
 # for testing
+pylama
 pytest>=3.5
 coverage>=4.0

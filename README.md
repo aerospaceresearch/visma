@@ -6,7 +6,7 @@
 A math equation solver and visualizer
 </h4>
 
-![visma](https://github.com/aerospaceresearch/visma/tree/master/assets/banner.png)
+![visma](https://raw.githubusercontent.com/wiki/aerospaceresearch/visma/assets/banner.png)
 
 <p align="center">
   <a href="https://travis-ci.org/aerospaceresearch/visma">
@@ -26,23 +26,26 @@ An equation solver and visualizer, which aims to help in grasping how mathematic
 
 ## Installation
 
-**NOTE:** VISualMAth is supported for python3 and above only
+[![PyPI](https://img.shields.io/pypi/v/VISualMAth.svg?style=for-the-badge)](https://pypi.org/project/VISualMAth)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/VISualMAth.svg?style=for-the-badge)](https://pypi.org/project/VISualMAth)
 
-The recommended installation method is through pip/pip3. To install do
+**NOTE:** VISualMAth is supported for python3 and above only. The recommended installation method is through pip/pip3.
+
+- To install do
 
 ```shell
-$ pip3 install VISualMAth
+$ pip3 install visualmath
 ```
 
 This sets up the environment to run on your computer.
 
-For launching visma do
+- For launching **visma** do
 
 ```shell
 $ visma
 ```
 
-**Note:** For windowss user (and those for whom) the above launching option is not available, to launch visma GUI do
+**Note:** For windows user (and those for whom) the above launching option is not available, to launch **visma** GUI do
 
 ```shell
 $ python3
@@ -50,25 +53,28 @@ $ python3
 >>> initGUI()
 ```
 
+
 ## Download:
 
-If visma is to be installed locally or for development, download the source zip.
 
-For installing dependencies use the following:
+[![GitHub release](https://img.shields.io/github/release/aerospaceresearch/visma/all.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/releases)
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/releases)
+
+
+If **visma** is to be installed locally or for development:
+
+- Download the [source zip](https://github.com/aerospaceresearch/visma/archive/master.zip) and extract.
+- For installing dependencies, from source folder do
 
 ```shell
 $ pip3 install -r requirements.txt
 ```
 
-For launching do
+- For launching do
 
 ```shell
 $ python3 main.py
 ```
-
-![Github All Releases](https://img.shields.io/github/downloads/aerospaceresearch/visma/total.svg?style=for-the-badge)
-![GitHub repo size in bytes](https://img.shields.io/github/repo-size/aerospaceresearch/visma.svg?style=for-the-badge)
-
 
 **NOTE:** If using pip instead of pip3 for installing, make sure to check if the pip exists in python3 library by checking the pip version.
 
@@ -76,16 +82,34 @@ $ python3 main.py
 $ pip --version
 ```
 
+## Docs
+
+[![Github Wiki](https://img.shields.io/badge/wiki-visma-green.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/wiki)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/aerospaceresearch/visma.svg?style=for-the-badge)
+
+For code documentation and learning how to use **visma** check out the [wiki](https://github.com/aerospaceresearch/visma/wiki).
+
+Below is a quick demo of using **visma** and some of its capabilities.
+
 
 ## Demo
 
-![visma](https://github.com/aerospaceresearch/visma/tree/master/assets/demo.gif)
+![visma](https://raw.githubusercontent.com/wiki/aerospaceresearch/visma/assets/demo.gif)
+
+To see all features of **visma**, check [this](https://github.com/aerospaceresearch/visma/wiki/Features) out.
 
 
 ## Contribute:
 
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/issues)
+[![Gitter](https://img.shields.io/gitter/room/aerospaceresearch/visma.svg?style=for-the-badge)](https://gitter.im/aerospaceresearch/visma)
+
+PRs are welcomed. For contributing to **visma** refer the [Dev Manual](https://github.com/aerospaceresearch/visma/wiki/DevMan). If there are any issues or ideas they can be addressed through the [issues](https://github.com/aerospaceresearch/visma/issues) or in [chat room](https://gitter.im/aerospaceresearch/visma).
+
 
 ## License:
+
 [![License: GPL v3](https://img.shields.io/github/license/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/blob/master/LICENSE)
+
+**visma** is distributed under the [**GNU GPL-3**](https://github.com/aerospaceresearch/visma/blob/master/LICENSE) or later.

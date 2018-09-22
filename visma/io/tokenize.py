@@ -29,7 +29,7 @@ symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>',
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 
-# TODO: Add latex input support
+# TODO: Add module for different inputs(ex: LaTeX)
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
 
@@ -411,21 +411,7 @@ def removeUnary(terms, symTokens):
 
 
 def getVariable(terms, symTokens, scope, coeff=1):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        terms {[type]} -- [description]
-        symTokens {[type]} -- [description]
-        scope {[type]} -- [description]
-
-    Keyword Arguments:
-        coeff {number} -- [description] (default: {1})
-
-    Returns:
-        [type] -- [description]
-    """
     variable = Variable()
     value = []
     coefficient = coeff
@@ -874,20 +860,18 @@ def getVariable(terms, symTokens, scope, coeff=1):
 
 
 def getToken(terms, symTokens, scope=None, coeff=1):
-    """[summary]
-
-    [description]
+    """Returns equation tokens for the given input terms and symtokens
 
     Arguments:
-        terms {[type]} -- [description]
-        symTokens {[type]} -- [description]
+        terms {list} -- equation terms
+        symTokens {list} -- symtoken for terms
 
     Keyword Arguments:
-        scope {[type]} -- [description] (default: {None})
-        coeff {number} -- [description] (default: {1})
+        scope {int} -- token scope (default: {None})
+        coeff {int} -- coefficient (default: {1})
 
     Returns:
-        [type] -- [description]
+        eqn {list} -- equation tokens list
     """
     if scope is None:
         scope = []
@@ -1441,16 +1425,14 @@ def getToken(terms, symTokens, scope=None, coeff=1):
     return eqn
 
 
-def clean(eqn):
-    """[summary]
-
-    [description]
+def preprocess(eqn):
+    """Processes input equation string and returns equation tokens
 
     Arguments:
-        eqn {[type]} -- [description]
+        eqn {string} -- input equation string
 
     Returns:
-        [type] -- [description]
+        tokens {list} -- equation tokens if valid input string
     """
     cleanEqn = removeSpaces(eqn)
     terms = getTerms(cleanEqn)
@@ -1463,16 +1445,6 @@ def clean(eqn):
 
 
 def constantVariable(variable):
-    """[summary]
-
-    [description]
-
-    Arguments:
-        variable {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
 
     constant = True
 
@@ -1504,15 +1476,13 @@ def constantVariable(variable):
 
 
 def evaluateConstant(constant):
-    """[summary]
-
-    [description]
+    """Returns constant value for a given visma.functions.Function or constant term
 
     Arguments:
-        constant {[type]} -- [description]
+        constant {visma.functions.Function/string} -- input term
 
     Returns:
-        [type] -- [description]
+       constant value -- value of input term
     """
     if isinstance(constant, Function):
         if isNumber(constant.value):
@@ -1529,16 +1499,7 @@ def evaluateConstant(constant):
 
 
 def constantConversion(tokens):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        tokens {[type]} -- [description]
-
-    Returns:
-        [type] -- [description]
-    """
     constantExpression = True
     for token in tokens:
         if isinstance(token, Variable):
@@ -1562,35 +1523,20 @@ def constantConversion(tokens):
 
 
 def tokenizer(eqnString):
-    """[summary]
-
-    [description]
+    """Generates tokens for input string
 
     Keyword Arguments:
-        eqn {str} -- [description] (default: {" {x-1} * {x+1}})
+        eqn {str} -- input equation string
 
     Returns:
-        [type] -- [description]
+        list -- function tokens list
     """
-    _, tokens = constantConversion(clean(eqnString))
+    _, tokens = constantConversion(preprocess(eqnString))
     return tokens
 
 
 def changeToken(tokens, variables, scope_times=0):
-    """[summary]
 
-    [description]
-
-    Arguments:
-        tokens {[type]} -- [description]
-        variables {[type]} -- [description]
-
-    Keyword Arguments:
-        scope_times {number} -- [description] (default: {0})
-
-    Returns:
-        [type] -- [description]
-    """
     if len(variables) != 0:
         if variables[0].scope is not None:
             for changeVariable in variables:
@@ -1630,7 +1576,7 @@ def removeToken(tokens, scope, scope_times=0):
         scope {int} -- scope number of token to be removed
 
     Keyword Arguments:
-        scope_times {number} -- [description] (default: {0})
+        scope_times {number} -- (default: {0})
 
     Returns:
         tokens {list} -- list of function tokens after removing token
