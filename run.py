@@ -38,45 +38,45 @@ if(str(sys.argv[1]) == str()):
     print("    run.py clean - Clean all cache, reports and builds")
     print("")
 elif (str(sys.argv[1]) == "install"):
-    subprocess.call(["python3 -m pip install -r requirements.txt"], shell=True)
+    subprocess.call("python3 -m pip install -r requirements.txt", shell=True)
 elif (str(sys.argv[1]) == "visma"):
-    subprocess.call(["python3 main.py"], shell=True)
+    subprocess.call("python3 main.py", shell=True)
 
 elif str(sys.argv[1]) == "test":
     if str(sys.argv[2]) == "syntax" or str(sys.argv[2]) == str():
         print("Python Syntax Test ...")
-        subprocess.call(["pylama"], shell=True)
+        subprocess.call("pylama", shell=True)
     elif (str(sys.argv[2]) == "modules"):
         print("Python Modules Test ...")
-        subprocess.call(["pytest"], shell=True)
+        subprocess.call("pytest", shell=True)
 
     if str(sys.argv[2]) != str() and str(sys.argv[2]) != "coverage" and str(sys.argv[2]) != "syntax" and str(sys.argv[2]) != "modules":
         print("Python Test for " + str(sys.argv[2]) + " ...")
-        subprocess.call(["coverage run --source ./ -m pytest " + str(sys.argv[2]) + " -v"], shell=True)
+        subprocess.call("coverage run --source ./ -m pytest " + str(sys.argv[2]) + " -v", shell=True)
     elif str(sys.argv[2]) == str():
         print("Python Modules Test with Coverage ...")
-        subprocess.call(["coverage run --source ./ -m pytest -v"], shell=True)
+        subprocess.call("coverage run --source ./ -m pytest -v", shell=True)
 
     if str(sys.argv[2]) == str() or str(sys.argv[2]) == "coverage" or str(sys.argv[3]) == "coverage":
-        subprocess.call(["coverage report"], shell=True)
-        subprocess.call(["coverage html"], shell=True)
+        subprocess.call("coverage report", shell=True)
+        subprocess.call("coverage html", shell=True)
 
     if str(sys.argv[2]) == "coverage" or str(sys.argv[3]) == "coverage":
         def thread1():
-            subprocess.call(["nohup xdg-open ./htmlcov/index.html"], shell=True)
+            subprocess.call("nohup xdg-open ./htmlcov/index.html", shell=True)
             threading.Thread(target=thread1).start()
 
 elif str(sys.argv[1]) == "pack":
-    subprocess.call(["mv main.py visma"], shell=True)
-    subprocess.call(["python3 setup.py sdist bdist_wheel"], shell=True)
-    subprocess.call(["mv ./visma/main.py ./"], shell=True)
+    subprocess.call("mv main.py visma", shell=True)
+    subprocess.call("python3 setup.py sdist bdist_wheel", shell=True)
+    subprocess.call("mv ./visma/main.py ./", shell=True)
 
     if str(sys.argv[2]) == "upload":
-        subprocess.call(["twine upload --repository-url https://test.pypi.org/legacy/", Str(Glob("dist/*"))], shell=True)
+        subprocess.call("twine upload --repository-url https://test.pypi.org/legacy/", Str(Glob("dist/*")), shell=True)
     elif str(sys.argv[2]) == "final":
-        subprocess.call(["twine upload", Str(Glob("dist/*"))], shell=True)
+        subprocess.call("twine upload", Str(Glob("dist/*")), shell=True)
 
 elif str(sys.argv[1]) == "clean":
-    subprocess.call(["git clean -xdf"], shell=True)
+    subprocess.call("git clean -xdf", shell=True)
 else:
     print("Invalid arguments")
