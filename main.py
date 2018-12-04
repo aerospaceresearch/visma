@@ -81,7 +81,7 @@ class WorkSpace(QWidget):
     mode = 'interaction'
     showQuickSim = True
     showStepByStep = True
-    showPlotter = True
+    showPlotter = False
     enableQSolver = True
     buttons = {}
     solutionOptionsBox = QGridLayout()
@@ -127,7 +127,7 @@ class WorkSpace(QWidget):
         self.equationList = QTabWidget()
         self.equationList.tab1 = QWidget()
         # self.equationList.tab2 = QWidget()
-        self.equationList.addTab(self.equationList.tab1, "history")
+        self.equationList.addTab(self.equationList.tab1, "History")
         # self.equationList.addTab(self.equationList.tab2, "favourites")
         self.equationList.tab1.setLayout(self.equationsLayout())
         self.equationList.tab1.setStatusTip("Track of old equations")
@@ -136,8 +136,8 @@ class WorkSpace(QWidget):
         inputSpace = QTabWidget()
         inputSpace.tab1 = QWidget()
         inputSpace.tab2 = QWidget()
-        inputSpace.addTab(inputSpace.tab1, "input")
-        inputSpace.addTab(inputSpace.tab2, "settings")
+        inputSpace.addTab(inputSpace.tab1, "Input")
+        inputSpace.addTab(inputSpace.tab2, "Settings")
         inputSpace.tab1.setLayout(self.inputsLayout())
         inputSpace.tab2.setLayout(preferenceLayout(self))
         inputSpace.tab1.setStatusTip("Input characters")
@@ -161,7 +161,7 @@ class WorkSpace(QWidget):
         tabStepsLogs = QTabWidget()
         tabStepsLogs.tab1 = QWidget()
         tabStepsLogs.tab2 = QWidget()
-        tabStepsLogs.addTab(tabStepsLogs.tab1, "step-by-step")
+        tabStepsLogs.addTab(tabStepsLogs.tab1, "Step-by-Step")
         # tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
@@ -235,7 +235,7 @@ class WorkSpace(QWidget):
         self.myQListWidget.resize(400, 300)
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
-        self.clearButton = QtWidgets.QPushButton('clear equations')
+        self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.clearButton.setStatusTip("Restart UI for clearing history")
         # FIXME: Clear button. Clear rightaway.

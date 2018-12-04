@@ -20,16 +20,15 @@ from visma.simplify.muldiv import multiplication, multiplicationEquation, divisi
 
 
 def moveRTokensToLTokens(lTokens, rTokens):
-    """[summary]
-
-    [description]
+    """Moves tokens in RHS to LHS
 
     Arguments:
-        lTokens {[type]} -- [description]
-        rTokens {[type]} -- [description]
+        ltokens {list} -- LHS tokens list
+        rtokens {list} -- RHS tokens list
 
     Returns:
-        [type] -- [description]
+        ltokens {list} -- LHS tokens list
+        rtokens {list} -- RHS tokens list
     """
     if len(lTokens) == 0 and len(rTokens) > 0:
         return rTokens, lTokens
@@ -73,16 +72,19 @@ def moveRTokensToLTokens(lTokens, rTokens):
 
 
 def simplifyEquation(lToks, rToks):
-    """[summary]
-
-    [description]
+    """Simplifies given equation tokens
 
     Arguments:
-        lToks {[type]} -- [description]
-        rToks {[type]} -- [description]
+        lToks {list} -- LHS tokens list
+        rToks {list} -- RHS tokens list
 
     Returns:
-        [type] -- [description]
+        lTokens {list} -- LHS tokens list
+        rTokens {list} -- RHS tokens list
+        availableOperations {list} -- list of operations
+        token_string {string} -- simplified result in string
+        animation {list} -- list of equation simplification progress
+        comments {list} -- list of solution steps
     """
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
@@ -163,15 +165,17 @@ def simplifyEquation(lToks, rToks):
 
 
 def simplify(tokens):
-    """[summary]
-
-    [description]
+    """Simplifies given expression tokens
 
     Arguments:
-        tokens {[type]} -- [description]
+        tokens {list} -- tokens list
 
     Returns:
-        [type] -- [description]
+        tokens {list} -- tokens list
+        availableOperations {list} -- list of operations
+        token_string {string} -- simplified result in string
+        animation {list} -- list of equation simplification progress
+        comments {list} -- list of solution steps
     """
     tokens_orig = copy.deepcopy(tokens)
     animation = [tokens_orig]
