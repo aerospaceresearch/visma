@@ -50,7 +50,7 @@ elif str(sys.argv[1]) == "test":
         print("Python Modules Test ...")
         subprocess.call(["pytest"], shell=True)
 
-    if str(sys.argv[2]) != str() and str(sys.argv[2]) != "coverage" and str(sys.argv[2]) != "syntax" and str(sys.argv[2]) != "modules" :
+    if str(sys.argv[2]) != str() and str(sys.argv[2]) != "coverage" and str(sys.argv[2]) != "syntax" and str(sys.argv[2]) != "modules":
         print("Python Test for " + str(sys.argv[2]) + " ...")
         subprocess.call(["coverage run --source ./ -m pytest " + str(sys.argv[2]) + " -v"], shell=True)
     elif str(sys.argv[2]) == str():
@@ -72,9 +72,9 @@ elif str(sys.argv[1]) == "pack":
     subprocess.call(["mv ./visma/main.py ./"], shell=True)
 
     if str(sys.argv[2]) == "upload":
-        subprocess.call(["twine upload --repository-url https://test.pypi.org/legacy/", Str(Glob("dist/*"))],shell=True)
+        subprocess.call(["twine upload --repository-url https://test.pypi.org/legacy/", Str(Glob("dist/*"))], shell=True)
     elif str(sys.argv[2]) == "final":
-        subprocess.call(["twine upload",Str(Glob("dist/*"))], shell=True)
+        subprocess.call(["twine upload", Str(Glob("dist/*"))], shell=True)
 
 elif str(sys.argv[1]) == "clean":
     subprocess.call(["git clean -xdf"], shell=True)
