@@ -1438,7 +1438,7 @@ def preprocess(eqn):
     terms = getTerms(cleanEqn)
     normalizedTerms = normalize(terms)
     symTokens = tokenizeSymbols(normalizedTerms)
-    terms, symTokens = removeUnary(normalizedTerms, symTokens)
+    normalizedTerms, symTokens = removeUnary(normalizedTerms, symTokens)
     if checkEquation(normalizedTerms, symTokens):
         tokens = getToken(normalizedTerms, symTokens)
         return tokens.tokens

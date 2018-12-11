@@ -43,14 +43,16 @@ This sets up the environment to run on your computer.
 
 ```shell
 $ visma
+>>> gui
 ```
 
 **Note:** For windows user (and those for whom) the above launching option is not available, to launch **visma** GUI do
 
 ```shell
 $ python3
->>> from visma.main import initGUI
->>> initGUI()
+>>> from visma.main import init
+>>> init()      # for starting visma
+>>> gui         # for visma gui
 ```
 
 
