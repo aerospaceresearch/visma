@@ -10,9 +10,10 @@ import os
 import webbrowser
 
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton,QDialog
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
@@ -47,8 +48,7 @@ class Window(QtWidgets.QMainWindow):
 
         wikiAction = QtWidgets.QAction('Wiki', self)
         wikiAction.setStatusTip('Open Github wiki')
-        # TODO: Pop a mini browser for docs and wiki
-        wikiAction.triggered.connect(lambda: webbrowser.open('https://github.com/aerospaceresearch/visma/wiki'))
+        wikiAction.triggered.connect(self.popupBrowser)
 
         self.statusBar()
 
@@ -68,6 +68,16 @@ class Window(QtWidgets.QMainWindow):
         self.setGeometry(300, 300, self.GUIwidth, self.GUIheight)
         self.setWindowTitle('VISual MAth')
         self.show()
+
+    def popupBrowser(self):
+        w = QDialog(self)
+        w.resize(600,500)
+        web = QWebEngineView(w)
+        web.load(QUrl('https://github.com/aerospaceresearch/visma/wiki'))
+        web.resize(600,500)
+        web.show()
+        w.show()
+
 
 
 class WorkSpace(QWidget):
