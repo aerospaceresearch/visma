@@ -10,7 +10,7 @@ import os
 import webbrowser
 
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton,QDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton, QDialog
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -71,13 +71,12 @@ class Window(QtWidgets.QMainWindow):
 
     def popupBrowser(self):
         w = QDialog(self)
-        w.resize(600,500)
+        w.resize(600, 500)
         web = QWebEngineView(w)
         web.load(QUrl('https://github.com/aerospaceresearch/visma/wiki'))
-        web.resize(600,500)
+        web.resize(600, 500)
         web.show()
         w.show()
-
 
 
 class WorkSpace(QWidget):
