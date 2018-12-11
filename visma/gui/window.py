@@ -7,7 +7,6 @@ About: This module is created to handle the GUI of the project, this module inte
 
 import sys
 import os
-import webbrowser
 
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton, QDialog
