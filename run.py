@@ -22,7 +22,10 @@ def Glob(value):
     return ret
 
 
-if(str(sys.argv[1]) == str()):
+for i in range(4-len(sys.argv)):
+    sys.argv.append("")
+
+if(str(sys.argv[1]) == ""):
     print("")
     print("Enter command arguments with run")
     print("    run.py install - Install all dependencies for visma")
@@ -37,27 +40,30 @@ if(str(sys.argv[1]) == str()):
     print("    run.py pack final - Generate builds and upload final build to pypi.org")
     print("    run.py clean - Clean all cache, reports and builds")
     print("")
+
 elif (str(sys.argv[1]) == "install"):
     subprocess.call("python3 -m pip install -r requirements.txt", shell=True)
+
 elif (str(sys.argv[1]) == "visma"):
     subprocess.call("python3 main.py", shell=True)
 
 elif str(sys.argv[1]) == "test":
-    if str(sys.argv[2]) == "syntax" or str(sys.argv[2]) == str():
+    if str(sys.argv[2]) == "syntax" or str(sys.argv[2]) == "":
         print("Python Syntax Test ...")
         subprocess.call("pylama", shell=True)
     elif (str(sys.argv[2]) == "modules"):
         print("Python Modules Test ...")
         subprocess.call("pytest", shell=True)
 
-    if str(sys.argv[2]) != str() and str(sys.argv[2]) != "coverage" and str(sys.argv[2]) != "syntax" and str(sys.argv[2]) != "modules":
+    if str(sys.argv[2]) != "" and str(sys.argv[2]) != "coverage" and str(sys.argv[2]) != "syntax" and str(sys.argv[2]) != "modules":
         print("Python Test for " + str(sys.argv[2]) + " ...")
         subprocess.call("coverage run --source ./ -m pytest " + str(sys.argv[2]) + " -v", shell=True)
-    elif str(sys.argv[2]) == str():
+
+    elif str(sys.argv[2]) == "":
         print("Python Modules Test with Coverage ...")
         subprocess.call("coverage run --source ./ -m pytest -v", shell=True)
 
-    if str(sys.argv[2]) == str() or str(sys.argv[2]) == "coverage" or str(sys.argv[3]) == "coverage":
+    if str(sys.argv[2]) == "" or str(sys.argv[2]) == "coverage" or str(sys.argv[3]) == "coverage":
         subprocess.call("coverage report", shell=True)
         subprocess.call("coverage html", shell=True)
 
@@ -78,5 +84,6 @@ elif str(sys.argv[1]) == "pack":
 
 elif str(sys.argv[1]) == "clean":
     subprocess.call("git clean -xdf", shell=True)
+
 else:
     print("Invalid arguments")
