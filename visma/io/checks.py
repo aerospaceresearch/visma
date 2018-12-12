@@ -48,7 +48,7 @@ def isNumber(term):
         if term[0] == '-':
             x += 1
             while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
+                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
                     return False
                 if term[x] == '.':
                     dot += 1
@@ -59,7 +59,7 @@ def isNumber(term):
                 return False
         else:
             while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
+                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
                     return False
                 if term[x] == '.':
                     dot += 1
