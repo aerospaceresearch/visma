@@ -173,10 +173,30 @@ def getTerms(eqn):
                 terms.append(eqn[x])
 
             elif eqn[x] == 'e':
-                terms.append('exp')
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("xp"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == "exp":
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                terms.append(eqn[x])
 
             elif eqn[x] == 'i':
-                terms.append('iota')
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("ota"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == "iota":
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                terms.append(eqn[x])
 
             elif eqn[x] == 't':
                 i = x
