@@ -48,11 +48,8 @@ def isNumber(term):
         if term[0] == '-':
             x += 1
             while x < len(term):
-                try:
-                    if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
-                        return False
-                except Exception as e:
-                    print("[INFO]: {}".format(e))
+                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
+                    return False
                 if term[x] == '.':
                     dot += 1
                 x += 1
@@ -62,11 +59,8 @@ def isNumber(term):
                 return False
         else:
             while x < len(term):
-                try:
-                    if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
-                        return False
-                except Exception as e:
-                    print("[INFO]: {}".format(e))
+                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
+                    return False
                 if term[x] == '.':
                     dot += 1
                 x += 1
