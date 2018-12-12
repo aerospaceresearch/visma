@@ -1486,12 +1486,7 @@ def evaluateConstant(constant):
     """
     if isinstance(constant, Function):
         if isNumber(constant.value):
-            try:
-                return math.pow(constant.value[0], constant.power[0])
-            except Exception as e:
-                print("[INFO] {}".format(e))
-            else:
-                return math.pow(constant.value, constant.power)
+            return math.pow(constant.value[0], constant.power[0])
         elif isinstance(constant.value, list):
             val = 1
             if constant.coefficient is not None:
