@@ -13,10 +13,9 @@ import os
 import webbrowser
 
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton
+from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton,QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui, QtWidgets
-
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
 from visma.io.checks import checkTypes, getVariables
@@ -294,14 +293,20 @@ class WorkSpace(QWidget):
         else:
             self.input = str(interactionText)
             self.mode = 'interaction'
+        showbuttons=True;
+        if len(self.input)==0:
+            self.input='0'
+            QMessageBox.information(self, "Message", "No input is given. please enter some expression.")
+            showbuttons=False;
+
         self.tokens = tokenizer(self.input)
-        # DBP: print(self.tokens)
+
         self.addEquation()
         lhs, rhs = getLHSandRHS(self.tokens)
         self.lTokens = lhs
         self.rTokens = rhs
         operations, self.solutionType = checkTypes(lhs, rhs)
-        if isinstance(operations, list):
+        if isinstance(operations, list) and showbuttons:
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
