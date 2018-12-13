@@ -13,7 +13,7 @@ import os
 import webbrowser
 
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton,QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton, QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui, QtWidgets
 from visma.calculus.differentiation import differentiate
@@ -73,9 +73,12 @@ class Window(QtWidgets.QMainWindow):
 
 
 class WorkSpace(QWidget):
-
-    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', u'\u03C0', '.', '0', '=', '<', '>']
-    inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g',  'h', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', '\\pi', '.', '0', '=', '<', '>']
+    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '/', '*',
+                  'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', u'\u03C0', '.', '0',
+                  '=', '<', '>']
+    inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '\\div',
+                  '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i',
+                  '\\pi', '.', '0', '=', '<', '>']
 
     mode = 'interaction'
     showQuickSim = True
@@ -293,11 +296,11 @@ class WorkSpace(QWidget):
         else:
             self.input = str(interactionText)
             self.mode = 'interaction'
-        showbuttons=True;
-        if len(self.input)==0:
-            self.input='0'
+        showbuttons = True
+        if len(self.input) == 0:
+            self.input = '0'
             QMessageBox.information(self, "Message", "No input is given. please enter some expression.")
-            showbuttons=False;
+            showbuttons = False
 
         self.tokens = tokenizer(self.input)
 
@@ -563,6 +566,7 @@ class WorkSpace(QWidget):
                 cursor.deletePreviousChar()
             else:
                 self.textedit.insertPlainText(str(name))
+
         return calluser
 
     def onSolvePress(self, name):
@@ -603,11 +607,13 @@ class WorkSpace(QWidget):
                 if self.solutionType == 'expression':
                     self.tokens, availableOperations, tokenString, equationTokens, comments = simplify(self.tokens)
                 else:
-                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
+                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = simplifyEquation(
+                        self.lTokens, self.rTokens)
             elif name == 'factorize':
-                    self.tokens, availableOperations, tokenString, equationTokens, comments = factorize(self.tokens)
+                self.tokens, availableOperations, tokenString, equationTokens, comments = factorize(self.tokens)
             elif name == 'find roots':
-                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = quadraticRoots(self.lTokens, self.rTokens)
+                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = quadraticRoots(
+                    self.lTokens, self.rTokens)
             elif name == 'solve':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = getVariables(lhs, rhs)
@@ -639,6 +645,7 @@ class WorkSpace(QWidget):
                     showSteps(self)
                 if self.showPlotter is True:
                     plot(self)
+
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
@@ -656,13 +663,16 @@ class WorkSpace(QWidget):
                 self.refreshButtons(operations)
 
             elif operation == 'solve':
-                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
+                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = solveFor(
+                    self.lTokens, self.rTokens, varName)
 
             elif operation == 'integrate':
-                self.lTokens, availableOperations, tokenString, equationTokens, comments = integrate(self.lTokens, varName)
+                self.lTokens, availableOperations, tokenString, equationTokens, comments = integrate(self.lTokens,
+                                                                                                     varName)
 
             elif operation == 'differentiate':
-                self.lTokens, availableOperations, tokenString, equationTokens, comments = differentiate(self.lTokens, varName)
+                self.lTokens, availableOperations, tokenString, equationTokens, comments = differentiate(self.lTokens,
+                                                                                                         varName)
 
             self.eqToks = equationTokens
             self.output = resultLatex(operation, equationTokens, comments, varName)
@@ -679,6 +689,7 @@ class WorkSpace(QWidget):
                 showSteps(self)
             if self.showPlotter is True:
                 plot(self)
+
         return calluser
 
 
