@@ -1,6 +1,6 @@
 from visma.io.checks import getVariables, areTokensEqual, isTokenInToken
 from visma.io.parser import tokensToString
-from visma.io.tokenize import getTerms
+from visma.io.tokenize import getTerms, normalize
 from visma.functions.operator import Operator, Plus
 from visma.functions.structure import Expression
 from tests.tester import getTokens
@@ -101,3 +101,10 @@ def test_getTerms():
 
     assert getTerms("[1,0;0,1]") == ['[', '1', ',', '0', ';', '0', ',', '1', ']']
     assert getTerms("2*[2,3;2,3]+[1,2;1,2]") == ['2', '*', '[', '2', ',', '3', ';', '2', ',', '3', ']', '+', '[', '1', ',', '2', ';', '1', ',', '2', ']']
+
+    assert getTerms(r"$\frac {3}{x}-\frac{x}{y}$") == ['frac', '{', '3', '}', '{', 'x', '}', '-', 'frac', '{', 'x', '}', '{', 'y', '}']
+
+
+def test_normalize():
+
+    assert normalize(['frac', '{', '3', '}', '{', 'x', '}', '-', 'frac', '{', 'x', '}', '{', 'y', '}']) == ['3', '/', 'x', '-', 'x', '/', 'y']
