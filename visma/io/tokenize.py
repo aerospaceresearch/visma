@@ -172,6 +172,19 @@ def getTerms(eqn):
                     continue
                 terms.append(eqn[x])
 
+            elif eqn[x] == 'f':
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("rac"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == "frac":
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                terms.append(eqn[x])
+
             elif eqn[x] == 'e':
                 terms.append('exp')
 
@@ -331,10 +344,22 @@ def normalize(terms):
     Returns:
         terms {list} -- Greek input terms
     """
-    for term in terms:
+    for index, term in enumerate(terms):
         for i, x in enumerate(inputLaTeX):
             if x == term:
                 term = inputGreek[i]
+        if term == 'frac':
+            terms.remove(terms[index])
+            terms.remove(terms[index])
+            j = index
+            while terms[j] is not '}':
+                j += 1
+            terms.remove(terms[j])
+            terms.insert(j, '/')
+            terms.remove(terms[j+1])
+            while terms[j] is not '}':
+                j += 1
+            terms.remove(terms[j])
     return terms
 
 
