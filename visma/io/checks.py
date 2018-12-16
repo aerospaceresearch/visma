@@ -206,7 +206,7 @@ def checkEquation(terms, symTokens):
             return False, log
     if terminalLatex == 1:
         log = "LaTeX detected: Missing ending $"
-        return False, log    
+        return False, log
     return True
 
 
