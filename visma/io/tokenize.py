@@ -25,7 +25,7 @@ from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
 
-symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';']
+symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';', '$']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 
@@ -350,16 +350,20 @@ def normalize(terms):
                 term = inputGreek[i]
         if term == 'frac':
             terms.remove(terms[index])
-            terms.remove(terms[index])
-            j = index
-            while terms[j] is not '}':
-                j += 1
-            terms.remove(terms[j])
-            terms.insert(j, '/')
-            terms.remove(terms[j+1])
-            while terms[j] is not '}':
-                j += 1
-            terms.remove(terms[j])
+            if index < len(terms):
+                terms.remove(terms[index])
+                j = index
+                while j < len(terms) and terms[j] is not '}':
+                    j += 1
+                if j < len(terms):
+                    terms.remove(terms[j])
+                    terms.insert(j, '/')
+                if j+1 < len(terms):
+                    terms.remove(terms[j+1])
+                while j < len(terms) and terms[j] is not '}':
+                    j += 1
+                if j < len(terms):
+                    terms.remove(terms[j])
     return terms
 
 
@@ -402,7 +406,6 @@ def tokenizeSymbols(terms):
                 symTokens[-1] = 'Binary'
         elif term in funcs:
             symTokens[-1] = funcSyms[funcs.index(term)]
-
     return symTokens
 
 
@@ -905,7 +908,13 @@ def getToken(terms, symTokens, scope=None, coeff=1):
     x = 0
     level = 0
     while x < len(terms):
-        if isVariable(terms[x]) and symTokens[x] not in funcSyms:
+        if terms[x] == '$':
+            symTokens.pop(x)
+            terms.pop(x)
+            symTokens.pop()
+            terms.pop()
+            continue
+        elif isVariable(terms[x]) and symTokens[x] not in funcSyms:
             varTerms = []
             varSymTokens = []
             brackets = 0
