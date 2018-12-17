@@ -9,7 +9,7 @@ import sys
 import os
 
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton, QDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton, QDialog, QMessageBox
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -299,6 +299,11 @@ class WorkSpace(QWidget):
         else:
             self.input = str(interactionText)
             self.mode = 'interaction'
+        showbuttons = True
+        if len(self.input) == 0:
+            self.input = '0'
+            QMessageBox.warning(self, "Message", "No input given!")
+            showbuttons = False
         self.tokens = tokenizer(self.input)
         # DBP: print(self.tokens)
         self.addEquation()
@@ -306,7 +311,7 @@ class WorkSpace(QWidget):
         self.lTokens = lhs
         self.rTokens = rhs
         operations, self.solutionType = checkTypes(lhs, rhs)
-        if isinstance(operations, list):
+        if isinstance(operations, list) and showbuttons:
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
@@ -605,7 +610,7 @@ class WorkSpace(QWidget):
                 else:
                     self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
             elif name == 'factorize':
-                    self.tokens, availableOperations, tokenString, equationTokens, comments = factorize(self.tokens)
+                self.tokens, availableOperations, tokenString, equationTokens, comments = factorize(self.tokens)
             elif name == 'find roots':
                 self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = quadraticRoots(self.lTokens, self.rTokens)
             elif name == 'solve':
