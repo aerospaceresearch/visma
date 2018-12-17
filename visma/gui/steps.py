@@ -34,11 +34,6 @@ def showSteps(workspace):
     workspace.stepsfigure.suptitle(workspace.output, y=0.98,
                                    horizontalalignment='center',
                                    verticalalignment='top', size=qApp.font().pointSize()*workspace.stepsFontSize)
-    try:
-        workspace.stepscanvas.draw()
-    except Exception as e:
-        print("[INFO]: Please give some input. \nError: {}".format(e))
-    # TODO: Disable 'visma' button for invalid and null input
 
 ###############
 # preferences #
