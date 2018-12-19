@@ -404,7 +404,7 @@ class WorkSpace(QWidget):
             if len(variables) > 0:
                 for variable in variables:
                     varButtons.append(variable)
-                varButtons.append("Back")
+                varButtons.append("back")
                 for i in reversed(range(self.solutionOptionsBox.count())):
                     self.solutionOptionsBox.itemAt(i).widget().setParent(None)
                 for i in range(int(len(varButtons) / 2) + 1):
@@ -647,11 +647,14 @@ class WorkSpace(QWidget):
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
+
         def calluser():
+
             availableOperations = []
             tokenString = ''
             equationTokens = []
-            if varName == 'Back':
+
+            if varName == 'back':
                 self.input = str(self.textedit.toPlainText())
                 self.tokens = tokenizer(self.input)
                 # print(self.tokens)
@@ -660,30 +663,34 @@ class WorkSpace(QWidget):
                     lhs, rhs)
                 self.refreshButtons(operations)
 
-            elif operation == 'solve':
-                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
-
-            elif operation == 'integrate':
-                self.lTokens, availableOperations, tokenString, equationTokens, comments = integrate(self.lTokens, varName)
-
-            elif operation == 'differentiate':
-                self.lTokens, availableOperations, tokenString, equationTokens, comments = differentiate(self.lTokens, varName)
-
-            self.eqToks = equationTokens
-            self.output = resultLatex(operation, equationTokens, comments, varName)
-            if len(availableOperations) == 0:
-                self.clearButtons()
             else:
-                self.refreshButtons(availableOperations)
-            if self.mode == 'normal':
-                self.textedit.setText(tokenString)
-            elif self.mode == 'interaction':
-                cursor = self.textedit.textCursor()
-                cursor.insertText(tokenString)
-            if self.showStepByStep is True:
-                showSteps(self)
-            if self.showPlotter is True:
-                plot(self)
+
+                if operation == 'solve':
+                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
+
+                elif operation == 'integrate':
+                    self.lTokens, availableOperations, tokenString, equationTokens, comments = integrate(self.lTokens, varName)
+
+                elif operation == 'differentiate':
+                    self.lTokens, availableOperations, tokenString, equationTokens, comments = differentiate(self.lTokens, varName)
+
+                self.eqToks = equationTokens
+                self.output = resultLatex(operation, equationTokens, comments, varName)
+
+                if len(availableOperations) == 0:
+                    self.clearButtons()
+                else:
+                    self.refreshButtons(availableOperations)
+                if self.mode == 'normal':
+                    self.textedit.setText(tokenString)
+                elif self.mode == 'interaction':
+                    cursor = self.textedit.textCursor()
+                    cursor.insertText(tokenString)
+                if self.showStepByStep is True:
+                    showSteps(self)
+                if self.showPlotter is True:
+                    plot(self)
+
         return calluser
 
 
