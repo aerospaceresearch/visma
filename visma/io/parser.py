@@ -56,6 +56,29 @@ def tokensToLatex(eqTokens):
     return eqLatex
 
 
+def latexToTerms(terms):
+
+    for index, term in enumerate(terms):
+        if term == 'frac':
+            terms.remove(terms[index])
+            if index < len(terms):
+                terms.remove(terms[index])
+                j = index
+                while j < len(terms) and terms[j] is not '}':
+                    j += 1
+                if j < len(terms):
+                    terms.remove(terms[j])
+                    terms.insert(j, '/')
+                if j+1 < len(terms):
+                    terms.remove(terms[j+1])
+                while j < len(terms) and terms[j] is not '}':
+                    j += 1
+                if j < len(terms):
+                    terms.remove(terms[j])
+
+    return terms
+
+
 def tokensToString(tokens):
     """Converts tokens to text string
 
@@ -117,7 +140,6 @@ def tokensToString(tokens):
                 tokenString += tokensToString([token.operand])
             elif isinstance(token.operand, Expression):
                 tokenString += tokensToString(token.operand.tokens)
-
             tokenString += ')'
         elif isinstance(token, Logarithm):
             if token.coefficient == 1:

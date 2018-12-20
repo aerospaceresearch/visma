@@ -37,7 +37,6 @@ def showSteps(workspace):
     workspace.stepscanvas.draw()
 
 
-
 ###############
 # preferences #
 ###############
