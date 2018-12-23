@@ -48,41 +48,17 @@ def expressionMultiplication(variables, tokens):
                     if tokens[i + 1].__class__ in [Variable, Constant]:
                         nxt = True
                 if nxt and prev:
+                    comments.append("Multiplying " + r"$" + tokens[i-1].__str__() + r"$" + " and " + r"$" + tokens[i+1].__str__() + r"$")
                     if isinstance(tokens[i + 1], Constant) and isinstance(tokens[i - 1], Constant):
-                        comments.append("Multiplying " + r"$" + tokens[i-1].__str__() + r"$" + " and " + r"$" + tokens[i+1].__str__() + r"$")
-                        no_1 = False
-                        no_2 = False
-                        if isNumber(tokens[i - 1].value):
-                            no_1 = True
-                        if isNumber(tokens[i + 1].value):
-                            no_2 = True
-                        if no_1 and no_2:
-                            tokens[i + 1].value = evaluateConstant(
-                                tokens[i - 1]) * evaluateConstant(tokens[i + 1])
-                            tokens[i + 1].power = 1
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i - 1].scope)
-                        elif no_1 and not no_2:
-                            tokens[i + 1].value.append(tokens[i - 1].value)
-                            tokens[i + 1].power.append(tokens[i - 1].power)
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i - 1].scope)
-                        elif not no_1 and no_2:
-                            tokens[i - 1].value.append(tokens[i + 1].value)
-                            tokens[i - 1].power.append(tokens[i + 1].power)
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i + 1].scope)
-                        elif not no_1 and not no_2:
-                            for vals in tokens[i - 1].value:
-                                tokens[i + 1].value.append(vals)
-                            for pows in tokens[i - 1].power:
-                                tokens[i + 1].power.append(pows)
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i - 1].scope)
+                        tokens[i + 1].value = evaluateConstant(
+                            tokens[i - 1]) * evaluateConstant(tokens[i + 1])
+                        tokens[i + 1].power = 1
+                        removeScopes.append(tokens[i].scope)
+                        removeScopes.append(tokens[i - 1].scope)
+
                         return variables, tokens, removeScopes, comments
 
                     elif isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Variable):
-                        comments.append("Multiplying " + r"$" + tokens[i - 1].__str__() + r"$" + " and " + r"$" + tokens[i + 1].__str__() + r"$")
                         for j, var in enumerate(tokens[i + 1].value):
                             found = False
                             for k, var2 in enumerate(tokens[i - 1].value):
@@ -101,14 +77,12 @@ def expressionMultiplication(variables, tokens):
                         return variables, tokens, removeScopes, comments
 
                     elif (isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Constant)):
-                        comments.append("Multiplying " + r"$" + tokens[i - 1].__str__() + "}" + r"$" + " and " + r"$" + tokens[i + 1].__str__() + r"$")
                         tokens[i + 1].coefficient *= evaluateConstant(tokens[i - 1])
                         removeScopes.append(tokens[i].scope)
                         removeScopes.append(tokens[i - 1].scope)
                         return variables, tokens, removeScopes, comments
 
                     elif (isinstance(tokens[i - 1], Variable) and isinstance(tokens[i + 1], Constant)):
-                        comments.append("Multiplying " + r"$" + tokens[i - 1].__str__() + r"$" + " and " + r"$" + tokens[i + 1].__str__() + r"$")
                         tokens[i - 1].coefficient *= evaluateConstant(tokens[i + 1])
                         removeScopes.append(tokens[i].scope)
                         removeScopes.append(tokens[i + 1].scope)
@@ -229,6 +203,82 @@ def division(tokens, direct=False):
     return tokens, availableOperations, token_string, animation, comments
 
 
+def expressionDivision(variables, tokens):
+
+    removeScopes = []
+    comments = []
+    for i, token in enumerate(tokens):
+        if isinstance(token, Binary):
+            if token.value in ['/']:
+                prev = False
+                nxt = False
+                if i != 0:
+                    if tokens[i - 1].__class__ in [Variable, Constant]:
+                        prev = True
+                if i + 1 < len(tokens):
+                    if tokens[i + 1].__class__ in [Variable, Constant]:
+                        nxt = True
+                if nxt and prev:
+                    comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
+                    if isinstance(tokens[i + 1], Constant) and isinstance(tokens[i - 1], Constant):
+                        tokens[i + 1].value = evaluateConstant(
+                            tokens[i - 1]) / evaluateConstant(tokens[i + 1])
+                        tokens[i + 1].power = 1
+                        removeScopes.append(tokens[i].scope)
+                        removeScopes.append(tokens[i - 1].scope)
+                        return variables, tokens, removeScopes, comments
+
+                    elif isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Variable):
+                        for j, var in enumerate(tokens[i + 1].value):
+                            found = False
+                            for k, var2 in enumerate(tokens[i - 1].value):
+                                tokens[i-1].coefficient /= tokens[i+1].coefficient
+                                if var == var2:
+                                    if isNumber(tokens[i + 1].power[j]) and isNumber(tokens[i - 1].power[k]):
+                                        tokens[i - 1].power[k] -= tokens[i + 1].power[j]
+                                        if tokens[i - 1].power[k] == 0:
+                                            del tokens[i - 1].power[k]
+                                            del tokens[i - 1].value[k]
+                                        found = True
+                                        break
+                            if not found:
+                                tokens[i - 1].value.append(tokens[i + 1].value[j])
+                                tokens[i - 1].power.append(-tokens[i + 1].power[j])
+
+                            if len(tokens[i - 1].value) == 0:
+                                constant = Constant()
+                                constant.scope = tokens[i - 1].scope
+                                constant.power = 1
+                                constant.value = tokens[i - 1].coefficient
+                                tokens[i - 1] = constant
+                            removeScopes.append(tokens[i].scope)
+                            removeScopes.append(tokens[i + 1].scope)
+                        return variables, tokens, removeScopes, comments
+
+                    elif (isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Constant)):
+                        val = evaluateConstant(tokens[i - 1])
+                        scope = tokens[i - 1].scope
+                        tokens[i - 1] = Variable()
+                        tokens[i - 1].value = tokens[i + 1].value
+                        tokens[i - 1].coefficient = val / \
+                            tokens[i + 1].coefficient
+                        tokens[i - 1].power = []
+                        tokens[i - 1].scope = scope
+                        for pows in tokens[i + 1].power:
+                            tokens[i - 1].power.append(-pows)
+
+                        removeScopes.append(tokens[i].scope)
+                        removeScopes.append(tokens[i + 1].scope)
+                        return variables, tokens, removeScopes, comments
+
+                    elif (isinstance(tokens[i - 1], Variable) and isinstance(tokens[i + 1], Constant)):
+                        tokens[i - 1].coefficient /= evaluateConstant(tokens[i + 1])
+                        removeScopes.append(tokens[i].scope)
+                        removeScopes.append(tokens[i + 1].scope)
+                        return variables, tokens, removeScopes, comments
+    return variables, tokens, removeScopes, comments
+
+
 def divisionEquation(lToks, rToks, direct=False):
 
     lTokens = copy.deepcopy(lToks)
@@ -314,115 +364,6 @@ def divisionEquation(lToks, rToks, direct=False):
     availableOperations = getOperationsEquation(
         lVariables, lTokens, rVariables, rTokens)
     return lTokens, rTokens, availableOperations, token_string, animation, comments
-
-
-def expressionDivision(variables, tokens):
-
-    removeScopes = []
-    comments = []
-    for i, token in enumerate(tokens):
-        if isinstance(token, Binary):
-            if token.value in ['/']:
-                prev = False
-                nxt = False
-                if i != 0:
-                    if tokens[i - 1].__class__ in [Variable, Constant]:
-                        prev = True
-                if i + 1 < len(tokens):
-                    if tokens[i + 1].__class__ in [Variable, Constant]:
-                        nxt = True
-                if nxt and prev:
-                    if isinstance(tokens[i + 1], Constant) and isinstance(tokens[i - 1], Constant):
-                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
-                        no_1 = False
-                        no_2 = False
-                        if isNumber(tokens[i - 1].value):
-                            no_1 = True
-                        if isNumber(tokens[i + 1].value):
-                            no_2 = True
-                        if no_1 and no_2:
-                            tokens[i + 1].value = evaluateConstant(
-                                tokens[i - 1]) / evaluateConstant(tokens[i + 1])
-                            tokens[i + 1].power = 1
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i - 1].scope)
-                        elif no_1 and not no_2:
-                            value = tokens[i - 1].value
-                            power = tokens[i - 1].power
-                            tokens[i - 1].value = [value]
-                            tokens[i - 1].power = [power]
-                            for val in tokens[i + 1].value:
-                                tokens[i - 1].value.append(val)
-                            for pows in tokens[i + 1].power:
-                                tokens[i - 1].power.append(-pows)
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i + 1].scope)
-                        elif not no_1 and no_2:
-                            tokens[i - 1].value.append(tokens[i + 1].value)
-                            tokens[i - 1].power.append(-tokens[i + 1].power)
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i + 1].scope)
-                        elif not no_1 and not no_2:
-                            for vals in tokens[i + 1].value:
-                                tokens[i - 1].value.append(vals)
-                            for pows in tokens[i + 1].power:
-                                tokens[i - 1].power.append(pows)
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i + 1].scope)
-                        return variables, tokens, removeScopes, comments
-
-                    elif isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Variable):
-                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
-                        for j, var in enumerate(tokens[i + 1].value):
-                            found = False
-                            for k, var2 in enumerate(tokens[i - 1].value):
-                                tokens[i-1].coefficient /= tokens[i+1].coefficient
-                                if var == var2:
-                                    if isNumber(tokens[i + 1].power[j]) and isNumber(tokens[i - 1].power[k]):
-                                        tokens[i - 1].power[k] -= tokens[i + 1].power[j]
-                                        if tokens[i - 1].power[k] == 0:
-                                            del tokens[i - 1].power[k]
-                                            del tokens[i - 1].value[k]
-                                        found = True
-                                        break
-                            if not found:
-                                tokens[i - 1].value.append(tokens[i + 1].value[j])
-                                tokens[i - 1].power.append(-tokens[i + 1].power[j])
-
-                            if len(tokens[i - 1].value) == 0:
-                                constant = Constant()
-                                constant.scope = tokens[i - 1].scope
-                                constant.power = 1
-                                constant.value = tokens[i - 1].coefficient
-                                tokens[i - 1] = constant
-                            removeScopes.append(tokens[i].scope)
-                            removeScopes.append(tokens[i + 1].scope)
-                        return variables, tokens, removeScopes, comments
-
-                    elif (isinstance(tokens[i + 1], Variable) and isinstance(tokens[i - 1], Constant)):
-                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
-                        val = evaluateConstant(tokens[i - 1])
-                        scope = tokens[i - 1].scope
-                        tokens[i - 1] = Variable()
-                        tokens[i - 1].value = tokens[i + 1].value
-                        tokens[i - 1].coefficient = val / \
-                            tokens[i + 1].coefficient
-                        tokens[i - 1].power = []
-                        tokens[i - 1].scope = scope
-                        for pows in tokens[i + 1].power:
-                            tokens[i - 1].power.append(-pows)
-
-                        removeScopes.append(tokens[i].scope)
-                        removeScopes.append(tokens[i + 1].scope)
-                        return variables, tokens, removeScopes, comments
-
-                    elif (isinstance(tokens[i - 1], Variable) and isinstance(tokens[i + 1], Constant)):
-                        comments.append("Dividing " + r"$" + tokens[i - 1].__str__() + r"$" + " by " + r"$" + tokens[i + 1].__str__() + r"$")
-                        tokens[i - 1].coefficient /= evaluateConstant(tokens[i + 1])
-                        removeScopes.append(tokens[i].scope)
-                        removeScopes.append(tokens[i + 1].scope)
-                        return variables, tokens, removeScopes, comments
-    return variables, tokens, removeScopes, comments
 
 
 ################################################
