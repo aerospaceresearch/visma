@@ -1,7 +1,6 @@
 import copy
 from visma.io.parser import tokensToString
 from visma.io.checks import getLevelVariables, getOperationsEquation, getOperationsExpression, evaluateConstant, isNumber
-from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary
@@ -118,45 +117,6 @@ def expressionMultiplication(variables, tokens):
     return variables, tokens, removeScopes, comments
 
 
-def multiplyExpressions(expression1, expression2):
-
-    tokens = []
-    tokens1 = expression1.tokens
-    tokens2 = expression2.tokens
-    coeff = expression1.coefficient * expression2.coefficient
-    for i, token1 in enumerate(tokens1):
-        # print(token1.value)
-        op = 1
-        if i != 0:
-            if isinstance(tokens1[i - 1], Binary):
-                if tokens1[i - 1].value == '+':
-                    op *= 1
-                elif tokens1[i - 1].value == '-':
-                    op *= -1
-        if isinstance(token1, Variable) or isinstance(token1, Constant):
-            for j, token2 in enumerate(tokens2):
-                # print(token2.value)
-                op2 = op
-                if isinstance(token2, Variable) or isinstance(token2, Constant):
-                    if j == 0 and i == 0:
-                        pass
-                    else:
-                        if j != 0:
-                            if isinstance(tokens2[j - 1], Binary):
-                                if tokens2[j - 1].value == '+':
-                                    op2 *= 1
-                                elif tokens2[j - 1].value == '-':
-                                    op2 *= -1
-                        binary = Binary()
-                        if op2 == -1:
-                            binary.value = '-'
-                        elif op2 == 1:
-                            binary.value = '+'
-                        tokens.append(binary)
-                    tokens.append(multiplySelect(token1, token2, coeff))
-                    # print(tokens)
-
-
 def multiplicationEquation(lToks, rToks, direct=False):
 
     lTokens = copy.deepcopy(lToks)
@@ -242,139 +202,6 @@ def multiplicationEquation(lToks, rToks, direct=False):
     availableOperations = getOperationsEquation(
         lVariables, lTokens, rVariables, rTokens)
     return lTokens, rTokens, availableOperations, token_string, animation, comments
-
-
-def multiplySelect(token1, token2, coeff=1):
-
-    if isinstance(token1, Variable) and isinstance(token2, Variable):
-        return multiplyVariables(token1, token2, coeff)
-    elif isinstance(token1, Variable) and isinstance(token2, Constant):
-        return multiplyVariableConstant(token2, token1, coeff)
-    elif isinstance(token1, Constant) and isinstance(token2, Variable):
-        return multiplyVariableConstant(token1, token2, coeff)
-    elif isinstance(token1, Constant) and isinstance(token2, Constant):
-        return multiplyConstants(token1, token2, coeff)
-
-
-def multiplyConstants(constant1, constant2, coeff):
-
-    no_1 = False
-    no_2 = False
-    constant = Constant()
-    if isNumber(constant1.value):
-        no_1 = True
-    if isNumber(constant2.value):
-        no_2 = True
-    if no_1 and no_2:
-        constant.value = evaluateConstant(
-            constant1) * evaluateConstant(constant2) * coeff
-        constant.power = 1
-        # removeScopes.append(tokens[i].scope)
-        # removeScopes.append(tokens[i-1].scope)
-    elif no_1 and not no_2:
-        constant.value = constant2.value
-        constant.power = constant2.power
-        done = False
-        for i, val in enumerate(constant.value):
-            if val == constant1.value:
-                constant.power[i] += constant1.power
-                done = True
-                break
-        if not done:
-            constant.value.append(constant1.value)
-            constant.power.append(constant1.power)
-        constant.value.append(coeff)
-        constant.power.append(1)
-        # removeScopes.append(tokens[i].scope)
-        # removeScopes.append(tokens[i-1].scope)
-    elif not no_1 and no_2:
-        constant.value = constant1.value
-        constant.power = constant1.power
-        done = False
-        for i, val in enumerate(constant.value):
-            if val == constant2.value:
-                constant.power[i] += constant2.power
-                done = True
-                break
-        if not done:
-            constant.value.append(constant2.value)
-            constant.power.append(constant2.power)
-        constant.value.append(coeff)
-        constant.power.append(1)
-        # removeScopes.append(tokens[i].scope)
-        # removeScopes.append(tokens[i+1].scope)
-    elif not no_1 and not no_2:
-        constant.value = constant2.value
-        constant.power = constant2.power
-        for i, val in enumerate(constant1.value):
-            done = False
-            for j, val2 in enumerate(constant.value):
-                if val == val2:
-                    constant.power[j] += constant1.power[i]
-                    done = True
-                    break
-            if not done:
-                constant.value.append(val)
-                constant.power.append(constant1.power[i])
-
-        constant.value.append(coeff)
-        constant.power.append(1)
-        # removeScopes.append(tokens[i].scope)
-        # removeScopes.append(tokens[i-1].scope)
-
-    return constant
-
-
-def multiplyVariables(variable1, variable2, coeff):
-
-    variable = Variable()
-    variable.value = []
-    variable.value.extend(variable1.value)
-    variable.power = []
-    variable.power.extend(variable1.power)
-    if isNumber(variable1.coefficient):
-        variable.coefficient = float(variable1.coefficient)
-    elif isinstance(variable1.coefficient, Function):
-        variable.coefficient = evaluateConstant(variable1.coefficient)
-    else:
-        variable.coefficient = variable1.coefficient
-    for j, var in enumerate(variable.value):
-        found = False
-        for k, var2 in enumerate(variable2.value):
-            if var == var2:
-                if isNumber(variable.power[j]) and isNumber(variable2.power[k]):
-                    variable.power[j] += variable2.power[k]
-                    found = True
-                    break
-        if not found:
-            variable.value.append(variable2.value[j])
-            variable.power.append(variable2.power[j])
-    variable.coefficient *= variable2.coefficient
-    variable.coefficient *= coeff
-    # removeScopes.append(tokens[i].scope)
-    # removeScopes.append(tokens[i+1].scope)
-    return variable
-
-
-def multiplyVariableConstant(constant, variable, coeff):
-
-    variable1 = Variable()
-    variable1.value = []
-    variable1.value.extend(variable.value)
-    variable1.power = []
-    variable1.power.extend(variable.power)
-    if isNumber(variable.coefficient):
-        variable1.coefficient = float(variable.coefficient)
-    elif isinstance(variable.coefficient, Function):
-        variable1.coefficient = evaluateConstant(variable.coefficient)
-    else:
-        variable.coefficient = variable1.coefficient
-
-    variable1.coefficient *= evaluateConstant(constant)
-    variable1.coefficient *= coeff
-    # removeScopes.append(tokens[i].scope)
-    # removeScopes.append(tokens[i-1].scope)
-    return variable1
 
 
 ############
@@ -598,9 +425,181 @@ def expressionDivision(variables, tokens):
     return variables, tokens, removeScopes, comments
 
 
-#####################
-# To be implemented #
-#####################
+################################################
+# TODO: Expression multiplication and division #
+################################################
+
+"""
+def multiplySelect(token1, token2, coeff=1):
+
+    if isinstance(token1, Variable) and isinstance(token2, Variable):
+        return multiplyVariables(token1, token2, coeff)
+    elif isinstance(token1, Variable) and isinstance(token2, Constant):
+        return multiplyVariableConstant(token2, token1, coeff)
+    elif isinstance(token1, Constant) and isinstance(token2, Variable):
+        return multiplyVariableConstant(token1, token2, coeff)
+    elif isinstance(token1, Constant) and isinstance(token2, Constant):
+        return multiplyConstants(token1, token2, coeff)
+
+
+def multiplyConstants(constant1, constant2, coeff):
+
+    no_1 = False
+    no_2 = False
+    constant = Constant()
+    if isNumber(constant1.value):
+        no_1 = True
+    if isNumber(constant2.value):
+        no_2 = True
+    if no_1 and no_2:
+        constant.value = evaluateConstant(
+            constant1) * evaluateConstant(constant2) * coeff
+        constant.power = 1
+        # removeScopes.append(tokens[i].scope)
+        # removeScopes.append(tokens[i-1].scope)
+    elif no_1 and not no_2:
+        constant.value = constant2.value
+        constant.power = constant2.power
+        done = False
+        for i, val in enumerate(constant.value):
+            if val == constant1.value:
+                constant.power[i] += constant1.power
+                done = True
+                break
+        if not done:
+            constant.value.append(constant1.value)
+            constant.power.append(constant1.power)
+        constant.value.append(coeff)
+        constant.power.append(1)
+        # removeScopes.append(tokens[i].scope)
+        # removeScopes.append(tokens[i-1].scope)
+    elif not no_1 and no_2:
+        constant.value = constant1.value
+        constant.power = constant1.power
+        done = False
+        for i, val in enumerate(constant.value):
+            if val == constant2.value:
+                constant.power[i] += constant2.power
+                done = True
+                break
+        if not done:
+            constant.value.append(constant2.value)
+            constant.power.append(constant2.power)
+        constant.value.append(coeff)
+        constant.power.append(1)
+        # removeScopes.append(tokens[i].scope)
+        # removeScopes.append(tokens[i+1].scope)
+    elif not no_1 and not no_2:
+        constant.value = constant2.value
+        constant.power = constant2.power
+        for i, val in enumerate(constant1.value):
+            done = False
+            for j, val2 in enumerate(constant.value):
+                if val == val2:
+                    constant.power[j] += constant1.power[i]
+                    done = True
+                    break
+            if not done:
+                constant.value.append(val)
+                constant.power.append(constant1.power[i])
+
+        constant.value.append(coeff)
+        constant.power.append(1)
+        # removeScopes.append(tokens[i].scope)
+        # removeScopes.append(tokens[i-1].scope)
+
+    return constant
+
+
+def multiplyVariables(variable1, variable2, coeff):
+
+    variable = Variable()
+    variable.value = []
+    variable.value.extend(variable1.value)
+    variable.power = []
+    variable.power.extend(variable1.power)
+    if isNumber(variable1.coefficient):
+        variable.coefficient = float(variable1.coefficient)
+    elif isinstance(variable1.coefficient, Function):
+        variable.coefficient = evaluateConstant(variable1.coefficient)
+    else:
+        variable.coefficient = variable1.coefficient
+    for j, var in enumerate(variable.value):
+        found = False
+        for k, var2 in enumerate(variable2.value):
+            if var == var2:
+                if isNumber(variable.power[j]) and isNumber(variable2.power[k]):
+                    variable.power[j] += variable2.power[k]
+                    found = True
+                    break
+        if not found:
+            variable.value.append(variable2.value[j])
+            variable.power.append(variable2.power[j])
+    variable.coefficient *= variable2.coefficient
+    variable.coefficient *= coeff
+    # removeScopes.append(tokens[i].scope)
+    # removeScopes.append(tokens[i+1].scope)
+    return variable
+
+
+def multiplyVariableConstant(constant, variable, coeff):
+
+    variable1 = Variable()
+    variable1.value = []
+    variable1.value.extend(variable.value)
+    variable1.power = []
+    variable1.power.extend(variable.power)
+    if isNumber(variable.coefficient):
+        variable1.coefficient = float(variable.coefficient)
+    elif isinstance(variable.coefficient, Function):
+        variable1.coefficient = evaluateConstant(variable.coefficient)
+    else:
+        variable.coefficient = variable1.coefficient
+
+    variable1.coefficient *= evaluateConstant(constant)
+    variable1.coefficient *= coeff
+    # removeScopes.append(tokens[i].scope)
+    # removeScopes.append(tokens[i-1].scope)
+    return variable1
+
+
+def multiplyExpressions(expression1, expression2):
+
+    tokens = []
+    tokens1 = expression1.tokens
+    tokens2 = expression2.tokens
+    coeff = expression1.coefficient * expression2.coefficient
+    for i, token1 in enumerate(tokens1):
+        # print(token1.value)
+        op = 1
+        if i != 0:
+            if isinstance(tokens1[i - 1], Binary):
+                if tokens1[i - 1].value == '+':
+                    op *= 1
+                elif tokens1[i - 1].value == '-':
+                    op *= -1
+        if isinstance(token1, Variable) or isinstance(token1, Constant):
+            for j, token2 in enumerate(tokens2):
+                # print(token2.value)
+                op2 = op
+                if isinstance(token2, Variable) or isinstance(token2, Constant):
+                    if j == 0 and i == 0:
+                        pass
+                    else:
+                        if j != 0:
+                            if isinstance(tokens2[j - 1], Binary):
+                                if tokens2[j - 1].value == '+':
+                                    op2 *= 1
+                                elif tokens2[j - 1].value == '-':
+                                    op2 *= -1
+                        binary = Binary()
+                        if op2 == -1:
+                            binary.value = '-'
+                        elif op2 == 1:
+                            binary.value = '+'
+                        tokens.append(binary)
+                    tokens.append(multiplySelect(token1, token2, coeff))
+                    # print(tokens)
 
 
 def multiply_expression_constant(constant, expression, coeff):
@@ -792,3 +791,4 @@ def division_select(token1, token2, coeff=1):
 
 def division_expressions(expression1, expression2):
     pass
+"""
