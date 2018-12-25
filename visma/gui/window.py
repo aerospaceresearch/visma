@@ -104,7 +104,7 @@ class WorkSpace(QWidget):
                 if not line.isspace():
                     fp.write(line)
                     equations.insert(
-                        0, ('Equation No.' + str(len(equations) + 1), line))
+                        -1, ('Equation No.' + str(len(equations) + 1), line))
             fp.close()
     except IOError:
         if not os.path.exists('local'):
@@ -251,6 +251,8 @@ class WorkSpace(QWidget):
         file = open('local/eqn-list.vis', 'w')
         file.truncate()
         file.close()
+        self.equations = []
+        self.addEquation()
 
     def Clicked(self, item):
         _, name = self.equations[self.myQListWidget.currentRow()]
