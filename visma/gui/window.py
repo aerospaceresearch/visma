@@ -51,7 +51,7 @@ class Window(QtWidgets.QMainWindow):
 
         addEqList = QtWidgets.QAction('Add Equations', self)
         addEqList.setStatusTip('Add custom equations')
-        addEqList.triggered.connect(self.addEquations)
+        addEqList.triggered.connect(self.loadEquations)
 
         self.statusBar()
 
@@ -80,16 +80,16 @@ class Window(QtWidgets.QMainWindow):
         web.show()
         w.show()
 
-    def addEquations(self):
+    def loadEquations(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Add Custom Equations", "", "All Files (*);;Visma Files (*.vis)", options=options)
-        tempList = []
+        if self.workSpace.equations[0][0] == "No equations stored":
+            self.workSpace.equations.pop(0)
         with open(fileName) as fileobj:
             for line in fileobj:
-                for ch in line:
-                    tempList.append(ch)
-        self.workSpace.textedit.append("".join(tempList))
+                self.workSpace.equations.insert(0, ('Equation No.' + str(len(self.workSpace.equations) + 1), line[:-1]))
+            self.workSpace.addEquation()
 
 
 class WorkSpace(QWidget):
@@ -116,9 +116,8 @@ class WorkSpace(QWidget):
         with open('local/eqn-list.vis', 'r+') as fp:
             for line in fp:
                 if not line.isspace():
-                    fp.write(line)
                     equations.insert(
-                        0, ('Equation No.' + str(len(equations) + 1), line))
+                        -1, ('Equation No.' + str(len(equations) + 1), line))
             fp.close()
     except IOError:
         if not os.path.exists('local'):
@@ -265,6 +264,8 @@ class WorkSpace(QWidget):
         file = open('local/eqn-list.vis', 'w')
         file.truncate()
         file.close()
+        self.equations = []
+        self.addEquation()
 
     def Clicked(self, item):
         _, name = self.equations[self.myQListWidget.currentRow()]
@@ -489,7 +490,7 @@ class WorkSpace(QWidget):
                 self.equations[0] = ("Equation No. 1", eqn)
             else:
                 self.equations.append(("Equation No. 2", eqn))
-        else:
+        elif eqn != "":
             self.equations.append(
                 ("Equation No. " + str(len(self.equations) + 1), eqn))
         file = open('local/eqn-list.vis', 'r+')

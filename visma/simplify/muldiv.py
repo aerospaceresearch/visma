@@ -13,7 +13,6 @@ from visma.io.tokenize import removeToken
 
 def multiplication(tokens, direct=False):
 
-    # FIXME: Fix multiplication for variables (Ex: x^-1 * x^2)
     animation = [copy.deepcopy(tokens)]
     comments = []
     if direct:
