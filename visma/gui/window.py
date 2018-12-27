@@ -256,8 +256,7 @@ class WorkSpace(QWidget):
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
-        self.clearButton.setStatusTip("Restart UI for clearing history")
-        # FIXME: Clear button. Clear rightaway.
+        self.clearButton.setStatusTip("Clear history")
         self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
 
@@ -266,7 +265,45 @@ class WorkSpace(QWidget):
         file.truncate()
         file.close()
         self.equations = []
-        self.addEquation()
+        self.clearEquations()
+
+    def clearEquations(self):
+        eqn = str(self.textedit.toPlainText())
+        for index, equation in self.equations:
+            if equation == eqn:
+                return self.equationListVbox
+
+        for i in reversed(range(self.equationListVbox.count())):
+            self.equationListVbox.itemAt(i).widget().setParent(None)
+
+        self.equations = [('No equations stored', '')]
+
+        file = open('local/eqn-list.vis', 'r+')
+        self.myQListWidget = QtWidgets.QListWidget(self)
+        i = 0
+        for index, name in self.equations:
+            if i != 0:
+                file.write("\n")
+            file.write(name)
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setTextUp(index)
+            myQCustomQWidget.setTextDown(name)
+            myQListWidgetItem = QtWidgets.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+            self.myQListWidget.addItem(myQListWidgetItem)
+            self.myQListWidget.setItemWidget(
+                myQListWidgetItem, myQCustomQWidget)
+            i += 1
+        file.close()
+        self.myQListWidget.resize(400, 300)
+
+        self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.equationListVbox.addWidget(self.myQListWidget)
+        self.myQListWidget.itemClicked.connect(self.Clicked)
+        self.clearButton = QtWidgets.QPushButton('Clear equations')
+        self.clearButton.clicked.connect(self.clearHistory)
+        self.equationListVbox.addWidget(self.clearButton)
+        return self.equationListVbox
 
     def Clicked(self, item):
         _, name = self.equations[self.myQListWidget.currentRow()]
@@ -516,7 +553,7 @@ class WorkSpace(QWidget):
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
-        self.clearButton = QtWidgets.QPushButton('clear equations')
+        self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
         return self.equationListVbox
