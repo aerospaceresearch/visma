@@ -419,7 +419,7 @@ class WorkSpace(QWidget):
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
-                    if operations[0] != 'solve':
+                    if operations[0] == 'solve':
                         opButtons = ['simplify']
                 else:
                     opButtons = ['simplify']
