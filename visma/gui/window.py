@@ -74,6 +74,7 @@ class Window(QtWidgets.QMainWindow):
     def popupBrowser(self):
         w = QDialog(self)
         w.resize(600, 500)
+        w.setWindowTitle('Wiki')
         web = QWebEngineView(w)
         web.load(QUrl('https://github.com/aerospaceresearch/visma/wiki'))
         web.resize(600, 500)
