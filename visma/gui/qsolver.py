@@ -27,7 +27,7 @@ def quickSimplify(workspace):
     symTokens = tokenizeSymbols(normalizedTerms)
     normalizedTerms, symTokens = removeUnary(normalizedTerms, symTokens)
     if checkEquation(normalizedTerms, symTokens) is True and input != "":
-        if symTokens[-1] is not False:
+        if symTokens and symTokens[-1] is not False:
             tokens = getToken(normalizedTerms, symTokens)
             tokens = tokens.tokens
             lhs, rhs = getLHSandRHS(tokens)
@@ -43,8 +43,11 @@ def quickSimplify(workspace):
             # workspace.eqToks = equationTokens
             # plot(workspace)
             return qSolution
-        else:
+        elif symTokens:
             log = "Invalid Expression"
+            return log
+        else:
+            log = ""
             return log
     else:
         log = ""
