@@ -95,8 +95,9 @@ class Window(QtWidgets.QMainWindow):
                     for line in fileobj:
                         self.workSpace.equations.insert(0, ('Equation No.' + str(len(self.workSpace.equations) + 1), line))
                     self.workSpace.addEquation()
-        except:
+        except IOError:
             pass
+
 
 class WorkSpace(QWidget):
 
