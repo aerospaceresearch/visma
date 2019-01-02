@@ -85,6 +85,8 @@ class Window(QtWidgets.QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Add Custom Equations", "", "All Files (*);;Visma Files (*.vis)", options=options)
+        if os.path.getsize(fileName) == 0:
+            return self.workSpace.warning("It's an empty file!")
         if self.workSpace.equations[0][0] == "No equations stored":
             self.workSpace.equations.pop(0)
         if fileName != '':
@@ -746,6 +748,13 @@ class WorkSpace(QWidget):
                     plot(self)
 
         return calluser
+    def warning(self, warningstr):
+        warning = QMessageBox()
+        warning.setWindowTitle('WARNING')
+        warning.setIcon(QMessageBox.Warning)
+        warning.setText('startup failure: %s' % warningstr)
+        warning.setStandardButtons(QMessageBox.Ok)
+        return warning.exec_()
 
 
 class QCustomQWidget(QtWidgets.QWidget):
