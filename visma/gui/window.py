@@ -92,7 +92,8 @@ class Window(QtWidgets.QMainWindow):
                 self.workSpace.equations.pop(0)
             with open(fileName) as fileobj:
                 for line in fileobj:
-                    if not any(line in item for item in self.workSpace.equations):
+                    line = line.replace(' ', '').replace('\n', '')
+                    if not any(line in item for item in self.workSpace.equations) and not (line.isspace() or line == ''):
                         self.workSpace.equations.insert(0, ('Equation No.' + str(len(self.workSpace.equations) + 1), line))
                 self.workSpace.addEquation()
 
@@ -121,7 +122,8 @@ class WorkSpace(QWidget):
     try:
         with open('local/eqn-list.vis', 'r+') as fp:
             for line in fp:
-                if not line.isspace():
+                line = line.replace(' ', '').replace('\n', '')
+                if not (line.isspace() or line == ''):
                     equations.insert(
                         0, ('Equation No.' + str(len(equations) + 1), line))
             fp.close()
@@ -228,6 +230,7 @@ class WorkSpace(QWidget):
 
     def textChangeTrigger(self):
         self.enableInteraction = True
+        self.clearButtons()
         if self.textedit.toPlainText() == "":
             self.enableQSolver = True
             self.enableInteraction = False
@@ -457,10 +460,9 @@ class WorkSpace(QWidget):
                                 self.solutionButtons[(i, j)], i, j)
 
     def addEquation(self):
-        eqn = str(self.textedit.toPlainText())
-        for index, equation in self.equations:
-            if equation == eqn:
-                return self.equationListVbox
+        eqn = str(self.textedit.toPlainText()).replace(' ', '')
+        if any(eqn in item for item in self.equations):
+            return self.equationListVbox
 
         for i in reversed(range(self.equationListVbox.count())):
             self.equationListVbox.itemAt(i).widget().setParent(None)
@@ -472,11 +474,11 @@ class WorkSpace(QWidget):
             else:
                 self.equations.insert(0, ("Equation No. 2", eqn))
         elif eqn != "":
-            self.equations.insert(0,
-                ("Equation No. " + str(len(self.equations) + 1), eqn))
+            self.equations.insert(0, ("Equation No. " + str(len(self.equations) + 1), eqn))
         file = open('local/eqn-list.vis', 'r+')
         self.myQListWidget = QtWidgets.QListWidget(self)
         i = 0
+        file.truncate()
         for index, name in self.equations:
             if i != 0:
                 file.write("\n")
@@ -492,7 +494,6 @@ class WorkSpace(QWidget):
             i += 1
         file.close()
         self.myQListWidget.resize(400, 300)
-
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
@@ -502,7 +503,6 @@ class WorkSpace(QWidget):
         return self.equationListVbox
 
     def inputsLayout(self, loadList="Greek"):
-
         inputLayout = QHBoxLayout(self)
         inputWidget = QWidget()
         self.selectedCombo = str(loadList)
@@ -534,7 +534,6 @@ class WorkSpace(QWidget):
     def onActivated(self, text):
         for i in reversed(range(self.inputBox.count())):
             self.inputBox.itemAt(i).widget().setParent(None)
-
         for i in range(4):
             for j in range(10):
                 if str(text) in "Greek":
