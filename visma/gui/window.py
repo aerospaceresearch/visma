@@ -85,18 +85,16 @@ class Window(QtWidgets.QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Add Custom Equations", "", "All Files (*);;Visma Files (*.vis)", options=options)
-        try:
+        if os.path.isfile(fileName):
             if os.path.getsize(fileName) == 0:
-                return self.workSpace.warning("It's an empty file!")
-            else:
-                if self.workSpace.equations[0][0] == "No equations stored":
-                    self.workSpace.equations.pop(0)
-                with open(fileName) as fileobj:
-                    for line in fileobj:
+                return self.workSpace.warning("Input equations file is empty!")
+            if self.workSpace.equations[0][0] == "No equations stored":
+                self.workSpace.equations.pop(0)
+            with open(fileName) as fileobj:
+                for line in fileobj:
+                    if not any(line in item for item in self.workSpace.equations):
                         self.workSpace.equations.insert(0, ('Equation No.' + str(len(self.workSpace.equations) + 1), line))
-                    self.workSpace.addEquation()
-        except IOError:
-            pass
+                self.workSpace.addEquation()
 
 
 class WorkSpace(QWidget):
@@ -360,9 +358,7 @@ class WorkSpace(QWidget):
             self.mode = 'interaction'
         showbuttons = True
         if len(self.input) == 0:
-            self.input = '0'
-            QMessageBox.warning(self, "Message", "No input given!")
-            showbuttons = False
+            return self.warning("No input given!")
         self.tokens = tokenizer(self.input)
         # DBP: print(self.tokens)
         self.addEquation()
@@ -533,9 +529,9 @@ class WorkSpace(QWidget):
             if index == "No equations stored":
                 self.equations[0] = ("Equation No. 1", eqn)
             else:
-                self.equations.append(("Equation No. 2", eqn))
+                self.equations.insert(0, ("Equation No. 2", eqn))
         elif eqn != "":
-            self.equations.append(
+            self.equations.insert(0,
                 ("Equation No. " + str(len(self.equations) + 1), eqn))
         file = open('local/eqn-list.vis', 'r+')
         self.myQListWidget = QtWidgets.QListWidget(self)
