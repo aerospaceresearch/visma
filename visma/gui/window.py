@@ -265,17 +265,6 @@ class WorkSpace(QWidget):
         return self.equationListVbox
 
     def clearHistory(self):
-        file = open('local/eqn-list.vis', 'w')
-        file.truncate()
-        file.close()
-        self.equations = []
-        self.clearEquations()
-
-    def clearEquations(self):
-        eqn = str(self.textedit.toPlainText())
-        for index, equation in self.equations:
-            if equation == eqn:
-                return self.equationListVbox
 
         for i in reversed(range(self.equationListVbox.count())):
             self.equationListVbox.itemAt(i).widget().setParent(None)
@@ -283,6 +272,7 @@ class WorkSpace(QWidget):
         self.equations = [('No equations stored', '')]
 
         file = open('local/eqn-list.vis', 'r+')
+        file.truncate()
         self.myQListWidget = QtWidgets.QListWidget(self)
         i = 0
         for index, name in self.equations:
@@ -300,10 +290,8 @@ class WorkSpace(QWidget):
             i += 1
         file.close()
         self.myQListWidget.resize(400, 300)
-
         self.myQListWidget.itemClicked.connect(self.Clicked)
         self.equationListVbox.addWidget(self.myQListWidget)
-        self.myQListWidget.itemClicked.connect(self.Clicked)
         self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
@@ -325,18 +313,6 @@ class WorkSpace(QWidget):
         topButtonSplitter = QSplitter(Qt.Horizontal)
         topButtonSplitter.addWidget(interactionModeWidget)
         permanentButtons = QWidget(self)
-        """
-        documentButtonsLayout = QHBoxLayout()
-        newButton = PicButton(QPixmap("assets/new.png"))
-        saveButton = PicButton(QPixmap("assets/save.png"))
-        newButton.setToolTip('Add New Equation')
-        saveButton.setToolTip('Save Equation')
-        documentButtonsLayout.addWidget(newButton)
-        documentButtonsLayout.addWidget(saveButton)
-        newButton.clicked.connect(self.newEquation)
-        saveButton.clicked.connect(self.saveEquation)
-        permanentButtons.setLayout(documentButtonsLayout)
-        """
         topButtonSplitter.addWidget(permanentButtons)
         self.bottomButton = QFrame()
         self.buttonSplitter = QSplitter(Qt.Vertical)
@@ -472,48 +448,6 @@ class WorkSpace(QWidget):
                                 self.onWRTVariablePress(varButtons[i * 2 + j], operation))
                             self.solutionOptionsBox.addWidget(
                                 self.solutionButtons[(i, j)], i, j)
-
-    def newEquation(self):
-        self.textedit.setText("")
-
-    def saveEquation(self):
-        for i in reversed(range(self.equationListVbox.count())):
-            self.equationListVbox.itemAt(i).widget().setParent(None)
-
-        eqn = str(self.textedit.toPlainText())
-        if len(self.equations) == 1:
-            index, name = self.equations[0]
-            if index == "No equations stored":
-                self.equations[0] = ("Equation No. 1", eqn)
-            else:
-                self.equations.append(("Equation No. 2", eqn))
-        else:
-            self.equations.append(
-                ("Equation No. " + str(len(self.equations) + 1), eqn))
-
-        self.textedit.setText('')
-        file = open('local/eqn-list.vis', 'r+')
-        self.myQListWidget = QtWidgets.QListWidget(self)
-        i = 0
-        for index, name in self.equations:
-            if i != 0:
-                file.write("\n")
-            file.write(name)
-            myQCustomQWidget = QCustomQWidget()
-            myQCustomQWidget.setTextUp(index)
-            myQCustomQWidget.setTextDown(name)
-            myQListWidgetItem = QtWidgets.QListWidgetItem(self.myQListWidget)
-            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
-            self.myQListWidget.addItem(myQListWidgetItem)
-            self.myQListWidget.setItemWidget(
-                myQListWidgetItem, myQCustomQWidget)
-            i += 1
-        file.close()
-        self.myQListWidget.resize(400, 300)
-
-        self.myQListWidget.itemClicked.connect(self.Clicked)
-        self.equationListVbox.addWidget(self.myQListWidget)
-        return self.equationListVbox
 
     def addEquation(self):
         eqn = str(self.textedit.toPlainText())
@@ -751,9 +685,9 @@ class WorkSpace(QWidget):
     @classmethod
     def warning(self, warningstr):
         warning = QMessageBox()
-        warning.setWindowTitle('WARNING')
+        warning.setWindowTitle('Warning')
         warning.setIcon(QMessageBox.Warning)
-        warning.setText('startup failure: %s' % warningstr)
+        warning.setText(warningstr)
         warning.setStandardButtons(QMessageBox.Ok)
         return warning.exec_()
 
