@@ -85,15 +85,18 @@ class Window(QtWidgets.QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Add Custom Equations", "", "All Files (*);;Visma Files (*.vis)", options=options)
-        if os.path.getsize(fileName) == 0:
-            return self.workSpace.warning("It's an empty file!")
-        if self.workSpace.equations[0][0] == "No equations stored":
-            self.workSpace.equations.pop(0)
-        if fileName != '':
-            with open(fileName) as fileobj:
-                for line in fileobj:
-                    self.workSpace.equations.insert(0, ('Equation No.' + str(len(self.workSpace.equations) + 1), line))
-                self.workSpace.addEquation()
+        try:
+            if os.path.getsize(fileName) == 0:
+                return self.workSpace.warning("It's an empty file!")
+            else:
+                if self.workSpace.equations[0][0] == "No equations stored":
+                    self.workSpace.equations.pop(0)
+                with open(fileName) as fileobj:
+                    for line in fileobj:
+                        self.workSpace.equations.insert(0, ('Equation No.' + str(len(self.workSpace.equations) + 1), line))
+                    self.workSpace.addEquation()
+        except IOError:
+            pass
 
 
 class WorkSpace(QWidget):
