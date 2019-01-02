@@ -17,6 +17,7 @@ def quickSimplify(workspace):
 
     Returns:
         qSolution/log {string} -- quick solution or error log
+        enableInteraction {bool} -- if False disables 'visma'(interaction) button
     """
     # FIXME: Crashes for some cases. Find and fix.
     qSolution = ""
@@ -42,18 +43,18 @@ def quickSimplify(workspace):
             qSolution += tokensToLatex(equationTokens[-1]) + ' $'
             # workspace.eqToks = equationTokens
             # plot(workspace)
-            return qSolution
+            return qSolution, True
         elif symTokens:
             log = "Invalid Expression"
-            return log
+            return log, False
         else:
             log = ""
-            return log
+            return log, False
     else:
         log = ""
         if input != "":
             _, log = checkEquation(normalizedTerms, symTokens)
-        return log
+        return log, False
 
 
 #######
@@ -82,13 +83,13 @@ def qSolveFigure(workspace):
     return qSolLayout
 
 
-def showQSolve(workspace, showQuickSim):
+def renderQuickSol(workspace, showQSolver):
     """Renders quick solution in matplotlib figure
 
     Arguments:
         workspace {QtWidgets.QWidget} -- main layout
     """
-    if showQuickSim is True:
+    if showQSolver is True:
         quickSolution = workspace.qSol
     else:
         quickSolution = ""

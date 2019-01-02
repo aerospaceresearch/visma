@@ -20,7 +20,7 @@ from visma.io.checks import checkTypes, getVariables
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotFigure2D, plotFigure3D, plot
-from visma.gui.qsolver import quickSimplify, qSolveFigure, showQSolve
+from visma.gui.qsolver import quickSimplify, qSolveFigure, renderQuickSol
 from visma.gui.settings import preferenceLayout
 from visma.gui.steps import stepsFigure, showSteps
 from visma.simplify.simplify import simplify, simplifyEquation
@@ -103,10 +103,11 @@ class WorkSpace(QWidget):
     inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g',  'h', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', '\\pi', '.', '0', '=', '<', '>']
 
     mode = 'interaction'
-    showQuickSim = True
+    showQSolver = True
     showStepByStep = True
     showPlotter = False
     enableQSolver = True
+    enableInteraction = False
     buttons = {}
     solutionOptionsBox = QGridLayout()
     solutionButtons = {}
@@ -226,16 +227,22 @@ class WorkSpace(QWidget):
         self.setLayout(hbox)
 
     def textChangeTrigger(self):
+        self.enableInteraction = True
         if self.textedit.toPlainText() == "":
             self.enableQSolver = True
-        if self.enableQSolver and self.showQuickSim:
-            self.qSol = quickSimplify(self)
+            self.enableInteraction = False
+        if self.enableQSolver and self.showQSolver:
+            self.qSol, self.enableInteraction = quickSimplify(self)
             if self.qSol is None:
                 self.qSol = ""
-            showQSolve(self, self.showQuickSim)
-        elif self.showQuickSim is False:
+            renderQuickSol(self, self.showQSolver)
+        elif self.showQSolver is False:
             self.qSol = ""
-            showQSolve(self, self.showQuickSim)
+            renderQuickSol(self, self.showQSolver)
+        if self.enableInteraction:
+            self.interactionModeButton.setEnabled(True)
+        else:
+            self.interactionModeButton.setEnabled(False)
 
     def clearAll(self):
         self.textedit.clear()
@@ -304,9 +311,9 @@ class WorkSpace(QWidget):
     def buttonsLayout(self):
         vbox = QVBoxLayout()
         interactionModeLayout = QVBoxLayout()
-        interactionModeButton = QtWidgets.QPushButton('visma')
-        interactionModeButton.clicked.connect(self.interactionMode)
-        interactionModeLayout.addWidget(interactionModeButton)
+        self.interactionModeButton = QtWidgets.QPushButton('visma')
+        self.interactionModeButton.clicked.connect(self.interactionMode)
+        interactionModeLayout.addWidget(self.interactionModeButton)
         interactionModeWidget = QWidget(self)
         interactionModeWidget.setLayout(interactionModeLayout)
         interactionModeWidget.setFixedSize(275, 50)
@@ -323,7 +330,7 @@ class WorkSpace(QWidget):
 
     def interactionMode(self):
         self.enableQSolver = False
-        showQSolve(self, self.enableQSolver)
+        renderQuickSol(self, self.enableQSolver)
         cursor = self.textedit.textCursor()
         interactionText = cursor.selectedText()
         if str(interactionText) == '':
