@@ -749,6 +749,7 @@ class WorkSpace(QWidget):
 
         return calluser
 
+    @classmethod
     def warning(self, warningstr):
         warning = QMessageBox()
         warning.setWindowTitle('WARNING')
