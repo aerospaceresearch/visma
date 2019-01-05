@@ -1,5 +1,5 @@
 from visma.gui.window import initGUI
-# from visma.gui.cli import commandExec
+from visma.gui.cli import commandExec
 
 
 def init():
@@ -8,8 +8,7 @@ def init():
         if cin == 'gui':
             initGUI()
         else:
-            # commandExec(cin) [CLI module goes here]
-            pass
+            commandExec(cin)
         cin = input('>>> ')
 
 
