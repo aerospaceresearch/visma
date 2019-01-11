@@ -8,7 +8,10 @@ def init():
         if cin == 'gui':
             initGUI()
         else:
-            commandExec(cin)
+            try:
+                commandExec(cin)
+            except ZeroDivisionError:
+                print("Cannot divide by Zero!")
         cin = input('>>> ')
 
 
