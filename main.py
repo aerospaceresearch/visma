@@ -8,7 +8,10 @@ def init():
         if cin == 'gui':
             initGUI()
         else:
-            commandExec(cin)
+            try:
+                commandExec(cin)
+            except ZeroDivisionError:
+                print("Invalid Expression")
         cin = input('>>> ')
 
 
