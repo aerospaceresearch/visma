@@ -234,14 +234,17 @@ class WorkSpace(QWidget):
         if self.textedit.toPlainText() == "":
             self.enableQSolver = True
             self.enableInteraction = False
-        if self.enableQSolver and self.showQSolver:
-            self.qSol, self.enableInteraction = quickSimplify(self)
-            if self.qSol is None:
+        try:
+            if self.enableQSolver and self.showQSolver:
+                self.qSol, self.enableInteraction = quickSimplify(self)
+                if self.qSol is None:
+                    self.qSol = ""
+                renderQuickSol(self, self.showQSolver)
+            elif self.showQSolver is False:
                 self.qSol = ""
-            renderQuickSol(self, self.showQSolver)
-        elif self.showQSolver is False:
-            self.qSol = ""
-            renderQuickSol(self, self.showQSolver)
+                renderQuickSol(self, self.showQSolver)
+        except ZeroDivisionError:
+            self.enableInteraction = False
         if self.enableInteraction:
             self.interactionModeButton.setEnabled(True)
         else:

@@ -11,7 +11,7 @@ def init():
             try:
                 commandExec(cin)
             except ZeroDivisionError:
-                print("Cannot divide by Zero!")
+                print("Invalid Expression")
         cin = input('>>> ')
 
 
