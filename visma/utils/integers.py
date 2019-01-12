@@ -10,14 +10,14 @@ def gcd(numbers):
 
     gcd = 1
     absValues = [abs(i) for i in numbers]
-    large = max(absValues)
+    smallest = min(absValues)
     if numbers[0] >= 0:
-        for i in range(large, 1, -1):
+        for i in range(smallest, 1, -1):
             if all(number % i == 0 for number in absValues) is True:
                 gcd = i
                 break
     else:
-        for i in range(-large, -1):
+        for i in range(-smallest, -1):
             if all(number % i == 0 for number in absValues) is True:
                 gcd = i
                 break
@@ -35,7 +35,8 @@ def factors(number):
     """
 
     factors = []
-    for i in range(1, abs(int(number)) + 1):
+    for i in range(1, abs(int(number**0.5)) + 1):
         if number % i == 0:
-            factors.append(i)
+            factors.extend([i, number // i])
+    factors.sort()
     return factors
