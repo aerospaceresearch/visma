@@ -35,7 +35,7 @@ def factors(number):
     """
 
     factors = []
-    for i in range(1, abs(int(number**0.5)) + 1):
+    for i in range(1, int(abs(number)**0.5) + 1):
         if number % i == 0:
             factors.extend([i, number // i])
     factors.sort()
