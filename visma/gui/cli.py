@@ -98,11 +98,11 @@ def printOnCLI(equationTokens, operation, comments):
     finalSteps = ""
     finalSteps = "INPUT: " + equationString[0] + "\n"
     finalSteps += "OPERATION: " + operation + "\n"
-    finalSteps += "OUTPUT: " + equationString[-1] + 2*"\n"
+    finalSteps += "OUTPUT: " + equationString[-1] + "\n"
     for i, _ in enumerate(equationString):
-        finalSteps += equationString[i]
         if comments[i] != []:
-            finalSteps += "\n" + "(" + str(commentsString[i][0]) + ")" + 2*"\n"
+            finalSteps += "(" + str(commentsString[i][0]) + ")" + "\n"
         else:
-            finalSteps += 2*"\n"
+            finalSteps += "\n"
+        finalSteps += equationString[i] + 2*"\n"
     print(finalSteps)

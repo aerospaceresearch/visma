@@ -356,7 +356,7 @@ def normalize(terms):
     Returns:
         terms {list} -- Greek input terms
     """
-    for index, term in enumerate(terms):
+    for term in terms:
         for i, x in enumerate(inputLaTeX):
             if x == term:
                 term = inputGreek[i]
