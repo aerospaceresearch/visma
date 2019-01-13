@@ -75,9 +75,9 @@ def buttonState(button, workspace):
 
     if button.text() == "Quick Simplifier":
         if button.isChecked() is True:
-            workspace.showQuickSim = True
+            workspace.showQSolver = True
         else:
-            workspace.showQuickSim = False
+            workspace.showQSolver = False
 
     elif button.text() == "Step-by-step Solution":
         if button.isChecked() is True:

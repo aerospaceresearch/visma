@@ -1,88 +1,89 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-if [ "$1" == "" ];
-then
-    echo ""
-    echo "Enter command arguments with run"
-    echo "    ./run install - Install all dependencies for visma"
-    echo "    ./run visma - Open visma GUI"
-    echo "    ./run test - Run all the tests and generates coverage report"
-    echo "    ./run test path/to/test_file.py - Runs all tests and shows coverage for given file"
-    echo "    ./run test syntax - Run syntax test using pylama"
-    echo "    ./run test modules - Run tests using pytest for all modules"
-    echo "    ./run test coverage - After running all the tests, open coverage report"
-    echo "    ./run pack - Generate builds for visma package"
-    echo "    ./run pack upload - Generate builds and then upload to test.pypi.org"
-    echo "    ./run pack final - Generate builds and upload final build to pypi.org"
-    echo "    ./run clean - Clean all cache, reports and builds"
-    echo ""
+from __future__ import print_function
+import sys
+import subprocess
+import threading
+import glob
 
 
-elif [ "$1" == "install" ];
-then
-    python3 -m pip install -r requirements.txt
+def Str(value):
+    if isinstance(value, list):
+        return " ".join(value)
+    if isinstance(value, basestring):
+        return value
+    return str(value)
 
 
-elif [ "$1" == "visma" ];
-then
-    python3 main.py
+def Glob(value):
+    ret = glob.glob(value)
+    if(len(ret) < 1):
+        ret = [value]
+    return ret
 
 
-elif [ "$1" == "test" ];
-then
+for i in range(4-len(sys.argv)):
+    sys.argv.append("")
 
-    if [ "$2" == "" ] || [ "$2" == "syntax" ];
-    then
-        echo "Python Syntax Test ..."
-        pylama
-    elif [ "$2" == "modules" ];
-    then
-        echo "Python Modules Test ..."
-        pytest
-    fi
+if(str(sys.argv[1]) == ""):
+    print("")
+    print("Enter command arguments with run")
+    print("    ./run install - Install all dependencies for visma")
+    print("    ./run visma - Open visma GUI")
+    print("    ./run test - Run all the tests and generates coverage report")
+    print("    ./run test path/to/test_file.py - Runs all tests and shows coverage for given file")
+    print("    ./run test syntax - Run syntax test using pylama")
+    print("    ./run test modules - Run tests using pytest for all modules")
+    print("    ./run test coverage - After running all the tests, open coverage report")
+    print("    ./run pack - Generate builds for visma package")
+    print("    ./run pack upload - Generate builds and then upload to test.pypi.org")
+    print("    ./run pack final - Generate builds and upload final build to pypi.org")
+    print("    ./run clean - Clean all cache, reports and builds")
+    print("")
 
-    if [ "$2" != "" ] && [ $2 != "coverage" ] && [ $2 != "syntax" ] && [ $2 != "modules" ];
-    then
-        echo "Python Test for $2 ..."
-        coverage run --source ./ -m pytest $2 -v
-    elif [ "$2" == "" ];
-    then
-        echo "Python Modules Test with Coverage ..."
-        coverage run --source ./ -m pytest -v
-    fi
+elif (str(sys.argv[1]) == "install"):
+    subprocess.call("python3 -m pip install -r requirements.txt", shell=True)
 
-    if [ "$2" == "" ] || [ "$2" == "coverage" ] || [ "$3" == "coverage" ];
-    then
-        coverage report
-        coverage html
-    fi
+elif (str(sys.argv[1]) == "visma"):
+    subprocess.call("python3 main.py", shell=True)
 
-    if [ "$2" == "coverage" ] || [ "$3" == "coverage" ];
-    then
-        nohup xdg-open ./htmlcov/index.html &
-    fi
+elif str(sys.argv[1]) == "test":
+    if str(sys.argv[2]) == "syntax" or str(sys.argv[2]) == "":
+        print("Python Syntax Test ...")
+        subprocess.call("pylama", shell=True)
+    elif (str(sys.argv[2]) == "modules"):
+        print("Python Modules Test ...")
+        subprocess.call("pytest", shell=True)
 
+    if str(sys.argv[2]) != "" and str(sys.argv[2]) != "coverage" and str(sys.argv[2]) != "syntax" and str(sys.argv[2]) != "modules":
+        print("Python Test for " + str(sys.argv[2]) + " ...")
+        subprocess.call("coverage run --source ./ -m pytest " + str(sys.argv[2]) + " -v", shell=True)
 
-elif [ "$1" == "pack" ];
-then
-    mv ./main.py ./visma
-    python3 setup.py sdist bdist_wheel
-    mv ./visma/main.py ./
+    elif str(sys.argv[2]) == "":
+        print("Python Modules Test with Coverage ...")
+        subprocess.call("coverage run --source ./ -m pytest -v", shell=True)
 
-    if [ "$2" == "upload" ];
-        then
-        twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-    elif [ "$2" == "final" ];
-        then
-        twine upload dist/*
-    fi
+    if str(sys.argv[2]) == "" or str(sys.argv[2]) == "coverage" or str(sys.argv[3]) == "coverage":
+        subprocess.call("coverage report", shell=True)
+        subprocess.call("coverage html", shell=True)
 
+    if str(sys.argv[2]) == "coverage" or str(sys.argv[3]) == "coverage":
+        def thread1():
+            subprocess.call("nohup xdg-open ./htmlcov/index.html", shell=True)
+            threading.Thread(target=thread1).start()
 
-elif [ "$1" == "clean" ];
-then
-    git clean -xdf
+elif str(sys.argv[1]) == "pack":
+    subprocess.call("mv main.py visma", shell=True)
+    subprocess.call("python3 setup.py sdist bdist_wheel", shell=True)
+    subprocess.call("mv ./visma/main.py ./", shell=True)
 
+    if str(sys.argv[2]) == "upload":
+        subprocess.call("twine upload --repository-url https://test.pypi.org/legacy/", Str(Glob("dist/*")), shell=True)
+    elif str(sys.argv[2]) == "final":
+        subprocess.call("twine upload", Str(Glob("dist/*")), shell=True)
 
-else
-    echo "Invalid arguments"
-fi
+elif str(sys.argv[1]) == "clean":
+    subprocess.call("git clean -xdf", shell=True)
+
+else:
+    print("Invalid arguments")

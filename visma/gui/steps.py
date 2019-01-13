@@ -1,6 +1,6 @@
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5.QtWidgets import QVBoxLayout, qApp, QLabel, QDoubleSpinBox
+from PyQt5.QtWidgets import QVBoxLayout, qApp, QLabel, QDoubleSpinBox, QScrollArea
 
 #######
 # GUI #
@@ -19,9 +19,10 @@ def stepsFigure(workspace):
     workspace.stepsfigure = Figure()
     workspace.stepscanvas = FigureCanvas(workspace.stepsfigure)
     workspace.stepsfigure.clear()
-
+    workspace.scroll = QScrollArea()
+    workspace.scroll.setWidget(workspace.stepscanvas)
     stepslayout = QVBoxLayout()
-    stepslayout.addWidget(workspace.stepscanvas)
+    stepslayout.addWidget(workspace.scroll)
     return stepslayout
 
 

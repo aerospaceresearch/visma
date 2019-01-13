@@ -15,7 +15,7 @@ def test_simplify():
 
     assert quickTest("3*2 + 4*2 - 3*4", simplify) == "2.0"
     assert quickTest("3*x + 4*x - 2*y", simplify) == "7.0x-2.0y"
-    assert quickTest("x*y + x*x + x*x^2 + x^2*x + x*y^2 + x^2*y", simplify) == "xy+x^(2)+xx^(2.0)+x^(2.0)x+xy^(2.0)+x^(2.0)y"  # FIXME: Simplify further
+    assert quickTest("x*y + x*x + x*x^2 + x^2*x + x*y^2 + x^2*y", simplify) == "xy+x^(2)+2x^(3.0)+xy^(2.0)+x^(2.0)y"
 
     assert quickTest("3/2 + 4/2 - 2/4", simplify) == "3.0"
     assert quickTest("x/5 + x/4 - 2/y", simplify) == "0.45x-2.0y^(-1)"
@@ -33,7 +33,7 @@ def test_simplify():
     assert quickTest("4 = 3x - 4x - 1 + 2", simplifyEquation) == "3.0+x=0"
     assert quickTest("z = x^2 - x + 1 - 2", simplifyEquation) == "z-x^(2.0)+x+1.0=0"
     assert quickTest("x = -1 + 2", simplifyEquation) == "x+1.0-2.0=0"  # FIXME: Further simplification required (simplification in RHS)
-    assert quickTest("x*y + x*x + x*x^2 = x^2*x + x*y^2 + x^2*y", simplifyEquation) == "xy+x^(2)+xx^(2.0)-x^(2.0)x-xy^(2.0)-x^(2.0)y=0"  # FIXME: Further simplification required
+    assert quickTest("x*y + x*x + x*x^2 = x^2*x + x*y^2 + x^2*y", simplifyEquation) == "xy+x^(2)-xy^(2.0)-x^(2.0)y=0"
 
     assert quickTest("3/2 + 4/2 = 2/4", simplifyEquation) == "3.0=0"  # FIXME: Exclude these cases, raise math error
     assert quickTest("x/5 + x/4 = 2/y", simplifyEquation) == "0.45x-2.0y^(-1)=0"
@@ -65,8 +65,10 @@ def test_addsub():
 
 def test_muldiv():
 
-    assert quickTest("x^3 * x^2", multiplication) == "x^(3.0)x^(2.0)"  # FIXME: Further simplification required
+    assert quickTest("3*y + x*2", multiplication) == "3.0y+2.0x"
+    assert quickTest("x^3 * x^2", multiplication) == "x^(5.0)"
+    assert quickTest("x^(-1)y^2 * zx^2", multiplication) == "xy^(2.0)z"
 
     assert quickTest("x^2 / x^2", division) == "1.0"
-    assert quickTest("x^4 / x^2", division) == "x^(2.0)"
     assert quickTest("x^2 / x^4", division) == "x^(-2.0)"
+    assert quickTest("x^(-1)y^2 / zx^2", division) == "x^(-3.0)y^(2.0)z^(-1)"

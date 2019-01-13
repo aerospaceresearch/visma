@@ -48,7 +48,7 @@ def isNumber(term):
         if term[0] == '-':
             x += 1
             while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
+                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
                     return False
                 if term[x] == '.':
                     dot += 1
@@ -59,7 +59,7 @@ def isNumber(term):
                 return False
         else:
             while x < len(term):
-                if (term[x] < '0' or term[x] > '9') and (dot != 0 or term[x] != '.'):
+                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
                     return False
                 if term[x] == '.':
                     dot += 1
@@ -145,6 +145,7 @@ def checkEquation(terms, symTokens):
     brackets = 0
     sqrBrackets = 0
     equators = 0
+    terminalLatex = 0
     for i, term in enumerate(terms):
         if term == '(':
             brackets += 1
@@ -180,6 +181,8 @@ def checkEquation(terms, symTokens):
             equators += 1
         elif term == ';':
             equators = 0
+        elif term == '$':
+            terminalLatex = 1 - terminalLatex
 
     if brackets < 0:
         log = "Too many ')'"
@@ -201,6 +204,9 @@ def checkEquation(terms, symTokens):
         if symTokens[i] == 'Binary' or symTokens[i] == 'Unary' or brackets != 0 or sqrBrackets != 0:
             log = "Invalid expression"
             return False, log
+    if terminalLatex == 1:
+        log = "LaTeX detected: Missing ending $"
+        return False, log
     return True
 
 

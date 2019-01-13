@@ -24,8 +24,9 @@ from visma.functions.trigonometry import Sine, Cosine, Tangent, Cotangent, Cosec
 from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
+from visma.io.parser import latexToTerms
 
-symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';']
+symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';', '$']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 
@@ -127,6 +128,7 @@ def getTerms(eqn):
                 terms.append(eqn[x])
 
             elif eqn[x] == 'l':
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("og_"):
@@ -137,6 +139,7 @@ def getTerms(eqn):
                     terms.append(buf)
                     x = i + 1
                     continue
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("og"):
@@ -147,6 +150,7 @@ def getTerms(eqn):
                     terms.append(buf)
                     x = i + 1
                     continue
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("n"):
@@ -160,6 +164,7 @@ def getTerms(eqn):
                 terms.append(eqn[x])
 
             elif eqn[x] == 'p':
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("i"):
@@ -172,6 +177,20 @@ def getTerms(eqn):
                     continue
                 terms.append(eqn[x])
 
+            elif eqn[x] == 'f':
+
+                i = x
+                buf = eqn[x]
+                while (i - x) < len("rac"):
+                    i += 1
+                    if i < len(eqn):
+                        buf += eqn[i]
+                if buf == "frac":
+                    terms.append(buf)
+                    x = i + 1
+                    continue
+                terms.append(eqn[x])
+
             elif eqn[x] == 'e':
                 terms.append('exp')
 
@@ -179,6 +198,7 @@ def getTerms(eqn):
                 terms.append('iota')
 
             elif eqn[x] == 't':
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("anh"):
@@ -189,6 +209,7 @@ def getTerms(eqn):
                     terms.append(buf)
                     x = i + 1
                     continue
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("an"):
@@ -202,6 +223,7 @@ def getTerms(eqn):
                 terms.append(eqn[x])
 
             elif eqn[x] == 'c':
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("sch"):
@@ -212,6 +234,7 @@ def getTerms(eqn):
                     terms.append(buf)
                     x = i + 1
                     continue
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("sc"):
@@ -233,6 +256,7 @@ def getTerms(eqn):
                     terms.append(buf)
                     x = i + 1
                     continue
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("os"):
@@ -254,6 +278,7 @@ def getTerms(eqn):
                     terms.append(buf)
                     x = i + 1
                     continue
+
                 i = x
                 buf = eqn[x]
                 while (i - x) < len("ot"):
@@ -331,10 +356,13 @@ def normalize(terms):
     Returns:
         terms {list} -- Greek input terms
     """
-    for term in terms:
+    for index, term in enumerate(terms):
         for i, x in enumerate(inputLaTeX):
             if x == term:
                 term = inputGreek[i]
+
+    terms = latexToTerms(terms)
+
     return terms
 
 
@@ -377,7 +405,6 @@ def tokenizeSymbols(terms):
                 symTokens[-1] = 'Binary'
         elif term in funcs:
             symTokens[-1] = funcSyms[funcs.index(term)]
-
     return symTokens
 
 
@@ -880,6 +907,11 @@ def getToken(terms, symTokens, scope=None, coeff=1):
     x = 0
     level = 0
     while x < len(terms):
+        if terms[x] == '$':
+            symTokens.pop(x)
+            terms.pop(x)
+            symTokens.pop()
+            terms.pop()
         if isVariable(terms[x]) and symTokens[x] not in funcSyms:
             varTerms = []
             varSymTokens = []
@@ -1438,7 +1470,7 @@ def preprocess(eqn):
     terms = getTerms(cleanEqn)
     normalizedTerms = normalize(terms)
     symTokens = tokenizeSymbols(normalizedTerms)
-    terms, symTokens = removeUnary(normalizedTerms, symTokens)
+    normalizedTerms, symTokens = removeUnary(normalizedTerms, symTokens)
     if checkEquation(normalizedTerms, symTokens):
         tokens = getToken(normalizedTerms, symTokens)
         return tokens.tokens
@@ -1486,7 +1518,7 @@ def evaluateConstant(constant):
     """
     if isinstance(constant, Function):
         if isNumber(constant.value):
-            return math.pow(constant.value, constant.power)
+            return math.pow(constant.value[0], constant.power[0])
         elif isinstance(constant.value, list):
             val = 1
             if constant.coefficient is not None:
