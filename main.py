@@ -10,7 +10,7 @@ def init():
         else:
             try:
                 commandExec(cin)
-            except ZeroDivisionError:
+            except Exception:
                 print("Invalid Expression")
         cin = input('>>> ')
 
