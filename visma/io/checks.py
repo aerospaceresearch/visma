@@ -71,13 +71,12 @@ def isVariable(term):
 
     if term in greek:
         return True
-    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
-        x = 0
-        while x < len(term):
-            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+    elif (ord(term[0]) >= 65 and ord(term[0]) <= 90) or (ord(term[0]) >= 97 and ord(term[0]) <= 122):
+        for i in range(1, len(term)):
+            if not((ord(term[i]) >= 65 and ord(term[i]) <= 90) or (ord(term[i]) >= 97 and ord(term[i]) <= 122)):
                 return False
-            x += 1
-        return True
+        else:
+            return True
 
 
 def isFunction(term):
