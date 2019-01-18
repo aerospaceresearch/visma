@@ -105,9 +105,9 @@ To see all features of **visma**, check [this](https://github.com/aerospaceresea
 
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/issues)
-[![Gitter](https://img.shields.io/gitter/room/aerospaceresearch/visma.svg?style=for-the-badge)](https://gitter.im/aerospaceresearch/visma)
+[![Zulip](https://img.shields.io/badge/Chat-on%20Zulip-17C789.svg?style=for-the-badge)](https://aerospaceresearch.zulipchat.com/#narrow/stream/181873-visma)
 
-PRs are welcomed. For contributing to **visma** refer [CONTRIBUTING.md](https://github.com/aerospaceresearch/visma/blob/master/CONTRIBUTING.md). If there are any issues or ideas they can be addressed through the [issues](https://github.com/aerospaceresearch/visma/issues) or in [chat room](https://gitter.im/aerospaceresearch/visma).
+PRs are welcomed. For contributing to **visma** refer [CONTRIBUTING.md](https://github.com/aerospaceresearch/visma/blob/master/CONTRIBUTING.md). If there are any issues or ideas they can be addressed through the [issues](https://github.com/aerospaceresearch/visma/issues) or in [chat room](https://aerospaceresearch.zulipchat.com/#narrow/stream/181873-visma).
 
 
 ## License:
