@@ -46,10 +46,7 @@ def removeSpaces(eqn):
     Returns:
         cleanEqn {string} -- equation string without spaces
     """
-    cleanEqn = ''
-    for char in eqn:
-        if char != ' ':
-            cleanEqn += char
+    cleanEqn = ''.join(eqn.split())
     return cleanEqn
 
 

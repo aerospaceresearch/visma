@@ -11,6 +11,7 @@ from visma.solvers.polynomial.roots import quadraticRoots
 from visma.transform.factorization import factorize
 
 
+
 def commandExec(command):
     operation = command.split('(', 1)[0]
     inputEquation = command.split('(', 1)[1][:-1]
