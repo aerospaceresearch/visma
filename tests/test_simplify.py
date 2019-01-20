@@ -10,7 +10,7 @@ from tests.tester import quickTest
 
 def test_simplify():
 
-    assert quickTest("1 + 2 - 3", simplify) == ""  # FIXME: Vanishing zero
+    assert quickTest("1 + 2 - 3", simplify) == "0"
     assert quickTest("1 + 2 - 4", simplify) == "-1.0"
 
     assert quickTest("3*2 + 4*2 - 3*4", simplify) == "2.0"

@@ -24,6 +24,8 @@ def addition(tokens, direct=False):
     while '+' in availableOperations:
         _, tok, rem, change, com = expressionAddition(variables, tokens)
         tokens = changeToken(removeToken(tok, rem), change)
+        if not tokens:
+            tokens.append(Zero())
         animation.append(copy.deepcopy(tokens))
         comments.append(com)
         variables = getLevelVariables(tokens)
@@ -549,6 +551,8 @@ def subtraction(tokens, direct=False):
     while '-' in availableOperations:
         _, tok, rem, change, com = expressionSubtraction(variables, tokens)
         tokens = changeToken(removeToken(tok, rem), change)
+        if not tokens:
+            tokens.append(Zero())
         animation.append(copy.deepcopy(tokens))
         comments.append(com)
         variables = getLevelVariables(tokens)
