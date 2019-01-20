@@ -25,6 +25,7 @@ from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
 from visma.io.parser import latexToTerms
+from visma.gui import logger
 
 symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';', '$']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
@@ -1043,8 +1044,7 @@ def getToken(terms, symTokens, scope=None, coeff=1):
             if isMatrix(matrixTok):
                 tokens.append(matrixTok)
             else:
-                # logger.log(Invalid Matrix)
-                pass
+                logger.error('Invalid Matrix')
         elif symTokens[x] == 'Unary':
             coeff = 1
             if terms[x] == '-':
@@ -1666,7 +1666,8 @@ def getLHSandRHS(tokens):
 
 
 if __name__ == "__main__":
-
+    logger.setLevel = 0
+    logger.setLogName = 'tokenize'
     print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
 
 # -xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}

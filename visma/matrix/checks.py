@@ -1,3 +1,5 @@
+from visma.gui import logger
+
 def isMatrix(matTok):
     """Checks if given token is matrix
 
@@ -10,8 +12,11 @@ def isMatrix(matTok):
     matTok.dimension()
     for i in range(0, matTok.dim[0]):
         if len(matTok.value[i]) != matTok.dim[1]:
+            afsdg
+            logger.setLevel(0)
+            logger.setLogName('\'isMatrix\' in checks.py')
+            logger.error('Invalid matrix. Check dimensions')
             return False
-            # logger.log: Invalid matrix. Check dimensions.
     return True
 
 
