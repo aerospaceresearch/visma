@@ -33,7 +33,7 @@ from visma.gui import logger
 
 
 class Window(QtWidgets.QMainWindow):
-    logger.setLevel(10)
+
     def __init__(self):
         super().__init__()
         font = QtGui.QFont()
@@ -60,6 +60,8 @@ class Window(QtWidgets.QMainWindow):
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
         fileMenu.addAction(addEqList)
+        # configMenu = menubar.addMenu('&Config')
+
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(wikiAction)
         self.workSpace = WorkSpace()
@@ -743,14 +745,15 @@ class PicButton(QAbstractButton):
     def sizeHint(self):
         return self.pixmap.size()
 
+
 def initGUI():
     logger.setLogName('window-gui')
     logger.info('Starting VisMa GUI...')
     try:
         app = QApplication(sys.argv)
-        ex = Window()    
+        ex = Window()
         ex.initUI()
         logger.setLogName('main')
         sys.exit(app.exec_())
-    finally:    
+    finally:
         logger.info('Existing VisMa...')

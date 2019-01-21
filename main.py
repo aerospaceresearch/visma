@@ -1,7 +1,8 @@
+import os
 from visma.gui.window import initGUI
 from visma.gui.cli import commandExec
 from visma.gui import logger
-import os
+
 
 def init():
     open(os.path.abspath("log.txt"), "w").close()
@@ -21,6 +22,7 @@ def init():
         cin = input('>>> ')
     if (cin == 'exit'):
         logger.info('Exiting VisMa...')
+
 
 if __name__ == '__main__':
     init()
