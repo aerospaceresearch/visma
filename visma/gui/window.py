@@ -29,6 +29,7 @@ from visma.simplify.muldiv import multiplication, multiplicationEquation, divisi
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
 from visma.transform.factorization import factorize
+from visma.gui import logger
 
 
 class Window(QtWidgets.QMainWindow):
@@ -128,6 +129,8 @@ class WorkSpace(QWidget):
                         0, ('Equation No.' + str(len(equations) + 1), line))
             fp.close()
     except IOError:
+        logger.setLogName('window-gui')
+        logger.error('IO error in opening %s', 'local/eqn-list.vis')
         if not os.path.exists('local'):
             os.mkdir('local')
         file = open('local/eqn-list.vis', 'w')
@@ -191,6 +194,7 @@ class WorkSpace(QWidget):
         # tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
+        # tabStepsLogs.tab2.setLayout(logger.logTextBox(self))
         # tabStepsLogs.tab2.setStatusTip("Logger")
 
         font = QtGui.QFont()
@@ -244,6 +248,8 @@ class WorkSpace(QWidget):
                 self.qSol = ""
                 renderQuickSol(self, self.showQSolver)
         except ZeroDivisionError:
+            logger.setLogName('window-gui')
+            logger.error('Zero division error')
             self.enableInteraction = False
         if self.enableInteraction:
             self.interactionModeButton.setEnabled(True)
@@ -741,7 +747,13 @@ class PicButton(QAbstractButton):
 
 
 def initGUI():
-    app = QApplication(sys.argv)
-    ex = Window()
-    ex.initUI()
-    sys.exit(app.exec_())
+    logger.setLogName('window-gui')
+    logger.info('Starting VisMa GUI...')
+    try:
+        app = QApplication(sys.argv)
+        ex = Window()
+        ex.initUI()
+        logger.setLogName('main')
+        sys.exit(app.exec_())
+    finally:
+        logger.info('Existing VisMa...')
