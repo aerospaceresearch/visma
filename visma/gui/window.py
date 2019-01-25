@@ -129,8 +129,6 @@ class WorkSpace(QWidget):
                         0, ('Equation No.' + str(len(equations) + 1), line))
             fp.close()
     except IOError:
-        logger.setLogName('window-gui')
-        logger.error('IO error in opening %s', 'local/eqn-list.vis')
         if not os.path.exists('local'):
             os.mkdir('local')
         file = open('local/eqn-list.vis', 'w')
@@ -191,11 +189,11 @@ class WorkSpace(QWidget):
         tabStepsLogs.tab1 = QWidget()
         tabStepsLogs.tab2 = QWidget()
         tabStepsLogs.addTab(tabStepsLogs.tab1, "Step-by-Step")
-        # tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
+        tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
-        # tabStepsLogs.tab2.setLayout(logger.logTextBox(self))
-        # tabStepsLogs.tab2.setStatusTip("Logger")
+        tabStepsLogs.tab2.setLayout(logger.logTextBox(self))
+        tabStepsLogs.tab2.setStatusTip("Logger")
 
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -232,6 +230,8 @@ class WorkSpace(QWidget):
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
 
+        self.logBox.append(logger.info('UI Initialised...'))
+
     def textChangeTrigger(self):
         self.enableInteraction = True
         self.clearButtons()
@@ -247,9 +247,8 @@ class WorkSpace(QWidget):
             elif self.showQSolver is False:
                 self.qSol = ""
                 renderQuickSol(self, self.showQSolver)
-        except ZeroDivisionError:
-            logger.setLogName('window-gui')
-            logger.error('Zero division error')
+        except Exception:
+            logger.error('Invalid Expression')
             self.enableInteraction = False
         if self.enableInteraction:
             self.interactionModeButton.setEnabled(True)

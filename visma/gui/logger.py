@@ -1,5 +1,7 @@
 import os
 import datetime
+from PyQt5.QtWidgets import QTextEdit, QVBoxLayout
+
 
 INFO = 20
 WARNING = 30
@@ -10,18 +12,13 @@ NAME = ''
 logString = ''
 now = datetime.datetime.now()
 
-'''
+
 def logTextBox(workspace):
-    workspace.logBox = QPlainTextEdit()
+    workspace.logBox = QTextEdit()
     workspace.logBox.setReadOnly(True)
     textLayout = QVBoxLayout()
     textLayout.addWidget(workspace.logBox)
     return textLayout
-
-def refreshLogger(workspace):
-    text = open('/home/mayank/Desktop/mynk/aeroME/visma/log.txt').read()
-    workspace.logBox.setPlainText(text)
-'''
 
 
 def setLogName(name):
@@ -36,17 +33,20 @@ def setLevel(level):
 
 def info(msg, *args):
     if INFO >= THRES_LEV:
-        logWriter('INFO', msg, *args)
+        info = logWriter('INFO', msg, *args)
+        return info
 
 
 def warn(msg, *args):
-    if INFO >= THRES_LEV:
-        logWriter('WARNING', msg, *args)
+    if WARNING >= THRES_LEV:
+        warn = logWriter('WARNING', msg, *args)
+        return warn
 
 
 def error(msg, *args):
     if ERROR >= THRES_LEV:
-        logWriter('ERROR', msg, *args)
+        error = logWriter('ERROR', msg, *args)
+        return error
 
 
 def logWriter(levType, msg, *args):
@@ -56,3 +56,4 @@ def logWriter(levType, msg, *args):
         print('Can\'t open the log file')
     logString = now.strftime("%Y-%m-%d %H:%M") + ' - ' + NAME + ' - ' + '%s: %s' % (levType, msg % args) + '\n'
     f.write(logString)
+    return logString

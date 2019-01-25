@@ -7,6 +7,7 @@ from visma.io.checks import checkEquation, checkTypes
 from visma.io.parser import tokensToLatex
 # from visma.gui.plotter import plot
 from visma.simplify.simplify import simplify, simplifyEquation
+from visma.gui import logger
 
 
 def quickSimplify(workspace):
@@ -20,6 +21,8 @@ def quickSimplify(workspace):
         enableInteraction {bool} -- if False disables 'visma'(interaction) button
     """
     # FIXME: Crashes for some cases. Find and fix.
+    logger.setLogName('qsolver')
+    logger.setLevel(0)
     qSolution = ""
     strIn = workspace.textedit.toPlainText()
     cleanInput = removeSpaces(strIn)
@@ -46,14 +49,17 @@ def quickSimplify(workspace):
             return qSolution, True
         elif symTokens:
             log = "Invalid Expression"
+            workspace.logBox.append(logger.error(log))
             return log, False
         else:
             log = ""
+            workspace.logBox.append(logger.error(log))
             return log, False
     else:
         log = ""
         if strIn != "":
             _, log = checkEquation(normalizedTerms, symTokens)
+            workspace.logBox.append(logger.error(log))
         return log, False
 
 
