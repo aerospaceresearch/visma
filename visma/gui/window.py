@@ -41,6 +41,7 @@ class Window(QtWidgets.QMainWindow):
         self.setFont(font)
 
         appIcon = QtGui.QIcon()
+        # FIXME: Use fixed file path
         appIcon.addFile(os.path.abspath('assets/icons/16x16.png'))
         appIcon.addFile(os.path.abspath('assets/icons/32x32.png'))
         appIcon.addFile(os.path.abspath('assets/icons/64x64.png'))
@@ -127,6 +128,7 @@ class WorkSpace(QWidget):
     resultOut = False
 
     try:
+        # FIXME: Use fixed file path
         with open('local/eqn-list.vis', 'r+') as fp:
             for line in fp:
                 line = line.replace(' ', '').replace('\n', '')

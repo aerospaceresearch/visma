@@ -64,14 +64,14 @@ def latexToTerms(terms):
             if index < len(terms):
                 terms.remove(terms[index])
                 j = index
-                while j < len(terms) and terms[j] is not '}':
+                while j < len(terms) and terms[j] != '}':
                     j += 1
                 if j < len(terms):
                     terms.remove(terms[j])
                     terms.insert(j, '/')
                 if j+1 < len(terms):
                     terms.remove(terms[j+1])
-                while j < len(terms) and terms[j] is not '}':
+                while j < len(terms) and terms[j] != '}':
                     j += 1
                 if j < len(terms):
                     terms.remove(terms[j])
