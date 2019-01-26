@@ -41,9 +41,9 @@ class Window(QtWidgets.QMainWindow):
         self.setFont(font)
 
         appIcon = QtGui.QIcon()
-        appIcon.addFile(os.path.abspath('visma/icons/16x16.png'))
-        appIcon.addFile(os.path.abspath('visma/icons/32x32.png'))
-        appIcon.addFile(os.path.abspath('visma/icons/64x64.png'))
+        appIcon.addFile(os.path.abspath('assets/icons/16x16.png'))
+        appIcon.addFile(os.path.abspath('assets/icons/32x32.png'))
+        appIcon.addFile(os.path.abspath('assets/icons/64x64.png'))
         self.setWindowIcon(appIcon)
 
     def initUI(self):
