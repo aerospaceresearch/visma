@@ -82,7 +82,7 @@ def isVariable(term):
 
 def isFunction(term):
 
-    if term in funcs:
+    if term in funcs or term in funcSyms:
         return True
     return False
 
