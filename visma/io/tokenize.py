@@ -1568,33 +1568,32 @@ def tokenizer(eqnString):
 def changeToken(tokens, variables, scope_times=0):
 
     if len(variables) != 0:
-        if variables[0].scope is not None:
-            for changeVariable in variables:
-                for token in tokens:
-                    if isinstance(token, Constant):
-                        if token.scope == changeVariable.scope:
-                            if changeVariable.coefficient is not None:
-                                token.coefficient = changeVariable.coefficient
-                            token.power = changeVariable.power
-                            token.value = changeVariable.value
-                            break
-                    elif isinstance(token, Variable):
-                        if token.scope == changeVariable.scope:
+        for changeVariable in variables:
+            for token in tokens:
+                if isinstance(token, Constant):
+                    if token.scope == changeVariable.scope:
+                        if changeVariable.coefficient is not None:
                             token.coefficient = changeVariable.coefficient
-                            token.power = changeVariable.power
-                            token.value = changeVariable.value
-                            break
-                    elif isinstance(token, Binary):
+                        token.power = changeVariable.power
+                        token.value = changeVariable.value
+                        break
+                elif isinstance(token, Variable):
+                    if token.scope == changeVariable.scope:
+                        token.coefficient = changeVariable.coefficient
+                        token.power = changeVariable.power
+                        token.value = changeVariable.value
+                        break
+                elif isinstance(token, Binary):
+                    if token.scope == changeVariable.scope:
+                        token.value = changeVariable.value
+                elif isinstance(token, Expression):
+                    if scope_times + 1 == len(changeVariable.scope):
                         if token.scope == changeVariable.scope:
-                            token.value = changeVariable.value
-                    elif isinstance(token, Expression):
-                        if scope_times + 1 == len(changeVariable.scope):
-                            if token.scope == changeVariable.scope:
-                                break
-                        elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
-                            token.tokens = changeToken(
-                                token.tokens, token.scope, scope_times + 1)
                             break
+                    elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
+                        token.tokens = changeToken(
+                            token.tokens, token.scope, scope_times + 1)
+                        break
     return tokens
 
 
