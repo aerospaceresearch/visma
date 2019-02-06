@@ -12,6 +12,8 @@ def init():
                 commandExec(cin)
             except ZeroDivisionError:
                 print("Invalid Expression")
+            except IndexError:
+                print(eval(cin))
         cin = input('>>> ')
 
 
