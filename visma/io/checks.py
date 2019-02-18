@@ -921,12 +921,14 @@ def highestPower(tokens, variable):
     Returns:
         maxPow {int} -- highest power of given variable
     """
+    # thik karo abhi!
     maxPow = 0
     for token in tokens:
         if isinstance(token, Variable):
             for i, val in enumerate(token.value):
-                if val == variable and token.power[i] > maxPow:
-                        maxPow = token.power[i]
+                letPow= eval(str(token.power[i]).replace('{',"").replace('(',"").replace('}',"").replace(')',""))
+                if val == variable and letPow > maxPow:
+                        maxPow = letPow
     return maxPow
 
 
@@ -946,6 +948,25 @@ def isIntegerPower(tokens, variable):
                 if val == variable and token.power[i] != int(token.power[i]):
                     return False
     return True
+
+def isFracrionalPower(tokens, variable):
+    """Checks if given variable has fractional powers
+
+    Arguments:
+        tokens {list} -- list of function tokens
+        variable {string} -- variable value
+
+    Returns:
+        bool -- if variable has fractional powers or not
+    """
+    for token in tokens:
+        if isinstance(token, Variable):
+            for i, val in enumerate(token.value):
+                if val == variable and '/' in str(token.power[i]):
+                    return True
+    return False
+
+
 
 
 def preprocessCheckPolynomial(lTokens, rTokens):
@@ -977,7 +998,9 @@ def preprocessCheckPolynomial(lTokens, rTokens):
             if lVariables[0] == rVariables[0]:
                 return True, max(highestPower(lTokens, lVariables[0]), highestPower(rTokens, rVariables[0]))
     elif len(lVariables) == 1 and len(rVariables) == 0:
-        if isIntegerPower(lTokens, lVariables[0]):
+        if isFracrionalPower(lTokens, lVariables[0]):
+            return True,highestPower(lTokens, lVariables[0])
+        elif isIntegerPower(lTokens, lVariables[0]):
             return True, highestPower(lTokens, lVariables[0])
     elif len(lVariables) == 0 and len(rVariables) == 1:
         if isIntegerPower(rTokens, rVariables[0]):
@@ -1110,3 +1133,4 @@ def getTokensType(tokens):
             elif token.value in ['<', '>', '<=', '>=']:
                 return "inequality"
     return "expression"
+
