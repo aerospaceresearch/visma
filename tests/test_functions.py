@@ -33,9 +33,9 @@ def test_Variable():
     assert variable1.__str__() == "0.5{x}^{4}"
 
     # FIXME: Optimize integrate
-    """
+    '''
     variable2 = Variable(3, 'x', -1)
     variable2.integrate('x')
     assert isinstance(variable2, Expression)
     assert variable2.__str__() == '{3log{x}}'
-    """
+    '''

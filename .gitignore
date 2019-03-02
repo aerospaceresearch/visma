@@ -11,3 +11,4 @@ local/
 VISualMAth.egg-info/
 __pycache__
 run.sh
+.vscode/
