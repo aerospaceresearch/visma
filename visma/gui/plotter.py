@@ -123,6 +123,7 @@ def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
         (LHS - RHS) {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
     """
 
+
     LHS = getFuncExpr(LHStok, eqnVars, graphVars)
     if len(eqnVars) == dim:
         RHS = getFuncExpr(RHStok, eqnVars, graphVars)

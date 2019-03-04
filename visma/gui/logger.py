@@ -13,6 +13,7 @@ logString = ''
 now = datetime.datetime.now()
 
 
+
 def logTextBox(workSpace):
     workSpace.logBox = QTextEdit()
     workSpace.logBox.setReadOnly(True)

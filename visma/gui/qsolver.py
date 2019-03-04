@@ -26,6 +26,7 @@ def quickSimplify(workSpace):
     qSolution = ""
 
     strIn = workSpace.textedit.toPlainText()
+
     cleanInput = removeSpaces(strIn)
     terms = getTerms(cleanInput)
     normalizedTerms = normalize(terms)
@@ -50,17 +51,21 @@ def quickSimplify(workSpace):
             return qSolution, True
         elif symTokens:
             log = "Invalid Expression"
+
             workSpace.logBox.append(logger.error(log))
             return log, False
         else:
             log = ""
             workSpace.logBox.append(logger.error(log))
+
             return log, False
     else:
         log = ""
         if strIn != "":
             _, log = checkEquation(normalizedTerms, symTokens)
+
             workSpace.logBox.append(logger.error(log))
+
         return log, False
 
 
