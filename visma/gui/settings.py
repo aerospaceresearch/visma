@@ -9,11 +9,11 @@ from visma.gui.plotter import plotPref
 #######
 
 
-def preferenceLayout(workspace):
+def preferenceLayout(workSpace):
     """GUI layout for preferences
 
     Arguments:
-        workspace {QtWidgets.QWidget} -- main layout
+        workSpace {QtWidgets.QWidget} -- main layout
 
     Returns:
         hbox {QtWidgets.QHBoxLayout} -- preferences layout
@@ -21,33 +21,33 @@ def preferenceLayout(workspace):
 
     hbox = QHBoxLayout()
 
-    workspace.QSCheckBox = QCheckBox("Quick Simplifier")
-    workspace.QSCheckBox.setChecked(True)
-    workspace.QSCheckBox.toggled.connect(lambda: buttonState(workspace.QSCheckBox, workspace))
+    workSpace.QSCheckBox = QCheckBox("Quick Simplifier")
+    workSpace.QSCheckBox.setChecked(True)
+    workSpace.QSCheckBox.toggled.connect(lambda: buttonState(workSpace.QSCheckBox, workSpace))
 
-    workspace.SSSCheckBox = QCheckBox("Step-by-step Solution")
-    workspace.SSSCheckBox.setFixedSize(200, 30)
-    workspace.SSSCheckBox.setChecked(True)
-    workspace.SSSCheckBox.toggled.connect(lambda: buttonState(workspace.SSSCheckBox, workspace))
+    workSpace.SSSCheckBox = QCheckBox("Step-by-step Solution")
+    workSpace.SSSCheckBox.setFixedSize(200, 30)
+    workSpace.SSSCheckBox.setChecked(True)
+    workSpace.SSSCheckBox.toggled.connect(lambda: buttonState(workSpace.SSSCheckBox, workSpace))
 
-    workspace.GPCheckBox = QCheckBox("Graph Plotter")
-    workspace.GPCheckBox.setChecked(False)
-    workspace.GPCheckBox.toggled.connect(lambda: buttonState(workspace.GPCheckBox, workspace))
+    workSpace.GPCheckBox = QCheckBox("Graph Plotter")
+    workSpace.GPCheckBox.setChecked(False)
+    workSpace.GPCheckBox.toggled.connect(lambda: buttonState(workSpace.GPCheckBox, workSpace))
 
     splitter1 = QSplitter(Qt.Vertical)
-    splitter1.addWidget(workspace.QSCheckBox)  # Quick Simplifier
-    splitter1.addWidget(workspace.SSSCheckBox)  # Step-by-step Solution
-    splitter1.addWidget(workspace.GPCheckBox)  # Graph Plotter
+    splitter1.addWidget(workSpace.QSCheckBox)  # Quick Simplifier
+    splitter1.addWidget(workSpace.SSSCheckBox)  # Step-by-step Solution
+    splitter1.addWidget(workSpace.GPCheckBox)  # Graph Plotter
 
     # Input Type Box
     comboLabel = QLabel()
     comboLabel.setText("Input Type:")
-    combo = QComboBox(workspace)
+    combo = QComboBox(workSpace)
     combo.setFixedSize(200, 30)
     combo.addItem("Greek")
     combo.addItem("LaTeX")
-    combo.activated[str].connect(workspace.onActivated)
-    stepspref1, stepspref2 = stepsPref(workspace)
+    combo.activated[str].connect(workSpace.onActivated)
+    stepspref1, stepspref2 = stepsPref(workSpace)
     inputTypeSplitter = QSplitter(Qt.Vertical)
     inputTypeSplitter.addWidget(stepspref1)
     inputTypeSplitter.addWidget(stepspref2)
@@ -57,36 +57,36 @@ def preferenceLayout(workspace):
     splitter = QSplitter(Qt.Horizontal)
     splitter.addWidget(splitter1)
     splitter.addWidget(inputTypeSplitter)
-    splitter.addWidget(plotPref(workspace))
+    splitter.addWidget(plotPref(workSpace))
 
     hbox.addWidget(splitter)
     return hbox
 
 
-def buttonState(button, workspace):
+def buttonState(button, workSpace):
     """Takes action according to button and its state change trigger
 
     Arguments:
         button {QtWidgets.QCheckBox} -- preference checkbox
-        workspace {QtWidgets.QWidget} -- main layout
+        workSpace {QtWidgets.QWidget} -- main layout
     """
 
-    workspace.clearAll()
+    workSpace.clearAll()
 
     if button.text() == "Quick Simplifier":
         if button.isChecked() is True:
-            workspace.showQSolver = True
+            workSpace.showQSolver = True
         else:
-            workspace.showQSolver = False
+            workSpace.showQSolver = False
 
     elif button.text() == "Step-by-step Solution":
         if button.isChecked() is True:
-            workspace.showStepByStep = True
+            workSpace.showStepByStep = True
         else:
-            workspace.showStepByStep = False
+            workSpace.showStepByStep = False
 
     elif button.text() == "Graph Plotter":
         if button.isChecked() is True:
-            workspace.showPlotter = True
+            workSpace.showPlotter = True
         else:
-            workspace.showPlotter = False
+            workSpace.showPlotter = False

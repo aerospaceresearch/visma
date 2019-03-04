@@ -9,11 +9,11 @@ from visma.io.parser import tokensToLatex
 from visma.simplify.simplify import simplify, simplifyEquation
 
 
-def quickSimplify(workspace):
+def quickSimplify(workSpace):
     """Dynamic simplifier for simplifying expression as it is being typed
 
     Arguments:
-        workspace {QtWidgets.QWidget} -- main layout
+        workSpace {QtWidgets.QWidget} -- main layout
 
     Returns:
         qSolution/log {string} -- quick solution or error log
@@ -21,7 +21,7 @@ def quickSimplify(workspace):
     """
     # FIXME: Crashes for some cases. Find and fix.
     qSolution = ""
-    input = workspace.textedit.toPlainText()
+    input = workSpace.textedit.toPlainText()
     cleanInput = removeSpaces(input)
     terms = getTerms(cleanInput)
     normalizedTerms = normalize(terms)
@@ -41,8 +41,8 @@ def quickSimplify(workspace):
                 _, _, _, _, equationTokens, _ = simplifyEquation(lhs, rhs)
                 qSolution = r'$ ' + '\Rightarrow \ '
             qSolution += tokensToLatex(equationTokens[-1]) + ' $'
-            # workspace.eqToks = equationTokens
-            # plot(workspace)
+            # workSpace.eqToks = equationTokens
+            # plot(workSpace)
             return qSolution, True
         elif symTokens:
             log = "Invalid Expression"
@@ -62,39 +62,39 @@ def quickSimplify(workspace):
 #######
 
 
-def qSolveFigure(workspace):
+def qSolveFigure(workSpace):
     """GUI layout for quick simplifier
 
     Arguments:
-        workspace {QtWidgets.QWidget} -- main layout
+        workSpace {QtWidgets.QWidget} -- main layout
 
     Returns:
         qSolLayout {QtWidgets.QVBoxLayout} -- quick simplifier layout
     """
 
-    bg = workspace.palette().window().color()
-    bgcolor = (bg.redF(), bg.greenF(), bg.blueF())
-    workspace.qSolveFigure = Figure(edgecolor=bgcolor, facecolor=bgcolor)
-    workspace.solcanvas = FigureCanvas(workspace.qSolveFigure)
-    workspace.qSolveFigure.clear()
+    bg = workSpace.palette().window().color()
+    bgColor = (bg.redF(), bg.greenF(), bg.blueF())
+    workSpace.qSolveFigure = Figure(edgecolor=bgColor, facecolor=bgColor)
+    workSpace.solcanvas = FigureCanvas(workSpace.qSolveFigure)
+    workSpace.qSolveFigure.clear()
     qSolLayout = QtWidgets.QVBoxLayout()
-    qSolLayout.addWidget(workspace.solcanvas)
+    qSolLayout.addWidget(workSpace.solcanvas)
 
     return qSolLayout
 
 
-def renderQuickSol(workspace, showQSolver):
+def renderQuickSol(workSpace, showQSolver):
     """Renders quick solution in matplotlib figure
 
     Arguments:
-        workspace {QtWidgets.QWidget} -- main layout
+        workSpace {QtWidgets.QWidget} -- main layout
     """
     if showQSolver is True:
-        quickSolution = workspace.qSol
+        quickSolution = workSpace.qSol
     else:
         quickSolution = ""
-    workspace.qSolveFigure.suptitle(quickSolution, x=0.01,
+    workSpace.qSolveFigure.suptitle(quickSolution, x=0.01,
                                     horizontalalignment='left',
                                     verticalalignment='top')
     #                               size=qApp.font().pointSize()*1.5)
-    workspace.solcanvas.draw()
+    workSpace.solcanvas.draw()

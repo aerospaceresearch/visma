@@ -7,35 +7,35 @@ from PyQt5.QtWidgets import QVBoxLayout, qApp, QLabel, QDoubleSpinBox, QScrollAr
 #######
 
 
-def stepsFigure(workspace):
+def stepsFigure(workSpace):
     """GUI layout for step-by-step solution
 
     Arguments:
-        workspace {QtWidgets.QWidget} -- main layout
+        workSpace {QtWidgets.QWidget} -- main layout
 
     Returns:
         stepslayout {QtWidgets.QVBoxLayout} -- step-by-step solution layout
     """
-    workspace.stepsfigure = Figure()
-    workspace.stepscanvas = FigureCanvas(workspace.stepsfigure)
-    workspace.stepsfigure.clear()
-    workspace.scroll = QScrollArea()
-    workspace.scroll.setWidget(workspace.stepscanvas)
+    workSpace.stepsfigure = Figure()
+    workSpace.stepscanvas = FigureCanvas(workSpace.stepsfigure)
+    workSpace.stepsfigure.clear()
+    workSpace.scroll = QScrollArea()
+    workSpace.scroll.setWidget(workSpace.stepscanvas)
     stepslayout = QVBoxLayout()
-    stepslayout.addWidget(workspace.scroll)
+    stepslayout.addWidget(workSpace.scroll)
     return stepslayout
 
 
-def showSteps(workspace):
+def showSteps(workSpace):
     """Renders step-by-step solution in matplotlib figure
 
     Arguments:
-        workspace {QtWidgets.QWidget} -- main layout
+        workSpace {QtWidgets.QWidget} -- main layout
     """
-    workspace.stepsfigure.suptitle(workspace.output, y=0.98,
+    workSpace.stepsfigure.suptitle(workSpace.output, y=0.98,
                                    horizontalalignment='center',
-                                   verticalalignment='top', size=qApp.font().pointSize()*workspace.stepsFontSize)
-    workspace.stepscanvas.draw()
+                                   verticalalignment='top', size=qApp.font().pointSize()*workSpace.stepsFontSize)
+    workSpace.stepscanvas.draw()
 
 
 ###############
@@ -43,21 +43,21 @@ def showSteps(workspace):
 ###############
 
 
-def stepsPref(workspace):
+def stepsPref(workSpace):
 
-    workspace.sizeChangeText = QLabel("Steps font size: " + str(round(workspace.stepsFontSize, 1)) + "x")
-    workspace.sizeChangeBox = QDoubleSpinBox()
-    workspace.sizeChangeBox.setFixedSize(200, 30)
-    workspace.sizeChangeBox.setRange(0.1, 10)
-    workspace.sizeChangeBox.setValue(1)
-    workspace.sizeChangeBox.setSingleStep(0.1)
-    workspace.sizeChangeBox.setSuffix('x')
-    workspace.sizeChangeBox.valueChanged.connect(lambda: sizeChange(workspace))
-    return workspace.sizeChangeText, workspace.sizeChangeBox
+    workSpace.sizeChangeText = QLabel("Steps font size: " + str(round(workSpace.stepsFontSize, 1)) + "x")
+    workSpace.sizeChangeBox = QDoubleSpinBox()
+    workSpace.sizeChangeBox.setFixedSize(200, 30)
+    workSpace.sizeChangeBox.setRange(0.1, 10)
+    workSpace.sizeChangeBox.setValue(1)
+    workSpace.sizeChangeBox.setSingleStep(0.1)
+    workSpace.sizeChangeBox.setSuffix('x')
+    workSpace.sizeChangeBox.valueChanged.connect(lambda: sizeChange(workSpace))
+    return workSpace.sizeChangeText, workSpace.sizeChangeBox
 
 
-def sizeChange(workspace):
-    workspace.stepsFontSize = workspace.sizeChangeBox.value()
-    workspace.sizeChangeText.setText("Steps font size: " + str(round(workspace.stepsFontSize, 1)) + "x")
-    if workspace.resultOut is True:
-        showSteps(workspace)
+def sizeChange(workSpace):
+    workSpace.stepsFontSize = workSpace.sizeChangeBox.value()
+    workSpace.sizeChangeText.setText("Steps font size: " + str(round(workSpace.stepsFontSize, 1)) + "x")
+    if workSpace.resultOut is True:
+        showSteps(workSpace)

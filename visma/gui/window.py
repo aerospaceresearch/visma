@@ -63,7 +63,7 @@ class Window(QtWidgets.QMainWindow):
 
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(wikiAction)
-        self.workSpace = WorkSpace()
+        self.workSpace = workSpace()
         self.setCentralWidget(self.workSpace)
         self.GUIwidth = 1300
         self.GUIheight = 900
@@ -98,7 +98,7 @@ class Window(QtWidgets.QMainWindow):
                 self.workSpace.addEquation()
 
 
-class WorkSpace(QWidget):
+class workSpace(QWidget):
 
     inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', u'\u03C0', '.', '0', '=', '<', '>']
     inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g',  'h', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', '\\pi', '.', '0', '=', '<', '>']

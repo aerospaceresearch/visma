@@ -4,7 +4,7 @@ from visma.gui.cli import commandExec
 
 def init():
     cin = input('>>> ')
-    while(cin != 'exit'):
+    while cin != 'exit':
         if cin == 'gui':
             initGUI()
         else:

@@ -67,7 +67,7 @@ def integrateTokens(funclist, wrtVar):
         if isinstance(func, Operator):  # add isFuntionOf
             intFunc.append(func)
         else:
-            newfunc = []
+            newFunc = []
             while(isinstance(func, Function)):
                 commentsNew[0] += r"$" + "\int \ " + "( " + func.__str__() + ")" + " d" + wrtVar + r"$"
                 funcCopy = copy.deepcopy(func)
@@ -101,10 +101,10 @@ def integrateTokens(funclist, wrtVar):
 
                         if log:
                             commentsNew[0] += r"$" + "= " + funcCopy[0].__str__() + "*" + funcCopy[2].__str__() + "\ ;\ " + r"$"
-                            newfunc.extend(funcCopy)
+                            newFunc.extend(funcCopy)
                         else:
                             commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
-                            newfunc.append(funcCopy)
+                            newFunc.append(funcCopy)
                 else:
                     if isinstance(funcCopy, Variable):
                         funcCopy.value.append(wrtVar)
@@ -115,7 +115,7 @@ def integrateTokens(funclist, wrtVar):
                         funcCopy.coefficient = coeff
                         funcCopy.value.append(wrtVar)
                         funcCopy.power.append(1)
-                    newfunc.append(funcCopy)
+                    newFunc.append(funcCopy)
                     commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
 
                 if func.operand is None:
@@ -126,7 +126,7 @@ def integrateTokens(funclist, wrtVar):
                         intFunc = Zero()
                         break
 
-            intFunc.extend(newfunc)
+            intFunc.extend(newFunc)
 
     animNew.extend(intFunc)
     return intFunc, animNew, commentsNew
