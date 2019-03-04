@@ -378,7 +378,7 @@ def divisionEquation(lToks, rToks, direct=False):
 # TODO: Expression multiplication and division #
 ################################################
 
-"""
+'''
 def multiplySelect(token1, token2, coeff=1):
 
     if isinstance(token1, Variable) and isinstance(token2, Variable):
@@ -740,4 +740,4 @@ def division_select(token1, token2, coeff=1):
 
 def division_expressions(expression1, expression2):
     pass
-"""
+'''

@@ -103,6 +103,7 @@ def factor(coefficients):
         roots.append(root)
         polynomial = quotient
     polynomial = [int(term) for term in polynomial]
+    roots.sort()
     return gcf, roots, polynomial
 
 

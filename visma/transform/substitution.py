@@ -117,26 +117,26 @@ def removeValues(initTok, givenTok):
     return givenTok
 
 
-def replaceValues(initTok, subsTok, givenTok, power):
+def replaceValues(initTok, subsTok, givenTok, poweratio):
     """Replaces a token with a substitute token
 
     Arguments:
         initTok {functions.structure.Function} -- token to be substituted
         subsTok {functions.structure.Function} -- substitute token
         toklist {list} -- token list
-        power {float} -- ratio of givenTok.power to initTok.power
+        poweratio {float} -- ratio of givenTok.power to initTok.power
 
     Returns:
         givenTok {functions.structure.Function} -- given token after replacing initTok with subsTok
     """
     givenTok = removeValues(initTok, givenTok)
     subs_copy = copy.deepcopy(subsTok)
-    subs_copy.power = [pow * power for pow in subs_copy.power]
-    for val, pow in zip(subs_copy.value, subs_copy.power):
+    subs_copy.power = [powr * poweratio for powr in subs_copy.power]
+    for val, powr in zip(subs_copy.value, subs_copy.power):
         if val in givenTok.value:
             valIndex = givenTok.value.index(val)
-            givenTok.power[valIndex] += pow
+            givenTok.power[valIndex] += powr
         else:
             givenTok.value.append(val)
-            givenTok.power.append(pow)
+            givenTok.power.append(powr)
     return givenTok

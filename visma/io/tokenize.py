@@ -25,6 +25,7 @@ from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
 from visma.io.parser import latexToTerms
+# from visma.gui import logger
 
 symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';', '$']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
@@ -46,10 +47,7 @@ def removeSpaces(eqn):
     Returns:
         cleanEqn {string} -- equation string without spaces
     """
-    cleanEqn = ''
-    for char in eqn:
-        if char != ' ':
-            cleanEqn += char
+    cleanEqn = ''.join(i for i in eqn.split())
     return cleanEqn
 
 
@@ -356,7 +354,7 @@ def normalize(terms):
     Returns:
         terms {list} -- Greek input terms
     """
-    for index, term in enumerate(terms):
+    for term in terms:
         for i, x in enumerate(inputLaTeX):
             if x == term:
                 term = inputGreek[i]
@@ -1046,8 +1044,8 @@ def getToken(terms, symTokens, scope=None, coeff=1):
             if isMatrix(matrixTok):
                 tokens.append(matrixTok)
             else:
-                # logger.log(Invalid Matrix)
                 pass
+                # logger.error('Invalid Matrix')
         elif symTokens[x] == 'Unary':
             coeff = 1
             if terms[x] == '-':
@@ -1570,33 +1568,32 @@ def tokenizer(eqnString):
 def changeToken(tokens, variables, scope_times=0):
 
     if len(variables) != 0:
-        if variables[0].scope is not None:
-            for changeVariable in variables:
-                for token in tokens:
-                    if isinstance(token, Constant):
-                        if token.scope == changeVariable.scope:
-                            if changeVariable.coefficient is not None:
-                                token.coefficient = changeVariable.coefficient
-                            token.power = changeVariable.power
-                            token.value = changeVariable.value
-                            break
-                    elif isinstance(token, Variable):
-                        if token.scope == changeVariable.scope:
+        for changeVariable in variables:
+            for token in tokens:
+                if isinstance(token, Constant):
+                    if token.scope == changeVariable.scope:
+                        if changeVariable.coefficient is not None:
                             token.coefficient = changeVariable.coefficient
-                            token.power = changeVariable.power
-                            token.value = changeVariable.value
-                            break
-                    elif isinstance(token, Binary):
+                        token.power = changeVariable.power
+                        token.value = changeVariable.value
+                        break
+                elif isinstance(token, Variable):
+                    if token.scope == changeVariable.scope:
+                        token.coefficient = changeVariable.coefficient
+                        token.power = changeVariable.power
+                        token.value = changeVariable.value
+                        break
+                elif isinstance(token, Binary):
+                    if token.scope == changeVariable.scope:
+                        token.value = changeVariable.value
+                elif isinstance(token, Expression):
+                    if scope_times + 1 == len(changeVariable.scope):
                         if token.scope == changeVariable.scope:
-                            token.value = changeVariable.value
-                    elif isinstance(token, Expression):
-                        if scope_times + 1 == len(changeVariable.scope):
-                            if token.scope == changeVariable.scope:
-                                break
-                        elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
-                            token.tokens = changeToken(
-                                token.tokens, token.scope, scope_times + 1)
                             break
+                    elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
+                        token.tokens = changeToken(
+                            token.tokens, token.scope, scope_times + 1)
+                        break
     return tokens
 
 
@@ -1669,7 +1666,8 @@ def getLHSandRHS(tokens):
 
 
 if __name__ == "__main__":
-
+    # logger.setLevel = 0
+    # logger.setLogName = 'tokenize'
     print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
 
 # -xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}

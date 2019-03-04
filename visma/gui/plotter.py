@@ -122,8 +122,8 @@ def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
     Returns:
         (LHS - RHS) {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
     """
-    for _ in LHStok:    # Replaced ( token ) by ( _ ) because we only need to loop on LHStokens but don't need the iterator itself.
-        LHS = getFuncExpr(LHStok, eqnVars, graphVars)
+
+    LHS = getFuncExpr(LHStok, eqnVars, graphVars)
     if len(eqnVars) == dim:
         RHS = getFuncExpr(RHStok, eqnVars, graphVars)
     elif len(eqnVars) == dim - 1:
