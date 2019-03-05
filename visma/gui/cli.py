@@ -80,6 +80,7 @@ def commandExec(command):
         lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
     printOnCLI(equationTokens, operation, comments, solutionType)
 
+
 def printOnCLI(equationTokens, operation, comments, solutionType):
     equationString = []
     for x in equationTokens:
@@ -101,7 +102,7 @@ def printOnCLI(equationTokens, operation, comments, solutionType):
         finalSteps += equationString[i] + 2*"\n"
 
     # This takes care if LHS and RHS produced after simplification are equal or not.
-    # If not equal a Math Error is generated. 
+    # If not equal a Math Error is generated.
     if (solutionType == 'equation'):
         lastStep = ''
         lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()

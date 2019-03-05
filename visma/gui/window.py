@@ -123,7 +123,7 @@ class WorkSpace(QWidget):
     solutionButtons = {}
     inputBox = QGridLayout()
     selectedCombo = "Greek"
-     equations = []
+    equations = []
     stepsFontSize = 1
     axisRange = [10, 10, 10, 30]  # axisRange[-1] --> MeshDensity in 3D graphs
     resultOut = False
@@ -644,12 +644,12 @@ class WorkSpace(QWidget):
                 self.eqToks = equationTokens
                 self.output = resultLatex(name, equationTokens, comments)
                 # This takes care if LHS and RHS produced after simplification are equal or not.
-                # If not equal a Math Error is generated. 
+                # If not equal a Math Error is generated.
                 if (self.solutionType == 'equation'):
                     lastStep = ''
                     lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
                     if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
-                        self.output += 'Math Error: LHS not equal to RHS' + '\n'                
+                        self.output += 'Math Error: LHS not equal to RHS' + '\n'
                 if len(availableOperations) == 0:
                     self.clearButtons()
                 else:
