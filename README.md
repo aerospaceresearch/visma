@@ -21,7 +21,7 @@ A math equation solver and visualizer
 </p>
 
 
-An equation solver and visualizer, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
+An equation solver and visualizer, which aims to help in grasping how mathematical equations are transformed and solved. By this, the threshold for obtaining deeper mathematical understanding can be reduced.
 
 
 ## Installation
@@ -35,6 +35,9 @@ An equation solver and visualizer, which aims to help in grasping how mathematic
 
 ```shell
 $ pip3 install visualmath
+if error persists,
+do
+$ pip3 install --user visualmath
 ```
 
 This sets up the environment to run on your computer.
@@ -46,7 +49,7 @@ $ visma
 >>> gui
 ```
 
-**Note:** For windows user (and those for whom) the above launching option is not available, to launch **visma** GUI do
+**Note:** For windows user (and those for whom) the above launching option is not available.Therefore, to launch **visma** GUI, do
 
 ```shell
 $ python3
@@ -83,7 +86,14 @@ $ python3 main.py
 ```shell
 $ pip --version
 ```
-
+To update the pip version, if needed, do:
+~~~ 
+    $ pip install --upgrade pip
+~~~
+If error persists while updating pip due to administrative priviliges, do
+~~~
+    $ pip install --user upgrade pip
+~~~
 ## Docs
 
 [![Github Wiki](https://img.shields.io/badge/wiki-visma-green.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/wiki)
