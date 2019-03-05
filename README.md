@@ -85,15 +85,15 @@ $ python3 main.py
 
 ```shell
 $ pip --version
-```
 To update the pip version, if needed, do:
-~~~ 
+
     $ pip install --upgrade pip
-~~~
-If error persists while updating pip due to administrative priviliges, do
-~~~
+
+If error persists while upgradingg pip due to administrative priviliges, do
+
     $ pip install --user upgrade pip
-~~~
+
+```
 ## Docs
 
 [![Github Wiki](https://img.shields.io/badge/wiki-visma-green.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/wiki)
