@@ -30,6 +30,7 @@ from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
 from visma.transform.factorization import factorize
 from visma.gui import logger
+from visma.io.parser import tokensToString
 
 
 class Window(QtWidgets.QMainWindow):
@@ -642,6 +643,13 @@ class WorkSpace(QWidget):
             if self.resultOut:
                 self.eqToks = equationTokens
                 self.output = resultLatex(name, equationTokens, comments)
+                # This takes care if LHS and RHS produced after simplification are equal or not.
+                # If not equal a Math Error is generated.
+                if (self.solutionType == 'equation'):
+                    lastStep = ''
+                    lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
+                    if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
+                        self.output += 'Math Error: LHS not equal to RHS' + '\n'
                 if len(availableOperations) == 0:
                     self.clearButtons()
                 else:
