@@ -15,7 +15,7 @@ def integrate(tokens, wrtVar):
     """Simplifies and then integrates given tokens wrt given variable
 
     Arguments:
-        tokens {list} -- list of funtion tokens
+        tokens {list} -- list of function tokens
         wrtVar {string} -- with respect to variable
 
     Returns:
@@ -52,7 +52,7 @@ def integrateTokens(funclist, wrtVar):
     """Integrates given tokens wrt given variable
 
     Arguments:
-        funclist {list} -- list of funtion tokens
+        funclist {list} -- list of function tokens
         wrtVar {string} -- with respect to variable
 
     Returns:
@@ -64,7 +64,7 @@ def integrateTokens(funclist, wrtVar):
     animNew = []
     commentsNew = ["Integrating with respect to " + r"$" + wrtVar + r"$" + "\n"]
     for func in funclist:
-        if isinstance(func, Operator):  # add isFuntionOf
+        if isinstance(func, Operator):  # add isfunctionOf
             intFunc.append(func)
         else:
             newfunc = []
