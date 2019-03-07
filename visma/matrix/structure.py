@@ -86,28 +86,26 @@ class Matrix(object):
 
 class SquareMat(Matrix):
 
-    def determinant(self,mat=[]):
-        if mat==[]:
-            mat=np.array(self.value)
-        if(mat.shape[0]>2):
-            ans=0
+    def determinant(self, mat=None):
+        if mat is None:
+            mat = np.array(self.value)
+        if(mat.shape[0] > 2):
+            ans = 0
             for i in range(mat.shape[0]):
-                mat1=mat
-                mat1=np.concatenate((mat[1:,:i],mat[1::,i+1:]),axis=1)
-                a=self.determinant(mat1)
-                a=a*mat[0][i]
-                if(i%2==0):
-                    ans+=a
+                mat1 = mat
+                mat1 = np.concatenate((mat[1:, :i], mat[1::, i+1:]), axis=1)
+                a = self.determinant(mat1)
+                a = a*mat[0][i]
+                if(i % 2==0):
+                    ans += a
                 else:
-                    ans-=a
-        elif(mat.shape[0]==2):
-            ans=0
-            ans=mat[0][0]*mat[1][1]-mat[0][1]*mat[1][0]
+                    ans -= a
+        elif(mat.shape[0] == 2):
+            ans = 0
+            ans = mat[0][0]*mat[1][1]-mat[0][1]*mat[1][0]
         else:
-            ans=mat
+            ans = mat
         return ans
-                
-
 
 
 class IdenMat(SquareMat):
