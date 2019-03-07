@@ -1,6 +1,7 @@
 from visma.functions.constant import Constant
 import numpy as np
 
+
 class Matrix(object):
     """Class for matrix type
 
@@ -96,7 +97,7 @@ class SquareMat(Matrix):
                 mat1 = np.concatenate((mat[1:, :i], mat[1::, i+1:]), axis=1)
                 a = self.determinant(mat1)
                 a = a*mat[0][i]
-                if(i % 2==0):
+                if(i % 2 == 0):
                     ans += a
                 else:
                     ans -= a
