@@ -78,10 +78,10 @@ def commandExec(command):
     elif operation == 'differentiate':
         lhs, rhs = getLHSandRHS(tokens)
         lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
-    printOnCLI(equationTokens, operation, comments)
+    printOnCLI(equationTokens, operation, comments, solutionType)
 
 
-def printOnCLI(equationTokens, operation, comments):
+def printOnCLI(equationTokens, operation, comments, solutionType):
     equationString = []
     for x in equationTokens:
         equationString.append(tokensToString(x))
@@ -100,4 +100,13 @@ def printOnCLI(equationTokens, operation, comments):
         else:
             finalSteps += "\n"
         finalSteps += equationString[i] + 2*"\n"
+
+    # This takes care if LHS and RHS produced after simplification are equal or not.
+    # If not equal a Math Error is generated.
+    if (solutionType == 'equation'):
+        lastStep = ''
+        lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
+        if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
+            finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
+
     print(finalSteps)

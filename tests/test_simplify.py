@@ -22,9 +22,9 @@ def test_simplify():
     assert quickTest("x/y + x/x + x/x^2 + x^2/x + x/y^2 + x^2/y + x + 1", simplify) == "xy^(-1)+x^(-1.0)+xy^(-2.0)+x^(2.0)y^(-1)+2.0x+2.0"
 
     assert quickTest("1 + 2 = 3", simplifyEquation) == "=0"  # FIXME: Vanishing zero
-    assert quickTest("1 + 2 = 4", simplifyEquation) == "-1.0=0"  # FIXME: Exclude these cases, raise math error
+    assert quickTest("1 + 2 = 4", simplifyEquation) == "-1.0=0"
 
-    assert quickTest("3*2 + 4*2 = 3*4", simplifyEquation) == "2.0=0"  # FIXME: Exclude these cases, raise math error
+    assert quickTest("3*2 + 4*2 = 3*4", simplifyEquation) == "2.0=0"
     assert quickTest("3*x = 4*x + 2*y", simplifyEquation) == "-x-2.0y=0"
     assert quickTest("1 - 1 = 3*x + 4*x + 2*y", simplifyEquation) == "7.0x+2.0y=0"
 
@@ -35,7 +35,7 @@ def test_simplify():
     assert quickTest("x = -1 + 2", simplifyEquation) == "x+1.0-2.0=0"  # FIXME: Further simplification required (simplification in RHS)
     assert quickTest("x*y + x*x + x*x^2 = x^2*x + x*y^2 + x^2*y", simplifyEquation) == "xy+x^(2)-xy^(2.0)-x^(2.0)y=0"
 
-    assert quickTest("3/2 + 4/2 = 2/4", simplifyEquation) == "3.0=0"  # FIXME: Exclude these cases, raise math error
+    assert quickTest("3/2 + 4/2 = 2/4", simplifyEquation) == "3.0=0"
     assert quickTest("x/5 + x/4 = 2/y", simplifyEquation) == "0.45x-2.0y^(-1)=0"
     assert quickTest("x/y + x/x + x/x^2 + x^2/x = x/y^2 + x^2/y + x - 1", simplifyEquation) == "xy^(-1)+2.0+x^(-1.0)-xy^(-2.0)-x^(2.0)y^(-1)=0"
 
