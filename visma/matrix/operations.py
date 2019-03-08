@@ -209,13 +209,13 @@ def scalarDiv(const, mat):
         matRes.empty([mat.dim[0], mat.dim[1]])
         for i in range(mat.dim[0]):
             for j in range(mat.dim[1]):
-                    if len(mat.value[i][j]) != 1:
-                        matRes.value[i][j].append(Expression(mat.value[i][j]))
-                    else:
-                        matRes.value[i][j].extend(mat.value[i][j])
+                if len(mat.value[i][j]) != 1:
+                    matRes.value[i][j].append(Expression(mat.value[i][j]))
+                else:
+                    matRes.value[i][j].extend(mat.value[i][j])
 
-                    matRes.value[i][j].append(Binary('/'))
-                    matRes.value[i][j].append(Constant(int(const)))
+                matRes.value[i][j].append(Binary('/'))
+                matRes.value[i][j].append(Constant(int(const)))
         matRes = simplifyMatrix(matRes)
         return matRes
     else:
