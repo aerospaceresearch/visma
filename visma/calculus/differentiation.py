@@ -28,7 +28,7 @@ def differentiate(tokens, wrtVar):
 
     tokens, availableOperations, token_string, animation, comments = simplify(tokens)
 
-    tokens, animNew, commentsNew = (DifferentiateTokens(tokens, wrtVar))
+    tokens, animNew, commentsNew = (differentiateTokens(tokens, wrtVar))
 
     animation.append(animNew)
     comments.append(commentsNew)
@@ -43,7 +43,7 @@ def differentiate(tokens, wrtVar):
     return tokens, availableOperations, token_string, animation, comments
 
 
-def DifferentiateTokens(funcList, wrtVar):
+def differentiateTokens(funcList, wrtVar):
     """Differentiates given tokens wrt given variable
 
     Arguments:
