@@ -1,0 +1,10 @@
+# required
+matplotlib>=2.0.0
+numpy>=1.12
+PyQt5>=5
+PyQtWebEngine>=5.12
+
+# for testing
+pylama
+pytest>=3.5
+coverage>=4.0
