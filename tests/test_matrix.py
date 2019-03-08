@@ -1,5 +1,5 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck
-from visma.matrix.operations import simplifyMatrix, addMatrix
+from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
 from tests.tester import getTokens
 
 ####################
@@ -91,6 +91,66 @@ def test_addMatrix():
                         2 - x^2, xy - 1 ]")
     matSum = addMatrix(matA, matB)
     assert matSum.__str__() == "[{x}+{y}+{1.0},2{x}^{2.0};{5.0},2{x}{y}-{1.0}]"
+
+
+def test_scalarAddMatrix():
+
+    mat = getTokens("[1, 2; \
+                    2,  1]")
+    const = 2
+    matSum = scalarAdd(const, mat)
+    assert matSum.__str__() == "[{3.0},{2.0};{2.0},{3.0}]"
+
+    mat = getTokens("[1, 2, 3;\
+                        4, 5, 6;\
+                        7, 8, 9]")
+    const = 3
+    matSum = scalarAdd(const, mat)
+    assert matSum.__str__() == "[{4.0},{2.0},{3.0};{4.0},{8.0},{6.0};{7.0},{8.0},{12.0}]"
+
+
+def test_scalarSubMatrix():
+
+    mat = getTokens("[8,6;\
+                      1,9]")
+    const = 2
+    matSub = scalarSub(const, mat)
+    assert matSub.__str__() == "[{6.0},{6.0};{1.0},{7.0}]"
+
+    mat = getTokens("[5,8,2;\
+                      12,30,9;\
+                      4,17,7]")
+    const = 10
+    matSub = scalarSub(const, mat)
+    assert matSub.__str__() == "[{-5.0},{8.0},{2.0};{12.0},{20.0},{9.0};{4.0},{17.0},{-3.0}]"
+
+
+def test_scalarMultMatrix():
+
+    mat = getTokens("[1, 2]")
+    const = 2
+    matSum = scalarMult(const, mat)
+    assert matSum.__str__() == "[{2.0},{4.0}]"
+
+    mat = getTokens("[2,4;\
+                      -5,7]")
+    const = 2
+    matSum = scalarMult(const, mat)
+    assert matSum.__str__() == "[{4.0},{8.0};{-10.0},{14.0}]"
+
+
+def test_scalarDivMatrix():
+
+    mat = getTokens("[4, 2]")
+    const = 2
+    matSum = scalarDiv(const, mat)
+    assert matSum.__str__() == "[{2.0},{1.0}]"
+
+    mat = getTokens("[48,36;\
+                      24,-3]")
+    const = 6
+    matSum = scalarDiv(const, mat)
+    assert matSum.__str__() == "[{8.0},{6.0};{4.0},{-0.5}]"
 
 
 def test_multiplyMatrix():

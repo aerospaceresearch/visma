@@ -3,7 +3,7 @@ from visma.functions.structure import Function
 from visma.functions.variable import Variable
 
 ############
-# Constant #
+#   Constant #
 ############
 
 

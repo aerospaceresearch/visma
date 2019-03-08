@@ -84,7 +84,8 @@ def commandExec(command):
     printOnCLI(equationTokens, operation, comments)
 
 
-def printOnCLI(equationTokens, operation, comments):
+
+def printOnCLI(equationTokens, operation, comments, solutionType):
     equationString = []
     for x in equationTokens:
         equationString.append(tokensToString(x))
@@ -96,11 +97,20 @@ def printOnCLI(equationTokens, operation, comments):
     finalSteps = ""
     finalSteps = "INPUT: " + equationString[0] + "\n"
     finalSteps += "OPERATION: " + operation + "\n"
-    finalSteps += "OUTPUT: " + equationString[-1] + 2*"\n"
+    finalSteps += "OUTPUT: " + equationString[-1] + "\n"
     for i, _ in enumerate(equationString):
-        finalSteps += equationString[i]
         if comments[i] != []:
-            finalSteps += "\n" + "(" + str(commentsString[i][0]) + ")" + 2*"\n"
+            finalSteps += "(" + str(commentsString[i][0]) + ")" + "\n"
         else:
-            finalSteps += 2*"\n"
+            finalSteps += "\n"
+        finalSteps += equationString[i] + 2*"\n"
+
+    # This takes care if LHS and RHS produced after simplification are equal or not.
+    # If not equal a Math Error is generated.
+    if (solutionType == 'equation'):
+        lastStep = ''
+        lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
+        if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
+            finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
+
     print(finalSteps)

@@ -216,7 +216,7 @@ def simplify(tokens):
     return tokens, availableOperations, token_string, animation, comments
 
 
-"""
+'''
 def defineScopeVariable(variable, scope):
     token = copy.deepcopy(variable)
     local_scope = copy.deepcopy(scope)
@@ -278,4 +278,4 @@ def defineScope(tokens, scope=None):
             pass
         i += 1
     return tokens
-"""
+'''

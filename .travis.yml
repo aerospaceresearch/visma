@@ -2,10 +2,11 @@ language: python
 python: "3.6"
 
 install :
-  - pip install pylama
-  - pip install pytest
+  - pip install pylama==7.6.6
+  - pip install pytest==4.1.1
   - pip install coverage
   - pip install coveralls
+  - pip install PyQt5==5.11.2
 
 script :
   - pylama

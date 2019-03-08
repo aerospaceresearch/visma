@@ -14,7 +14,7 @@ def differentiate(tokens, wrtVar):
     """Simplifies and then differentiates given tokens wrt given variable
 
     Arguments:
-        tokens {list} -- list of funtion tokens
+        tokens {list} -- list of function tokens
         wrtVar {string} -- with respect to variable
 
     Returns:
@@ -46,7 +46,7 @@ def differentiateTokens(funclist, wrtVar):
     """Differentiates given tokens wrt given variable
 
     Arguments:
-        funclist {list} -- list of funtion tokens
+        funclist {list} -- list of function tokens
         wrtVar {string} -- with respect to variable
 
     Returns:

@@ -29,7 +29,7 @@ def graphPlot(workspace):
         variables {list} -- variables in given equation
 
     Note:
-        The func obtained from graphPlot() funtion is of different type for 2D and 3D plots. For 2D, func is a numpy array, and for 3D, func is a function.
+        The func obtained from graphPlot() function is of different type for 2D and 3D plots. For 2D, func is a numpy array, and for 3D, func is a function.
     """
     tokens = workspace.eqToks[-1]
     axisRange = workspace.axisRange
@@ -122,8 +122,7 @@ def getFunction(LHStok, RHStok, eqnVars, graphVars, dim):
     Returns:
         (LHS - RHS) {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
     """
-    for token in LHStok:
-        LHS = getFuncExpr(LHStok, eqnVars, graphVars)
+    LHS = getFuncExpr(LHStok, eqnVars, graphVars)
     if len(eqnVars) == dim:
         RHS = getFuncExpr(RHStok, eqnVars, graphVars)
     elif len(eqnVars) == dim - 1:
