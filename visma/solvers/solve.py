@@ -130,7 +130,7 @@ def moveToRHS(lTokens, rTokens, wrtVar):
 
 
 def funcInverse(lTokens, rTokens, wrtVar):
-    """Applies inverse of funtion of wrtVar to RHS
+    """Applies inverse of function of wrtVar to RHS
 
     Arguments:
         lTokens {list} -- LHS tokens list
