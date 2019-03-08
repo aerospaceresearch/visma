@@ -65,11 +65,6 @@ def commandExec(command):
         else:
             lTokens, rTokens, _, _, equationTokens, comments = divisionEquation(
                 lTokens, rTokens, True)
-    elif operation == 'simplify':
-        if solutionType == 'expression':
-            tokens, _, _, equationTokens, comments = simplify(tokens)
-        else:
-            lTokens, rTokens, _, _, equationTokens, comments = simplifyEquation(lTokens, rTokens)
     elif operation == 'factorize':
         tokens, _, _, equationTokens, comments = factorize(tokens)
     elif operation == 'find-roots':
@@ -83,6 +78,9 @@ def commandExec(command):
     elif operation == 'differentiate':
         lhs, rhs = getLHSandRHS(tokens)
         lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
+    else:
+        print("Please write a correct expression. \n\n")
+        return
     printOnCLI(equationTokens, operation, comments)
 
 
