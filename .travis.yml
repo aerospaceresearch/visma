@@ -6,6 +6,7 @@ install :
   - pip install pytest==4.1.1
   - pip install coverage
   - pip install coveralls
+  - pip install PyQt5==5.11.2
 
 script :
   - pylama

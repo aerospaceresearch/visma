@@ -92,6 +92,7 @@ def test_addMatrix():
     matSum = addMatrix(matA, matB)
     assert matSum.__str__() == "[{x}+{y}+{1.0},2{x}^{2.0};{5.0},2{x}{y}-{1.0}]"
 
+
 def test_scalarAddMatrix():
 
     mat = getTokens("[1, 2; \
@@ -107,12 +108,14 @@ def test_scalarAddMatrix():
     matSum = scalarAdd(const, mat)
     assert matSum.__str__() == "[{4.0},{2.0},{3.0};{4.0},{8.0},{6.0};{7.0},{8.0},{12.0}]"
 
+
 def test_scalarSubMatrix():
 
-    mat = getTokens("[8, 6]")
+    mat = getTokens("[8,6;\
+                      1,9]")
     const = 2
     matSub = scalarSub(const, mat)
-    assert matSub.__str__() == "[{6.0},{6.0}]"
+    assert matSub.__str__() == "[{6.0},{6.0};{1.0},{7.0}]"
 
     mat = getTokens("[5,8,2;\
                       12,30,9;\
@@ -120,6 +123,7 @@ def test_scalarSubMatrix():
     const = 10
     matSub = scalarSub(const, mat)
     assert matSub.__str__() == "[{-5.0},{8.0},{2.0};{12.0},{20.0},{9.0};{4.0},{17.0},{-3.0}]"
+
 
 def test_scalarMultMatrix():
 
@@ -133,6 +137,7 @@ def test_scalarMultMatrix():
     const = 2
     matSum = scalarMult(const, mat)
     assert matSum.__str__() == "[{4.0},{8.0};{-10.0},{14.0}]"
+
 
 def test_scalarDivMatrix():
 

@@ -5,6 +5,7 @@ from visma.simplify.simplify import simplify
 from visma.matrix.structure import Matrix
 from visma.gui import logger
 
+
 def simplifyMatrix(mat):
     """Simplifies each element in the matrix
 
@@ -43,6 +44,7 @@ def addMatrix(matA, matB):
     matSum = simplifyMatrix(matSum)
     return matSum
 
+
 def subMatrix(matA, matB):
     """Subtracts two matrices
 
@@ -65,6 +67,7 @@ def subMatrix(matA, matB):
             matSub.value[i][j].extend(matB.value[i][j])
     matSub = simplifyMatrix(matSub)
     return matSub
+
 
 def multiplyMatrix(matA, matB):
     """Multiplies two matrices
@@ -99,6 +102,7 @@ def multiplyMatrix(matA, matB):
     matPro = simplifyMatrix(matPro)
     return matPro
 
+
 def scalarAdd(const, mat):
     """
     Adds constant terms with Matrix
@@ -119,7 +123,7 @@ def scalarAdd(const, mat):
     matRes.empty(mat.dim)
     for i in range(mat.dim[0]):
         for j in range(mat.dim[1]):
-            if i!=j:
+            if i != j:
                 matRes.value[i][j].extend(mat.value[i][j])
             else:
                 if len(mat.value[i][j]) != 1:
@@ -130,6 +134,7 @@ def scalarAdd(const, mat):
                 matRes.value[i][j].append(Constant(int(const)))
     matRes = simplifyMatrix(matRes)
     return matRes
+
 
 def scalarSub(const, mat):
     """
@@ -151,7 +156,7 @@ def scalarSub(const, mat):
     matRes.empty([mat.dim[0], mat.dim[1]])
     for i in range(mat.dim[0]):
         for j in range(mat.dim[1]):
-            if i!=j:
+            if i != j:
                 matRes.value[i][j].extend(mat.value[i][j])
             else:
                 if len(mat.value[i][j]) != 1:
@@ -162,6 +167,7 @@ def scalarSub(const, mat):
                 matRes.value[i][j].append(Constant(int(const)))
     matRes = simplifyMatrix(matRes)
     return matRes
+
 
 def scalarMult(const, mat):
     """Multiplies constant terms with Matrix
@@ -177,15 +183,16 @@ def scalarMult(const, mat):
     matRes.empty([mat.dim[0], mat.dim[1]])
     for i in range(mat.dim[0]):
         for j in range(mat.dim[1]):
-                if len(mat.value[i][j]) != 1:
-                    matRes.value[i][j].append(Expression(mat.value[i][j]))
-                else:
-                    matRes.value[i][j].extend(mat.value[i][j])
+            if len(mat.value[i][j]) != 1:
+                matRes.value[i][j].append(Expression(mat.value[i][j]))
+            else:
+                matRes.value[i][j].extend(mat.value[i][j])
 
-                matRes.value[i][j].append(Binary('*'))
-                matRes.value[i][j].append(Constant(int(const)))
+            matRes.value[i][j].append(Binary('*'))
+            matRes.value[i][j].append(Constant(int(const)))
     matRes = simplifyMatrix(matRes)
     return matRes
+
 
 def scalarDiv(const, mat):
     """Divides constant terms with Matrix
@@ -197,7 +204,7 @@ def scalarDiv(const, mat):
     Returns:
         matRes {visma.matrix.structure.Matrix} -- result matrix token
     """
-    if const!=0:
+    if const != 0:
         matRes = Matrix()
         matRes.empty([mat.dim[0], mat.dim[1]])
         for i in range(mat.dim[0]):
