@@ -84,7 +84,6 @@ def commandExec(command):
     printOnCLI(equationTokens, operation, comments)
 
 
-
 def printOnCLI(equationTokens, operation, comments, solutionType):
     equationString = []
     for x in equationTokens:
