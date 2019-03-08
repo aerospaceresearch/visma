@@ -12,6 +12,9 @@ from visma.transform.factorization import factorize
 
 
 def commandExec(command):
+    if command.find('(') == -1:
+        print("Please write a correct expression. \n\n")
+        return
     operation = command.split('(', 1)[0]
     inputEquation = command.split('(', 1)[1][:-1]
     if ',' in inputEquation:
@@ -81,7 +84,7 @@ def commandExec(command):
     else:
         print("Please write a correct expression. \n\n")
         return
-    printOnCLI(equationTokens, operation, comments)
+    printOnCLI(equationTokens, operation, comments, solutionType)
 
 
 def printOnCLI(equationTokens, operation, comments, solutionType):
