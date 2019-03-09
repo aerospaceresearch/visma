@@ -221,6 +221,7 @@ def scalarDiv(const, mat):
     else:
         logger.error("ZeroDivisionError: Cannot divide matrix by zero")
 
+
 def traceMat(mat):
     """Returns the trace of a square matrix (sum of diagonal elements)
 
@@ -230,8 +231,8 @@ def traceMat(mat):
     Returns:
         trace {visma.matrix.structure.Matrix} -- 1x1 Matrix token
     """
-    trace=Matrix()
-    trace.empty([1,1])
+    trace = Matrix()
+    trace.empty([1, 1])
     for i in range(mat.dim[0]):
         if len(mat.value[i][i]) != 1:
             trace.value[0][0].append(Expression(mat.value[i][i]))
@@ -239,5 +240,5 @@ def traceMat(mat):
             trace.value[0][0].extend(mat.value[i][i])
         trace.value[0][0].append(Binary('+'))
     trace.value[0][0].append(Constant('0'))
-    trace=simplifyMatrix(trace)
+    trace = simplifyMatrix(trace)
     return trace
