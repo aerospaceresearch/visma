@@ -80,7 +80,7 @@ class Matrix(object):
         self.dim[0] = len(self.value)
         self.dim[1] = len(self.value[0])
 
-    def transposeMat(mat):
+    def transposeMat(self):
         """Returns Transpose of Matrix
 
         Arguments:
@@ -90,10 +90,10 @@ class Matrix(object):
             matRes {visma.matrix.structure.Matrix} -- result matrix token
         """
         matRes = Matrix()
-        matRes.empty([mat.dim[0], mat.dim[1]])
-        for i in range(mat.dim[0]):
-            for j in range(mat.dim[1]):
-                matRes.value[j][i] = mat.value[i][j]
+        matRes.empty([self.dim[0], self.dim[1]])
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matRes.value[j][i] = self.value[i][j]
         return matRes
 
 

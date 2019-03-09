@@ -1,7 +1,6 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
 from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
 from tests.tester import getTokens
-from visma.matrix.structure import Matrix
 
 ####################
 # matrix.structure #
@@ -200,13 +199,13 @@ def test_transposeMat():
 
     mat = getTokens("[1, 2; \
                     3,  4]")
-    matTranspose = Matrix.transposeMat(mat)
+    matTranspose = mat.transposeMat()
     assert matTranspose.__str__() == "[{1.0},{3.0};{2.0},{4.0}]"
 
     mat = getTokens("[5,8,2;\
                       12,30,9;\
                       4,17,7]")
-    matTranspose = Matrix.transposeMat(mat)
+    matTranspose = mat.transposeMat()
     assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
 
 
@@ -214,9 +213,9 @@ def test_isSquare():
 
     mat = getTokens("[1, 2; \
                       x, z]")
-    assert Matrix.isSquare(mat)
+    assert mat.isSquare()
 
     mat = getTokens("[1, 2; \
                       1, 3; \
                       1, 4]")
-    assert not Matrix.isSquare(mat)
+    assert not mat.isSquare()
