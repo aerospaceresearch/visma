@@ -12,9 +12,12 @@ from visma.transform.factorization import factorize
 
 
 def commandExec(command):
-    if command.find('(') == -1:
+    openParenthesis = command.find('(')
+    closeParenthesis = command.find(')')
+    if (closeParenthesis == -1 or openParenthesis == -1 or closeParenthesis < openParenthesis):
         print("Enter valid operation.\n")
         return
+            
     operation = command.split('(', 1)[0]
     inputEquation = command.split('(', 1)[1][:-1]
     if ',' in inputEquation:
