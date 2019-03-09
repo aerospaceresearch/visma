@@ -240,5 +240,6 @@ def traceMat(mat):
             trace.value[0][0].extend(mat.value[i][i])
         trace.value[0][0].append(Binary('+'))
     trace.value[0][0].append(Constant('0'))
+    trace.value[0][0] = simplify(trace.value[0][0])
     trace = simplifyMatrix(trace)
     return trace
