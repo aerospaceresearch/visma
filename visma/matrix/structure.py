@@ -104,6 +104,7 @@ class SquareMat(Matrix):
             else:
                 trace.value.extend(self.value[i][i])    
             trace.value.append(Binary('+'))
+        trace.value.append(Constant('0'))    
         trace=simplify(trace)
         return trace    
 
