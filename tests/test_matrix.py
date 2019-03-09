@@ -176,7 +176,7 @@ def test_multiplyMatrix():
 
 def test_trace():
 
-    mat = getTokens(" 1, 2; \
+    mat = getTokens("[1, 2; \
                       3, 4]")
-    trace=traceMat(mat) 
-    assert trace.__str__() == "[{5.0}]"    
+    trace = traceMat(mat)
+    assert trace.__str__() == "[{5.0}]"
