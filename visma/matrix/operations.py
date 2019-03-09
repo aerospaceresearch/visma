@@ -43,6 +43,30 @@ def addMatrix(matA, matB):
     return matSum
 
 
+def subtractMatrix(matA, matB):
+    """Subtracts two matrices
+
+    Arguments:
+        matA {visma.matrix.structure.Matrix} -- matrix token
+        matB {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        matDifference {visma.matrix.structure.Matrix} -- difference matrix token
+
+    Note:
+        Make dimCheck before calling subtractMatrix
+    """
+    matDifference = Matrix()
+    matDifference.empty(matA.dim)
+    for i in range(matA.dim[0]):
+        for j in range(matA.dim[1]):
+            matDifference.value[i][j].extend(matA.value[i][j])
+            matDifference.value[i][j].append(Binary('-'))
+            matDifference.value[i][j].extend(matB.value[i][j])
+    matDifference = simplifyMatrix(matDifference)
+    return matDifference
+
+
 def multiplyMatrix(matA, matB):
     """Multiplies two matrices
 
