@@ -13,7 +13,7 @@ from visma.transform.factorization import factorize
 
 def commandExec(command):
     if command.find('(') == -1:
-        print("Please write a correct expression. \n\n")
+        print("Enter valid operation.\n")
         return
     operation = command.split('(', 1)[0]
     inputEquation = command.split('(', 1)[1][:-1]
