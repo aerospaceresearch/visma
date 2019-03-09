@@ -1,6 +1,7 @@
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, division
+from visma.io.checks import preprocessSimplification
 from tests.tester import quickTest
 
 #####################
@@ -38,6 +39,12 @@ def test_simplify():
     assert quickTest("3/2 + 4/2 = 2/4", simplifyEquation) == "3.0=0"
     assert quickTest("x/5 + x/4 = 2/y", simplifyEquation) == "0.45x-2.0y^(-1)=0"
     assert quickTest("x/y + x/x + x/x^2 + x^2/x = x/y^2 + x^2/y + x - 1", simplifyEquation) == "xy^(-1)+2.0+x^(-1.0)-xy^(-2.0)-x^(2.0)y^(-1)=0"
+
+
+def test_preprocess_simplification():
+
+    assert preprocessSimplification("4+(4+(4+1))") == "4+4+4+1"
+    assert preprocessSimplification("4-(4+(4-1))") == "4-4-4+1"
 
 
 def test_addsub():

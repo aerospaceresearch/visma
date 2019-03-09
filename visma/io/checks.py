@@ -131,6 +131,62 @@ def getVariables(lTokens, rTokens=None, variables=None):
     return variables
 
 
+def preprocessSimplification(eqn):
+    """
+    Simplifies the input equation to remove any unnecessary sqrBrackets
+    Arguments:
+        eqn {string}: The equation that is entered by the user
+
+    Returns:
+        eqn {string}: The new string after simplification
+
+    NOTE:
+        This function only removes the unnecessary brackets from the equation.
+        It does not simplify them simplify them
+
+    """
+    length = len(eqn)
+    result = [None]*length
+    index = 0
+    i = 0
+    stack = []
+    stack.append(0)
+
+    while i<length:
+        if eqn[i] == '+':
+            if stack[-1] == 1:
+                result[index] = '-'
+                index += 1
+            elif stack[-1] == 0:
+                result[index] = '+'
+                index += 1
+
+        elif eqn[i] == '-':
+            if stack[-1] == 1:
+                result[index] = '+'
+                index += 1
+            elif stack[-1] == 0:
+                result[index] = '-'
+                index += 1
+        elif (eqn[i] == '(' and i > 0):
+            if eqn[i-1] == '-':
+                x = 0 if (stack[-1] == 1) else 1
+                stack.append(x)
+            elif eqn[i - 1] == '+':
+                stack.append(stack[-1])
+        elif eqn[i] == ')':
+            stack.pop()
+        else:
+            result[index] = eqn[i]
+            index += 1
+        i += 1
+    eqn = ""
+    for i in result:
+        if i != None:
+            eqn += str(i)
+    return eqn
+
+
 def checkEquation(terms, symTokens):
     """Checks if input is a valid expression or equation
 
