@@ -1,5 +1,5 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck
-from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
+from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv, transposeMat
 from tests.tester import getTokens
 
 ####################
@@ -151,6 +151,20 @@ def test_scalarDivMatrix():
     const = 6
     matSum = scalarDiv(const, mat)
     assert matSum.__str__() == "[{8.0},{6.0};{4.0},{-0.5}]"
+
+
+def test_transposeMat():
+
+    mat = getTokens("[1, 2; \
+                    3,  4]")
+    matTranspose = transposeMat(mat)
+    assert matTranspose.__str__() == "[{1.0},{3.0};{2.0},{4.0}]"
+
+    mat = getTokens("[5,8,2;\
+                      12,30,9;\
+                      4,17,7]")
+    matTranspose = transposeMat(mat)
+    assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
 
 
 def test_multiplyMatrix():
