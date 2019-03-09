@@ -1,4 +1,4 @@
-from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isSquareMatrix
+from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isSquareMatrix, isEqual
 from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
 from tests.tester import getTokens
 from visma.matrix.structure import Matrix
@@ -61,8 +61,8 @@ def test_dimCheck():
 
 def test_multiplyCheck():
 
-    matA = getTokens("[1, 2; \
-                       x, 2; \
+    matA = getTokens("[2, x; \
+                       3, y; \
                        3, y]")
     matB = getTokens("[2, x; \
                        3, y]")
@@ -72,6 +72,21 @@ def test_multiplyCheck():
                        3, y, z]")
     matB = getTokens("[1, 2; 2, 3]")
     assert not multiplyCheck(matA, matB)
+
+
+def test_isEqual():
+
+    matA = getTokens("[1, 2; \
+                      x, z]")
+    matB = getTokens("[1, 2; \
+                      x, z]")
+
+    assert isEqual(matA, matB)
+
+    matA = getTokens("[2, x, 1; \
+                       3, y, z]")
+    matB = getTokens("[1, 2; 2, 3]")
+    assert not isEqual(matA, matB)
 
 
 #####################

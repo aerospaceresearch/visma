@@ -52,6 +52,22 @@ def multiplyCheck(matA, matB):
     return False
 
 
+def isEqual(matA, matB):
+    """Checks if the two matrices are equal
+
+    Arguments:
+        matA {visma.matrix.structure.Matrix} -- matrix token
+        matB {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        bool -- to multiply or not
+    """
+    if not dimCheck(matA, matB) or matA.__str__() != matB.__str__():
+        return False
+    else:
+        return True
+
+
 def isSquareMatrix(mat):
     """Checks if matrix is square
 
