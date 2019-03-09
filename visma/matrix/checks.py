@@ -50,3 +50,17 @@ def multiplyCheck(matA, matB):
     if matA.dim[1] == matB.dim[0]:
         return True
     return False
+
+
+def isSquareMatrix(mat):
+    """Checks if matrix is square
+
+    Arguments:
+        mat {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        bool -- if dimensions same or not
+    """
+    if isMatrix(mat) and (mat.dim[0] == mat.dim[1]):
+        return True
+    return False

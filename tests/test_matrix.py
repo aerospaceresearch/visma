@@ -1,4 +1,4 @@
-from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck
+from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isSquareMatrix
 from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv, transposeMat
 from tests.tester import getTokens
 
@@ -29,6 +29,18 @@ def test_isMatrix():
                       1, 3; \
                       1]")
     assert mat == []  # not a matrix; returns empty matrix
+
+
+def test_isSquareMatrix():
+
+    mat = getTokens("[1, 2; \
+                      x, z]")
+    assert isSquareMatrix(mat)
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1]")
+    assert not mat
 
 
 def test_dimCheck():
