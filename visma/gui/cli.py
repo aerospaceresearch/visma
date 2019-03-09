@@ -82,7 +82,7 @@ def commandExec(command):
         lhs, rhs = getLHSandRHS(tokens)
         lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
     else:
-        print("Please write a correct expression. \n\n")
+        print("Enter valid operation.\n")
         return
     printOnCLI(equationTokens, operation, comments, solutionType)
 
