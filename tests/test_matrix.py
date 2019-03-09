@@ -1,5 +1,5 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck
-from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
+from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv, traceMat
 from tests.tester import getTokens
 
 ####################
@@ -173,3 +173,10 @@ def test_multiplyMatrix():
     # assert matPro.__str__() == ""
     """
     pass
+
+def test_trace():
+
+    mat = getTokens(" 1, 2; \
+                      3, 4]")
+    trace=traceMat(mat) 
+    assert trace.__str__() == "[{5.0}]"    

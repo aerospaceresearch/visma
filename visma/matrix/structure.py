@@ -1,6 +1,4 @@
 from visma.functions.constant import Constant
-from visma.functions.structure import Expression
-from visma.functions.operator import Binary
 
 
 class Matrix(object):
@@ -90,23 +88,6 @@ class SquareMat(Matrix):
 
     def determinant(self):
         pass
-
-    def trace(self):
-        """Returns the trace of a square matrix (sum of diagonal elements)
-        
-        Returns: 
-            trace {visma.functions.structure.Expression} -- Expression token
-        """
-        from visma.simplify.simplify import simplify
-        for i in range(self.dim[0]):
-            if len(self.value[i][i]) != 1:
-                trace.value.append(Expression(self.value[i][i]))
-            else:
-                trace.value.extend(self.value[i][i])    
-            trace.value.append(Binary('+'))
-        trace.value.append(Constant('0'))    
-        trace=simplify(trace)
-        return trace    
 
 
 class IdenMat(SquareMat):
