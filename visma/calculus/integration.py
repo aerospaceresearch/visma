@@ -69,7 +69,7 @@ def integrateTokens(funclist, wrtVar):
         else:
             newfunc = []
             while(isinstance(func, Function)):
-                commentsNew[0] += r"$" + "\int \ " + "( " + func.__str__() + ")" + " d" + wrtVar + r"$"
+                commentsNew[0] += r"$" + r"\int \ " + r"( " + func.__str__() + ")" + r" d" + wrtVar + r"$"
                 funcCopy = copy.deepcopy(func)
                 if wrtVar in funcCopy.functionOf():
                     if not isinstance(funcCopy, Constant):
@@ -100,10 +100,10 @@ def integrateTokens(funclist, wrtVar):
                                     funcCopy.coefficient /= funcCopy.power[i]
 
                         if log:
-                            commentsNew[0] += r"$" + "= " + funcCopy[0].__str__() + "*" + funcCopy[2].__str__() + "\ ;\ " + r"$"
+                            commentsNew[0] += r"$" + r"= " + funcCopy[0].__str__() + r"*" + funcCopy[2].__str__() + r"\ ;\ " + r"$"
                             newfunc.extend(funcCopy)
                         else:
-                            commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
+                            commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
                             newfunc.append(funcCopy)
                 else:
                     if isinstance(funcCopy, Variable):
@@ -116,7 +116,7 @@ def integrateTokens(funclist, wrtVar):
                         funcCopy.value.append(wrtVar)
                         funcCopy.power.append(1)
                     newfunc.append(funcCopy)
-                    commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
+                    commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
 
                 if func.operand is None:
                     break
