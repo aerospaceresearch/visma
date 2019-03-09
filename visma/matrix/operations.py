@@ -234,10 +234,10 @@ def traceMat(mat):
     trace.empty([1,1])
     for i in range(mat.dim[0]):
         if len(mat.value[i][i]) != 1:
-            trace.value.append(Expression(mat.value[i][i]))
+            trace.value[0][0].append(Expression(mat.value[i][i]))
         else:
-            trace.value.extend(mat.value[i][i])    
-        trace.value.append(Binary('+'))
-    trace.value.append(Constant('0'))    
+            trace.value[0][0].extend(mat.value[i][i])    
+        trace.value[0][0].append(Binary('+'))
+    trace.value[0][0].append(Constant('0'))    
     trace=simplify(trace)
     return trace        
