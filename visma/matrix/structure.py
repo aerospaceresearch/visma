@@ -65,9 +65,6 @@ class Matrix(object):
         else:
             return False
 
-    def transpose(self, RHS, wrtVar=None):
-        pass
-
     def inverse(self):
         pass
 

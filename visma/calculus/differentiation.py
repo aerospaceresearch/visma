@@ -79,7 +79,7 @@ def differentiateTokens(funclist, wrtVar):
                                         funcCopy.value = funcCopy.coefficient
                                         funcCopy.coefficient = 1
                                         funcCopy.power = 1
-                        commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
+                        commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
                         newfunc.append(funcCopy)
                     func.differentiate()
                     if not(isinstance(func, Constant) and func.value == 1):
@@ -87,7 +87,7 @@ def differentiateTokens(funclist, wrtVar):
                 else:
                     funcCopy = (Zero())
                     newfunc.append(funcCopy)
-                    commentsNew[0] += r"$" + "= " + funcCopy.__str__() + "\ ;\ " + r"$"
+                    commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
 
                 if func.operand is None:
                     break
