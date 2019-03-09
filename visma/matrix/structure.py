@@ -1,6 +1,5 @@
 from visma.functions.constant import Constant
 from visma.functions.structure import Expression
-from visma.simplify.simplify import simplify
 from visma.functions.operator import Binary
 
 
@@ -98,6 +97,7 @@ class SquareMat(Matrix):
         Returns: 
             trace {visma.functions.structure.Expression} -- Expression token
         """
+        from visma.simplify.simplify import simplify
         for i in range(self.dim[0]):
             if len(self.value[i][i]) != 1:
                 trace.value.append(Expression(self.value[i][i]))
