@@ -152,7 +152,7 @@ def preprocessSimplification(eqn):
     stack = []
     stack.append(0)
 
-    while i<length:
+    while i < length:
         if eqn[i] == '+':
             if stack[-1] == 1:
                 result[index] = '-'
@@ -182,7 +182,7 @@ def preprocessSimplification(eqn):
         i += 1
     eqn = ""
     for i in result:
-        if i != None:
+        if i is not None:
             eqn += str(i)
     return eqn
 
