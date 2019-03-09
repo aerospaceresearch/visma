@@ -66,17 +66,3 @@ def isEqual(matA, matB):
         return False
     else:
         return True
-
-
-def isSquareMatrix(mat):
-    """Checks if matrix is square
-
-    Arguments:
-        mat {visma.matrix.structure.Matrix} -- matrix token
-
-    Returns:
-        bool -- if dimensions same or not
-    """
-    if isMatrix(mat) and (mat.dim[0] == mat.dim[1]):
-        return True
-    return False
