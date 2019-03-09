@@ -48,9 +48,9 @@ class Sqrt(Operator):
     def __str__(self):
         represent = ""
         if self.operand.value == -1:
-            represent += "\iota "
+            represent += r"\iota "
         else:
-            represent += "\sqrt" + self.operand.__str__()
+            represent += r"\sqrt" + self.operand.__str__()
         return represent
 
 
