@@ -1,5 +1,5 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
-from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv, traceMat
+from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
 from tests.tester import getTokens
 
 ####################
@@ -12,8 +12,8 @@ def test_strMatrix():
     mat = getTokens("[1+x, 2; \
                       3  , 4]")
     assert mat.__str__() == "[{1.0}+{x},{2.0};{3.0},{4.0}]"
-    
-    
+
+ 
 #################
 # matrix.checks #
 #################
