@@ -1,6 +1,6 @@
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
-from visma.io.checks import checkTypes
+from visma.io.checks import checkTypes, preprocessSimplification
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import tokensToString
 from visma.simplify.simplify import simplify, simplifyEquation
@@ -18,6 +18,7 @@ def commandExec(command):
         varName = inputEquation.split(',')[1]
         inputEquation = inputEquation.split(',')[0]
 
+    inputEquation = preprocessSimplification(str(inputEquation))
     lhs = []
     rhs = []
     solutionType = ''

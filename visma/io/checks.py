@@ -1,6 +1,7 @@
 import math
 import copy
 from visma.config.values import ROUNDOFF
+from visma.gui import logger
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
@@ -129,6 +130,73 @@ def getVariables(lTokens, rTokens=None, variables=None):
         elif isinstance(token, Expression):
             variables.extend(getVariables(token.tokens, [], variables))
     return variables
+
+
+def preprocessSimplification(eqn):
+    """
+    Simplifies the input equation to remove any unnecessary sqrBrackets
+    Arguments:
+        eqn {string}: The equation that is entered by the user
+     Returns:
+        eqn {string}: The new string after simplification
+     NOTE:
+        This function only removes the unnecessary brackets from the equation.
+        It does not simplify them simplify them
+     """
+    length = len(eqn)
+    result = [None]*length
+    index = 0
+    i = 0
+    stack = []
+    stack.append(0)
+
+    while i < length:
+        if eqn[i] == '+':
+            if stack[-1] == 1:
+                result[index] = '-'
+                index += 1
+            elif stack[-1] == 0:
+                result[index] = '+'
+                index += 1
+
+        elif eqn[i] == '-':
+            if stack[-1] == 1:
+                result[index] = '+'
+                index += 1
+            elif stack[-1] == 0:
+                result[index] = '-'
+                index += 1
+        elif (eqn[i] == '(' and i > 0):
+            if eqn[i-1] == '-':
+                x = 0 if (stack[-1] == 1) else 1
+                stack.append(x)
+
+            elif eqn[i - 1] == '+':
+                stack.append(stack[-1])
+
+            elif eqn[i-1] == '*' or eqn[i-1] == '/':
+                while eqn[i] != ')':
+                    result[index] = eqn[i]
+                    index += 1
+                    i += 1
+                result[index] = eqn[i]
+                index += 1
+                i -= 1
+
+        elif eqn[i] == ')':
+            try:
+                stack.pop()
+            except IndexError:
+                logger.warn("Empty stack")
+        else:
+            result[index] = eqn[i]
+            index += 1
+        i += 1
+    eqn = ""
+    for i in result:
+        if i is not None:
+            eqn += str(i)
+    return eqn
 
 
 def checkEquation(terms, symTokens):
