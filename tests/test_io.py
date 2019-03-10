@@ -34,18 +34,27 @@ def test_areTokensEqual():
 
 
 def test_checkEquation():
+    test1 = False
+    test2 = False
+    test3 = False
     termA = ["(", ")"]
     symbTokenA = []
     boolean, msg = checkEquation(termA, symbTokenA)
-    assert (boolean == False and msg == "Empty Brackets.")
+    if (boolean == False and msg == "Empty Brackets."):
+        test1 = True
+    assert test1
     termB = ["[", "["]
     symbTokenB = []
     boolean, msg = checkEquation(termB, symbTokenB)
-    assert (boolean == False and msg == "Too many '['")
-    termC = [")","("]
+    if (boolean == False and msg == "Too many '['"):
+        test2 = True
+    assert test2
+    termC = [")", "("]
     symbTokenC = []
     boolean, msg = checkEquation(termC, symbTokenC)
-    assert (boolean == False and msg == "Check the order of closing & opening Brackets.")
+    if (boolean == False and msg == "Check the order of closing & opening Brackets."):
+        test3 = True
+    assert test3
 
 
 def test_isTokenInToken():
