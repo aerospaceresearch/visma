@@ -32,10 +32,12 @@ def showSteps(workspace):
     Arguments:
         workspace {QtWidgets.QWidget} -- main layout
     """
-    workspace.stepsfigure.suptitle(workspace.output, x=0.35, y=0.98,
+    workspace.stepsfigure.suptitle(workspace.output, y=0.98,
                                    horizontalalignment='center',
                                    verticalalignment='top', size=qApp.font().pointSize()*workspace.stepsFontSize)
     workspace.stepscanvas.draw()
+    hbar = workspace.scroll.horizontalScrollBar()
+    hbar.setValue((hbar.minimum()+hbar.maximum())/2)
 
 
 ###############
