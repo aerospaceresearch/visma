@@ -32,6 +32,23 @@ def test_traceMat():
     assert tokensToString(trace) == "7.0"
 
 
+def test_isSquare():
+    mat = getTokens("[1, 0; \
+                      2, 1]")
+    assert Matrix.isSquare(mat)
+
+    mat = getTokens("[1, 0, 3; \
+                      2, 1, 2]")
+    assert not Matrix.isSquare(mat)
+
+
+def test_transposeMat():
+    mat = getTokens("[1, 3; \
+                      2, 6]")
+    matRes = Matrix.transposeMat(mat)
+    assert matRes.__str__() == "[{1.0},{2.0};{3.0},{6.0}]"
+
+
 #################
 # matrix.checks #
 #################
