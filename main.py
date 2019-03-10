@@ -9,8 +9,14 @@ def init():
     logger.setLevel(10)
     logger.setLogName('main')
     logger.info('Initialising VisMa...(currently in CLI mode)')
-    cin = input('>>> ')
-    while(cin != 'exit'):
+    userInterface = "-----------------------------------------------------------------------------\n" \
+                    "| simplify( Equation )   ->> Simplifies the given equation.                 |\n" \
+                    "|                                                                           |\n" \
+                    "| exit     ->> Exits the Program.                                           |\n" \
+                    "-----------------------------------------------------------------------------\n" \
+                    ">>> "
+    cin = input(userInterface)
+    while cin != 'exit':
         if cin == 'gui':
             initGUI()
         else:
@@ -20,7 +26,7 @@ def init():
                 logger.error("Invalid Expression: %s ", cin)
                 print("Invalid Expression")
         cin = input('>>> ')
-    if (cin == 'exit'):
+    if cin == 'exit':
         logger.info('Exiting VisMa...')
 
 
