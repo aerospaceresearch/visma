@@ -171,7 +171,6 @@ def preprocessSimplification(eqn):
             if eqn[i-1] == '-':
                 x = 0 if (stack[-1] == 1) else 1
                 stack.append(x)
-<<<<<<< HEAD
 
             elif eqn[i - 1] == '+':
                 stack.append(stack[-1])
@@ -190,12 +189,7 @@ def preprocessSimplification(eqn):
                 stack.pop()
             except IndexError:
                 logger.warn("Empty stack")
-=======
-            elif eqn[i - 1] == '+':
-                stack.append(stack[-1])
-        elif eqn[i] == ')':
-            stack.pop()
->>>>>>> 466d724bc7d690c6454970e8b6b0eade2c731b0e
+
         else:
             result[index] = eqn[i]
             index += 1
