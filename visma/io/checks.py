@@ -137,12 +137,24 @@ def preprocessSimplification(eqn):
     Simplifies the input equation to remove any unnecessary sqrBrackets
     Arguments:
         eqn {string}: The equation that is entered by the user
+<<<<<<< HEAD
      Returns:
         eqn {string}: The new string after simplification
      NOTE:
         This function only removes the unnecessary brackets from the equation.
         It does not simplify them simplify them
      """
+=======
+
+    Returns:
+        eqn {string}: The new string after simplification
+
+    NOTE:
+        This function only removes the unnecessary brackets from the equation.
+        It does not simplify them simplify them
+
+    """
+>>>>>>> 466d724bc7d690c6454970e8b6b0eade2c731b0e
     length = len(eqn)
     result = [None]*length
     index = 0
@@ -170,6 +182,7 @@ def preprocessSimplification(eqn):
             if eqn[i-1] == '-':
                 x = 0 if (stack[-1] == 1) else 1
                 stack.append(x)
+<<<<<<< HEAD
 
             elif eqn[i - 1] == '+':
                 stack.append(stack[-1])
@@ -188,6 +201,12 @@ def preprocessSimplification(eqn):
                 stack.pop()
             except IndexError:
                 logger.warn("Empty stack")
+=======
+            elif eqn[i - 1] == '+':
+                stack.append(stack[-1])
+        elif eqn[i] == ')':
+            stack.pop()
+>>>>>>> 466d724bc7d690c6454970e8b6b0eade2c731b0e
         else:
             result[index] = eqn[i]
             index += 1

@@ -45,7 +45,10 @@ def test_preprocess_simplification():
 
     assert preprocessSimplification("4+(4+(4+1))") == "4+4+4+1"
     assert preprocessSimplification("4-(4+(4-1))") == "4-4-4+1"
+<<<<<<< HEAD
     assert preprocessSimplification("4-(4*(4-1))") == "4-4*(4-1)"
+=======
+>>>>>>> 466d724bc7d690c6454970e8b6b0eade2c731b0e
 
 
 def test_addsub():
