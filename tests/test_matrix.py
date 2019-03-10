@@ -1,6 +1,9 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
-from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv, traceMat
+from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
 from tests.tester import getTokens
+from visma.matrix.structure import SquareMat, Matrix
+from visma.io.parser import tokensToString
+
 
 ####################
 # matrix.structure #
@@ -12,6 +15,21 @@ def test_strMatrix():
     mat = getTokens("[1+x, 2; \
                       3  , 4]")
     assert mat.__str__() == "[{1.0}+{x},{2.0};{3.0},{4.0}]"
+
+
+def test_traceMat():
+
+    mat = getTokens("[1, 2; \
+                      3, 4]")
+    Matrix.isSquare(mat)
+    trace = SquareMat.traceMat(mat)
+    assert tokensToString(trace) == "5.0"
+
+    mat = getTokens("[7, 5; \
+                      2, 0]")
+    Matrix.isSquare(mat)
+    trace = SquareMat.traceMat(mat)
+    assert tokensToString(trace) == "7.0"
 
 
 #################
@@ -188,11 +206,3 @@ def test_multiplyMatrix():
     # assert matPro.__str__() == ""
     """
     pass
-
-
-def test_trace():
-
-    mat = getTokens("[1, 2; \
-                      3, 4]")
-    trace = traceMat(mat)
-    assert trace.__str__() == "[{5.0}]"
