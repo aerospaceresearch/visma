@@ -39,10 +39,10 @@ def graphPlot(workspace, again):
     variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
     if (dim == 1 and eqType == "expression") or ((dim == 2) and eqType == "equation"):
-        if again == True:
+        if again:
             variables.append('f(' + variables[0] + ')')
-            graphVars, func = plotIn3D(LHStok, RHStok, variables, axisRange)    
-        else:   
+            graphVars, func = plotIn3D(LHStok, RHStok, variables, axisRange)
+        else:
             graphVars, func = plotIn2D(LHStok, RHStok, variables, axisRange)
         if dim == 1:
             variables.append('f(' + variables[0] + ')')
@@ -215,6 +215,7 @@ def plotFigure3D(workspace):
     layout.addWidget(workspace.toolbar3D)
     return layout
 
+
 def renderPlot(workspace, graphVars, func, variables):
     """Renders plot for functions in 2D and 3D
 
@@ -293,6 +294,7 @@ def plot(workspace):
     if ((dim == 2) and eqType == "equation"):
             graphVars, func, variables = graphPlot(workspace, True)
             renderPlot(workspace, graphVars, func, variables)
+
 
 def refreshPlot(workspace):
     if workspace.resultOut is True and workspace.showPlotter is True:
