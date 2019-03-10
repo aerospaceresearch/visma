@@ -292,8 +292,8 @@ def plot(workspace):
 
     # Handles case when a equation (like x^2 + y^2 = 5) can be rendered in 2D as well as 3D.
     if ((dim == 2) and eqType == "equation"):
-            graphVars, func, variables = graphPlot(workspace, True)
-            renderPlot(workspace, graphVars, func, variables)
+        graphVars, func, variables = graphPlot(workspace, True)
+        renderPlot(workspace, graphVars, func, variables)
 
 
 def refreshPlot(workspace):
