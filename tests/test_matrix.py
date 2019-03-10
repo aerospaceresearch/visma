@@ -196,4 +196,3 @@ def test_trace():
                       3, 4]")
     trace = traceMat(mat)
     assert trace.__str__() == "[{5.0}]"
-
