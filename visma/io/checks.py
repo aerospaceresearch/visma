@@ -143,7 +143,6 @@ def preprocessSimplification(eqn):
         This function only removes the unnecessary brackets from the equation.
         It does not simplify them simplify them
     """
-    
     length = len(eqn)
     result = [None]*length
     index = 0
