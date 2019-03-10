@@ -40,19 +40,19 @@ def test_checkEquation():
     termA = ["(", ")"]
     symbTokenA = []
     boolean, msg = checkEquation(termA, symbTokenA)
-    if (boolean == False and msg == "Empty Brackets."):
+    if (boolean is False) and (msg == "Empty Brackets."):
         test1 = True
     assert test1
     termB = ["[", "["]
     symbTokenB = []
     boolean, msg = checkEquation(termB, symbTokenB)
-    if (boolean == False and msg == "Too many '['"):
+    if (boolean is False) and (msg == "Too many '['"):
         test2 = True
     assert test2
     termC = [")", "("]
     symbTokenC = []
     boolean, msg = checkEquation(termC, symbTokenC)
-    if (boolean == False and msg == "Check the order of closing & opening Brackets."):
+    if (boolean is False) and (msg == "Check the order of closing & opening Brackets."):
         test3 = True
     assert test3
 
