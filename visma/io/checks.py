@@ -131,6 +131,77 @@ def getVariables(lTokens, rTokens=None, variables=None):
     return variables
 
 
+def checkSyntax(eqnString):
+    """Checks if input follows standard syntax or not
+
+    Arguments:
+        eqnString {string} -- equation to be executed
+
+    Returns:
+        bool -- if valid or not
+    """
+    if (eqnString.count('(') != eqnString.count(')')):
+        return False
+
+    # Clean equation i.e removing whitespaces
+    eqnString = eqnString.replace(" ", "")
+    stringLen = len(eqnString)
+
+    # For now explicitly defining function of length 2, as there is only one such
+    # function and no point in iterating through whole list of function for that
+    funclen = {2: ['ln'], 3: [], 4: [], 5: []}
+
+    # List to check if decimal point is preceded by an integer
+    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    operators = ['-', '+', '*', '/', '=', '<', '>', '<=', '>=', '^', '(', '[', ',', ';']
+
+    for func in funcs:
+        if (len(func) in [3, 4, 5]):
+            funclen[len(func)].append(func)
+    for func in funcSyms:
+        if (len(func) in [3, 4, 5]):
+            funclen[len(func)].append(func)
+
+    i = 2  # length of function to be checked starting from 2
+    while (i <= 5):
+        if (stringLen >= 3):  # Any function will need atleast 3 (example ln2) or more chracters to be a valid equation
+            for index, val in enumerate(eqnString):
+                if (index < stringLen+1-i):
+                    if (eqnString[index:index+i] in funclen[i]):
+                        validCheck1 = bool(eqnString[index+i] == '(') and bool(eqnString[index+i+1] != ')')
+                        validCheck2 = bool(eqnString[index+i:].count('(') <= eqnString[index+i:].count(')'))
+                        if (not(validCheck1 * validCheck2)):
+                            return False
+                else:
+                    break
+            i = i + 1
+        else:
+            break
+
+    for index, val in enumerate(eqnString):
+        if (val == '.'):
+            invalidCheck1 = bool((index == 0) or (index == stringLen-1))
+            invalidCheck2 = bool(eqnString[index-1] not in numbers) or bool(eqnString[index+1] not in numbers)
+            if (invalidCheck1 + invalidCheck2):
+                return False
+
+        elif (val == ')'):
+            if (index < stringLen-2):
+                invalidCheck1 = bool(index == 0)
+                invalidCheck2 = bool(eqnString[index+1] == '(')
+                invalidCheck3 = False
+                if (eqnString[index+2] == '('):
+                    invalidCheck3 = bool(eqnString[index+1] not in operators)
+                if (invalidCheck1 + invalidCheck2 + invalidCheck3):
+                    return False
+            elif (index == stringLen-2):
+                invalidCheck1 = bool(eqnString[index+1] == '(')
+                invalidCheck2 = bool(eqnString[index+1] in operators)
+                if (invalidCheck1 + invalidCheck2):
+                    return False
+    return True
+
+
 def checkEquation(terms, symTokens):
     """Checks if input is a valid expression or equation
 
