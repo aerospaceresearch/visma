@@ -1,4 +1,8 @@
 from visma.functions.constant import Constant
+from visma.functions.operator import Multiply
+from visma.functions.operator import Minus
+from visma.functions.operator import Plus
+from visma.functions.structure import Expression
 import numpy as np
 
 
@@ -89,21 +93,26 @@ class SquareMat(Matrix):
 
     def determinant(self, mat=None):
         if mat is None:
+            self.dimension()
             mat = np.array(self.value)
         if(mat.shape[0] > 2):
-            ans = 0
+            ans = []
             for i in range(mat.shape[0]):
                 mat1 = mat
                 mat1 = np.concatenate((mat[1:, :i], mat[1::, i+1:]), axis=1)
-                a = self.determinant(mat1)
-                a = a*mat[0][i]
+                a = Expression()
+                a.tokens = self.determinant(mat1)
+                m=Multiply()
+                a = [a] + [m] + mat[0][i].tolist()
                 if(i % 2 == 0):
-                    ans += a
+                    ans = ans + [Plus()] + a
                 else:
-                    ans -= a
+                    ans = ans + [Minus()] + a
         elif(mat.shape[0] == 2):
-            ans = 0
-            ans = mat[0][0]*mat[1][1]-mat[0][1]*mat[1][0]
+            a=Multiply()
+            b=Minus()
+            mat=mat.tolist()
+            ans = mat[0][0]+[a]+mat[1][1]+[b]+mat[0][1]+[a]+mat[1][0]
         else:
             ans = mat
         return ans
