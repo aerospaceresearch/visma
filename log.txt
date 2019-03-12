@@ -1,5 +1,0 @@
-2019-03-09 23:00 - main - INFO: Initialising VisMa...(currently in CLI mode)
-2019-03-09 23:00 - main - ERROR: Invalid Expression: 2+5 
-2019-03-09 23:00 - main - ERROR: Invalid Expression: 2+5= 
-2019-03-09 23:00 - main - ERROR: Invalid Expression: 2 
-2019-03-09 23:00 - main - ERROR: Invalid Expression: (2+5) 
