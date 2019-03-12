@@ -1,4 +1,4 @@
-from visma.io.checks import getVariables, areTokensEqual, isTokenInToken
+from visma.io.checks import getVariables, areTokensEqual, isTokenInToken, checkSyntax
 from visma.io.parser import tokensToString
 from visma.io.tokenize import getTerms, normalize
 from visma.functions.operator import Operator, Plus
@@ -52,6 +52,39 @@ def test_isTokenInToken():
     assert isTokenInToken(varA, varC)
     assert not isTokenInToken(varA, varD)
     assert not isTokenInToken(varA, varE)
+
+
+def test_checkSyntax():
+    test1 = False
+    test2 = False
+    test3 = False
+    test4 = False
+    test5 = False
+    eqn1 = "2 + sin(2)"
+    boolean, log = checkSyntax(eqn1)
+    if (boolean is True and log == "Standard syntax is followed"):
+        test1 = True
+    assert test1
+    eqn2 = "2 + (log2)^(e+2) + sinh(x + x^2)"
+    boolean, log = checkSyntax(eqn2)
+    if (boolean is False and log == "For function 'log', arguments are not enclosed within parentheses"):
+        test2 = True
+    assert test2
+    eqn3 = "0.2 + .5"
+    boolean, log = checkSyntax(eqn3)
+    if (boolean is False and log == "Decimal point must be between two integers"):
+        test3 = True
+    assert test3
+    eqn4 = "2 + (x+2)(x+3)"
+    boolean, log = checkSyntax(eqn4)
+    if (boolean is False and log == "There must be an operator between close parenthesis and open parenthesis"):
+        test4 = True
+    assert test4
+    eqn5 = "2 + (x+2)*(x+3)"
+    boolean, log = checkSyntax(eqn5)
+    if (boolean is True and log == "Standard syntax is followed"):
+        test5 = True
+    assert test5
 
 
 #############
