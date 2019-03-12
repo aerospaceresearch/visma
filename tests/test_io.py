@@ -1,4 +1,4 @@
-from visma.io.checks import getVariables, areTokensEqual, isTokenInToken, checkEquation
+from visma.io.checks import getVariables, areTokensEqual, isTokenInToken, checkEquation, checkSyntax
 from visma.io.parser import tokensToString
 from visma.io.tokenize import getTerms, normalize
 from visma.functions.operator import Operator, Plus
@@ -31,6 +31,39 @@ def test_areTokensEqual():
     opA.value = '+'
     opB = Plus()
     assert areTokensEqual(opA, opB)
+
+
+def test_checkSyntax():
+    test1 = False
+    test2 = False
+    test3 = False
+    test4 = False
+    test5 = False
+    eqn1 = "2 + sin(2)"
+    boolean = checkSyntax(eqn1)
+    if (boolean is True):
+        test1 = True
+    assert test1
+    eqn2 = "2 + (log2)^(e+2) + sinh(x + x^2)"
+    boolean = checkSyntax(eqn2)
+    if (boolean is False):
+        test2 = True
+    assert test2
+    eqn3 = "0.2 + .5"
+    boolean = checkSyntax(eqn3)
+    if (boolean is False):
+        test3 = True
+    assert test3
+    eqn4 = "2 + (x+2)(x+3)"
+    boolean = checkSyntax(eqn4)
+    if (boolean is False):
+        test4 = True
+    assert test4
+    eqn5 = "2 + (x+2)*(x+3)"
+    boolean = checkSyntax(eqn5)
+    if (boolean is True):
+        test5 = True
+    assert test5
 
 
 def test_checkEquation():

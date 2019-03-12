@@ -141,6 +141,7 @@ def checkSyntax(eqnString):
         bool -- if valid or not
     """
     if (eqnString.count('(') != eqnString.count(')')):
+        # "Unequal no. of parentheses"
         return False
 
     # Clean equation i.e removing whitespaces
@@ -162,27 +163,41 @@ def checkSyntax(eqnString):
         if (len(func) in [3, 4, 5]):
             funclen[len(func)].append(func)
 
-    i = 2  # length of function to be checked starting from 2
-    while (i <= 5):
-        if (stringLen >= 3):  # Any function will need atleast 3 (example ln2) or more chracters to be a valid equation
+    lenCheck = 2  # length of function to be checked starting from 2
+    while (lenCheck <= 5):
+        if (stringLen >= 2):  # Any function will need atleast 2 characters to be called. Example simplify(ln)
             for index, val in enumerate(eqnString):
-                if (index < stringLen+1-i):
-                    if (eqnString[index:index+i] in funclen[i]):
-                        validCheck1 = bool(eqnString[index+i] == '(') and bool(eqnString[index+i+1] != ')')
-                        validCheck2 = bool(eqnString[index+i:].count('(') <= eqnString[index+i:].count(')'))
-                        if (not(validCheck1 * validCheck2)):
+                if (index < stringLen + 1 - lenCheck):
+                    if (eqnString[index:index+lenCheck] in funclen[lenCheck]):
+                        if (stringLen < lenCheck + 3):
+                            # "Function of length {} cannot exist in a string of length {}. Example: sin(2)".format(lenCheck, stringLen)
                             return False
+                        elif (eqnString[index:index+lenCheck+1] in funclen[lenCheck+1]):
+                            validCheck1 = bool(eqnString[index+lenCheck+1] == '(') and bool(eqnString[index+lenCheck+2] != ')')
+                            validCheck2 = bool(eqnString[index+lenCheck+1:].count('(') <= eqnString[index+lenCheck+1:].count(')'))
+                            if (not(validCheck1 * validCheck2)):
+                                # "Function arguments must be enclosed within non-empty parentheses"
+                                return False
+                        else:
+                            validCheck1 = bool(eqnString[index+lenCheck] == '(') and bool(eqnString[index+lenCheck+1] != ')')
+                            validCheck2 = bool(eqnString[index+lenCheck:].count('(') <= eqnString[index+lenCheck:].count(')'))
+                            if (not(validCheck1 * validCheck2)):
+                                # "Function arguments must be enclosed within non-empty parentheses"
+                                return False
                 else:
                     break
-            i = i + 1
+            lenCheck += 1
         else:
             break
 
     for index, val in enumerate(eqnString):
         if (val == '.'):
-            invalidCheck1 = bool((index == 0) or (index == stringLen-1))
-            invalidCheck2 = bool(eqnString[index-1] not in numbers) or bool(eqnString[index+1] not in numbers)
-            if (invalidCheck1 + invalidCheck2):
+            if (index == 0) or (index == stringLen-1):
+                # "Decimal point must be between two numbers"
+                return False
+            invalidCheck = bool(eqnString[index-1] not in numbers) or bool(eqnString[index+1] not in numbers)
+            if (invalidCheck):
+                # "Decimal point must be between two numbers"
                 return False
 
         elif (val == ')'):
@@ -190,14 +205,16 @@ def checkSyntax(eqnString):
                 invalidCheck1 = bool(index == 0)
                 invalidCheck2 = bool(eqnString[index+1] == '(')
                 invalidCheck3 = False
-                if (eqnString[index+2] == '('):
+                if (eqnString[index+2] == '(' or eqnString[index+2] == '['):
                     invalidCheck3 = bool(eqnString[index+1] not in operators)
                 if (invalidCheck1 + invalidCheck2 + invalidCheck3):
+                    # "There must be an operator between close parenthesis and open parenthesis. Example: )+("
                     return False
             elif (index == stringLen-2):
                 invalidCheck1 = bool(eqnString[index+1] == '(')
-                invalidCheck2 = bool(eqnString[index+1] in operators)
+                invalidCheck2 = bool(eqnString[index+1] in operators and eqnString[index+1] != ';')
                 if (invalidCheck1 + invalidCheck2):
+                    # "Open parenthesis or an operator cannot be at the end of an equation"
                     return False
     return True
 
