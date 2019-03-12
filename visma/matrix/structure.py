@@ -1,4 +1,5 @@
 from visma.functions.constant import Constant
+from visma.functions.operator import Binary
 
 
 class Matrix(object):
@@ -129,6 +130,24 @@ class SquareMat(Matrix):
 
     def determinant(self):
         pass
+
+    def traceMat(self):
+        """Returns the trace of a square matrix (sum of diagonal elements)
+
+        Arguments:
+            mat {visma.matrix.structure.Matrix} -- matrix token
+
+        Returns:
+            trace {visma.matrix.structure.Matrix} -- string token
+        """
+        from visma.simplify.simplify import simplify
+        trace = []
+        for i in range(self.dim[0]):
+            trace.extend(self.value[i][i])
+            trace.append(Binary('+'))
+        trace.append(Constant(0))
+        trace, _, _, _, _ = simplify(trace)
+        return trace
 
 
 class DiagMat(SquareMat):
