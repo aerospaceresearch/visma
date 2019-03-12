@@ -102,17 +102,17 @@ class SquareMat(Matrix):
                 mat1 = np.concatenate((mat[1:, :i], mat[1::, i+1:]), axis=1)
                 a = Expression()
                 a.tokens = self.determinant(mat1)
-                m=Multiply()
+                m = Multiply()
                 a = [a] + [m] + mat[0][i].tolist()
                 if(i % 2 == 0):
                     ans = ans + [Plus()] + a
                 else:
                     ans = ans + [Minus()] + a
         elif(mat.shape[0] == 2):
-            a=Multiply()
-            b=Minus()
-            mat=mat.tolist()
-            ans = mat[0][0]+[a]+mat[1][1]+[b]+mat[0][1]+[a]+mat[1][0]
+            a = Multiply()
+            b = Minus()
+            mat = mat.tolist()
+            ans = mat[0][0] + [a] + mat[1][1] + [b] + mat[0][1] + [a] + mat[1][0]
         else:
             ans = mat
         return ans

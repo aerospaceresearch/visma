@@ -113,3 +113,11 @@ def test_multiplyMatrix():
     # assert matPro.__str__() == ""
     """
     pass
+
+
+def test_determinant(mat):
+    mat = getTokens(mat)
+    if mat.isSquare():
+        return mat.determinant()
+    else:
+        return 'Invalid matrix'
