@@ -167,6 +167,6 @@ class IdenMat(DiagMat):
     """
 
     def __init__(self, dim):
-        super().__init__(dim, ["1"]*dim[0])
+        super().__init__(dim, [[Constant(1)]]*dim[0])
         for i in range(0, dim[0]):
             self.value[i][i] = Constant(1)

@@ -1,6 +1,7 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
 from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
 from visma.matrix.structure import DiagMat
+from visma.functions.constant import Constant
 from tests.tester import getTokens
 
 ####################
@@ -56,7 +57,7 @@ def test_isDiagonal():
                       1, 4]")
     assert not mat.isDiagonal()
 
-    mat = DiagMat([3, 3], [['1'], ['5'], ['2']])
+    mat = DiagMat([3, 3], [[Constant(1)], [Constant(5)], [Constant(2)]])
     assert mat.isDiagonal()
 
 
