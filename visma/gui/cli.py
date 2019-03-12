@@ -78,9 +78,6 @@ def commandExec(command):
     elif operation == 'differentiate':
         lhs, rhs = getLHSandRHS(tokens)
         lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
-    else:
-        print("Please write a correct expression. \n\n")
-        return
     printOnCLI(equationTokens, operation, comments, solutionType)
 
 

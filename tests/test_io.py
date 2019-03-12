@@ -1,4 +1,5 @@
 from visma.io.checks import getVariables, areTokensEqual, isTokenInToken, checkEquation, checkSyntax
+from visma.io.checks import getVariables, areTokensEqual, isTokenInToken
 from visma.io.parser import tokensToString
 from visma.io.tokenize import getTerms, normalize
 from visma.functions.operator import Operator, Plus

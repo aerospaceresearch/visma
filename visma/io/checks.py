@@ -238,22 +238,10 @@ def checkEquation(terms, symTokens):
         if term == '(':
             brackets += 1
         elif term == ')':
-            if brackets == 0:
-                log = "Check the order of closing & opening Brackets."
-                return False, log
-            elif terms[i-1] == '(':         # i-1 can't be less than 0 because the if (sqrBrackets == 0) will trigger.
-                log = "Empty Brackets."
-                return False, log
             brackets -= 1
         elif term == '[':
             sqrBrackets += 1
         elif term == ']':
-            if sqrBrackets == 0:
-                log = "Check the order of closing & opening Square Brackets."
-                return False, log
-            elif terms[i-1] == '[':         # i-1 can't be less than 0 because the if (sqrBrackets == 0) will trigger.
-                log = "Empty Square Brackets."
-                return False, log
             sqrBrackets -= 1
         elif term == '^':
             if i + 1 < len(terms):
@@ -290,16 +278,12 @@ def checkEquation(terms, symTokens):
     elif brackets > 0:
         log = "Too many '('"
         return False, log
-    else:                   # if number of brackets is equal on both sides, No Errors is printed.
-        pass
     if sqrBrackets < 0:
         log = "Too many ']'"
         return False, log
     elif sqrBrackets > 0:
         log = "Too many '['"
         return False, log
-    else:                   # if number of square brackets is equal on both sides, No Errors is printed.
-        pass
     if equators > 1:
         log = "Inappropriate number of equators(=,<,>)"
         return False, log
