@@ -1,0 +1,10 @@
+2019-03-10 20:46 - main - INFO: Initialising VisMa...(currently in CLI mode)
+2019-03-10 20:46 - window-gui - INFO: Starting VisMa GUI...
+2019-03-10 20:46 - window-gui - INFO: UI Initialised...
+2019-03-10 20:46 - qsolver - ERROR: Missing exponent after '^'
+2019-03-10 20:46 - qsolver - ERROR: Invalid Expression
+2019-03-10 20:46 - qsolver - ERROR: Invalid Expression
+2019-03-10 20:46 - qsolver - ERROR: Missing exponent after '^'
+2019-03-10 20:46 - qsolver - ERROR: Invalid expression
+2019-03-10 20:46 - qsolver - ERROR: Invalid expression
+2019-03-10 20:46 - qsolver - INFO: Existing VisMa...

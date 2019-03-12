@@ -1,5 +1,6 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
 from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
+from visma.matrix.structure import DiagMat
 from tests.tester import getTokens
 
 ####################
@@ -12,6 +13,67 @@ def test_strMatrix():
     mat = getTokens("[1+x, 2; \
                       3  , 4]")
     assert mat.__str__() == "[{1.0}+{x},{2.0};{3.0},{4.0}]"
+
+
+def test_transposeMat():
+
+    mat = getTokens("[1, 2; \
+                    3,  4]")
+    matTranspose = mat.transposeMat()
+    assert matTranspose.__str__() == "[{1.0},{3.0};{2.0},{4.0}]"
+
+    mat = getTokens("[5,8,2;\
+                      12,30,9;\
+                      4,17,7]")
+    matTranspose = mat.transposeMat()
+    assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
+
+
+def test_isSquare():
+
+    mat = getTokens("[1, 2; \
+                      x, z]")
+    assert mat.isSquare()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isSquare()
+
+
+def test_isDiagonal():
+
+    mat = getTokens("[1, 0; \
+                      0, z]")
+    assert mat.isDiagonal()
+
+    mat = getTokens("[1+x, 0+y; \
+                      0, z]")
+    assert not mat.isDiagonal()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isDiagonal()
+
+    mat = DiagMat([3, 3], [['1'], ['5'], ['2']])
+    assert mat.isDiagonal()
+
+
+def test_isIdentity():
+
+    mat = getTokens("[1, 0; \
+                      0, 1]")
+    assert mat.isIdentity()
+
+    mat = getTokens("[1+x, 0+y; \
+                      0, 1]")
+    assert not mat.isIdentity()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isIdentity()
 
 
 #################
@@ -188,34 +250,3 @@ def test_multiplyMatrix():
     # assert matPro.__str__() == ""
     """
     pass
-
-
-#################
-# matrix.structure #
-#################
-
-
-def test_transposeMat():
-
-    mat = getTokens("[1, 2; \
-                    3,  4]")
-    matTranspose = mat.transposeMat()
-    assert matTranspose.__str__() == "[{1.0},{3.0};{2.0},{4.0}]"
-
-    mat = getTokens("[5,8,2;\
-                      12,30,9;\
-                      4,17,7]")
-    matTranspose = mat.transposeMat()
-    assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
-
-
-def test_isSquare():
-
-    mat = getTokens("[1, 2; \
-                      x, z]")
-    assert mat.isSquare()
-
-    mat = getTokens("[1, 2; \
-                      1, 3; \
-                      1, 4]")
-    assert not mat.isSquare()
