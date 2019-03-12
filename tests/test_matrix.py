@@ -1,5 +1,7 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
 from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
+from visma.matrix.structure import DiagMat
+from visma.functions.constant import Constant
 from tests.tester import getTokens
 from visma.io.parser import tokensToString
 
@@ -33,16 +35,23 @@ def test_traceMat():
 
 
 def test_isSquare():
-    mat = getTokens("[1, 0; \
-                      2, 1]")
-    assert mat.isSquare()
 
     mat = getTokens("[1, 0, 3; \
                       2, 1, 2]")
     assert not mat.isSquare()
 
+    mat = getTokens("[1, 2; \
+                      x, z]")
+    assert mat.isSquare()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isSquare()
+
 
 def test_transposeMat():
+
     mat = getTokens("[1, 3; \
                       2, 6]")
     matTranspose = mat.transposeMat()
@@ -53,6 +62,41 @@ def test_transposeMat():
                       4,17,7]")
     matTranspose = mat.transposeMat()
     assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
+
+
+def test_isDiagonal():
+
+    mat = getTokens("[1, 0; \
+                      0, z]")
+    assert mat.isDiagonal()
+
+    mat = getTokens("[1+x, 0+y; \
+                      0, z]")
+    assert not mat.isDiagonal()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isDiagonal()
+
+    mat = DiagMat([3, 3], [[Constant(1)], [Constant(5)], [Constant(2)]])
+    assert mat.isDiagonal()
+
+
+def test_isIdentity():
+
+    mat = getTokens("[1, 0; \
+                      0, 1]")
+    assert mat.isIdentity()
+
+    mat = getTokens("[1+x, 0+y; \
+                      0, 1]")
+    assert not mat.isIdentity()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isIdentity()
 
 
 #################

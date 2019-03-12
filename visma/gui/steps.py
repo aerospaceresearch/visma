@@ -36,6 +36,8 @@ def showSteps(workspace):
                                    horizontalalignment='center',
                                    verticalalignment='top', size=qApp.font().pointSize()*workspace.stepsFontSize)
     workspace.stepscanvas.draw()
+    hbar = workspace.scroll.horizontalScrollBar()
+    hbar.setValue((hbar.minimum()+hbar.maximum())/2)
 
 
 ###############

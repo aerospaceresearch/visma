@@ -15,7 +15,7 @@ from visma.functions.structure import FuncOp
 from visma.functions.variable import Variable
 
 
-def graphPlot(workspace):
+def graphPlot(workspace, again):
     """Function for plotting graphs in 2D and 3D space
 
     2D graphs are plotted for expression in one variable and equations in two variables. 3D graphs are plotted for expressions in two variables and equations in three variables.
@@ -27,6 +27,7 @@ def graphPlot(workspace):
         graphVars {list} -- variables to be plotted on the graph
         func {numpy.array(2D)/function(3D)} -- equation converted to compatible data type for plotting
         variables {list} -- variables in given equation
+        again {bool} -- True when an equation can be plotted in 2D and 3D both else False
 
     Note:
         The func obtained from graphPlot() function is of different type for 2D and 3D plots. For 2D, func is a numpy array, and for 3D, func is a function.
@@ -38,7 +39,11 @@ def graphPlot(workspace):
     variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
     if (dim == 1 and eqType == "expression") or ((dim == 2) and eqType == "equation"):
-        graphVars, func = plotIn2D(LHStok, RHStok, variables, axisRange)
+        if again:
+            variables.append('f(' + variables[0] + ')')
+            graphVars, func = plotIn3D(LHStok, RHStok, variables, axisRange)
+        else:
+            graphVars, func = plotIn2D(LHStok, RHStok, variables, axisRange)
         if dim == 1:
             variables.append('f(' + variables[0] + ')')
     elif (dim == 2 and eqType == "expression") or ((dim == 3) and eqType == "equation"):
@@ -211,17 +216,17 @@ def plotFigure3D(workspace):
     return layout
 
 
-def plot(workspace):
+def renderPlot(workspace, graphVars, func, variables):
     """Renders plot for functions in 2D and 3D
 
     Maps points from the numpy arrays for variables in given equation on the 2D/3D plot figure
 
     Arguments:
         workspace {QtWidgets.QWidget} -- main layout
+        graphVars {list} -- variables for plotting
+        dim {int} -- dimenion of plot
+        variables {list} -- variables in equation
     """
-    workspace.figure2D.clear()
-    workspace.figure3D.clear()
-    graphVars, func, variables = graphPlot(workspace)
     if len(graphVars) == 2:
         X, Y = graphVars[0], graphVars[1]
         ax = workspace.figure2D.add_subplot(111)
@@ -265,6 +270,30 @@ def plot(workspace):
         ax.set_zlabel(r'$' + variables[2] + '$')
         workspace.canvas3D.draw()
         workspace.tabPlot.setCurrentIndex(1)
+
+
+def plot(workspace):
+    """When called from window.py it initiates rendering of equations.
+
+    Arguments:
+        workspace {QtWidgets.QWidget} -- main layout
+    """
+    workspace.figure2D.clear()
+    workspace.figure3D.clear()
+
+    tokens = workspace.eqToks[-1]
+    eqType = getTokensType(tokens)
+    LHStok, RHStok = getLHSandRHS(tokens)
+    variables = sorted(getVariables(LHStok, RHStok))
+    dim = len(variables)
+
+    graphVars, func, variables = graphPlot(workspace, False)
+    renderPlot(workspace, graphVars, func, variables)
+
+    # Handles case when a equation (like x^2 + y^2 = 5) can be rendered in 2D as well as 3D.
+    if ((dim == 2) and eqType == "equation"):
+        graphVars, func, variables = graphPlot(workspace, True)
+        renderPlot(workspace, graphVars, func, variables)
 
 
 def refreshPlot(workspace):
