@@ -139,10 +139,20 @@ def checkSyntax(eqnString):
 
     Returns:
         bool -- if valid or not
+        log -- Message for easy debugging
     """
-    if (eqnString.count('(') != eqnString.count(')')):
-        # "Unequal no. of parentheses"
-        return False
+    matchingParenthesis = 0  # Counter used to check if any close parenthesis is encountered before open parenthesis
+    for index, val in enumerate(eqnString):
+        if (val == '('):
+            matchingParenthesis += 1
+        elif (val == ')'):
+            matchingParenthesis -= 1
+            if (matchingParenthesis == -1):
+                log = "Close parenthesis encountered before open parethesis"
+                return False, log
+    if (matchingParenthesis != 0):
+        log = "Each open parenthesis must have a unique corresponding close parenthesis"
+        return False, log
 
     # Clean equation i.e removing whitespaces
     eqnString = eqnString.replace(" ", "")
@@ -150,40 +160,49 @@ def checkSyntax(eqnString):
 
     # For now explicitly defining function of length 2, as there is only one such
     # function and no point in iterating through whole list of function for that
-    funclen = {2: ['ln'], 3: [], 4: [], 5: []}
+    funcOfLen = {2: ['ln'], 3: [], 4: [], 5: []}
 
     # List to check if decimal point is preceded by an integer
-    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    operators = ['-', '+', '*', '/', '=', '<', '>', '<=', '>=', '^', '(', '[', ',', ';']
+    integers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    operators = ['-', '+', '*', '/', '=', '<', '>', '<=', '>=', '^', '(', ',', ';']
 
     for func in funcs:
         if (len(func) in [3, 4, 5]):
-            funclen[len(func)].append(func)
+            funcOfLen[len(func)].append(func)
     for func in funcSyms:
         if (len(func) in [3, 4, 5]):
-            funclen[len(func)].append(func)
+            funcOfLen[len(func)].append(func)
 
-    lenCheck = 2  # length of function to be checked starting from 2
+    lenCheck = 2  # Length of function to be checked starting from 2
     while (lenCheck <= 5):
         if (stringLen >= 2):  # Any function will need atleast 2 characters to be called. Example simplify(ln)
             for index, val in enumerate(eqnString):
                 if (index < stringLen + 1 - lenCheck):
-                    if (eqnString[index:index+lenCheck] in funclen[lenCheck]):
-                        if (stringLen < lenCheck + 3):
-                            # "Function of length {} cannot exist in a string of length {}. Example: sin(2)".format(lenCheck, stringLen)
-                            return False
-                        elif (eqnString[index:index+lenCheck+1] in funclen[lenCheck+1]):
-                            validCheck1 = bool(eqnString[index+lenCheck+1] == '(') and bool(eqnString[index+lenCheck+2] != ')')
-                            validCheck2 = bool(eqnString[index+lenCheck+1:].count('(') <= eqnString[index+lenCheck+1:].count(')'))
-                            if (not(validCheck1 * validCheck2)):
-                                # "Function arguments must be enclosed within non-empty parentheses"
-                                return False
+                    if (eqnString[index:index+lenCheck] in funcOfLen[lenCheck]):
+                        if (eqnString[index:index+lenCheck+1] in funcOfLen[lenCheck+1]):
+                            if (stringLen < index + lenCheck + 4):
+                                log = "Either the function '{}' has no arguments or arguments are not enclosed within parentheses".format(eqnString[index:index+lenCheck+1])
+                                return False, log
+                            invalidCheck = (eqnString[index+lenCheck+1] != '(')
+                            if invalidCheck:
+                                log = "For function '{}', arguments are not enclosed within parentheses".format(eqnString[index:index+lenCheck+1])
+                                return False, log
+                            invalidCheck = (eqnString[index+lenCheck+2] == ')')
+                            if invalidCheck:
+                                log = "Function '{}' has no argument".format(eqnString[index:index+lenCheck+1])
+                                return False, log
                         else:
-                            validCheck1 = bool(eqnString[index+lenCheck] == '(') and bool(eqnString[index+lenCheck+1] != ')')
-                            validCheck2 = bool(eqnString[index+lenCheck:].count('(') <= eqnString[index+lenCheck:].count(')'))
-                            if (not(validCheck1 * validCheck2)):
-                                # "Function arguments must be enclosed within non-empty parentheses"
-                                return False
+                            if (stringLen < index + lenCheck + 3):
+                                log = "Either the function '{}' has no arguments or arguments are not enclosed within parentheses".format(eqnString[index:index+lenCheck])
+                                return False, log
+                            invalidCheck = (eqnString[index+lenCheck] != '(')
+                            if invalidCheck:
+                                log = "For function '{}', arguments are not enclosed within parentheses".format(eqnString[index:index+lenCheck])
+                                return False, log
+                            invalidCheck = (eqnString[index+lenCheck+1] == ')')
+                            if invalidCheck:
+                                log = "Function '{}' has no argument".format(eqnString[index:index+lenCheck])
+                                return False, log
                 else:
                     break
             lenCheck += 1
@@ -193,30 +212,28 @@ def checkSyntax(eqnString):
     for index, val in enumerate(eqnString):
         if (val == '.'):
             if (index == 0) or (index == stringLen-1):
-                # "Decimal point must be between two numbers"
-                return False
-            invalidCheck = bool(eqnString[index-1] not in numbers) or bool(eqnString[index+1] not in numbers)
+                log = "Decimal point must be between two integers"
+                return False, log
+            invalidCheck = (eqnString[index-1] not in integers or eqnString[index+1] not in integers)
             if (invalidCheck):
-                # "Decimal point must be between two numbers"
-                return False
+                log = "Decimal point must be between two integers"
+                return False, log
 
         elif (val == ')'):
             if (index < stringLen-2):
-                invalidCheck1 = bool(index == 0)
-                invalidCheck2 = bool(eqnString[index+1] == '(')
-                invalidCheck3 = False
-                if (eqnString[index+2] == '(' or eqnString[index+2] == '['):
-                    invalidCheck3 = bool(eqnString[index+1] not in operators)
-                if (invalidCheck1 + invalidCheck2 + invalidCheck3):
-                    # "There must be an operator between close parenthesis and open parenthesis. Example: )+("
-                    return False
-            elif (index == stringLen-2):
-                invalidCheck1 = bool(eqnString[index+1] == '(')
-                invalidCheck2 = bool(eqnString[index+1] in operators and eqnString[index+1] != ';')
+                invalidCheck1 = (eqnString[index+1] == '(')
+                invalidCheck2 = False
+                if (eqnString[index+2] == '('):
+                    invalidCheck2 = (eqnString[index+1] not in operators)
                 if (invalidCheck1 + invalidCheck2):
-                    # "Open parenthesis or an operator cannot be at the end of an equation"
-                    return False
-    return True
+                    log = "There must be an operator between close parenthesis and open parenthesis"
+                    return False, log
+            elif (index == stringLen-2):
+                invalidCheck = (eqnString[index+1] in operators and eqnString[index+1] != ';')
+                if (invalidCheck):
+                    log = "Open parenthesis or an operator cannot be at the end of an equation"
+                    return False, log
+    return True, "Standard syntax is followed"
 
 
 def checkEquation(terms, symTokens):

@@ -1561,7 +1561,7 @@ def tokenizer(eqnString):
     Returns:
         list -- function tokens list
     """
-    if (not(checkSyntax(eqnString))):
+    if (not(checkSyntax(eqnString))[0]):
         return
     _, tokens = constantConversion(preprocess(eqnString))
     return tokens
