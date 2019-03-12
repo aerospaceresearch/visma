@@ -115,7 +115,7 @@ def test_multiplyMatrix():
     pass
 
 
-def test_determinant(mat):
+def test_determinant(mat='[1,2;3,4]'):
     mat = getTokens(mat)
     if mat.isSquare():
         return mat.determinant()
