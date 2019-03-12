@@ -1,4 +1,4 @@
-from visma.io.checks import getVariables, areTokensEqual, isTokenInToken, checkEquation
+from visma.io.checks import getVariables, areTokensEqual, isTokenInToken
 from visma.io.parser import tokensToString
 from visma.io.tokenize import getTerms, normalize
 from visma.functions.operator import Operator, Plus
@@ -31,30 +31,6 @@ def test_areTokensEqual():
     opA.value = '+'
     opB = Plus()
     assert areTokensEqual(opA, opB)
-
-
-def test_checkEquation():
-    test1 = False
-    test2 = False
-    test3 = False
-    termA = ["(", ")"]
-    symbTokenA = []
-    boolean, msg = checkEquation(termA, symbTokenA)
-    if (boolean is False) and (msg == "Empty Brackets."):
-        test1 = True
-    assert test1
-    termB = ["[", "["]
-    symbTokenB = []
-    boolean, msg = checkEquation(termB, symbTokenB)
-    if (boolean is False) and (msg == "Too many '['"):
-        test2 = True
-    assert test2
-    termC = [")", "("]
-    symbTokenC = []
-    boolean, msg = checkEquation(termC, symbTokenC)
-    if (boolean is False) and (msg == "Check the order of closing & opening Brackets."):
-        test3 = True
-    assert test3
 
 
 def test_isTokenInToken():
