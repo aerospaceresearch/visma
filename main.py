@@ -3,13 +3,7 @@ from visma.gui.window import initGUI
 from visma.gui.cli import commandExec
 from visma.gui import logger
 
-
-def init():
-    open(os.path.abspath("log.txt"), "w").close()
-    logger.setLevel(10)
-    logger.setLogName('main')
-    logger.info('Initialising VisMa...(currently in CLI mode)')
-    userInterface = "_______________________________________________________________________________________________\n"\
+userInterface = "_______________________________________________________________________________________________\n"\
                     "| gui  ->> opens Visma in GUI mode.                                                           |\n"\
                     "| exit ->> Closes the program.                                                                |\n"\
                     "|---------------------------------------------------------------------------------------------|\n"\
@@ -27,6 +21,13 @@ def init():
                     "| differentiate(expression , variable)->> Differentiates the expression by the given variable.|\n"\
                     "|_____________________________________________________________________________________________|\n"\
                     ">>> "
+
+
+def init():
+    open(os.path.abspath("log.txt"), "w").close()
+    logger.setLevel(10)
+    logger.setLogName('main')
+    logger.info('Initialising VisMa...(currently in CLI mode)')
     cin = input(userInterface)
     while cin != 'exit':
         if cin == 'gui':
