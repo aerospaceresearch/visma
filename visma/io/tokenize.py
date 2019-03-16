@@ -71,39 +71,35 @@ def getTerms(eqn):
         if ('a' <= eqn[x] <= 'z') or ('A' <= eqn[x] <= 'Z') or eqn[x] in greek:
 
             buf = eqn[x]
-            i = x
-            while (i - x) < 3:
-                i += 1
-                if i < len(eqn):
-                    buf += eqn[i]
+            if x + 3 < len(eqn):
+                for i in range(1, 4):
+                    buf += eqn[x+i]
             if len(buf) == 4:
                 if buf in funcFourLetters:
                     terms.append(buf)
                     x += 4
                     continue
+
             buf = eqn[x]
-            i = x
-            while (i - x) < 2:
-                i += 1
-                if i < len(eqn):
-                    buf += eqn[i]
+            if x + 2 < len(eqn):
+                for i in range(1, 3):
+                    buf += eqn[x + i]
             if len(buf) == 3:
                 if buf in funcThreeLetters:
                     terms.append(buf)
                     x += 3
                     continue
+
             buf = eqn[x]
-            i = x
-            while (i - x) < 1:
-                i += 1
-                if i < len(eqn):
-                    buf += eqn[i]
+            if x + 1 < len(eqn):
+                buf += eqn[x + 1]
             if len(buf) == 2:
                 if buf in funcTwoLetters:
                     terms.append(buf)
                     x += 2
                     continue
-            if eqn[x] == 'e':
+
+            if eqn[x] == 'e':   # Special Cases: e , i
                 terms.append("exp")
                 x += 1
                 continue
@@ -131,6 +127,7 @@ def getTerms(eqn):
                 else:
                     break
             terms.append(buf)
+
         elif eqn[x] in symbols:
             if eqn[x] == '<':
                 i = x
