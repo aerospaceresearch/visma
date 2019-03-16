@@ -21,9 +21,6 @@ def test_getVariables():
     varC = getTokens("x + sin(x) + cos(y) + tan(2*z)*2 + tanh(z) + e^2")
     assert getVariables(varC) == ['x']
 
-    #varD = getTokens("sin(x) + 7*x")
-    #assert getVariables(varD) == ['x']
-
 
 def test_areTokensEqual():
 
