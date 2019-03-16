@@ -18,6 +18,12 @@ def test_getVariables():
     varB = getTokens("xy+ xy^2 +yz^3")
     assert getVariables(varB) == ['x', 'y', 'z']
 
+    varC = getTokens("x + sin(x) + cos(y) + tan(2*z)*2 + tanh(z) + e^2")
+    assert getVariables(varC) == ['x']
+
+    #varD = getTokens("sin(x) + 7*x")
+    #assert getVariables(varD) == ['x']
+
 
 def test_areTokensEqual():
 

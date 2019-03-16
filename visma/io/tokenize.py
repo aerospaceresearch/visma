@@ -107,7 +107,7 @@ def getTerms(eqn):
                 terms.append("iota")
                 x += 1
                 continue
-                
+
             terms.append(eqn[x])
             x += 1
 
