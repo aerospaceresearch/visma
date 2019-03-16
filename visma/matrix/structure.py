@@ -119,7 +119,7 @@ class Matrix(object):
             matRes {visma.matrix.structure.Matrix} -- result matrix token
         """
         matRes = Matrix()
-        matRes.empty([self.dim[0], self.dim[1]])
+        matRes.empty([self.dim[1], self.dim[0]])
         for i in range(self.dim[0]):
             for j in range(self.dim[1]):
                 matRes.value[j][i] = self.value[i][j]
