@@ -85,6 +85,7 @@ def test_isDiagonal():
     mat = IdenMat([2, 2])
     assert mat.isDiagonal()
 
+
 def test_isIdentity():
 
     mat = getTokens("[1, 0; \
