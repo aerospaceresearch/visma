@@ -29,7 +29,7 @@ def factorizeTokens(tokens):
         tokens = []
         comment = "The real roots of the above polynomial are "
         for root in roots:
-            comment += r"$" + str(root) + "\ ,\ " + r"$"
+            comment += r"$" + str(root) + r"\ ,\ " + r"$"
         if gcf != 1:
             tokens.append(Constant(float(gcf)))
             tokens.append(Multiply())
@@ -103,6 +103,7 @@ def factor(coefficients):
         roots.append(root)
         polynomial = quotient
     polynomial = [int(term) for term in polynomial]
+    roots.sort()
     return gcf, roots, polynomial
 
 

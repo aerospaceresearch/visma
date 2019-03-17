@@ -33,7 +33,7 @@ def resultLatex(operation, equations, comments, wrtVar=None):
     finalSteps += "\n"
     finalSteps += "OUTPUT: " + r"$" + equationLatex[-1] + r"$" + "\n"*2
 
-    for i in range(len(equationLatex)):
+    for i, _ in enumerate(equationLatex):
         if comments[i] != []:
             finalSteps += str(comments[i][0]) + "\n"
         finalSteps += r"$" + equationLatex[i] + r"$" + "\n"*2
@@ -64,14 +64,14 @@ def latexToTerms(terms):
             if index < len(terms):
                 terms.remove(terms[index])
                 j = index
-                while j < len(terms) and terms[j] is not '}':
+                while j < len(terms) and terms[j] != '}':
                     j += 1
                 if j < len(terms):
                     terms.remove(terms[j])
                     terms.insert(j, '/')
                 if j+1 < len(terms):
                     terms.remove(terms[j+1])
-                while j < len(terms) and terms[j] is not '}':
+                while j < len(terms) and terms[j] != '}':
                     j += 1
                 if j < len(terms):
                     terms.remove(terms[j])

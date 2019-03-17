@@ -19,7 +19,10 @@ def test_differentiate():
     assert quickTest("xy + xy^2 + xyz", differentiate, 'y') == "x+2.0xy+xz"
     assert quickTest("xy + xy^2 + xyz", differentiate, 'z') == "+xy"  # FIXME: Remove unnecessary sign '+'
 
-
+    assert quickTest("xy + z", differentiate, 'z') == "1"
+    assert quickTest("z + xy", differentiate, 'z') == "1"
+    assert quickTest("z - xy", differentiate, 'z') == "1"
+    assert quickTest("xy - z", differentiate, 'z') == "-1"
 ########################
 # calculus.integration #
 ########################

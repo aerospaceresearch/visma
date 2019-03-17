@@ -4,6 +4,7 @@ from visma.functions.operator import Minus
 from visma.functions.operator import Plus
 from visma.functions.structure import Expression
 import numpy as np
+from visma.functions.operator import Binary
 
 
 class Matrix(object):
@@ -70,8 +71,36 @@ class Matrix(object):
         else:
             return False
 
-    def transpose(self, RHS, wrtVar=None):
-        pass
+    def isIdentity(self):
+        """Checks if matrix is identity
+
+        Returns:
+            bool -- if identity matrix or not
+        """
+        if self.isDiagonal():
+            for i in range(0, self.dim[0]):
+                if self.value[i][i][0].value != 1:
+                    return False
+            self.__class__ = IdenMat
+            return True
+        else:
+            return False
+
+    def isDiagonal(self):
+        """Checks if matrix is diagonal
+
+        Returns:
+            bool -- if diagonal matrix or not
+        """
+        if self.isSquare():
+            for i in range(0, self.dim[0]):
+                for j in range(0, self.dim[1]):
+                    if i != j and (self.value[i][j][0].value != 0 or len(self.value[i][j]) > 1):
+                        return False
+            self.__class__ = DiagMat
+            return True
+        else:
+            return False
 
     def inverse(self):
         pass
@@ -87,6 +116,19 @@ class Matrix(object):
         """
         self.dim[0] = len(self.value)
         self.dim[1] = len(self.value[0])
+
+    def transposeMat(self):
+        """Returns Transpose of Matrix
+
+        Returns:
+            matRes {visma.matrix.structure.Matrix} -- result matrix token
+        """
+        matRes = Matrix()
+        matRes.empty([self.dim[1], self.dim[0]])
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matRes.value[j][i] = self.value[i][j]
+        return matRes
 
 
 class SquareMat(Matrix):
@@ -117,23 +159,61 @@ class SquareMat(Matrix):
             ans = mat
         return ans
 
+    def traceMat(self):
+        """Returns the trace of a square matrix (sum of diagonal elements)
 
-class IdenMat(SquareMat):
-    """Class for identity matrix
+        Arguments:
+            mat {visma.matrix.structure.Matrix} -- matrix token
 
-    Identity matrix is a square matrix with all elements as 0 except for the diagonal elements which are 1.
+        Returns:
+            trace {visma.matrix.structure.Matrix} -- string token
+        """
+        from visma.simplify.simplify import simplify
+        trace = []
+        for i in range(self.dim[0]):
+            trace.extend(self.value[i][i])
+            trace.append(Binary('+'))
+        trace.append(Constant(0))
+        trace, _, _, _, _ = simplify(trace)
+        return trace
+
+
+class DiagMat(SquareMat):
+    """Class for Diagonal matrix
+
+    Diagonal matrix is a square matrix with all elements as 0 except for the diagonal elements.
 
     Extends:
         SquareMat
     """
 
-    def __init__(self, dim):
+    def __init__(self, dim, diagElem):
+        """
+        dim {list} -- dimension of matrix
+        diagElem {list} -- list of tokens list
+        """
         super().__init__()
+        self.dim = dim
         for i in range(0, dim[0]):
             row = []
             for j in range(0, dim[1]):
                 if i == j:
-                    row.append(Constant(1))
+                    row.append(diagElem[i])
                 else:
-                    row.append(Constant(0))
+                    row.append([Constant(0)])
             self.value.append(row)
+
+
+class IdenMat(DiagMat):
+    """Class for identity matrix
+
+    Identity matrix is a diagonal matrix with all elements as 0 except for the diagonal elements which are 1.
+
+    Extends:
+        DiagMat
+    """
+
+    def __init__(self, dim):
+        super().__init__(dim, [[Constant(1)]]*dim[0])
+        for i in range(0, dim[0]):
+            self.value[i][i] = Constant(1)

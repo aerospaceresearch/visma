@@ -29,6 +29,8 @@ from visma.simplify.muldiv import multiplication, multiplicationEquation, divisi
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
 from visma.transform.factorization import factorize
+from visma.gui import logger
+from visma.io.parser import tokensToString
 
 
 class Window(QtWidgets.QMainWindow):
@@ -38,6 +40,13 @@ class Window(QtWidgets.QMainWindow):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.setFont(font)
+
+        appIcon = QtGui.QIcon()
+        # FIXME: Use fixed file path
+        appIcon.addFile(os.path.abspath('assets/icons/16x16.png'))
+        appIcon.addFile(os.path.abspath('assets/icons/32x32.png'))
+        appIcon.addFile(os.path.abspath('assets/icons/64x64.png'))
+        self.setWindowIcon(appIcon)
 
     def initUI(self):
         exitAction = QtWidgets.QAction('Exit', self)
@@ -120,6 +129,7 @@ class WorkSpace(QWidget):
     resultOut = False
 
     try:
+        # FIXME: Use fixed file path
         with open('local/eqn-list.vis', 'r+') as fp:
             for line in fp:
                 line = line.replace(' ', '').replace('\n', '')
@@ -188,10 +198,11 @@ class WorkSpace(QWidget):
         tabStepsLogs.tab1 = QWidget()
         tabStepsLogs.tab2 = QWidget()
         tabStepsLogs.addTab(tabStepsLogs.tab1, "Step-by-Step")
-        # tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
+        tabStepsLogs.addTab(tabStepsLogs.tab2, "logger")
         tabStepsLogs.tab1.setLayout(stepsFigure(self))
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
-        # tabStepsLogs.tab2.setStatusTip("Logger")
+        tabStepsLogs.tab2.setLayout(logger.logTextBox(self))
+        tabStepsLogs.tab2.setStatusTip("Logger")
 
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -228,6 +239,8 @@ class WorkSpace(QWidget):
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
 
+        self.logBox.append(logger.info('UI Initialised...'))
+
     def textChangeTrigger(self):
         self.enableInteraction = True
         self.clearButtons()
@@ -243,7 +256,8 @@ class WorkSpace(QWidget):
             elif self.showQSolver is False:
                 self.qSol = ""
                 renderQuickSol(self, self.showQSolver)
-        except ZeroDivisionError:
+        except Exception:
+            logger.error('Invalid Expression')
             self.enableInteraction = False
         if self.enableInteraction:
             self.interactionModeButton.setEnabled(True)
@@ -629,6 +643,13 @@ class WorkSpace(QWidget):
             if self.resultOut:
                 self.eqToks = equationTokens
                 self.output = resultLatex(name, equationTokens, comments)
+                # This takes care if LHS and RHS produced after simplification are equal or not.
+                # If not equal a Math Error is generated.
+                if (self.solutionType == 'equation'):
+                    lastStep = ''
+                    lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
+                    if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
+                        self.output += 'Math Error: LHS not equal to RHS' + '\n'
                 if len(availableOperations) == 0:
                     self.clearButtons()
                 else:
@@ -741,7 +762,13 @@ class PicButton(QAbstractButton):
 
 
 def initGUI():
-    app = QApplication(sys.argv)
-    ex = Window()
-    ex.initUI()
-    sys.exit(app.exec_())
+    logger.setLogName('window-gui')
+    logger.info('Starting VisMa GUI...')
+    try:
+        app = QApplication(sys.argv)
+        ex = Window()
+        ex.initUI()
+        logger.setLogName('main')
+        sys.exit(app.exec_())
+    finally:
+        logger.info('Existing VisMa...')

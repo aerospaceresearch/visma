@@ -926,7 +926,7 @@ def highestPower(tokens, variable):
         if isinstance(token, Variable):
             for i, val in enumerate(token.value):
                 if val == variable and token.power[i] > maxPow:
-                        maxPow = token.power[i]
+                    maxPow = token.power[i]
     return maxPow
 
 
