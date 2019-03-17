@@ -1,6 +1,6 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
-from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
-from visma.matrix.structure import DiagMat
+from visma.matrix.operations import simplifyMatrix, addMatrix, subMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
+from visma.matrix.structure import DiagMat, IdenMat
 from visma.functions.constant import Constant
 from tests.tester import getTokens
 from visma.io.parser import tokensToString
@@ -82,6 +82,8 @@ def test_isDiagonal():
     mat = DiagMat([3, 3], [[Constant(1)], [Constant(5)], [Constant(2)]])
     assert mat.isDiagonal()
 
+    mat = IdenMat([2, 2])
+    assert mat.isDiagonal()
 
 def test_isIdentity():
 
@@ -191,6 +193,14 @@ def test_addMatrix():
                         2 - x^2, xy - 1 ]")
     matSum = addMatrix(matA, matB)
     assert matSum.__str__() == "[{x}+{y}+{1.0},2{x}^{2.0};{5.0},2{x}{y}-{1.0}]"
+
+
+def test_subMatrix():
+
+    matA = getTokens("[y, 2x]")
+    matB = getTokens("[-x, -x]")
+    matSub = subMatrix(matA, matB)
+    assert matSub.__str__() == "[{y}--1.0{x},3.0{x}]"
 
 
 def test_scalarAddMatrix():
