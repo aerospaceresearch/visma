@@ -24,6 +24,7 @@ def test_getVariables():
     # assert getVariables(varC) == ['x', 'y', 'z']
     assert getVariables(varC) == ['x']
 
+
 def test_areTokensEqual():
 
     varA = getTokens("3xy")
