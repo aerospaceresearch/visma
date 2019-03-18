@@ -21,7 +21,6 @@ def test_getVariables():
     # FIXME: getVariables() in visma.io.checks
     # varC = getTokens("x + sin(x) + cos(y) + tan(2*z)*2 + tanh(z) + e^2")
     # assert getVariables(varC) == ['x', 'y', 'z']
-    assert getVariables(varC) == ['x']
 
 
 def test_areTokensEqual():
