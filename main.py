@@ -36,28 +36,31 @@ def init():
         prompt = '>>> '
         intro = "Welcome! This is Visual Maths Interactive Shell...\n" + "type 'help' for a User Manual and Ctrl + D to Exit prompt\n"
 
+        @classmethod
         def do_exit(self, inp):
             '''Exits VisMa Prompt'''
             print("Exiting VisMa...")
             logger.info('Exiting VisMa...')
             return True
 
-        def do_help(self, inp):
+        def do_manual(self, inp):
             '''Displays a list of commands that can be used'''
             print(self.userManual)
 
+        @classmethod
         def do_gui(self, inp):
             '''Starts GUI of VisMa'''
             initGUI()
             print("Initiating GUI...")
             logger.info("Initiating GUI...")
 
-        def default(self, cin):
+        @classmethod
+        def default(self, inp):
             '''Directs to CommandExec and performs operations thereafter'''
             try:
-                commandExec(cin)
+                commandExec(inp)
             except ZeroDivisionError:
-                logger.error('Invalid Expression: %s', cin)
+                logger.error('Invalid Expression: %s', inp)
                 print('Invalid Expression')
 
         do_EOF = do_exit
