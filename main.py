@@ -43,6 +43,10 @@ def init():
             logger.info('Exiting VisMa...')
             return True
 
+        def emptyline(self):
+            logger.error('Empty line received as input')
+            print('Empty line received as input\n')
+
         def do_manual(self, inp):
             '''Displays a list of commands that can be used'''
             print(self.userManual)
@@ -59,9 +63,9 @@ def init():
             '''Directs to CommandExec and performs operations thereafter'''
             try:
                 commandExec(inp)
-            except ZeroDivisionError:
-                logger.error('Invalid Expression: %s', inp)
-                print('Invalid Expression')
+            except Exception:
+                logger.error('Invalid Expression: ' + inp)
+                print('Invalid Expression: ' + inp + '\n')
 
         do_EOF = do_exit
 
