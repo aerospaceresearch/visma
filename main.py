@@ -16,7 +16,7 @@ def init():
 
         userManual = "|_________________________________________________________________________________________________|\n"\
                      "| gui  ->> opens Visma in GUI mode.                                                               |\n"\
-                     "| exit ->> Closes the prompt.                                                                     |\n"\
+                     "| Ctrl + D ->> Closes the prompt.                                                                     |\n"\
                      "| exit ->> Closes the prompt.                                                                     |\n"\
                      "|-------------------------------------------------------------------------------------------------|\n"\
                      "| simplify( equation or expression ) ->> Simplifies the given equation.                           |\n"\
