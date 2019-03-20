@@ -16,6 +16,7 @@ def commandExec(command):
     inputEquation = command.split('(', 1)[1][:-1]
     if ',' in inputEquation:
         varName = inputEquation.split(',')[1]
+        varName = "".join(varName.split())
         inputEquation = inputEquation.split(',')[0]
 
     lhs = []
