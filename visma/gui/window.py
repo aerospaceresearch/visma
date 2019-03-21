@@ -648,7 +648,7 @@ class WorkSpace(QWidget):
                 if (self.solutionType == 'equation' and self.operation != 'solve'):
                     lastStep = ''
                     lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
-                    if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
+                    if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and 'x' not in lastStep[0] and 'y' not in lastStep[0] and 'z' not in lastStep[0]):
                         self.output += 'Math Error: LHS not equal to RHS' + '\n'
                 if len(availableOperations) == 0:
                     self.clearButtons()

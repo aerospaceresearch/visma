@@ -107,7 +107,7 @@ def printOnCLI(equationTokens, operation, comments, solutionType):
     if (solutionType == 'equation' and operation != 'solve'):
         lastStep = ''
         lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
-        if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
+        if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and 'x' not in lastStep[0] and 'y' not in lastStep[0] and 'z' not in lastStep[0]):
             finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
 
     print(finalSteps)
