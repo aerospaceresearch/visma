@@ -16,6 +16,7 @@ def commandExec(command):
     inputEquation = command.split('(', 1)[1][:-1]
     if ',' in inputEquation:
         varName = inputEquation.split(',')[1]
+        varName = "".join(varName.split())
         inputEquation = inputEquation.split(',')[0]
 
     lhs = []
@@ -103,7 +104,7 @@ def printOnCLI(equationTokens, operation, comments, solutionType):
 
     # This takes care if LHS and RHS produced after simplification are equal or not.
     # If not equal a Math Error is generated.
-    if (solutionType == 'equation'):
+    if (solutionType == 'equation' and operation != 'solve'):
         lastStep = ''
         lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
         if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):

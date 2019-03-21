@@ -645,7 +645,7 @@ class WorkSpace(QWidget):
                 self.output = resultLatex(name, equationTokens, comments)
                 # This takes care if LHS and RHS produced after simplification are equal or not.
                 # If not equal a Math Error is generated.
-                if (self.solutionType == 'equation'):
+                if (self.solutionType == 'equation' and self.operation != 'solve'):
                     lastStep = ''
                     lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
                     if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and lastStep[0] != 'x' and lastStep[0] != 'y' and lastStep[0] != 'z'):
