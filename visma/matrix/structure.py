@@ -132,8 +132,20 @@ class Matrix(object):
 
 
 class SquareMat(Matrix):
+    """Class for Square matrix
+
+    Square matrix is a matrix with equal dimensions.
+
+    Extends:
+        Matrix
+    """
 
     def determinant(self, mat=None):
+        """Calculates square matrices' determinant
+
+        Returns:
+            list of tokens forming the determinant
+        """
         if mat is None:
             self.dimension()
             mat = np.array(self.value)
@@ -156,7 +168,7 @@ class SquareMat(Matrix):
             mat = mat.tolist()
             ans = mat[0][0] + [a] + mat[1][1] + [b] + mat[0][1] + [a] + mat[1][0]
         else:
-            ans = mat
+            ans = mat[0][0]
         return ans
 
     def traceMat(self):
