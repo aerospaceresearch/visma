@@ -532,7 +532,6 @@ class WorkSpace(QWidget):
         # inputSplitter.addWidget(inputTypeSplitter)
         # inputSplitter.addWidget(inputWidget)
         inputLayout.addWidget(inputWidget)
-        
         return inputLayout
 
     def onActivated(self, text):
@@ -575,7 +574,7 @@ class WorkSpace(QWidget):
                 elif ('.' in pre_text):
                     pass
                 else:
-                    cursor.insertText(".") 
+                    cursor.insertText(".")
             else:
                 self.textedit.insertPlainText(str(name))
         return calluser
