@@ -532,6 +532,7 @@ class WorkSpace(QWidget):
         # inputSplitter.addWidget(inputTypeSplitter)
         # inputSplitter.addWidget(inputWidget)
         inputLayout.addWidget(inputWidget)
+        
         return inputLayout
 
     def onActivated(self, text):
@@ -557,6 +558,7 @@ class WorkSpace(QWidget):
                         self.inputBox.addWidget(self.buttons[(i, j)], i, j)
         self.selectedCombo = str(text)
 
+
     def onInputPress(self, name):
         def calluser():
             if name == 'C':
@@ -564,6 +566,16 @@ class WorkSpace(QWidget):
             elif name == 'DEL':
                 cursor = self.textedit.textCursor()
                 cursor.deletePreviousChar()
+            elif name =='.':
+                cursor = self.textedit.textCursor()
+                p = cursor.position()
+                pre_text = self.textedit.toPlainText()[:p]
+                
+                if ('.' in pre_text):
+                    pass
+                else:
+                    cursor.insertText(".")
+                
             else:
                 self.textedit.insertPlainText(str(name))
         return calluser
