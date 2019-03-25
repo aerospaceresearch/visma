@@ -570,8 +570,9 @@ class WorkSpace(QWidget):
                 cursor = self.textedit.textCursor()
                 p = cursor.position()
                 pre_text = self.textedit.toPlainText()[:p]
-                
-                if ('.' in pre_text):
+                if(pre_text==""):
+                    cursor.insertText("0.")
+                elif ('.' in pre_text):
                     pass
                 else:
                     cursor.insertText(".")
