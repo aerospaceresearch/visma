@@ -1,6 +1,6 @@
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
-from visma.io.checks import checkTypes
+from visma.io.checks import checkTypes, mathError
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import tokensToString
 from visma.simplify.simplify import simplify, simplifyEquation
@@ -102,12 +102,7 @@ def printOnCLI(equationTokens, operation, comments, solutionType):
             finalSteps += "\n"
         finalSteps += equationString[i] + 2*"\n"
 
-    # This takes care if LHS and RHS produced after simplification are equal or not.
-    # If not equal a Math Error is generated.
-    if (solutionType == 'equation' and operation != 'solve'):
-        lastStep = ''
-        lastStep = tokensToString(equationTokens[len(equationTokens) - 1]).split()
-        if (lastStep[0] != lastStep[len(lastStep) - 1] and len(lastStep) == 3 and 'x' not in lastStep[0] and 'y' not in lastStep[0] and 'z' not in lastStep[0]):
-            finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
+    if (mathError(equationTokens[-1])):
+        finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
 
     print(finalSteps)
