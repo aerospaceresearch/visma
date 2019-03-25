@@ -575,8 +575,7 @@ class WorkSpace(QWidget):
                 elif ('.' in pre_text):
                     pass
                 else:
-                    cursor.insertText(".")
-                
+                    cursor.insertText(".") 
             else:
                 self.textedit.insertPlainText(str(name))
         return calluser
