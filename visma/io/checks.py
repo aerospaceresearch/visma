@@ -1125,11 +1125,8 @@ def mathError(equationToken):
         True{bool} -- if there is some math error in the last step of equation
         False{bool} -- if there is no math error in the last step of equation
     '''
-    from visma.io.parser import tokensToString
-    equationTerms = tokensToString(equationToken).split()
-    print(equationTerms)
     if len(equationToken) == 3:
-        if (isinstance(equationToken[0], Constant) and equationTerms[1] == '=' and isinstance(equationToken[2], Constant)):
-            if (equationToken[0].value != equationToken[2].value):
+        if (isinstance(equationToken[0], Constant) and isinstance(equationToken[1], Binary) and isinstance(equationToken[2], Constant)):
+            if (equationToken[0].value != equationToken[2].value and equationToken[1].value == '='):
                 return True
     return False
