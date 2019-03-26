@@ -578,6 +578,16 @@ class WorkSpace(QWidget):
             elif name == 'DEL':
                 cursor = self.textedit.textCursor()
                 cursor.deletePreviousChar()
+            elif name == '.':
+                cursor = self.textedit.textCursor()
+                p = cursor.position()
+                preText = self.textedit.toPlainText()[:p]
+                if(preText == ""):
+                    cursor.insertText("0.")
+                elif ('.' in preText):
+                    pass
+                else:
+                    cursor.insertText(".")
             else:
                 self.textedit.insertPlainText(str(name))
         return calluser
