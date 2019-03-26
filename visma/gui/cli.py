@@ -1,6 +1,6 @@
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
-from visma.io.checks import checkTypes
+from visma.io.checks import checkTypes, mathError
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import tokensToString
 from visma.simplify.simplify import simplify, simplifyEquation
@@ -16,6 +16,7 @@ def commandExec(command):
     inputEquation = command.split('(', 1)[1][:-1]
     if ',' in inputEquation:
         varName = inputEquation.split(',')[1]
+        varName = "".join(varName.split())
         inputEquation = inputEquation.split(',')[0]
 
     lhs = []
@@ -65,11 +66,6 @@ def commandExec(command):
         else:
             lTokens, rTokens, _, _, equationTokens, comments = divisionEquation(
                 lTokens, rTokens, True)
-    elif operation == 'simplify':
-        if solutionType == 'expression':
-            tokens, _, _, equationTokens, comments = simplify(tokens)
-        else:
-            lTokens, rTokens, _, _, equationTokens, comments = simplifyEquation(lTokens, rTokens)
     elif operation == 'factorize':
         tokens, _, _, equationTokens, comments = factorize(tokens)
     elif operation == 'find-roots':
@@ -83,10 +79,10 @@ def commandExec(command):
     elif operation == 'differentiate':
         lhs, rhs = getLHSandRHS(tokens)
         lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
-    printOnCLI(equationTokens, operation, comments)
+    printOnCLI(equationTokens, operation, comments, solutionType)
 
 
-def printOnCLI(equationTokens, operation, comments):
+def printOnCLI(equationTokens, operation, comments, solutionType):
     equationString = []
     for x in equationTokens:
         equationString.append(tokensToString(x))
@@ -98,11 +94,15 @@ def printOnCLI(equationTokens, operation, comments):
     finalSteps = ""
     finalSteps = "INPUT: " + equationString[0] + "\n"
     finalSteps += "OPERATION: " + operation + "\n"
-    finalSteps += "OUTPUT: " + equationString[-1] + 2*"\n"
+    finalSteps += "OUTPUT: " + equationString[-1] + "\n"
     for i, _ in enumerate(equationString):
-        finalSteps += equationString[i]
         if comments[i] != []:
-            finalSteps += "\n" + "(" + str(commentsString[i][0]) + ")" + 2*"\n"
+            finalSteps += "(" + str(commentsString[i][0]) + ")" + "\n"
         else:
-            finalSteps += 2*"\n"
+            finalSteps += "\n"
+        finalSteps += equationString[i] + 2*"\n"
+
+    if (mathError(equationTokens[-1])):
+        finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
+
     print(finalSteps)

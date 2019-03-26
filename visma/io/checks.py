@@ -6,6 +6,7 @@ from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.functions.operator import Operator, Binary
 
+
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 
 funcs = ['log', 'log_', 'ln', 'exp', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh']
@@ -926,7 +927,7 @@ def highestPower(tokens, variable):
         if isinstance(token, Variable):
             for i, val in enumerate(token.value):
                 if val == variable and token.power[i] > maxPow:
-                        maxPow = token.power[i]
+                    maxPow = token.power[i]
     return maxPow
 
 
@@ -1110,3 +1111,22 @@ def getTokensType(tokens):
             elif token.value in ['<', '>', '<=', '>=']:
                 return "inequality"
     return "expression"
+
+
+def mathError(equationToken):
+    '''Checks if an equation token is mathematically correct or not
+    Typically, being used to check last equation token
+    (Checks if LHS and RHS of equation token are equal or not)
+
+    Arguments:
+        equationToken{list} -- Equation token
+
+    Returns:
+        True{bool} -- if there is some math error in the last step of equation
+        False{bool} -- if there is no math error in the last step of equation
+    '''
+    if len(equationToken) == 3:
+        if (isinstance(equationToken[0], Constant) and isinstance(equationToken[1], Binary) and isinstance(equationToken[2], Constant)):
+            if (equationToken[0].value != equationToken[2].value and equationToken[1].value == '='):
+                return True
+    return False

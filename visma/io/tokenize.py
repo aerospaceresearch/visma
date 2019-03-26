@@ -25,10 +25,15 @@ from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
 from visma.io.parser import latexToTerms
+# from visma.gui import logger
 
 symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';', '$']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
+
+funcFourLetters = ["sinh", "sqrt", "sech", "csch", "cosh", "coth", "frac", "iota", "tanh", "log_"]
+funcThreeLetters = ["tan", "sin", "cos", "sec", "log", "exp", "csc", "cot"]
+funcTwoLetters = ["ln", "pi"]
 
 # TODO: Add module for different inputs(ex: LaTeX)
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
@@ -46,10 +51,7 @@ def removeSpaces(eqn):
     Returns:
         cleanEqn {string} -- equation string without spaces
     """
-    cleanEqn = ''
-    for char in eqn:
-        if char != ' ':
-            cleanEqn += char
+    cleanEqn = ''.join(i for i in eqn.split())
     return cleanEqn
 
 
@@ -66,242 +68,55 @@ def getTerms(eqn):
     terms = []
     while x < len(eqn):
 
-        if (eqn[x] >= 'a' and eqn[x] <= 'z') or (eqn[x] >= 'A' and eqn[x] <= 'Z') or eqn[x] in greek:
+        if ('a' <= eqn[x] <= 'z') or ('A' <= eqn[x] <= 'Z') or eqn[x] in greek:
 
-            if eqn[x] == 's':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("qrt"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sqrt':
+            buf = eqn[x]
+            if x + 3 < len(eqn):
+                for i in range(1, 4):
+                    buf += eqn[x+i]
+            if len(buf) == 4:
+                if buf in funcFourLetters:
                     terms.append(buf)
-                    x = i + 1
+                    x += 4
                     continue
 
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("inh"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sinh':
+            buf = eqn[x]
+            if x + 2 < len(eqn):
+                for i in range(1, 3):
+                    buf += eqn[x + i]
+            if len(buf) == 3:
+                if buf in funcThreeLetters:
                     terms.append(buf)
-                    x = i + 1
+                    x += 3
                     continue
 
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("in"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sin':
+            buf = eqn[x]
+            if x + 1 < len(eqn):
+                buf += eqn[x + 1]
+            if len(buf) == 2:
+                if buf in funcTwoLetters:
                     terms.append(buf)
-                    x = i + 1
+                    x += 2
                     continue
 
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("ech"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sech':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("ec"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sec':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'l':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("og_"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "log_":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("og"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "log":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("n"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "ln":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'p':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("i"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "pi":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'f':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("rac"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "frac":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'e':
-                terms.append('exp')
-
+            if eqn[x] == 'e':   # Special Cases: e , i
+                terms.append("exp")
+                x += 1
+                continue
             elif eqn[x] == 'i':
-                terms.append('iota')
+                terms.append("iota")
+                x += 1
+                continue
 
-            elif eqn[x] == 't':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("anh"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'tanh':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("an"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'tan':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'c':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("sch"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'csch':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("sc"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'csc':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("osh"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'cosh':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("os"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'cos':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("oth"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'coth':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("ot"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'cot':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                terms.append(eqn[x])
-
-            else:
-                terms.append(eqn[x])
+            terms.append(eqn[x])
             x += 1
-        elif eqn[x] >= '0' and eqn[x] <= '9':
-            buf = ''
+
+        elif '0' <= eqn[x] <= '9':
             buf = eqn[x]
             x += 1
             dot = 0
             while x < len(eqn):
-                if (eqn[x] >= '0' and eqn[x] <= '9'):
+                if '0' <= eqn[x] <= '9':
                     buf += eqn[x]
                     x += 1
                 elif eqn[x] == '.':
@@ -314,6 +129,7 @@ def getTerms(eqn):
                 else:
                     break
             terms.append(buf)
+
         elif eqn[x] in symbols:
             if eqn[x] == '<':
                 i = x
@@ -356,7 +172,7 @@ def normalize(terms):
     Returns:
         terms {list} -- Greek input terms
     """
-    for index, term in enumerate(terms):
+    for term in terms:
         for i, x in enumerate(inputLaTeX):
             if x == term:
                 term = inputGreek[i]
@@ -1046,8 +862,8 @@ def getToken(terms, symTokens, scope=None, coeff=1):
             if isMatrix(matrixTok):
                 tokens.append(matrixTok)
             else:
-                # logger.log(Invalid Matrix)
                 pass
+                # logger.error('Invalid Matrix')
         elif symTokens[x] == 'Unary':
             coeff = 1
             if terms[x] == '-':
@@ -1570,33 +1386,32 @@ def tokenizer(eqnString):
 def changeToken(tokens, variables, scope_times=0):
 
     if len(variables) != 0:
-        if variables[0].scope is not None:
-            for changeVariable in variables:
-                for token in tokens:
-                    if isinstance(token, Constant):
-                        if token.scope == changeVariable.scope:
-                            if changeVariable.coefficient is not None:
-                                token.coefficient = changeVariable.coefficient
-                            token.power = changeVariable.power
-                            token.value = changeVariable.value
-                            break
-                    elif isinstance(token, Variable):
-                        if token.scope == changeVariable.scope:
+        for changeVariable in variables:
+            for token in tokens:
+                if isinstance(token, Constant):
+                    if token.scope == changeVariable.scope:
+                        if changeVariable.coefficient is not None:
                             token.coefficient = changeVariable.coefficient
-                            token.power = changeVariable.power
-                            token.value = changeVariable.value
-                            break
-                    elif isinstance(token, Binary):
+                        token.power = changeVariable.power
+                        token.value = changeVariable.value
+                        break
+                elif isinstance(token, Variable):
+                    if token.scope == changeVariable.scope:
+                        token.coefficient = changeVariable.coefficient
+                        token.power = changeVariable.power
+                        token.value = changeVariable.value
+                        break
+                elif isinstance(token, Binary):
+                    if token.scope == changeVariable.scope:
+                        token.value = changeVariable.value
+                elif isinstance(token, Expression):
+                    if scope_times + 1 == len(changeVariable.scope):
                         if token.scope == changeVariable.scope:
-                            token.value = changeVariable.value
-                    elif isinstance(token, Expression):
-                        if scope_times + 1 == len(changeVariable.scope):
-                            if token.scope == changeVariable.scope:
-                                break
-                        elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
-                            token.tokens = changeToken(
-                                token.tokens, token.scope, scope_times + 1)
                             break
+                    elif token.scope == changeVariable.scope[0:(scope_times + 1)]:
+                        token.tokens = changeToken(
+                            token.tokens, token.scope, scope_times + 1)
+                        break
     return tokens
 
 
@@ -1669,7 +1484,8 @@ def getLHSandRHS(tokens):
 
 
 if __name__ == "__main__":
-
+    # logger.setLevel = 0
+    # logger.setLogName = 'tokenize'
     print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
 
 # -xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
