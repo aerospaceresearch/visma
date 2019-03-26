@@ -63,6 +63,11 @@ def test_transposeMat():
     matTranspose = mat.transposeMat()
     assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
 
+    mat = getTokens("[5,8,2;\
+                      2,3,4]")
+    matTranspose = mat.transposeMat()
+    assert matTranspose.__str__() == "[{5.0},{2.0};{8.0},{3.0};{2.0},{4.0}]"
+
 
 def test_isDiagonal():
 
