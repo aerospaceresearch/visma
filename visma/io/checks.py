@@ -68,10 +68,10 @@ def isVariable(term):
 
     if term in greek:
         return True
-    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
+    elif ('a' <= term[0] <= 'z') or ('A' <= term[0] <= 'Z'):
         x = 0
         while x < len(term):
-            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+            if term[x] < 'A' or ('Z' < term[x] < 'a') or term[x] > 'z':
                 return False
             x += 1
         return True
