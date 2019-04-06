@@ -59,10 +59,11 @@ def isInt(val):
 
 def isNumber(term):
 
-        if isInt(term) or isFloat(term):
-            return True
-        else:
-            return False
+    if isInt(term) or isFloat(term):
+        return True
+    else:
+        return False
+
 
 def isVariable(term):
 
