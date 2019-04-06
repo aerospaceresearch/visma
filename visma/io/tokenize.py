@@ -114,18 +114,10 @@ def getTerms(eqn):
         elif '0' <= eqn[x] <= '9':
             buf = eqn[x]
             x += 1
-            dot = 0
             while x < len(eqn):
-                if '0' <= eqn[x] <= '9':
+                if '0' <= eqn[x] <= '9' or eqn[x] == '.':
                     buf += eqn[x]
                     x += 1
-                elif eqn[x] == '.':
-                    if dot == 0:
-                        buf += eqn[x]
-                        dot += 1
-                        x += 1
-                    else:
-                        break
                 else:
                     break
             terms.append(buf)
