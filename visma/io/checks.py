@@ -64,7 +64,6 @@ def isNumber(term):
     else:
         return False
 
-
 def isVariable(term):
 
     if term in greek:
