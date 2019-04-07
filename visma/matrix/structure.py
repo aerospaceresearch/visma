@@ -2,7 +2,7 @@ from visma.functions.constant import Constant
 from visma.functions.operator import Multiply
 from visma.functions.operator import Minus
 from visma.functions.operator import Plus
-from visma.functions.structure import Expression
+from visma.functions.constant import Zero
 import numpy as np
 from visma.functions.operator import Binary
 
@@ -146,29 +146,36 @@ class SquareMat(Matrix):
         Returns:
             list of tokens forming the determinant
         """
+        from visma.simplify.simplify import simplify
         if mat is None:
             self.dimension()
             mat = np.array(self.value)
         if(mat.shape[0] > 2):
             ans = []
             for i in range(mat.shape[0]):
-                mat1 = mat
-                mat1 = np.concatenate((mat[1:, :i], mat[1::, i+1:]), axis=1)
-                a = Expression()
-                a.tokens = self.determinant(mat1)
-                m = Multiply()
-                a = [a] + [m] + mat[0][i].tolist()
-                if(i % 2 == 0):
-                    ans = ans + [Plus()] + a
-                else:
-                    ans = ans + [Minus()] + a
+                mat1 = SquareMat()
+                mat1.value = np.concatenate((mat[1:, :i], mat[1:, i+1:]), axis=1).tolist()
+                a, _, _, _, _ = simplify(mat1.determinant())
+                if(a[0].value != 0 and a != []):
+                    a, _, _, _, _ = simplify(a + [Multiply()] + mat[0][i].tolist())
+                    if(i % 2 == 0):
+                        if(ans != []):
+                            ans, _, _, _, _ = simplify(ans + [Plus()] + a)
+                        else:
+                            ans = a
+                    else:
+                        ans, _, _, _, _ = simplify(ans + [Minus()] + a)
         elif(mat.shape[0] == 2):
             a = Multiply()
             b = Minus()
             mat = mat.tolist()
-            ans = mat[0][0] + [a] + mat[1][1] + [b] + mat[0][1] + [a] + mat[1][0]
+            a1, _, _, _, _ = simplify(mat[0][0] + [a] + mat[1][1])
+            a2, _, _, _, _ = simplify(mat[0][1] + [a] + mat[1][0])
+            ans, _, _, _, _ = simplify([a1[0], b, a2[0]])
         else:
-            ans = mat[0][0]
+            ans, _, _, _, _ = simplify(mat[0][0])
+        if(ans == []):
+            ans = [Zero()]
         return ans
 
     def traceMat(self):

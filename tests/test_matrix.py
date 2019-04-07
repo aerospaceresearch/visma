@@ -286,19 +286,16 @@ def test_determinant():
         a = ''
         for i in mat.determinant():
             a += i.__str__()
-        a = '{' + a + '}'
-        assert a == "{{1.0}*{4.0}-{2.0}*{3.0}}"
+        assert a == "{-2.0}"
     mat = getTokens('[1,2,3;4,5,6;7,8,9]')
     if mat.isSquare():
         a = ''
         for i in mat.determinant():
             a += i.__str__()
-        a = '{' + a + '}'
-        assert a == "{+{({5.0}*{9.0}-{6.0}*{8.0})}*{1.0}-{({4.0}*{9.0}-{6.0}*{7.0})}*{2.0}+{({4.0}*{8.0}-{5.0}*{7.0})}*{3.0}}"
+        assert a == "{0}"
     mat = getTokens('[1]')
     if mat.isSquare():
         a = ''
         for i in mat.determinant():
             a += i.__str__()
-        a = '{' + a + '}'
-        assert a == "{{1.0}}"
+        assert a == "{1.0}"
