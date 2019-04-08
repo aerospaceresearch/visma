@@ -1,4 +1,5 @@
 from visma.functions.structure import FuncOp
+from visma.functions.exponential import NaturalLog
 import math
 
 ########################
@@ -29,7 +30,7 @@ class Sinh(FuncOp):
         self.__class__ = Cosh
 
     def calculate(self, val):
-        return self.coefficient * ((math.sin(val))**self.power)
+        return self.coefficient * ((math.sinh(val))**self.power)
 
 
 class Cosh(FuncOp):
@@ -55,11 +56,33 @@ class Cosh(FuncOp):
         self.__class__ = Sinh
 
     def calculate(self, val):
-        return self.coefficient * ((math.cos(val))**self.power)
+        return self.coefficient * ((math.cosh(val))**self.power)
 
 
 class Tanh(FuncOp):
-    pass
+    """Class for tanh function -- tanh(...)
+
+        Extends:
+            FuncOp
+        """
+
+    def __init__(self):
+        super().__init__()
+        self.value = 'tanh'
+
+    def inverse(self, RHS):
+        super().inverse(RHS)
+        self.__class__ = ArcTanh
+
+    def differentiate(self):
+        super().differentiate()
+        self.__class__ = Cosh       # Derivative of Tanh(x) is equal to 1-Tanh^2(x) = Sech^2(x) = Cosh^-2(x), So Class is Cosh, and Power is to be set to (-2).
+
+    def integrate(self):
+        self.__class__ = NaturalLog     # Ln(Cosh(x)), value is to be set to Cosh(...).
+
+    def calculate(self, val):
+        return self.coefficient * ((math.tanh(val)) ** self.power)
 
 ################################
 # Inverse Hyperbolic Functions #
