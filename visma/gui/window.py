@@ -695,7 +695,12 @@ class WorkSpace(QWidget):
                 else:
                     self.refreshButtons(availableOperations)
                 if self.mode == 'normal':
-                    self.textedit.setText(tokenString)
+                	# Quick Fix for bug till expression simplifiction is handled
+                    token_string = ""
+                    for i in tokenString:
+                        if not i=="(" and not i==")":
+                            token_string  += i
+                    self.textedit.setText(token_string)
                 elif self.mode == 'interaction':
                     cursor = self.textedit.textCursor()
                     cursor.insertText(tokenString)
