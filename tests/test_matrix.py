@@ -289,3 +289,24 @@ def test_multiplyMatrix():
     # assert matPro.__str__() == ""
     """
     pass
+
+
+def test_determinant():
+    mat = getTokens('[1,2;3,4]')
+    if mat.isSquare():
+        a = ''
+        for i in mat.determinant():
+            a += i.__str__()
+        assert a == "{-2.0}"
+    mat = getTokens('[1,2,3;4,5,6;7,8,9]')
+    if mat.isSquare():
+        a = ''
+        for i in mat.determinant():
+            a += i.__str__()
+        assert a == "{0}"
+    mat = getTokens('[1]')
+    if mat.isSquare():
+        a = ''
+        for i in mat.determinant():
+            a += i.__str__()
+        assert a == "{1.0}"
