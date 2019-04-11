@@ -39,43 +39,40 @@ class ExpressionCompatibility(object):
         self.availableOperations = getOperationsExpression(self.variables, self.tokens)
 
 
+def isFloat(val):
+
+    try:
+        float(val)
+        return True
+    except ValueError:
+        return False
+
+
+def isInt(val):
+
+    try:
+        int(val)
+        return True
+    except ValueError:
+        return False
+
+
 def isNumber(term):
 
-    if isinstance(term, int) or isinstance(term, float):
+    if isInt(term) or isFloat(term):
         return True
     else:
-        x = 0
-        dot = 0
-        if term[0] == '-':
-            x += 1
-            while x < len(term):
-                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-            if x >= 2:
-                return True
-            else:
-                return False
-        else:
-            while x < len(term):
-                if (str(term[x]) < '0' or str(term[x]) > '9') and (dot != 0 or str(term[x]) != '.'):
-                    return False
-                if term[x] == '.':
-                    dot += 1
-                x += 1
-        return True
+        return False
 
 
 def isVariable(term):
 
     if term in greek:
         return True
-    elif (term[0] >= 'a' and term[0] <= 'z') or (term[0] >= 'A' and term[0] <= 'Z'):
+    elif ('a' <= term[0] <= 'z') or ('A' <= term[0] <= 'Z'):
         x = 0
         while x < len(term):
-            if term[x] < 'A' or (term[x] > 'Z' and term[x] < 'a') or term[x] > 'z':
+            if term[x] < 'A' or ('Z' < term[x] < 'a') or term[x] > 'z':
                 return False
             x += 1
         return True
@@ -174,6 +171,16 @@ def checkEquation(terms, symTokens):
                 if terms[i + 1] == '(':
                     log = "Invalid expression"
                     return False, log
+        if not isNumber(term):
+            x = 0
+            dot = 0
+            while x < len(term):
+                if str(term[x]) == '.':
+                    dot += 1
+                    if dot > 1:
+                        log = "Remove Multiple decimal points."
+                        return False, log
+                x += 1
         elif term == '>' or term == '<':
             if i + 1 < len(terms):
                 if terms[i+1] != '=':
