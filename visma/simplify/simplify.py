@@ -13,7 +13,7 @@ import copy
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary
-from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression
+from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression, postSimplification
 from visma.io.parser import tokensToString
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
@@ -212,6 +212,7 @@ def simplify(tokens):
             animation.pop(len(animation) - 1)
             animation.extend(anim)
             comments.extend(com)
+    tokens, animation = postSimplification(tokens, animation)
     token_string = tokensToString(tokens)
     return tokens, availableOperations, token_string, animation, comments
 

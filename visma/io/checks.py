@@ -1137,3 +1137,22 @@ def mathError(equationToken):
             if (equationToken[0].value != equationToken[2].value and equationToken[1].value == '='):
                 return True
     return False
+
+
+def postSimplification(tokens, animation):
+    '''Intended to apply certain transformations which may be needed to be applied after expression simplification
+    Typically being used to remove redundant '+' sign in expression beginning with it
+
+    Arguments:
+        tokens{list} -- tokens of CURRENT step
+        animation{list} -- list of tokens of ALL steps yet
+
+    Returns:
+        tokens{list} -- posprocessed tokens of CURRENT step
+        animation{list} -- list of postprocesses tokens of ALL steps
+    '''
+    if len(animation[-1]) == 2:
+        if isinstance(animation[-1][0], Binary) and animation[-1][0].value == '+':
+            animation[-1] = animation[-1][1:]
+            tokens = tokens[1:]
+    return tokens, animation
