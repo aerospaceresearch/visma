@@ -174,7 +174,7 @@ class SquareMat(Matrix):
             ans, _, _, _, _ = simplify([a1[0], b, a2[0]])
         else:
             ans, _, _, _, _ = simplify(mat[0][0])
-        if(ans == []):
+        if not ans:
             ans = [Zero()]
         return ans
 
