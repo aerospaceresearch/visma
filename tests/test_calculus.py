@@ -12,12 +12,12 @@ def test_differentiate():
     assert quickTest("x^2 + x", differentiate, 'x') == "2.0x+1"
 
     assert quickTest("x + 2y + 3z + 4", differentiate, 'x') == "1"
-    # FIXME(tokensToString error): assert quickTest("x + 2y + 3z + 4", differentiate, 'y') == "2"
-    # FIXME(tokensToString error): assert quickTest("x + 2y + 3z + 4", differentiate, 'z') == "3"
+    assert quickTest("x + 2y + 3z + 4", differentiate, 'y') == "2.0"
+    assert quickTest("x + 2y + 3z + 4", differentiate, 'z') == "3.0"
 
     assert quickTest("xy + xy^2 + xyz", differentiate, 'x') == "y+y^(2.0)+yz"
     assert quickTest("xy + xy^2 + xyz", differentiate, 'y') == "x+2.0xy+xz"
-    assert quickTest("xy + xy^2 + xyz", differentiate, 'z') == "+xy"  # FIXME: Remove unnecessary sign '+'
+    assert quickTest("xy + xy^2 + xyz", differentiate, 'z') == "xy"
 
     assert quickTest("xy + z", differentiate, 'z') == "1"
     assert quickTest("z + xy", differentiate, 'z') == "1"
