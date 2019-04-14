@@ -310,3 +310,15 @@ def test_determinant():
         for i in mat.determinant():
             a += i.__str__()
         assert a == "{1.0}"
+
+
+def test_cofactor():
+    mat = getTokens('[1,2;3,4]')
+    if mat.isSquare():
+        assert str(mat.cofactor()) == '[{4.0},{-3.0};{-2.0},{1.0}]'
+    mat = getTokens('[1,2,3;0,4,5;1,0,6]')
+    if mat.isSquare():
+        assert str(mat.cofactor()) == '[{24.0},{5.0},{-4.0};{-12.0},{3.0},{2.0};{-2.0},{-5.0},{4.0}]'
+    mat = getTokens('[1,2,3,4;5,6,7,8;9,10,11,12;13,14,15,16]')
+    if mat.isSquare():
+        assert str(mat.cofactor()) == '[{0},{0},{0},{0};{0},{0},{0},{0};{0},{0},{0},{0};{0},{0},{0},{0}]'

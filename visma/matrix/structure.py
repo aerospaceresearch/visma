@@ -105,9 +105,6 @@ class Matrix(object):
     def inverse(self):
         pass
 
-    def cofactor(self):
-        pass
-
     def dimension(self):
         """Gets the dimension of the matrix
 
@@ -195,6 +192,26 @@ class SquareMat(Matrix):
         trace.append(Constant(0))
         trace, _, _, _, _ = simplify(trace)
         return trace
+
+    def cofactor(self):
+        mat1 = SquareMat()
+        mat1.value = []
+        for i in range(self.dim[0]):
+            if(i % 2 == 0):
+                coeff = -1
+            else:
+                coeff = 1
+            mat1.value.append([])
+            for j in range(self.dim[1]):
+                coeff *= -1
+                mat = SquareMat()
+                temp = np.array(self.value)
+                mat.value = np.concatenate((np.concatenate((temp[:i, :j], temp[i+1:, :j])), np.concatenate((temp[:i, j+1:], temp[i+1:, j+1:]))), axis=1).tolist()
+                val = mat.determinant()[0]
+                val.value *= coeff
+                mat1.value[i].append([val])
+        mat1.dimension()
+        return mat1
 
 
 class DiagMat(SquareMat):
