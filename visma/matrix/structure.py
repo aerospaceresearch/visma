@@ -194,6 +194,11 @@ class SquareMat(Matrix):
         return trace
 
     def cofactor(self):
+        """Calculates cofactors matrix of the Square Matrix
+
+        Returns:
+            An object of type SquareMat
+        """
         mat1 = SquareMat()
         mat1.value = []
         for i in range(self.dim[0]):
