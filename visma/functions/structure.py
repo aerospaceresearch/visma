@@ -114,7 +114,7 @@ class Function(object):
             inst = inst.operand
         return inst.value
 
-    def isEmpty(self):
+    def isZero(self):
         """
         It checks if the Function is equal to Zero or not, to decide it should be Added, Subtracted,...etc. or not.
         :returns: bool
