@@ -196,7 +196,7 @@ class Expression(Function):
         return represent
 
     def get_reduced(self):
-        '''Simpilifies the expression 
+        '''Simpilifies the expression
         '''
         from visma.simplify.simplify import simplify
         self.tokens, _, _, _, _ = simplify(self.tokens)
