@@ -178,6 +178,7 @@ class Expression(Function):
         self.tokens = []
         if tokens is not None:
             self.tokens.extend(tokens)
+            self.get_reduced()
         self.type = 'Expression'
 
     def __str__(self):
@@ -193,6 +194,14 @@ class Expression(Function):
         if self.operand is not None:
             represent += "{(" + str(self.operand) + ")}"
         return represent
+
+    def get_reduced(self):
+        '''Simpilifies the expression 
+        '''
+        from visma.simplify.simplify import simplify
+        self.tokens, _, _, _, _ = simplify(self.tokens)
+        if(self.__class__ == Expression):
+            self.reduced = True
 
 
 class Equation(Expression):
