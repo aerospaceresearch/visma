@@ -1,5 +1,5 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
-from visma.matrix.operations import simplifyMatrix, addMatrix, subMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
+from visma.matrix.operations import simplifyMatrix, addMatrix, subMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv, gauss_elim, row_echelon
 from visma.matrix.structure import DiagMat, IdenMat
 from visma.functions.constant import Constant
 from tests.tester import getTokens
@@ -105,6 +105,31 @@ def test_isIdentity():
                       1, 3; \
                       1, 4]")
     assert not mat.isIdentity()
+
+
+def test_echelon():
+    mat = getTokens("[1, 4, 2;\
+                      5, 7, 6;\
+                      2, 4, 9]")
+    assert row_echelon(mat).__str__() == "[{1.0},{4.0},{2.0};{0.0},{-13.0},{-4.0};{0.0},{-0.0},{6.230769230769231}]"
+
+    mat = getTokens("[1, 2, 3, 1;\
+                      4, 5, 6, 1;\
+                      7, 8, 9, 2]")
+    assert row_echelon(mat).__str__() == "[{1.0},{2.0},{3.0},{1.0};{0.0},{-3.0},{-6.0},{-3.0};{0.0},{-0.0},{0},{1.0}]"
+
+    mat = getTokens("[1, 2, 3, 1;\
+                      4, 5, 6, 1;\
+                      7, 8, 9, 1;\
+                      2, 3 ,1 ,4]")
+    assert row_echelon(mat).__str__() == "[{1.0},{2.0},{3.0},{1.0};{0.0},{-3.0},{-6.0},{-3.0};{0.0},{-0.0},{-3.0},{3.0};{0.0},{-0.0},{0},{0}]"
+
+
+def test_multi_variable_solve():
+    mat = getTokens("[1, 2, 3, 1;\
+                      4, 5, 6, 1;\
+                      7, 8, 2, 2]")
+    assert gauss_elim(mat).__str__()=="[{-1.1428571428571432};{1.2857142857142858};{-0.14285714285714285}]"
 
 
 #################
