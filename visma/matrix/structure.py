@@ -1,4 +1,5 @@
 from visma.functions.constant import Constant
+from visma.functions.structure import Expression
 from visma.functions.operator import Multiply
 from visma.functions.operator import Minus
 from visma.functions.operator import Plus
@@ -76,6 +77,41 @@ class Matrix(object):
         from visma.matrix.operations import simplifyMatrix
         matSub = simplifyMatrix(matSub)
         return matSub
+
+
+    def __mul__(self, other):
+        """Multiplies two matrices
+
+        Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+
+        Returns:
+            matPro {visma.matrix.structure.Matrix} -- product matrix token
+
+        Note:
+            Make mulitplyCheck before calling multiplyMatrix
+            Not commutative
+        """
+        matPro = Matrix()
+        matPro.empty([self.dim[0], other.dim[1]])
+        for i in range(self.dim[0]):
+            for j in range(other.dim[1]):
+                for k in range(self.dim[1]):
+                    if matPro.value[i][j] != []:
+                        matPro.value[i][j].append(Binary('+'))
+                    if len(self.value[i][k]) != 1:
+                        matPro.value[i][j].append(Expression(self.value[i][k]))
+                    else:
+                        matPro.value[i][j].extend(self.value[i][k])
+                    matPro.value[i][j].append(Binary('*'))
+                    if len(other.value[k][j]) != 1:
+                        matPro.value[i][j].append(Expression(other.value[k][j]))
+                    else:
+                        matPro.value[i][j].extend(other.value[k][j])
+        from visma.matrix.operations import simplifyMatrix
+        matPro = simplifyMatrix(matPro)
+        return matPro
 
 
     def __str__(self):
