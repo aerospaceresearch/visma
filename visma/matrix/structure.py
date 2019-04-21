@@ -1,5 +1,6 @@
 from visma.functions.constant import Constant
 from visma.functions.structure import Expression
+from visma.functions.operator import Binary
 
 
 class Matrix(object):
