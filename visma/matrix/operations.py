@@ -300,10 +300,12 @@ def gauss_elim(mat):
             if j!=M-2:
                 sum_.append(Binary('+'))
         sum_,_,_,_,_ = simplify(sum_)
+        
         result.value[index][0].extend(echelon.value[i][M-1])
         if sum_:
+            
             if sum_[0].value<0:
-                result.value[index][0].append(Binary('+'))
+                result.value[index][0].append(Binary('-'))     #negative sign makes the negative sign in value positive
             else:
                 result.value[index][0].append(Binary('-'))
             result.value[index][0].extend(sum_)
