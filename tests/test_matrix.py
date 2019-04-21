@@ -219,3 +219,25 @@ def test_isSquare():
                       1, 3; \
                       1, 4]")
     assert not mat.isSquare()
+
+#######################
+# Operator Overloading
+#######################
+
+
+def test_addoverload():
+
+    matA = getTokens("[ x      , x^2; \
+                        3 + x^2, xy ]")
+    matB = getTokens("[ y + 1  , x^2; \
+                        2 - x^2, xy - 1 ]")
+    matSum = matA + matB
+    assert matSum.__str__() == "[{x}+{y}+{1.0},2{x}^{2.0};{5.0},2{x}{y}-{1.0}]"
+
+
+def test_suboverload():
+
+    matA = getTokens("[y, 2x]")
+    matB = getTokens("[-x, -x]")
+    matSub = matA - matB
+    assert matSub.__str__() == "[{y}--1.0{x},3.0{x}]"
