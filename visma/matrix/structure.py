@@ -29,7 +29,7 @@ class Matrix(object):
         self.power = 1
         self.dim = [0, 0]
 
-    def __add__(self,other):
+    def __add__(self, other):
         """Adds two matrices
 
         Arguments:
@@ -53,8 +53,7 @@ class Matrix(object):
         matSum = simplifyMatrix(matSum)
         return matSum
 
-
-    def __sub__(self,other):
+    def __sub__(self, other):
         """Subtracts two matrices
 
         Arguments:
@@ -77,7 +76,6 @@ class Matrix(object):
         from visma.matrix.operations import simplifyMatrix
         matSub = simplifyMatrix(matSub)
         return matSub
-
 
     def __mul__(self, other):
         """Multiplies two matrices
@@ -112,7 +110,6 @@ class Matrix(object):
         from visma.matrix.operations import simplifyMatrix
         matPro = simplifyMatrix(matPro)
         return matPro
-
 
     def __str__(self):
         represent = "["
