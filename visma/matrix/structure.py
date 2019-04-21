@@ -28,6 +28,56 @@ class Matrix(object):
         self.power = 1
         self.dim = [0, 0]
 
+    def __add__(self,other):
+        """Adds two matrices
+
+        Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+
+        Returns:
+            matSum {visma.matrix.structure.Matrix} -- sum matrix token
+
+        Note:
+            Make dimCheck before calling addMatrix
+        """
+        matSum = Matrix()
+        matSum.empty(self.dim)
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matSum.value[i][j].extend(self.value[i][j])
+                matSum.value[i][j].append(Binary('+'))
+                matSum.value[i][j].extend(other.value[i][j])
+        from visma.matrix.operations import simplifyMatrix
+        matSum = simplifyMatrix(matSum)
+        return matSum
+
+
+    def __sub__(self,other):
+        """Subtracts two matrices
+
+        Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+
+        Returns:
+            matSub {visma.matrix.structure.Matrix} -- subtracted matrix token
+
+        Note:
+            Make dimCheck before calling subMatrix
+        """
+        matSub = Matrix()
+        matSub.empty(self.dim)
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matSub.value[i][j].extend(self.value[i][j])
+                matSub.value[i][j].append(Binary('-'))
+                matSub.value[i][j].extend(other.value[i][j])
+        from visma.matrix.operations import simplifyMatrix
+        matSub = simplifyMatrix(matSub)
+        return matSub
+
+
     def __str__(self):
         represent = "["
         for i in range(self.dim[0]):
