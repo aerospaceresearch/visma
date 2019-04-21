@@ -40,6 +40,37 @@ def test_Constant():
     summation = constant1 - variable1
     assert summation.__str__() == "{({5}-5{x}^{3})}"
 
+    constant1 = Constant(5)
+    constant2 = Constant(5)
+    summation = constant1 * constant2
+    assert summation.__str__() == "{25}"
+
+    constant1 = Constant(5)
+    variable1 = Variable(5, 'x', 3)
+    summation = constant1 * variable1
+    assert summation.__str__() == "25{x}^{3}"
+
+    constant1 = Constant(5)
+    exp1 = constant1 + Variable(5, 'x', 3)
+    constant2 = Constant(10)
+    summation = constant2 * exp1
+    assert summation.__str__() == "{({50}+50{x}^{3})}"
+
+    constant1 = Constant(5)
+    constant2 = Constant(5)
+    summation = constant1 / constant2
+    assert summation.__str__() == "{1.0}"
+
+    constant1 = Constant(5)
+    variable1 = Variable(5, 'x', 3)
+    summation = constant1 / variable1
+    assert summation.__str__() == "{x}^{-3}"
+
+    constant1 = Constant(5)
+    exp1 = constant1 + Variable(5, 'x', 3)
+    constant2 = Constant(10)
+    summation = constant2 / exp1
+    assert summation.__str__() == "10.0*{({5}+5{x}^{3})}^{-1}"
 
 ######################
 # functions.variable #
