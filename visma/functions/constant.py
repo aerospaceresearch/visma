@@ -1,224 +1,96 @@
-import math
-from visma.functions.structure import Function, Expression
+from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.functions.exponential import Exponential
-
-#############
-# Constant  #
-#############
 
 
-class Constant(Function):
-    """Class for constant type tokens
-
-    Example:
-        1, -2, 3.14, 4i + 5 etc
-
-    Extends:
-        Function
-    """
-
-    def __init__(self, value=None):
-        super().__init__()
-        self.coefficient = 1
-        self.power = 1
-        self.type = 'Constant'
-        if value is not None:
-            self.value = value
-
-    def inverse(self, RHS):
-        pass
-
-    def differentiate(self):
-        super().differentiate()
-        self.value = 0
-
-    def integrate(self, intwrt):
-        self.coefficient = self.value ** self.power
-        self.__class__ = Variable
-        self.power = [1]
-        self.value = [intwrt]
-
-    def __radd__(self, other):
-        return self + other
-
-    def __add__(self, other):
-        if self.isZero():   # if one of them is Empty, we can return the other one even it is Empty too because we need at least one to be returned.
-            return other
-        elif other.isZero():
-            return self
-        elif isinstance(other, Constant):
-            const = Constant()
-            const.value = self.calculate() + other.calculate()
-            return const
-        elif isinstance(other, Expression):
-            if other.power == 1:
-                constFound = False
-                for i, var in enumerate(other.tokens):
-                    if isinstance(var, Constant):
-                        other.tokens[i] = self + var
-                        constFound = True
-                        break
-                if not constFound:
-                    other.tokens.extend(['+', self])
-                return other
-            else:
-                pass
-        self.value = self.calculate()
-        self.power = 1
-        self.coefficient = 1
-        exprAdd = Expression([self, '+', other])     # Make an Expression and assign the Tokens attribute with the Constant and the Other Variable, Trig. function,...etc.
-        return exprAdd
-
-    def __rsub__(self, other):
-        return self - other
-
-    def __sub__(self, other):
-        if self.isZero():
-            return -1 * other
-        elif other.isZero():
-            return self
-        elif isinstance(other, Constant):
-            const = Constant()
-            const.value = self.calculate() - other.calculate()
-            return const
-        elif isinstance(other, Expression):
-            if other.power == 1:
-                for i, var in enumerate(other.tokens):
-                    other.tokens[i] = -1 * var
-                    if isinstance(var, Constant):
-                        other.tokens[i] = self + var
-                return other
-            else:
-                pass
-        self.value = self.calculate()
-        self.power = 1
-        self.coefficient = 1
-        exprSub = Expression([self, '-', other])
-        return exprSub
-
-    def __rmul__(self, other):
-        return self * other
-
-    def __mul__(self, other):
-        if other in ['+', '-', '*', '/']:
-            return other
-        elif self.isZero():
-            return self
-        elif isinstance(other, int) or isinstance(other, float):
-            const = Constant()
-            const.value = self.calculate() * other
-            return const
-        elif isinstance(other, Constant):
-            if other.isZero():
-                return other
-            const = Constant()
-            const.value = self.calculate() * other.calculate()
-            return const
-        elif isinstance(other, Expression):
-            if other.power == 1:
-                other.tokens[0] = self * other.tokens[0]
-                for i, var in enumerate(other.tokens):
-                    if other.tokens[i-1] == '+' or other.tokens[i-1] == '-':
-                        other.tokens[i] = self * var
-            else:
-                if isinstance(other.power, Constant) or isinstance(other.power, int) or isinstance(other.power, float):
-                    self = self ** (-1 * other.power)
-                    for i, var in enumerate(other.tokens):
-                        if other.tokens[i - 1] == '+' or other.tokens[i - 1] == '-':
-                            other.tokens[i] = self * var
-                else:
-                    other.coefficient = self * other.coefficient
-        else:
-            if other.isZero():
-                return other
-            other.coefficient = self.calculate() * other.coefficient
-        return other
-
-    def __rtruediv__(self, other):
-        return self / other
-
-    def __truediv__(self, other):
-        if other in ['+', '-', '*', '/']:
-            return other
-        elif self.isZero():
-            return self
-        elif isinstance(other, Constant):
-            if other.isZero():
-                return self     # ToDo: Raise a Division by Zero Error
-            const = Constant()
-            const.value = self.calculate() / other.calculate()
-            return const
-        elif isinstance(other, Expression):
-            other.power = -1 * other.power
-            newCoeff = self * other.coefficient
-            other.coefficient = newCoeff
-            return other
-        else:
-            if other.isZero():  # ToDo: Raise a Division by Zero Error
-                return other
-            other.coefficient = self.calculate() / other.coefficient
-            other.power = [-1 * eachPower for eachPower in other.power]
-        return other
-
-    def __pow__(self, val):
-        if isinstance(val, int) or isinstance(val, float) or isinstance(val, Constant):
-            if self.power == 0 and self.value == 0:
-                self.power = 1
-                self.value = 1
-            else:
-                self.value = (self.value ** self.power)
-                self.power = 1
-            return self
-        elif isinstance(val, Constant):
-            self.value = self.calculate() ** val.calculate()
-            self.coefficient = 1
-            self.power = 1
-            return self
-        else:
-            constExponent = Exponential()
-            constExponent.base = self.value
-            constExponent.coefficient = self.coefficient
-            constExponent.power = val
-            return constExponent
-
-    def calculate(self):
-        return self.coefficient * (self ** self.power).value
-
-    def functionOf(self):
-        return []
+######################
+# functions.constant #
+######################
 
 
-class Zero(Constant):
+def test_Constant():
 
-    def __init__(self):
-        super().__init__()
-        self.value = 0
+    constant1 = Constant(10)
+    assert constant1.__str__() == "{10}"
+    constant1.differentiate()
+    assert constant1.value == 0
+
+    constant2 = Constant(5, 2)
+    constant2.integrate('x')
+    assert isinstance(constant2, Variable)
+    assert constant2.__str__() == "25{x}"
+
+    # Tests for Operator Overloaded functions.
+
+    # Addition & Subtraction
+
+    constant4 = Constant(2, 2)
+    constant5 = Constant(7)
+    constant3 = constant4 - constant5
+    assert constant3.__str__() == "{-3}"
+
+    constant4 = Constant(7, 2)
+    constant0 = Constant(5)
+    constant6 = constant4 - constant3 - constant5 + constant0
+    assert constant6.__str__() == "{50}"
+
+    constant0 = Constant(5, 2, 2)
+    constant2 = constant0
+    variable0 = Variable(5, 'X', 3)
+    summation0 = constant0 - variable0 + constant2
+    assert summation0.__str__() == "{({100}-5{X}^{3})}"
+
+    constant0 = Constant(5, 2, 2)
+    constant2 = constant0
+    variable0 = Variable(5, 'X', 3)
+    summation0 = constant0 + variable0 + constant2
+    assert summation0.__str__() == "{({100}+5{X}^{3})}"
+
+    # Multiplication & Division
+
+    constant0 = Constant(0, 2)
+    constant1 = Constant(5)
+    mul1 = constant0 * constant1
+    assert mul1.calculate() == 0
+    mul1 = constant1 * constant0
+    assert mul1.calculate() == 0
+    mul1 = constant1 * constant1 + constant0 * constant1 + constant0 * constant1
+    assert mul1.calculate() == 25
+
+    constant1 = Constant(5, 2)
+    constant2 = Constant(4, 2)
+    variable0 = Variable(3, 'X', 3)
+    mul3 = constant1 * (constant2 + variable0)
+    assert mul3.__str__() == "{({400}+75{X}^{3})}"
+
+    constant1 = Constant(5, 2)
+    constant2 = Constant(4, 2)
+    variable0 = Variable(3, 'X', 3)
+    mul3 = constant1 / (constant2 + variable0)
+    assert mul3.__str__() == "{25}*{({16}+3{X}^{3})}^{-1}"
+
+    constant1 = Constant(3, 2)
+    constant2 = Constant(4, 2)
+    variable0 = Variable(3, 'X', 3)
+    mul3 = constant1/(constant2/variable0 + constant1)
+    assert mul3.__str__() == "{9}*{({9}+5.333333333333333{X}^{-3})}^{-1}"
 
 
-class One(Constant):
-
-    def __init__(self):
-        super().__init__()
-        self.value = 1
+######################
+# functions.variable #
+######################
 
 
-class Pi(Constant):
+def test_Variable():
 
-    def __init__(self):
-        super().__init__()
-        self.value = math.pi
+    variable1 = Variable(2, 'x', 3)
+    assert variable1.__str__() == "2{x}^{3}"
+    variable1.integrate('x')
+    assert variable1.__str__() == "0.5{x}^{4}"
 
-
-class Euler(Constant):
-
-    def __init__(self):
-        super().__init__()
-        self.value = math.e
-
-
-class Iota(Constant):
-
-    def __init__(self):
-        super().__init__()
-        self.value = 1j
+    # FIXME: Optimize integrate
+    '''
+    variable2 = Variable(3, 'x', -1)
+    variable2.integrate('x')
+    assert isinstance(variable2, Expression)
+    assert variable2.__str__() == '{3log{x}}'
+    '''
