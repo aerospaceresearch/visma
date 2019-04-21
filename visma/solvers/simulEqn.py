@@ -3,7 +3,6 @@ from visma.simplify.simplify import simplifyEquation, moveRTokensToLTokens
 from visma.io.parser import tokensToString
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.matrix.structure import SquareMat
 from visma.matrix.special import cramerMatrices
 
 

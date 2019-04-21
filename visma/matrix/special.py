@@ -1,6 +1,7 @@
 from visma.io.tokenize import tokenizer
 from visma.matrix.structure import SquareMat
 
+
 def cramerMatrices(coefficients):
     '''
     Arguments:
