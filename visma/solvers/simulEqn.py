@@ -4,6 +4,7 @@ from visma.io.parser import tokensToString
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.matrix.structure import SquareMat
+from visma.matrix.special import cramerMatrices
 
 
 def coeffCalculator(LandR_tokens):
@@ -37,45 +38,6 @@ def coeffCalculator(LandR_tokens):
                 coefficients[i][3] = token.value
 
     return coefficients
-
-
-def crammerMatrices(coefficients):
-    '''
-    Arguments:
-    coefficients -- 3 X 4 list -- each each row contains coefficients for x, y, z and constant term respectively
-
-    Returns:
-    Dx, Dy, Dz, D -- 3 X 4 list -- Crammer's Matrices for implementing Crammer's Rule.
-    '''
-    D = [[0] * 3 for _ in range(3)]
-    Dx = [[0] * 3 for _ in range(3)]
-    Dy = [[0] * 3 for _ in range(3)]
-    Dz = [[0] * 3 for _ in range(3)]
-    for i in range(3):
-        for j in range(3):
-            D[i][j] = coefficients[i][j]
-            Dx[i][j] = coefficients[i][j]
-            Dy[i][j] = coefficients[i][j]
-            Dz[i][j] = coefficients[i][j]
-    for k in range(3):
-        Dx[k][0] = coefficients[k][3]
-        Dy[k][1] = coefficients[k][3]
-        Dz[k][2] = coefficients[k][3]
-    for i in range(3):
-        for j in range(3):
-            D[i][j] = tokenizer(str(D[i][j]))
-            Dx[i][j] = tokenizer(str(Dx[i][j]))
-            Dy[i][j] = tokenizer(str(Dy[i][j]))
-            Dz[i][j] = tokenizer(str(Dz[i][j]))
-    matD = SquareMat()
-    matD.value = D
-    matDx = SquareMat()
-    matDx.value = Dx
-    matDy = SquareMat()
-    matDy.value = Dy
-    matDz = SquareMat()
-    matDz.value = Dz
-    return matD, matDx, matDy, matDz
 
 
 def getResult(matD, matDx, matDy, matDz):
@@ -119,7 +81,7 @@ def simulSolver(eqStr1, eqStr2, eqStr3, solveFor):
         lTokens, rTokens, _, _, _, _ = simplifyEquation(tokens[0], tokens[1])
         LandR_tokens[i] = [lTokens, rTokens]
     coefficients = coeffCalculator(LandR_tokens)   # (as of now) its a 3 by 4 matrix; each row has coeff of x, y, z and constant term.
-    matD, matDx, matDy, matDz = crammerMatrices(coefficients)
+    matD, matDx, matDy, matDz = cramerMatrices(coefficients)
     trivial, x, y, z = getResult(matD, matDx, matDy, matDz)
     if trivial:
         if solveFor == 'x':
