@@ -357,3 +357,4 @@ def test_multi_variable_solve():
                       3,5,2,8;\
                       0,8,2,-7]")
     assert gauss_elim(mat).__str__() == "[{4.0};{-1.0};{0.5}]"
+    
