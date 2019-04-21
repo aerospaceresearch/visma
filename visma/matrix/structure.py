@@ -1,6 +1,7 @@
 from visma.functions.constant import Constant
 from visma.functions.structure import Expression
 
+
 class Matrix(object):
     """Class for matrix type
 
@@ -21,7 +22,7 @@ class Matrix(object):
         self.coefficient = 1
         self.power = 1
         self.dim = [0, 0]
-        
+
     def __add__(self, other):
         """Adds two matrices
          Arguments:
