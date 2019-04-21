@@ -14,8 +14,7 @@ def test_Constant():
     constant1.differentiate()
     assert constant1.value == 0
 
-    constant2 = Constant(5)
-    constant2.power = 2
+    constant2 = Constant(5, 2)
     constant2.integrate('x')
     assert isinstance(constant2, Variable)
     assert constant2.__str__() == "25{x}"
@@ -24,30 +23,23 @@ def test_Constant():
 
     # Addition & Subtraction
 
-    constant4 = Constant(2)
-    constant4.power = 2
+    constant4 = Constant(2, 2)
     constant5 = Constant(7)
     constant3 = constant4 - constant5
     assert constant3.__str__() == "{-3}"
 
-    constant4 = Constant(7)
-    constant4 = constant4
-    constant4.power = 2
+    constant4 = Constant(7, 2)
     constant0 = Constant(5)
     constant6 = constant4 - constant3 - constant5 + constant0
     assert constant6.__str__() == "{50}"
 
-    constant0 = Constant(5)
-    constant0.power = 2
-    constant0.coefficient = 2
+    constant0 = Constant(5, 2, 2)
     constant2 = constant0
     variable0 = Variable(5, 'X', 3)
     summation0 = constant0 - variable0 + constant2
     assert summation0.__str__() == "{({100}-5{X}^{3})}"
 
-    constant0 = Constant(5)
-    constant0.power = 2
-    constant0.coefficient = 2
+    constant0 = Constant(5, 2, 2)
     constant2 = constant0
     variable0 = Variable(5, 'X', 3)
     summation0 = constant0 + variable0 + constant2
@@ -55,10 +47,8 @@ def test_Constant():
 
     # Multiplication & Division
 
-    constant0 = Constant(0)
-    constant0.power = 2
+    constant0 = Constant(0, 2)
     constant1 = Constant(5)
-    constant1.power = 1
     mul1 = constant0 * constant1
     assert mul1.calculate() == 0
     mul1 = constant1 * constant0
@@ -66,26 +56,20 @@ def test_Constant():
     mul1 = constant1 * constant1 + constant0 * constant1 + constant0 * constant1
     assert mul1.calculate() == 25
 
-    constant1 = Constant(5)
-    constant1.power = 2
-    constant2 = Constant(4)
-    constant2.power = 2
+    constant1 = Constant(5, 2)
+    constant2 = Constant(4, 2)
     variable0 = Variable(3, 'X', 3)
     mul3 = constant1 * (constant2 + variable0)
     assert mul3.__str__() == "{({400}+75{X}^{3})}"
 
-    constant1 = Constant(5)
-    constant1.power = 2
-    constant2 = Constant(4)
-    constant2.power = 2
+    constant1 = Constant(5, 2)
+    constant2 = Constant(4, 2)
     variable0 = Variable(3, 'X', 3)
     mul3 = constant1 / (constant2 + variable0)
     assert mul3.__str__() == "{25}*{({16}+3{X}^{3})}^{-1}"
 
-    constant1 = Constant(3)
-    constant1.power = 2
-    constant2 = Constant(4)
-    constant2.power = 2
+    constant1 = Constant(3, 2)
+    constant2 = Constant(4, 2)
     variable0 = Variable(3, 'X', 3)
     mul3 = constant1/(constant2/variable0 + constant1)
     assert mul3.__str__() == "{9}*{({9}+5.333333333333333{X}^{-3})}^{-1}"
