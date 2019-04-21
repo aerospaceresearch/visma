@@ -1,5 +1,5 @@
 import math
-from visma.functions.structure import Function
+from visma.functions.structure import Function, Expression
 from visma.functions.variable import Variable
 
 ############
@@ -40,6 +40,62 @@ class Constant(Function):
 
     def calculate(self):
         return self.coefficient * ((self.value**(self.power)))
+
+    def __radd__(self, other):
+        return self + other
+
+    def __add__(self, other):
+        from visma.functions.constant import Constant
+        if isinstance(other, Constant):
+            self = Constant(self.calculate() + other.calculate())
+            return self
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.tokens = [self]
+            for i, token in enumerate(other.tokens):
+                if isinstance(token, Constant):
+                    self = Constant(self.calculate() + other.calculate())
+                elif isinstance(token, Variable):
+                    expression.tokens.extend(['+', Variable(token)])
+            expression.tokens[0] = self
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Variable):
+            expression = Expression()
+            expression.tokens = [self]
+            expression.tokens.extend(['+', other])
+            self.type = 'Expression'
+            self = expression
+            return expression
+
+    def __rsub__(self, other):
+        return self - other
+
+    def __sub__(self, other):
+        from visma.functions.constant import Constant
+        if isinstance(other, Constant):
+            self = Constant(self.calculate() - other.calculate())
+            return self
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.tokens = [self]
+            for i, token in enumerate(other.tokens):
+                if isinstance(token, Constant):
+                    self = Constant(self.calculate() - other.calculate())
+                elif isinstance(token, Variable):
+                    expression.tokens.extend(['-', Variable(token)])
+            expression.tokens[0] = self
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Variable):
+            expression = Expression()
+            expression.tokens = [self]
+            expression.tokens.extend(['-', other])
+            self.type = 'Expression'
+            self = expression
+            return expression
 
     def functionOf(self):
         return []

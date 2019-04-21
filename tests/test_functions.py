@@ -1,5 +1,6 @@
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
+from visma.functions.structure import Expression
 
 
 ######################
@@ -19,6 +20,26 @@ def test_Constant():
     assert isinstance(constant2, Variable)
     assert constant2.__str__() == "5{x}"
 
+    constant1 = Constant(2)
+    constant2 = Constant(7)
+    constant3 = constant1 + constant2
+    assert constant3.__str__() == "{9}"
+
+    constant1 = Constant(2)
+    constant2 = Constant(7)
+    constant3 = constant1 - constant2
+    assert constant3.__str__() == "{-5}"
+
+    constant1 = Constant(5)
+    variable1 = Variable(5, 'x', 3)
+    summation = constant1 + variable1
+    assert summation.__str__() == "{({5}+5{x}^{3})}"
+
+    constant1 = Constant(5)
+    variable1 = Variable(5, 'x', 3)
+    summation = constant1 - variable1
+    assert summation.__str__() == "{({5}-5{x}^{3})}"
+
 
 ######################
 # functions.variable #
@@ -31,6 +52,47 @@ def test_Variable():
     assert variable1.__str__() == "2{x}^{3}"
     variable1.integrate('x')
     assert variable1.__str__() == "0.5{x}^{4}"
+
+    constant = Constant(3)
+    variable = Variable(2, 'x', 3)
+    add = variable + constant
+    assert add.__str__() == "{(2{x}^{3}+{3})}"
+
+    variable1 = Variable(2, 'x', 3)
+    variable2 = Variable(4, 'x', 3)
+    variable3 = Variable(2, 'x', 4)
+    add1 = variable1 + variable2
+    add2 = variable1 + variable3
+    assert add1.__str__() == "6{x}^{3}"
+    assert add2.__str__() == "{(6{x}^{3}+2{x}^{4})}"
+
+    variable1 = Variable(2, 'x', 3)
+    constant = Constant(3)
+    exp1 = Expression([variable1, '+', constant])
+    variable2 = Variable(4, 'x', 3)
+    add2 = variable2 + exp1
+    assert add2.__str__() == "{(6{x}^{3}+{3})}"
+
+    constant = Constant(3)
+    variable = Variable(2, 'x', 3)
+    add = variable - constant
+    assert add.__str__() == "{(2{x}^{3}-{3})}"
+
+    variable1 = Variable(2, 'x', 3)
+    variable2 = Variable(4, 'x', 3)
+    variable3 = Variable(2, 'x', 4)
+    variable4 = Variable(2, 'x', 3)
+    add1 = variable1 - variable2
+    add2 = variable3 - variable4
+    assert add1.__str__() == "-2{x}^{3}"
+    assert add2.__str__() == "{(2{x}^{4}-2{x}^{3})}"
+
+    variable1 = Variable(2, 'x', 3)
+    constant = Constant(3)
+    exp1 = variable1 - constant
+    variable2 = Variable(4, 'x', 3)
+    add2 = variable2 - exp1
+    assert add2.__str__() == "{(2{x}^{3}-{-3})}"
 
     # FIXME: Optimize integrate
     '''

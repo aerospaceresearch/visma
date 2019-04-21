@@ -77,3 +77,81 @@ class Variable(Function):
 
     def calculate(self, val):
         return self.coefficient * ((val**(self.power)))
+
+    def __radd__(self, other):
+        return self + other
+
+    def __add__(self, other):
+        from visma.functions.constant import Constant
+        if isinstance(other, Constant):
+            expression = Expression()
+            expression.tokens = [self]
+            expression.tokens.extend(['+', other])
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.tokens = [self]
+            for i, token in enumerate(other.tokens):
+                if isinstance(token, Variable):
+                    if token.power == self.power:
+                        self.coefficient += other.tokens[i].coefficient
+                    else:
+                        expression.tokens.extend(['+', Variable(token)])
+                elif isinstance(token, Constant):
+                    expression.tokens.extend(['+', Constant(token.calculate()*1)])
+            expression.tokens[0] = self
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Variable):
+            if other.power == self.power:
+                self.coefficient += other.coefficient
+                return self
+            else:
+                expression = Expression()
+                expression.tokens = [self]
+                expression.tokens.extend(['+', other])
+                self.type = 'Expression'
+                self = expression
+                return expression
+
+    def __rsub__(self, other):
+        return self - other
+
+    def __sub__(self, other):
+        from visma.functions.constant import Constant
+        if isinstance(other, Constant):
+            expression = Expression()
+            expression.tokens = [self]
+            expression.tokens.extend(['-', other])
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.tokens = [self]
+            for i, token in enumerate(other.tokens):
+                if isinstance(token, Variable):
+                    if token.power == self.power:
+                        self.coefficient -= other.tokens[i].coefficient
+                    else:
+                        expression.tokens.extend(['-', Variable(token)])
+                elif isinstance(token, Constant):
+                    expression.tokens.extend(['-', Constant(token.calculate()*-1)])
+            expression.tokens[0] = self
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Variable):
+            if other.power == self.power:
+                self.coefficient -= other.coefficient
+                return self
+            else:
+                expression = Expression()
+                expression.tokens = [self]
+                expression.tokens.extend(['-', other])
+                self.type = 'Expression'
+                self = expression
+                return expression
