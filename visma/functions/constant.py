@@ -52,7 +52,7 @@ class Constant(Function):
         elif isinstance(other, Expression):
             expression = Expression()
             expression.tokens = [self]
-            for i, token in enumerate(other.tokens):
+            for token in other.tokens:
                 if isinstance(token, Constant):
                     self = Constant(self.calculate() + other.calculate())
                 elif isinstance(token, Variable):
@@ -80,7 +80,7 @@ class Constant(Function):
         elif isinstance(other, Expression):
             expression = Expression()
             expression.tokens = [self]
-            for i, token in enumerate(other.tokens):
+            for token in other.tokens:
                 if isinstance(token, Constant):
                     self = Constant(self.calculate() - other.calculate())
                 elif isinstance(token, Variable):
