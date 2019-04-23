@@ -107,7 +107,7 @@ class Constant(Function):
             return self
         elif isinstance(other, Expression):
             expression = Expression()
-            for i, token in enumerate(other.tokens):
+            for token in other.tokens:
                 if isinstance(token, Constant):
                     expression.tokens.append(Constant(self.calculate() * token.calculate()))
                 elif isinstance(token, Variable):
