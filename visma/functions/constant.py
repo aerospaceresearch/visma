@@ -98,7 +98,7 @@ class Constant(Function):
             return expression
 
     def __rmul__(self, other):
-        return self - other
+        return self * other
 
     def __mul__(self, other):
         from visma.functions.constant import Constant
@@ -129,7 +129,7 @@ class Constant(Function):
             return variable
 
     def __rtruediv__(self, other):
-        return self - other
+        return self / other
 
     def __truediv__(self, other):
         from visma.functions.constant import Constant

@@ -155,3 +155,67 @@ class Variable(Function):
                 self.type = 'Expression'
                 self = expression
                 return expression
+
+    def __rmul__(self, other):
+        return self * other
+
+    def __mul__(self, other):
+        from visma.functions.constant import Constant
+        if isinstance(other, Constant):
+            self.coefficient *= other.calculate()
+            return self
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.coefficient = self.coefficient * other.coefficient
+            for i, token in enumerate(other.tokens):
+                if isinstance(token, Variable) or isinstance(token, Constant):
+                    expression.tokens.extend([self * token])
+                else:
+                    expression.tokens.extend(token)
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Variable):
+            variable = Variable()
+            variable.value.extend(self.value)
+            variable.power.extend(self.power)
+            variable.coefficient = self.coefficient * other.coefficient
+            for i, val in enumerate(other.value):
+                if val in variable.value:
+                    variable.power[i] += other.power[i]
+                else:
+                    variable.value.extend(val)
+                    variable.power.extend([other.power[i]])
+            self = variable
+            return variable
+
+    def __rtruediv__(self, other):
+        return self / other
+
+    def __truediv__(self, other):
+        from visma.functions.constant import Constant
+        if isinstance(other, Constant):
+            self.coefficient /= other.calculate()
+            return self
+        elif isinstance(other, Expression):
+            expression = Expression()
+            self.coefficient /= other.coefficient
+            other.power *= -1
+            expression.tokens = [self]
+            expression.tokens.extend(['*', other])
+            self.type = 'Expression'
+            self = expression
+            return expression
+        elif isinstance(other, Variable):
+            variable = Variable()
+            variable.value.extend(self.value)
+            variable.power.extend(self.power)
+            variable.coefficient = self.coefficient / other.coefficient
+            for i, val in enumerate(other.value):
+                if val in variable.value:
+                    variable.power[i] -= other.power[i]
+                else:
+                    variable.value.extend(val)
+                    variable.power.extend([-1*other.power[i]])
+            self = variable
+            return variable

@@ -125,6 +125,40 @@ def test_Variable():
     add2 = variable2 - exp1
     assert add2.__str__() == "{(2{x}^{3}-{-3})}"
 
+    constant = Constant(3)
+    variable = Variable(2, 'x', 3)
+    add = variable * constant
+    assert add.__str__() == "6{x}^{3}"
+
+    variable1 = Variable(2, 'x', 3)
+    variable2 = Variable(4, 'x', 3)
+    add2 = variable1 * variable2
+    assert add2.__str__() == "8{x}^{6}"
+
+    variable1 = Variable(2, 'x', 3)
+    variable2 = Variable(4, 'y', 3)
+    add2 = variable1 * variable2
+    assert add2.__str__() == "8{x}^{3}{y}^{3}"
+
+    variable1 = Variable(2, 'x', 3)
+    variable2 = Variable(4, 'y', 4)
+    add1 = variable1 / variable2
+    assert add1.__str__() == "0.5{x}^{3}{y}^{-4}"
+
+    variable1 = Variable(2, 'x', 3)
+    constant = Constant(3)
+    exp1 = variable1 - constant
+    variable2 = Variable(4, 'x', 3)
+    add2 = variable2 / exp1
+    assert add2.__str__() == "{(4.0{x}^{3}*{(2{x}^{3}-{3})}^{-1})}"
+
+    variable1 = Variable(2, 'x', 3)
+    constant = Constant(3)
+    exp1 = variable1 - constant
+    variable2 = Variable(4, 'x', 3)
+    add2 = variable2 * exp1
+    assert add2.__str__() == "4*{(8{x}^{6}-12{x}^{3})}"
+
     # FIXME: Optimize integrate
     '''
     variable2 = Variable(3, 'x', -1)
