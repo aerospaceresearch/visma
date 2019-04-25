@@ -8,12 +8,27 @@ from visma.simplify.addsub import addition, additionEquation, subtraction, subtr
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
+# from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
 
 
 def commandExec(command):
     operation = command.split('(', 1)[0]
     inputEquation = command.split('(', 1)[1][:-1]
+
+    # # TODO: Implement simultaneous equation solvers in GUI & CLI
+    # if ';' in inputEquation:
+    #     if ',' in inputEquation:
+    #         varName = inputEquation.split(',')[1]
+    #         varName = "".join(varName.split())
+    #         inputEquation = inputEquation.split(',')[0]
+    #     afterSplit = inputEquation.split(';')
+    #     # Multiple equations provided by user.
+    #     eqStr1 = afterSplit[0]
+    #     eqStr2 = afterSplit[1]
+    #     eqStr3 = afterSplit[2]
+    #     token_string  = simulSolver(eqStr1, eqStr2, eqStr3, varName)
+
     if ',' in inputEquation:
         varName = inputEquation.split(',')[1]
         varName = "".join(varName.split())
