@@ -46,6 +46,24 @@ def test_Constant():
     assert summation.__str__() == "{25}"
 
     constant1 = Constant(5)
+    exp1 = constant1 + Variable(5, 'x', 3)
+    constant2 = Constant(10)
+    summation = constant2 + exp1
+    assert summation.__str__() == "{({15}+5{x}^{3})}"
+
+    constant1 = Constant(5)
+    exp1 = constant1 + Variable(5, 'x', 3)
+    constant2 = Constant(10)
+    summation = constant2 - exp1
+    assert summation.__str__() == "{({5}-5{x}^{3})}"
+
+    constant1 = Constant(5)
+    exp1 = constant1 + Variable(5, 'x', 3)
+    constant2 = Constant(10)
+    summation = exp1 - constant2
+    assert summation.__str__() == "{({({5}+5{x}^{3})}-{10})}"
+
+    constant1 = Constant(5)
     variable1 = Variable(5, 'x', 3)
     summation = constant1 * variable1
     assert summation.__str__() == "25{x}^{3}"
@@ -71,6 +89,12 @@ def test_Constant():
     constant2 = Constant(10)
     summation = constant2 / exp1
     assert summation.__str__() == "10.0*{({5}+5{x}^{3})}^{-1}"
+
+    constant1 = Constant(5)
+    exp1 = constant1 + Variable(5, 'x', 3)
+    constant2 = Constant(10)
+    summation = exp1 / constant2
+    assert summation.__str__() == "0.1*{({5}+5{x}^{3})}"
 
 ######################
 # functions.variable #
@@ -104,6 +128,20 @@ def test_Variable():
     add2 = variable2 + exp1
     assert add2.__str__() == "{(6{x}^{3}+{3})}"
 
+    variable1 = Variable(2, 'x', 3)
+    constant = Constant(3)
+    exp1 = variable1 + constant
+    variable2 = Variable(4, 'x', 3)
+    add2 = variable2 - exp1
+    assert add2.__str__() == "{(2{x}^{3}-{3})}"
+
+    variable1 = Variable(2, 'x', 3)
+    constant = Constant(3)
+    exp1 = Expression([variable1, '+', constant])
+    variable2 = Variable(4, 'x', 3)
+    add2 = exp1 - variable2
+    assert add2.__str__() == "{({(2{x}^{3}+{3})}-4{x}^{3})}"  # TODO : Can be solved by calling expression simplifaction after it is fixed
+
     constant = Constant(3)
     variable = Variable(2, 'x', 3)
     add = variable - constant
@@ -117,13 +155,6 @@ def test_Variable():
     add2 = variable3 - variable4
     assert add1.__str__() == "-2{x}^{3}"
     assert add2.__str__() == "{(2{x}^{4}-2{x}^{3})}"
-
-    variable1 = Variable(2, 'x', 3)
-    constant = Constant(3)
-    exp1 = variable1 - constant
-    variable2 = Variable(4, 'x', 3)
-    add2 = variable2 - exp1
-    assert add2.__str__() == "{(2{x}^{3}-{-3})}"
 
     constant = Constant(3)
     variable = Variable(2, 'x', 3)

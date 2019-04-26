@@ -54,7 +54,7 @@ class Constant(Function):
             expression.tokens = [self]
             for token in other.tokens:
                 if isinstance(token, Constant):
-                    self = Constant(self.calculate() + other.calculate())
+                    self = Constant(self.calculate() + token.calculate())
                 elif isinstance(token, Variable):
                     expression.tokens.extend(['+', Variable(token)])
             expression.tokens[0] = self
@@ -70,7 +70,12 @@ class Constant(Function):
             return expression
 
     def __rsub__(self, other):
-        return self - other
+        expression = Expression()
+        expression.tokens = [other]
+        expression.tokens.extend(['-', self])
+        self.type = 'Expression'
+        self = expression
+        return expression
 
     def __sub__(self, other):
         from visma.functions.constant import Constant
@@ -82,7 +87,7 @@ class Constant(Function):
             expression.tokens = [self]
             for token in other.tokens:
                 if isinstance(token, Constant):
-                    self = Constant(self.calculate() - other.calculate())
+                    self = Constant(self.calculate() - token.calculate())
                 elif isinstance(token, Variable):
                     expression.tokens.extend(['-', Variable(token)])
             expression.tokens[0] = self
@@ -129,7 +134,11 @@ class Constant(Function):
             return variable
 
     def __rtruediv__(self, other):
-        return self / other
+        expression = Expression(other.tokens)
+        expression.coefficient = other.coefficient/self.calculate()
+        self.type = 'Expression'
+        self = expression
+        return expression
 
     def __truediv__(self, other):
         from visma.functions.constant import Constant
