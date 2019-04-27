@@ -353,7 +353,7 @@ def inverse(matrix):
     for i in range(0, n):
         for j in range(0, n):
             if j != i:
-                temp = []  
+                temp = []
                 if len(mat.value[j][i]) != 1:
                     temp.append(Expression(mat.value[j][i]))
                 else:
