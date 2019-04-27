@@ -103,8 +103,8 @@ class Matrix(object):
             return False
 
     def inverse(self):
-        """Returns the inverse of the matrix 
-        
+        """Returns the inverse of the matrix
+
         Returns:
             inverse {visma.matrix.structure.Matrix} -- inverse of matrix
         """

@@ -334,8 +334,8 @@ def inverse(matrix):
             if j < n:
                 mat.value[i][j] = matrix.value[i][j]
             else:
-                mat.value[i][j] = s[]
-    
+                mat.value[i][j] = []
+
     for i in range(0, n):
         for j in range(n, 2*n):
             if j == (i + n):
@@ -349,11 +349,11 @@ def inverse(matrix):
                 temp = mat.value[i][j]
                 mat.value[i][j] = mat.value[i-1][j]
                 mat.value[i-1][j] = temp
-    
+
     for i in range(0, n):
         for j in range(0, n):
             if j != i:
-                temp = []   
+                temp = []  
                 if len(mat.value[j][i]) != 1:
                     temp.append(Expression(mat.value[j][i]))
                 else:
@@ -363,8 +363,8 @@ def inverse(matrix):
                     temp.append(Expression(mat.value[i][i]))
                 else:
                     temp.extend(mat.value[i][i])
-                temp, _, _, _, _ = simplify(temp) 
-               
+                temp, _, _, _, _ = simplify(temp)
+
                 for k in range(0, 2*n):
                     t = []
                     if mat.value[i][k][0].value != 0:
@@ -395,7 +395,7 @@ def inverse(matrix):
                 mat.value[i][j], _, _, _, _ = simplify(mat.value[i][j])
 
     inv = Matrix()
-    inv.empty([n,n])
+    inv.empty([n, n])
     for i in range(0, n):
         for j in range(n, 2*n):
             inv.value[i][j-n] = mat.value[i][j]
