@@ -74,6 +74,13 @@ def test_Constant():
     mul3 = constant1/(constant2/variable0 + constant1)
     assert mul3.__str__() == "{9}*{({9}+5.333333333333333{X}^{-3})}^{-1}"
 
+    constant1 = Constant(2, 2)
+    constant2 = Constant(2, 2)
+    mul3 = constant1 ** constant2
+    assert mul3.__str__() == "{256}"
+
+    # Todo: (Constant - Expression) to be added. when All Operator Overloading function are done.
+
 
 ######################
 # functions.variable #

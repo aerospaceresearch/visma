@@ -166,7 +166,7 @@ class Constant(Function):
         return other
 
     def __pow__(self, val):
-        if isinstance(val, int) or isinstance(val, float) or isinstance(val, Constant):
+        if isinstance(val, int) or isinstance(val, float):
             if self.power == 0 and self.value == 0:
                 self.power = 1
                 self.value = 1
