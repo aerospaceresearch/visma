@@ -103,7 +103,13 @@ class Matrix(object):
             return False
 
     def inverse(self):
-        pass
+        """Returns the inverse of the matrix 
+        
+        Returns:
+            inverse {visma.matrix.structure.Matrix} -- inverse of matrix
+        """
+        from visma.matrix.operations import inverse
+        return inverse(self)
 
     def dimension(self):
         """Gets the dimension of the matrix
