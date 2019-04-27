@@ -4,6 +4,7 @@ from visma.functions.constant import Constant
 from visma.simplify.simplify import simplify
 from visma.matrix.structure import Matrix
 from visma.gui import logger
+from visma.io.tokenize import tokenizer
 
 
 def simplifyMatrix(mat):
