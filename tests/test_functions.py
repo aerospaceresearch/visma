@@ -71,8 +71,8 @@ def test_Constant():
     constant1 = Constant(3, 2)
     constant2 = Constant(4, 2)
     variable0 = Variable(3, 'X', 3)
-    mul3 = constant1/(constant2/variable0 + constant1)
-    assert mul3.__str__() == "{9}*{({9}+5.333333333333333{X}^{-3})}^{-1}"
+    mul3 = constant1 - constant1/(constant2/variable0 + constant1)
+    assert mul3.__str__() == "{({9}-{9}*{({9}+5.333333333333333{X}^{-3})}^{-1})}"
 
     constant1 = Constant(2, 2)
     constant2 = Constant(2, 2)
