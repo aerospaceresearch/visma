@@ -103,7 +103,6 @@ class Matrix(object):
         else:
             return False
 
-
     def dimension(self):
         """Gets the dimension of the matrix
 
