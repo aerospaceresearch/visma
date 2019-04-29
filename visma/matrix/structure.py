@@ -170,7 +170,7 @@ class SquareMat(Matrix):
         else:
             ans, _, _, _, _ = simplify(mat[0][0])
         if not ans:
-            ans = [Zero()]
+            ans = Zero()
         return ans
 
     def traceMat(self):
@@ -202,6 +202,10 @@ class SquareMat(Matrix):
         """
         from visma.simplify.simplify import simplify
         from visma.io.tokenize import tokenizer
+        from visma.io.parser import tokensToString
+
+        if tokensToString(self.determinant()) == "0":
+            return -1
 
         n = self.dim[0]
         mat = Matrix()
