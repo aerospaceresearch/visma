@@ -46,19 +46,22 @@ def test_Constant():
     assert summation.__str__() == "{25}"
 
     constant1 = Constant(5)
-    exp1 = constant1 + Variable(5, 'x', 3)
+    variable1 = Variable(5, 'x', 3)
+    exp1 = Expression([constant1, '+', variable1])
     constant2 = Constant(10)
     summation = constant2 + exp1
     assert summation.__str__() == "{({15}+5{x}^{3})}"
 
     constant1 = Constant(5)
-    exp1 = constant1 + Variable(5, 'x', 3)
+    variable1 = Variable(5, 'x', 3)
+    exp1 = Expression([constant1, '+', variable1])
     constant2 = Constant(10)
     summation = constant2 - exp1
     assert summation.__str__() == "{({5}-5{x}^{3})}"
 
     constant1 = Constant(5)
-    exp1 = constant1 + Variable(5, 'x', 3)
+    variable1 = Variable(5, 'x', 3)
+    exp1 = Expression([constant1, '+', variable1])
     constant2 = Constant(10)
     summation = exp1 - constant2
     assert summation.__str__() == "{({({5}+5{x}^{3})}-{10})}"
@@ -69,7 +72,8 @@ def test_Constant():
     assert summation.__str__() == "25{x}^{3}"
 
     constant1 = Constant(5)
-    exp1 = constant1 + Variable(5, 'x', 3)
+    variable1 = Variable(5, 'x', 3)
+    exp1 = Expression([constant1, '+', variable1])
     constant2 = Constant(10)
     summation = constant2 * exp1
     assert summation.__str__() == "{({50}+50{x}^{3})}"
@@ -85,13 +89,15 @@ def test_Constant():
     assert summation.__str__() == "{x}^{-3}"
 
     constant1 = Constant(5)
-    exp1 = constant1 + Variable(5, 'x', 3)
+    variable1 = Variable(5, 'x', 3)
+    exp1 = Expression([constant1, '+', variable1])
     constant2 = Constant(10)
     summation = constant2 / exp1
     assert summation.__str__() == "10.0*{({5}+5{x}^{3})}^{-1}"
 
     constant1 = Constant(5)
-    exp1 = constant1 + Variable(5, 'x', 3)
+    variable1 = Variable(5, 'x', 3)
+    exp1 = Expression([constant1, '+', variable1])
     constant2 = Constant(10)
     summation = exp1 / constant2
     assert summation.__str__() == "0.1*{({5}+5{x}^{3})}"
