@@ -86,15 +86,6 @@ class Constant(Function):
             const = Constant()
             const.value = self.calculate() - other.calculate()
             return const
-        elif isinstance(other, Expression):
-            if other.power == 1:
-                for i, var in enumerate(other.tokens):
-                    other.tokens[i] = -1 * var
-                    if isinstance(var, Constant):
-                        other.tokens[i] = self + var
-                return other
-            else:
-                pass
         self.value = self.calculate()
         self.power = 1
         self.coefficient = 1

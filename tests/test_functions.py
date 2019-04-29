@@ -1,6 +1,6 @@
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-
+from visma.functions.structure import Expression
 
 ######################
 # functions.constant #
@@ -79,7 +79,12 @@ def test_Constant():
     mul3 = constant1 ** constant2
     assert mul3.__str__() == "{256}"
 
-    # Todo: (Constant - Expression) to be added. when All Operator Overloading function are done.
+    var1 = Variable(3, 'x', 3)
+    const1 = Constant(5)
+    expr1 = Expression([var1, '-', const1])
+    constant2 = Constant(2, 2)
+    sub1 = constant2 - expr1
+    assert sub1.__str__() == "{({4}-{(3{x}^{3}-{5})})}"
 
 
 ######################
