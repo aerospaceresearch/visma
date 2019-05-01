@@ -3,7 +3,7 @@ from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
-from visma.io.checks import isNumber
+from visma.io.checks import isNumber, mathError
 from visma.matrix.structure import Matrix
 
 
@@ -37,6 +37,53 @@ def resultLatex(operation, equations, comments, wrtVar=None):
         if comments[i] != []:
             finalSteps += str(comments[i][0]) + "\n"
         finalSteps += r"$" + equationLatex[i] + r"$" + "\n"*2
+
+    return finalSteps
+
+
+def resultStringCLI(equationTokens, operation, comments, solutionType, simul):
+    """Converts tokens to final string format for displaying in terminal in CLI
+
+    Arguments:
+        equationTokens {list} -- list of animations or step by step tokens
+        operation {string} -- operation performed on input
+        comments {list} -- list of comments
+        solutionType {string} -- type of solution expression/equation
+        simul{bool} -- True indicates user has entered simultaneous equation
+
+    Returns:
+        finalSteps {string} -- final result to be displayed in CLI
+    """
+
+    equationString = []
+    for x in equationTokens:
+        equationString.append(tokensToString(x))
+
+    commentsString = []
+    for x in comments:
+        if not x:
+            commentsString.append([])
+        else:
+            for y in x:
+                commentsString.append([y.translate({ord(c): None for c in '${\}'})])
+
+    finalSteps = ''
+    finalSteps = 'INPUT: ' + equationString[0] + '\n'
+    finalSteps += 'OPERATION: ' + operation + '\n'
+    finalSteps += 'OUTPUT: ' + equationString[-1] + 2*'\n'
+    finalSteps += 'STEP-BY-STEP SOLUTION: ' + '\n'
+
+    for i, _ in enumerate(equationString):
+        if comments[i] != [] and equationString[i] != '':
+            finalSteps += '(' + str(commentsString[i][0]) + ')' + '\n'
+            finalSteps += equationString[i] + 2*"\n"
+        elif comments[i] != [] and equationString[i] == '':
+            finalSteps += '\n' + '[' + str(commentsString[i][0]) + ']' + '\n'
+        elif comments[i] == [] and equationString[i] != '':
+            finalSteps += '\n' + equationString[i] + 2*'\n'
+
+    if mathError(equationTokens[-1]) and (not simul):
+        finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
 
     return finalSteps
 
