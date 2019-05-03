@@ -3,6 +3,7 @@ from visma.functions.operator import Multiply
 from visma.functions.operator import Minus
 from visma.functions.operator import Plus
 from visma.functions.constant import Zero
+from visma.functions.structure import Expression
 import numpy as np
 from visma.functions.operator import Binary
 
@@ -102,9 +103,6 @@ class Matrix(object):
         else:
             return False
 
-    def inverse(self):
-        pass
-
     def dimension(self):
         """Gets the dimension of the matrix
 
@@ -172,7 +170,7 @@ class SquareMat(Matrix):
         else:
             ans, _, _, _, _ = simplify(mat[0][0])
         if not ans:
-            ans = [Zero()]
+            ans = Zero()
         return ans
 
     def traceMat(self):
@@ -192,6 +190,98 @@ class SquareMat(Matrix):
         trace.append(Constant(0))
         trace, _, _, _, _ = simplify(trace)
         return trace
+
+    def inverse(self):
+        """Calculates the inverse of the matrix using Gauss-Jordan Elimination
+
+        Arguments:
+            matrix {visma.matrix.structure.Matrix} -- matrix token
+
+        Returns:
+            inv {visma.matrix.structure.Matrix} -- result matrix token
+        """
+        from visma.simplify.simplify import simplify
+        from visma.io.tokenize import tokenizer
+        from visma.io.parser import tokensToString
+
+        if tokensToString(self.determinant()) == "0":
+            return -1
+
+        n = self.dim[0]
+        mat = Matrix()
+        mat.empty([n, 2*n])
+        for i in range(0, n):
+            for j in range(0, 2*n):
+                if j < n:
+                    mat.value[i][j] = self.value[i][j]
+                else:
+                    mat.value[i][j] = []
+
+        for i in range(0, n):
+            for j in range(n, 2*n):
+                if j == (i + n):
+                    mat.value[i][j].extend(tokenizer('1'))
+                else:
+                    mat.value[i][j].extend(tokenizer("0"))
+
+        for i in range(n-1, 0, -1):
+            if mat.value[i-1][0][0].value < mat.value[i][0][0].value:
+                for j in range(0, 2*n):
+                    temp = mat.value[i][j]
+                    mat.value[i][j] = mat.value[i-1][j]
+                    mat.value[i-1][j] = temp
+
+        for i in range(0, n):
+            for j in range(0, n):
+                if j != i:
+                    temp = []
+                    if len(mat.value[j][i]) != 1:
+                        temp.append(Expression(mat.value[j][i]))
+                    else:
+                        temp.extend(mat.value[j][i])
+                    temp.append(Binary('/'))
+                    if len(mat.value[i][i]) != 1:
+                        temp.append(Expression(mat.value[i][i]))
+                    else:
+                        temp.extend(mat.value[i][i])
+                    temp, _, _, _, _ = simplify(temp)
+
+                    for k in range(0, 2*n):
+                        t = []
+                        if mat.value[i][k][0].value != 0:
+                            if len(mat.value[i][k]) != 1:
+                                t.append(Expression(mat.value[i][k]))
+                            else:
+                                t.extend(mat.value[i][k])
+                            t.append(Binary('*'))
+                            if len(temp) != 1:
+                                t.append(Expression(temp))
+                            else:
+                                t.extend(temp)
+                            t, _, _, _, _ = simplify(t)
+                            mat.value[j][k].append(Binary('-'))
+                            if len(t) != 1:
+                                mat.value[j][k].append(Expression(t))
+                            else:
+                                mat.value[j][k].extend(t)
+                            mat.value[j][k], _, _, _, _ = simplify(mat.value[j][k])
+
+        for i in range(0, n):
+            temp = []
+            temp.extend(mat.value[i][i])
+            for j in range(0, 2*n):
+                if mat.value[i][j][0].value != 0:
+                    mat.value[i][j].append(Binary('/'))
+                    mat.value[i][j].extend(temp)
+                    mat.value[i][j], _, _, _, _ = simplify(mat.value[i][j])
+
+        inv = SquareMat()
+        inv.empty([n, n])
+        for i in range(0, n):
+            for j in range(n, 2*n):
+                inv.value[i][j-n] = mat.value[i][j]
+
+        return inv
 
     def cofactor(self):
         """Calculates cofactors matrix of the Square Matrix
