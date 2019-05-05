@@ -1,4 +1,6 @@
 from visma.functions.constant import Constant
+from visma.functions.structure import Expression
+from visma.functions.operator import Binary
 
 
 class Matrix(object):
@@ -21,6 +23,79 @@ class Matrix(object):
         self.coefficient = 1
         self.power = 1
         self.dim = [0, 0]
+
+    def __add__(self, other):
+        """Adds two matrices
+         Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+         Returns:
+            matSum {visma.matrix.structure.Matrix} -- sum matrix token
+         Note:
+            Make dimCheck before calling addMatrix
+        """
+        matSum = Matrix()
+        matSum.empty(self.dim)
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matSum.value[i][j].extend(self.value[i][j])
+                matSum.value[i][j].append(Binary('+'))
+                matSum.value[i][j].extend(other.value[i][j])
+        from visma.matrix.operations import simplifyMatrix
+        matSum = simplifyMatrix(matSum)
+        return matSum
+
+    def __sub__(self, other):
+        """Subtracts two matrices
+         Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+         Returns:
+            matSub {visma.matrix.structure.Matrix} -- subtracted matrix token
+         Note:
+            Make dimCheck before calling subMatrix
+        """
+        matSub = Matrix()
+        matSub.empty(self.dim)
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matSub.value[i][j].extend(self.value[i][j])
+                matSub.value[i][j].append(Binary('-'))
+                matSub.value[i][j].extend(other.value[i][j])
+        from visma.matrix.operations import simplifyMatrix
+        matSub = simplifyMatrix(matSub)
+        return matSub
+
+    def __mul__(self, other):
+        """Multiplies two matrices
+         Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+         Returns:
+            matPro {visma.matrix.structure.Matrix} -- product matrix token
+         Note:
+            Make mulitplyCheck before calling multiplyMatrix
+            Not commutative
+        """
+        matPro = Matrix()
+        matPro.empty([self.dim[0], other.dim[1]])
+        for i in range(self.dim[0]):
+            for j in range(other.dim[1]):
+                for k in range(self.dim[1]):
+                    if matPro.value[i][j] != []:
+                        matPro.value[i][j].append(Binary('+'))
+                    if len(self.value[i][k]) != 1:
+                        matPro.value[i][j].append(Expression(self.value[i][k]))
+                    else:
+                        matPro.value[i][j].extend(self.value[i][k])
+                    matPro.value[i][j].append(Binary('*'))
+                    if len(other.value[k][j]) != 1:
+                        matPro.value[i][j].append(Expression(other.value[k][j]))
+                    else:
+                        matPro.value[i][j].extend(other.value[k][j])
+        from visma.matrix.operations import simplifyMatrix
+        matPro = simplifyMatrix(matPro)
+        return matPro
 
     def __str__(self):
         represent = "["
