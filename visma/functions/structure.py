@@ -114,6 +114,15 @@ class Function(object):
             inst = inst.operand
         return inst.value
 
+    def isZero(self):
+        """
+        It checks if the Function is equal to Zero or not, to decide it should be Added, Subtracted,...etc. or not.
+        :returns: bool
+        """
+        if (self.value == 0 and self.power != 0) or self.coefficient == 0:
+            return True
+        return False
+
 
 ##########
 # FuncOp #
