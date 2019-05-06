@@ -44,17 +44,17 @@ def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFo
     '''Calculates values of x, y and z
 
     Arguments:
-    matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
-    matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
-    matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
-    matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
-    comments {list} -- list of comments
-    animation {list} -- equation tokens for step by step
+        matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
+        matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
+        matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
+        matD {visma.matrix.structure.Matrix.SquareMat} -- Matrix Token
+        comments {list} -- list of comments
+        animation {list} -- equation tokens for step by step
 
     Returns:
-    comments {list} -- list of comments
-    animations {list} -- list of step by step tokens
-    trivial {bool} -- Indicates if trivial solutions exist or not
+        comments {list} -- list of comments
+        animations {list} -- list of step by step tokens
+        trivial {bool} -- Indicates if trivial solutions exist or not
     '''
     x = 0
     y = 0
@@ -103,15 +103,15 @@ def simulSolver(eqTok1, eqTok2, eqTok3, solveFor):
     Main driver function in simulEqn.py
 
     Arguments:
-    eqTok1 {lsit} -- list of tokens of first equation
-    eqTok2 {lsit} -- list of tokens of second equation
-    eqTok3 {lsit} -- list of tokens of third equation
-    solveFor -- string/character -- variable for which equation is being solved.
+        eqTok1 {lsit} -- list of tokens of first equation
+        eqTok2 {lsit} -- list of tokens of second equation
+        eqTok3 {lsit} -- list of tokens of third equation
+        solveFor -- string/character -- variable for which equation is being solved.
 
     Returns:
-    tokenLastString {string} -- last step in string form
-    animations {list} -- list of step by step tokens
-    comments {list} -- list of comments
+        tokenLastString {string} -- last step in string form
+        animations {list} -- list of step by step tokens
+        comments {list} -- list of comments
     '''
     animation = []
     comments = []
