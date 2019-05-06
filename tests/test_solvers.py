@@ -29,14 +29,14 @@ def test_quadraticRoots():
     assert quickTest("x^2 - x + 1 = 0", quadraticRoots) == "(x-0.5+0.87*sqrt[2](-1))*(x-0.5-0.87*sqrt[2](-1))=0"
 
 
-############################
-# solvers.polynomial.roots #
-############################
+###############################
+# solvers.simulEqn #
+###############################
 
 def test_simulSolvers():
-    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver, 'x') == "x=0.0013363779188398915"
-    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver, 'y') == "y=1.3336499407741604"
-    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver, 'z') == "z=-0.001225933462737421"
+    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver, 'x') == "x=0.0"
+    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver, 'y') == "y=1.33"
+    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver, 'z') == "z=-0.0"
 
     assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 11z = 12", simulSolver, 'x') == "x=-0.0"
     assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 11z = 12", simulSolver, 'y') == "y=-1.0"
@@ -45,6 +45,14 @@ def test_simulSolvers():
     assert quickTest("1x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 11z = 12", simulSolver, 'x') == "NoTrivialSolution"
     assert quickTest("1x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 11z = 12", simulSolver, 'y') == "NoTrivialSolution"
     assert quickTest("1x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 11z = 12", simulSolver, 'z') == "NoTrivialSolution"
+
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 9a + 10y + 1100w = 12", simulSolver, 'a') == "a=0.0"
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 9a + 10y + 1100w = 12", simulSolver, 'y') == "y=1.33"
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 9a + 10y + 1100w = 12", simulSolver, 'w') == "w=-0.0"
+
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 10y = 12", simulSolver, 'a') == "a=0.0"
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 10y = 12", simulSolver, 'y') == "y=1.2"
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 10y = 12", simulSolver, 'w') == "w=0.11"
 
 
 #################
