@@ -1,6 +1,6 @@
 from visma.functions.structure import Function, Expression
 from visma.functions.exponential import Logarithm
-from visma.functions.operator import Divide
+from visma.functions.operator import Plus, Minus, Multiply, Divide
 
 ############
 # Variable #
@@ -86,7 +86,7 @@ class Variable(Function):
         if isinstance(other, Constant):
             expression = Expression()
             expression.tokens = [self]
-            expression.tokens.extend(['+', other])
+            expression.tokens.extend([Plus(), other])
             self.type = 'Expression'
             self = expression
             return expression
@@ -98,9 +98,9 @@ class Variable(Function):
                     if token.power == self.power:
                         self.coefficient += other.tokens[i].coefficient
                     else:
-                        expression.tokens.extend(['+', Variable(token)])
+                        expression.tokens.extend([Plus(), Variable(token)])
                 elif isinstance(token, Constant):
-                    expression.tokens.extend(['+', Constant(token.calculate()*1)])
+                    expression.tokens.extend([Plus(), Constant(token.calculate()*1)])
             expression.tokens[0] = self
             self.type = 'Expression'
             self = expression
@@ -112,7 +112,7 @@ class Variable(Function):
             else:
                 expression = Expression()
                 expression.tokens = [self]
-                expression.tokens.extend(['+', other])
+                expression.tokens.extend([Plus(), other])
                 self.type = 'Expression'
                 self = expression
                 return expression
@@ -120,7 +120,7 @@ class Variable(Function):
     def __rsub__(self, other):
         expression = Expression()
         expression.tokens = [other]
-        expression.tokens.extend(['-', self])
+        expression.tokens.extend([Minus(), self])
         self.type = 'Expression'
         self = expression
         return expression
@@ -130,7 +130,7 @@ class Variable(Function):
         if isinstance(other, Constant):
             expression = Expression()
             expression.tokens = [self]
-            expression.tokens.extend(['-', other])
+            expression.tokens.extend([Minus(), other])
             self.type = 'Expression'
             self = expression
             return expression
@@ -142,9 +142,9 @@ class Variable(Function):
                     if token.power == self.power:
                         self.coefficient -= other.tokens[i].coefficient
                     else:
-                        expression.tokens.extend(['-', Variable(token)])
+                        expression.tokens.extend([Minus(), Variable(token)])
                 elif isinstance(token, Constant):
-                    expression.tokens.extend(['-', Constant(token.calculate())])
+                    expression.tokens.extend([Minus(), Constant(token.calculate())])
             expression.tokens[0] = self
             self.type = 'Expression'
             self = expression
@@ -156,7 +156,7 @@ class Variable(Function):
             else:
                 expression = Expression()
                 expression.tokens = [self]
-                expression.tokens.extend(['-', other])
+                expression.tokens.extend([Minus(), other])
                 self.type = 'Expression'
                 self = expression
                 return expression
@@ -176,7 +176,7 @@ class Variable(Function):
                 if isinstance(token, Variable) or isinstance(token, Constant):
                     expression.tokens.extend([self * token])
                 else:
-                    expression.tokens.extend(token)
+                    expression.tokens.extend([token])
             self.type = 'Expression'
             self = expression
             return expression
@@ -207,7 +207,7 @@ class Variable(Function):
             self.coefficient /= other.coefficient
             other.power *= -1
             expression.tokens = [self]
-            expression.tokens.extend(['*', other])
+            expression.tokens.extend([Multiply(), other])
             self.type = 'Expression'
             self = expression
             return expression

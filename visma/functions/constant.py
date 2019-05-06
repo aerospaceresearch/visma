@@ -2,6 +2,7 @@ import math
 from visma.functions.structure import Function, Expression
 from visma.functions.variable import Variable
 from visma.functions.exponential import Exponential
+from visma.functions.operator import Plus, Minus
 
 #############
 # Constant  #
@@ -64,77 +65,101 @@ class Constant(Function):
                         constFound = True
                         break
                 if not constFound:
-                    other.tokens.extend(['+', self])
+                    other.tokens.extend([Plus(), self])
                 return other
             else:
                 pass
         self.value = self.calculate()
         self.power = 1
         self.coefficient = 1
-        exprAdd = Expression([self, '+', other])     # Make an Expression and assign the Tokens attribute with the Constant and the Other Variable, Trig. function,...etc.
+        exprAdd = Expression([self, Plus(), other])     # Make an Expression and assign the Tokens attribute with the Constant and the Other Variable, Trig. function,...etc.
         return exprAdd
 
     def __rsub__(self, other):
-        return self - other
+        return Constant(0) - self + other
 
     def __sub__(self, other):
-        if self.isZero():
-            return -1 * other
-        elif other.isZero():
+        if isinstance(other, Constant):
+            self = Constant(self.calculate() - other.calculate())
             return self
-        elif isinstance(other, Constant):
-            const = Constant()
-            const.value = self.calculate() - other.calculate()
-            return const
-        self.value = self.calculate()
-        self.power = 1
-        self.coefficient = 1
-        exprSub = Expression([self, '-', other])
-        return exprSub
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.tokens = [self]
+            if other.power == 1:
+                coeff = other.coefficient
+                for i, token in enumerate(other.tokens):
+                    print(expression, " ", type(token), other.tokens[i-1])
+                    if isinstance(token, Constant):
+                        if other.tokens[i-1].value == '+' or i == 0:
+                            expression.tokens[0] = Constant(self.calculate() - token.calculate()*coeff)
+                        elif other.tokens[i-1].value == '-':
+                            expression.tokens[0] = Constant(self.calculate() + token.calculate()*coeff)
+                            print(expression.tokens[0])
+                    elif isinstance(token, Variable):
+                        if other.tokens[i-1].value == '+' or i == 0:
+                            expression.tokens.extend([Minus(), Variable(token)])
+                        elif other.tokens[i-1].value == '-':
+                            expression.tokens.extend([Plus(), Variable(token)])
+                self.type = 'Expression'
+                self = expression
+                return expression
+            else:
+                expression.tokens.extend([Minus(), other])
+                self.type = 'Expression'
+                self = expression
+                return expression
+        elif isinstance(other, Variable):
+            expression = Expression()
+            expression.tokens = [self]
+            expression.tokens.extend([Minus(), other])
+            self.type = 'Expression'
+            self = expression
+            return expression
 
     def __rmul__(self, other):
         return self * other
 
     def __mul__(self, other):
-        if other in ['+', '-', '*', '/']:
+        if other.isZero():
+            return other
+        if other.value in ['+', '-', '*', '/']:
             return other
         elif self.isZero():
             return self
-        elif isinstance(other, int) or isinstance(other, float):
-            const = Constant()
-            const.value = self.calculate() * other
-            return const
         elif isinstance(other, Constant):
-            if other.isZero():
-                return other
-            const = Constant()
-            const.value = self.calculate() * other.calculate()
+            const = Constant(self.calculate() * other.calculate())
             return const
+        elif isinstance(other, Variable):
+            variable = Variable()
+            variable.coefficient = self.calculate() * other.coefficient
+            variable.value.extend(other.value)
+            variable.power.extend(other.power)
+            self.type = 'Variable'
+            self = variable
+            return variable
         elif isinstance(other, Expression):
             if other.power == 1:
                 other.tokens[0] = self * other.tokens[0]
                 for i, var in enumerate(other.tokens):
-                    if other.tokens[i-1] == '+' or other.tokens[i-1] == '-':
+                    if other.tokens[i-1].value == '+' or other.tokens[i-1].value == '-':
                         other.tokens[i] = self * var
             else:
                 if isinstance(other.power, Constant) or isinstance(other.power, int) or isinstance(other.power, float):
                     self = self ** (-1 * other.power)
                     for i, var in enumerate(other.tokens):
-                        if other.tokens[i - 1] == '+' or other.tokens[i - 1] == '-':
+                        if other.tokens[i - 1].value == '+' or other.tokens[i - 1].value == '-':
                             other.tokens[i] = self * var
                 else:
                     other.coefficient = self * other.coefficient
         else:
-            if other.isZero():
-                return other
             other.coefficient = self.calculate() * other.coefficient
         return other
 
     def __rtruediv__(self, other):
-        return self / other
+        return Constant(1) / self * other
 
     def __truediv__(self, other):
-        if other in ['+', '-', '*', '/']:
+        if other.value in ['+', '-', '*', '/']:
             return other
         elif self.isZero():
             return self
@@ -146,7 +171,7 @@ class Constant(Function):
             return const
         elif isinstance(other, Expression):
             other.power = -1 * other.power
-            newCoeff = self * other.coefficient
+            newCoeff = self * Constant(other.coefficient)
             other.coefficient = newCoeff
             return other
         else:
@@ -179,126 +204,6 @@ class Constant(Function):
 
     def calculate(self):
         return self.coefficient * (self ** self.power).value
-
-    def __radd__(self, other):
-        return self + other
-
-    def __add__(self, other):
-        from visma.functions.constant import Constant
-        if isinstance(other, Constant):
-            self = Constant(self.calculate() + other.calculate())
-            return self
-        elif isinstance(other, Expression):
-            expression = Expression()
-            expression.tokens = [self]
-            for token in other.tokens:
-                if isinstance(token, Constant):
-                    self = Constant(self.calculate() + token.calculate())
-                elif isinstance(token, Variable):
-                    expression.tokens.extend(['+', Variable(token)])
-            expression.tokens[0] = self
-            self.type = 'Expression'
-            self = expression
-            return expression
-        elif isinstance(other, Variable):
-            expression = Expression()
-            expression.tokens = [self]
-            expression.tokens.extend(['+', other])
-            self.type = 'Expression'
-            self = expression
-            return expression
-
-    def __rsub__(self, other):
-        expression = Expression()
-        expression.tokens = [other]
-        expression.tokens.extend(['-', self])
-        self.type = 'Expression'
-        self = expression
-        return expression
-
-    def __sub__(self, other):
-        from visma.functions.constant import Constant
-        if isinstance(other, Constant):
-            self = Constant(self.calculate() - other.calculate())
-            return self
-        elif isinstance(other, Expression):
-            expression = Expression()
-            expression.tokens = [self]
-            for token in other.tokens:
-                if isinstance(token, Constant):
-                    self = Constant(self.calculate() - token.calculate())
-                elif isinstance(token, Variable):
-                    expression.tokens.extend(['-', Variable(token)])
-            expression.tokens[0] = self
-            self.type = 'Expression'
-            self = expression
-            return expression
-        elif isinstance(other, Variable):
-            expression = Expression()
-            expression.tokens = [self]
-            expression.tokens.extend(['-', other])
-            self.type = 'Expression'
-            self = expression
-            return expression
-
-    def __rmul__(self, other):
-        return self * other
-
-    def __mul__(self, other):
-        from visma.functions.constant import Constant
-        if isinstance(other, Constant):
-            self = Constant(self.calculate() * other.calculate())
-            return self
-        elif isinstance(other, Expression):
-            expression = Expression()
-            for token in other.tokens:
-                if isinstance(token, Constant):
-                    expression.tokens.append(Constant(self.calculate() * token.calculate()))
-                elif isinstance(token, Variable):
-                    variable = Variable()
-                    variable.coefficient = self.calculate() * token.coefficient
-                    variable.value.extend(token.value)
-                    variable.power.extend(token.power)
-                    expression.tokens.extend(['+', variable])
-            self.type = 'Expression'
-            self = expression
-            return expression
-        elif isinstance(other, Variable):
-            variable = Variable()
-            variable.coefficient = self.calculate() * other.coefficient
-            variable.value.extend(other.value)
-            variable.power.extend(other.power)
-            self.type = 'Variable'
-            self = variable
-            return variable
-
-    def __rtruediv__(self, other):
-        expression = Expression(other.tokens)
-        expression.coefficient = other.coefficient/self.calculate()
-        self.type = 'Expression'
-        self = expression
-        return expression
-
-    def __truediv__(self, other):
-        from visma.functions.constant import Constant
-        if isinstance(other, Constant):
-            self = Constant(self.calculate() / other.calculate())
-            return self
-        elif isinstance(other, Expression):
-            expression = Expression(other.tokens)
-            expression.coefficient = self.calculate()/other.coefficient
-            expression.power = -1*other.power
-            self.type = 'Expression'
-            self = expression
-            return expression
-        elif isinstance(other, Variable):
-            variable = Variable(other)
-            variable.coefficient = self.calculate() / other.coefficient
-            variable.value.extend(other.value)
-            variable.power.extend([other.power[0]*-1])
-            self.type = 'Variable'
-            self = variable
-            return variable
 
     def functionOf(self):
         return []
