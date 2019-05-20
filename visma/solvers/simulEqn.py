@@ -93,13 +93,13 @@ def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFo
             animation += [tokenizer(resultStr)]
         elif solveFor is None:
             resultStr1 = str(variables[0]) + ' = ' + str(x)
-            comments += [[]] 
+            comments += [[]]
             animation += [tokenizer(resultStr1)]
 
             resultStr2 = str(variables[1]) + ' = ' + str(y)
             comments += [[]]
             animation += [tokenizer(resultStr2)]
-            
+
             resultStr3 = str(variables[2]) + ' = ' + str(z)
             comments += [[]]
             animation += [tokenizer(resultStr3)]
