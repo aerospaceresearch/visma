@@ -54,6 +54,11 @@ def test_simulSolvers():
     assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 10y = 12", simulSolver, 'y') == "y=1.2"
     assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 10y = 12", simulSolver, 'w') == "w=0.11"
 
+    # Tests for testing 'solve for all variable' option in case no variable is specified by user.
+    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver) == "z=-0.0;y=1.33;x=0.0"
+    assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 11z = 12", simulSolver) == "z=2.0;y=-1.0;x=-0.0"
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 9a + 10y + 1100w = 12", simulSolver) == "y=1.33;w=-0.0;a=0.0"
+    assert quickTest("1000a + 2y + 3w = 4; 5a + 6y + 7w = 8; 10y = 12", simulSolver) == "y=1.2;w=0.11;a=0.0"
 
 #################
 # solvers.solve #
