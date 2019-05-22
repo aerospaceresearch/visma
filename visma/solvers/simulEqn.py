@@ -4,7 +4,7 @@ from visma.io.parser import tokensToString
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.matrix.special import cramerMatrices
-from visma.io.checks import getVariables
+from visma.io.checks import getVariableSim
 
 
 def coeffCalculator(LandR_tokens, variables):
@@ -122,11 +122,9 @@ def simulSolver(eqTok1, eqTok2, eqTok3, solveFor):
 
     for _, tokens in enumerate(eqnTokens):
         lTokens, rTokens = getLHSandRHS(tokens)
-        variablesEach = getVariables(lTokens, rTokens)
-        variables.extend(variablesEach)
         LandR_tokens.append([lTokens, rTokens])
-    variables = list(dict.fromkeys(variables))
-    variables.sort()    # List of all the variables in all 3 equation in sorted order
+
+    variables = getVariableSim(eqnTokens)
 
     for i, tokens in enumerate(LandR_tokens):
         lTokens, rTokens, _, _, animationEach, commentsEach = simplifyEquation(tokens[0], tokens[1])
