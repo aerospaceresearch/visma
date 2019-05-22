@@ -7,7 +7,7 @@ from visma.io.checks import isNumber, mathError
 from visma.matrix.structure import Matrix
 
 
-def resultLatex(operation, equations, comments, wrtVar=None):
+def resultLatex(equationTokens, operation, comments, solutionType, simul=False, wrtVar=None):
     """Converts tokens to LaTeX format for displaying in step-by-step solution figure
 
     Arguments:
@@ -23,25 +23,33 @@ def resultLatex(operation, equations, comments, wrtVar=None):
     """
 
     equationLatex = []
-    for eqTokens in equations:
+    for eqTokens in equationTokens:
         equationLatex.append(tokensToLatex(eqTokens))
 
-    finalSteps = "INPUT: " + r"$" + equationLatex[0] + r"$" + "\n"
-    finalSteps += "OPERATION: " + operation
-    if wrtVar is not None:
-        finalSteps += " with respect to " + r"$" + wrtVar + r"$"
-    finalSteps += "\n"
-    finalSteps += "OUTPUT: " + r"$" + equationLatex[-1] + r"$" + "\n"*2
+    finalSteps = ''
+    if not simul:
+        finalSteps = 'INPUT: ' + r'$' + equationLatex[0] + r'$' + '\n'
+    else:
+        finalSteps = 'INPUT: ' + '(Multiple ' + r'$' + ' equations)' + r'$' + '\n'
+    finalSteps += 'OPERATION: ' + operation + '\n'
+    finalSteps += 'OUTPUT: ' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
 
     for i, _ in enumerate(equationLatex):
-        if comments[i] != []:
-            finalSteps += str(comments[i][0]) + "\n"
-        finalSteps += r"$" + equationLatex[i] + r"$" + "\n"*2
+        if comments[i] != [] and equationLatex[i] != '':
+            finalSteps += '(' + str(comments[i][0]) + ')' + '\n'
+            finalSteps += r'$' + equationLatex[i] + r'$' + 2*"\n"
+        elif comments[i] != [] and equationLatex[i] == '':
+            finalSteps += '\n' + '[' + str(comments[i][0]) + ']' + '\n'
+        elif comments[i] == [] and equationLatex[i] != '':
+            finalSteps += '\n' + r'$' + equationLatex[i] + r'$' + 2*'\n'
+
+    if mathError(equationTokens[-1]) and (not simul):
+        finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
 
     return finalSteps
 
 
-def resultStringCLI(equationTokens, operation, comments, solutionType, simul):
+def resultStringCLI(equationTokens, operation, comments, solutionType, simul=False):
     """Converts tokens to final string format for displaying in terminal in CLI
 
     Arguments:
