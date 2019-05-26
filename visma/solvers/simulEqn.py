@@ -16,7 +16,6 @@ def coeffCalculator(LandR_tokens, variables):
     Returns:
         coefficients -- 3 X 4 list -- each each row contains coefficients for x, y, z and constant term respectively.
     '''
-    # TODO: Currently implemented taking with fixed variables x, y and z. To be implemented with different variables like u, v  and w.
     coefficients = []
     coefficients = [[0] * 4 for _ in range(3)]
     for i, LandR_token in enumerate(LandR_tokens):
@@ -40,7 +39,7 @@ def coeffCalculator(LandR_tokens, variables):
     return coefficients
 
 
-def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor):
+def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor=None):
     '''Calculates values of x, y and z
 
     Arguments:
@@ -92,13 +91,25 @@ def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFo
             resultStr = str(variables[2]) + ' = ' + str(z)
             comments += [[]]
             animation += [tokenizer(resultStr)]
+        elif solveFor is None:
+            resultStr1 = str(variables[0]) + ' = ' + str(x)
+            comments += [[]]
+            animation += [tokenizer(resultStr1)]
+
+            resultStr2 = str(variables[1]) + ' = ' + str(y)
+            comments += [[]]
+            animation += [tokenizer(resultStr2)]
+
+            resultStr3 = str(variables[2]) + ' = ' + str(z)
+            comments += [[]]
+            animation += [tokenizer(resultStr3)]
     elif not trivial:
         comments += [['There is no trivial solution to the the provided set of equations as D = 0']]
         animation += [[]]
     return comments, animation, trivial
 
 
-def simulSolver(eqTok1, eqTok2, eqTok3, solveFor):
+def simulSolver(eqTok1, eqTok2, eqTok3, solveFor=None):
     '''
     Main driver function in simulEqn.py
 
@@ -143,9 +154,15 @@ def simulSolver(eqTok1, eqTok2, eqTok3, solveFor):
 
     coefficients = coeffCalculator(LandR_tokens, variables)   # (as of now) its a 3 by 4 matrix; each row has coeff of x, y, z and constant term.
     matD, matDx, matDy, matDz = cramerMatrices(coefficients)
-    comments, animation, trivial = getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor)
+    if solveFor is not None:
+        comments, animation, trivial = getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor)
+    else:
+        comments, animation, trivial = getResult(matD, matDx, matDy, matDz, variables, comments, animation)
     if trivial:
-        lastTokenString = tokensToString(animation[-1])
+        if solveFor is not None:
+            lastTokenString = tokensToString(animation[-1])
+        else:
+            lastTokenString = tokensToString(animation[-1]) + ';' + tokensToString(animation[-2]) + ';' + tokensToString(animation[-3])
     else:
         lastTokenString = 'No Trivial Solution'
     return lastTokenString, animation, comments
