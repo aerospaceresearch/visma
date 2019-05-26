@@ -14,7 +14,7 @@ Logic Description:
 
 import math
 import copy
-from visma.io.checks import isNumber, isVariable, getNumber, checkEquation, funcs, funcSyms
+from visma.io.checks import isNumber, isVariable, getNumber, checkEquation, checkSyntax, funcs, funcSyms
 from visma.functions.structure import Function, Equation, Expression
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
@@ -1371,6 +1371,8 @@ def tokenizer(eqnString):
     Returns:
         list -- function tokens list
     """
+    if (not(checkSyntax(eqnString))[0]):
+        return
     _, tokens = constantConversion(preprocess(eqnString))
     return tokens
 
