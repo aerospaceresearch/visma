@@ -47,58 +47,32 @@ class Constant(Function):
     def __radd__(self, other):
         return self + other
 
-
-
-
     def __add__(self, other):
-        # print(self.value)
-        # print(other.value)
-        if other.power == self.power:
-            if self.before == '-':
-                self.value -= other.value
-            else:
-                self.value += other.value
-            # print('')
-            # print(self.value)
-            # print(self.power)
-
-
-            # if self.value == 0:
-            #     if self.power == 0:
-
-            if self.value == 0:
-                if self.power == 0:
-                    self.value = 1
-                    self.power = 1
+        if isinstance(other, Constant):
+            if other.power == self.power:
+                if self.before == '-':
+                    self.value -= other.value
+                else:
+                    self.value += other.value
+                result = Constant()
+                if self.value == 0:
+                    if self.power == 0:
+                        self.value = 1
+                        self.power = 1
+                        result = Constant()
+                        result.scope = self.scope
+                        result.power = self.power
+                        result.value = self.value
+                else:
                     result = Constant()
                     result.scope = self.scope
                     result.power = self.power
                     result.value = self.value
-            else:
-                # print('xxxx')
-                result = Constant()
-                result.scope = self.scope
-                result.power = self.power
-                result.value = self.value
- 
-            return result
-
-
-
-
-
-
-
-
-
-        if self.isZero():   # if one of them is Empty, we can return the other one even it is Empty too because we need at least one to be returned.
+                return result
+        elif self.isZero():
             return other
         elif other.isZero():
             return self
-        elif isinstance(other, Constant):
-            const = Constant()
-            const.value = self.calculate() + other.calculate()
-            return const
         elif isinstance(other, Expression):
             if other.power == 1:
                 constFound = False
