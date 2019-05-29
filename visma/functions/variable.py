@@ -84,7 +84,9 @@ class Variable(Function):
     def __add__(self, other):
         from visma.functions.constant import Constant
         if isinstance(other, Variable):
-            if self.power == other.power:
+            sortedValuesSelf = self.value.sort()
+            sortedValuesOther = other.value.sort()
+            if (self.power == other.power) & (sortedValuesSelf == sortedValuesOther):
                 if self.before == '-':
                     self.coefficient -= other.coefficient
                 else:
@@ -95,13 +97,6 @@ class Variable(Function):
                     result.power = self.power
                     result.coefficient = self.coefficient
                 return self
-            else:
-                expression = Expression()
-                expression.tokens = [self]
-                expression.tokens.extend([Plus(), other])
-                self.type = 'Expression'
-                self = expression
-                return expression
         elif isinstance(other, Constant):
             expression = Expression()
             expression.tokens = [self]

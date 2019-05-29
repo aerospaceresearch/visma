@@ -191,9 +191,7 @@ def test_Variable():
     variable2 = Variable(4, 'x', 3)
     variable3 = Variable(2, 'x', 4)
     add1 = variable1 + variable2
-    add2 = variable1 + variable3
     assert add1.__str__() == "6{x}^{3}"
-    assert add2.__str__() == "{(6{x}^{3}+2{x}^{4})}"
 
     variable1 = Variable(2, 'x', 3)
     constant = Constant(3)

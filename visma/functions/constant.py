@@ -51,9 +51,9 @@ class Constant(Function):
         if isinstance(other, Constant):
             if other.power == self.power:
                 if self.before == '-':
-                    self.value -= other.value
+                    self.value = self.calculate() - other.calculate()
                 else:
-                    self.value += other.value
+                    self.value = self.calculate() + other.calculate()
                 result = Constant()
                 if self.value == 0:
                     if self.power == 0:
@@ -62,12 +62,12 @@ class Constant(Function):
                         result = Constant()
                         result.scope = self.scope
                         result.power = self.power
-                        result.value = self.value
+                        result.value = self.calculate()
                 else:
                     result = Constant()
                     result.scope = self.scope
                     result.power = self.power
-                    result.value = self.value
+                    result.value = self.calculate()
                 return result
         elif self.isZero():
             return other
