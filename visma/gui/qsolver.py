@@ -26,6 +26,8 @@ def quickSimplify(workspace):
     qSolution = ""
     strIn = workspace.textedit.toPlainText()
     cleanInput = removeSpaces(strIn)
+    if ';' in cleanInput:
+        return "", True, True
     terms = getTerms(cleanInput)
     normalizedTerms = normalize(terms)
     symTokens = tokenizeSymbols(normalizedTerms)
@@ -46,21 +48,21 @@ def quickSimplify(workspace):
             qSolution += tokensToLatex(equationTokens[-1]) + ' $'
             # workspace.eqToks = equationTokens
             # plot(workspace)
-            return qSolution, True
+            return qSolution, True, False
         elif symTokens:
             log = "Invalid Expression"
             workspace.logBox.append(logger.error(log))
-            return log, False
+            return log, False, _
         else:
             log = ""
             workspace.logBox.append(logger.error(log))
-            return log, False
+            return log, False, _
     else:
         log = ""
         if strIn != "":
             _, log = checkEquation(normalizedTerms, symTokens)
             workspace.logBox.append(logger.error(log))
-        return log, False
+        return log, False, _
 
 
 #######
@@ -89,14 +91,14 @@ def qSolveFigure(workspace):
     return qSolLayout
 
 
-def renderQuickSol(workspace, showQSolver):
+def renderQuickSol(workspace, log, showQSolver):
     """Renders quick solution in matplotlib figure
 
     Arguments:
         workspace {QtWidgets.QWidget} -- main layout
     """
     if showQSolver is True:
-        quickSolution = workspace.qSol
+        quickSolution = log
     else:
         quickSolution = ""
     workspace.qSolveFigure.suptitle(quickSolution, x=0.01,

@@ -129,6 +129,19 @@ def getVariables(lTokens, rTokens=None, variables=None):
     return variables
 
 
+def getVariableSim(eqnTokens):
+    from visma.io.tokenize import getLHSandRHS
+
+    variables = []
+    for _, tokens in enumerate(eqnTokens):
+        lTokens, rTokens = getLHSandRHS(tokens)
+        variablesEach = getVariables(lTokens, rTokens)
+        variables.extend(variablesEach)
+    variables = list(dict.fromkeys(variables))
+    variables.sort()    # List of all the variables in all 3 equation in sorted order
+    return variables
+
+
 def checkEquation(terms, symTokens):
     """Checks if input is a valid expression or equation
 

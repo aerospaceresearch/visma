@@ -16,7 +16,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
-from visma.io.checks import checkTypes, getVariables, mathError
+from visma.io.checks import checkTypes, getVariables, getVariableSim, mathError
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
 from visma.gui.plotter import plotFigure2D, plotFigure3D, plot
@@ -28,6 +28,7 @@ from visma.simplify.addsub import addition, additionEquation, subtraction, subtr
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
+from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
 from visma.gui import logger
 
@@ -126,6 +127,7 @@ class WorkSpace(QWidget):
     stepsFontSize = 1
     axisRange = [10, 10, 10, 30]  # axisRange[-1] --> MeshDensity in 3D graphs
     resultOut = False
+    simul = False
 
     try:
         # FIXME: Use fixed file path
@@ -248,13 +250,14 @@ class WorkSpace(QWidget):
             self.enableInteraction = False
         try:
             if self.enableQSolver and self.showQSolver:
-                self.qSol, self.enableInteraction = quickSimplify(self)
+                self.qSol, self.enableInteraction, self.simul = quickSimplify(self)
                 if self.qSol is None:
                     self.qSol = ""
-                renderQuickSol(self, self.showQSolver)
+                if not self.simul:
+                    renderQuickSol(self, self.qSol, self.showQSolver)
             elif self.showQSolver is False:
                 self.qSol = ""
-                renderQuickSol(self, self.showQSolver)
+                renderQuickSol(self, self.qSol, self.showQSolver)
         except Exception:
             logger.error('Invalid Expression')
             self.enableInteraction = False
@@ -349,7 +352,7 @@ class WorkSpace(QWidget):
 
     def interactionMode(self):
         self.enableQSolver = False
-        renderQuickSol(self, self.enableQSolver)
+        renderQuickSol(self, self.qSol, self.enableQSolver)
         cursor = self.textedit.textCursor()
         interactionText = cursor.selectedText()
         if str(interactionText) == '':
@@ -361,18 +364,31 @@ class WorkSpace(QWidget):
         showbuttons = True
         if len(self.input) == 0:
             return self.warning("No input given!")
-        self.tokens = tokenizer(self.input)
-        # DBP: print(self.tokens)
-        self.addEquation()
-        lhs, rhs = getLHSandRHS(self.tokens)
-        self.lTokens = lhs
-        self.rTokens = rhs
-        operations, self.solutionType = checkTypes(lhs, rhs)
+        self.simul = False
+        if ';' in self.input:
+            self.simul = True
+            afterSplit = self.input.split(';')
+            eqStr1 = afterSplit[0]
+            eqStr2 = afterSplit[1]
+            eqStr3 = afterSplit[2]
+        if self.simul:
+            self.tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
+            self.addEquation()
+            operations = ['solve']
+            self.solutionType = 'equation'
+        else:
+            self.tokens = tokenizer(self.input)
+            # DBP: print(self.tokens)
+            self.addEquation()
+            lhs, rhs = getLHSandRHS(self.tokens)
+            self.lTokens = lhs
+            self.rTokens = rhs
+            operations, self.solutionType = checkTypes(lhs, rhs)
         if isinstance(operations, list) and showbuttons:
             opButtons = []
             if len(operations) > 0:
                 if len(operations) == 1:
-                    if operations[0] not in ['integrate', 'differentiate', 'find roots', 'factorize']:
+                    if (operations[0] not in ['integrate', 'differentiate', 'find roots', 'factorize']) and (not self.simul):
                         opButtons = ['simplify']
                 else:
                     opButtons = ['simplify']
@@ -625,8 +641,11 @@ class WorkSpace(QWidget):
             elif name == 'find roots':
                 self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = quadraticRoots(self.lTokens, self.rTokens)
             elif name == 'solve':
-                lhs, rhs = getLHSandRHS(self.tokens)
-                variables = getVariables(lhs, rhs)
+                if not self.simul:
+                    lhs, rhs = getLHSandRHS(self.tokens)
+                    variables = getVariables(lhs, rhs)
+                else:
+                    variables = getVariableSim(self.tokens)
                 self.wrtVariableButtons(variables, name)
                 self.resultOut = False
             elif name == 'integrate':
@@ -641,7 +660,7 @@ class WorkSpace(QWidget):
                 self.resultOut = False
             if self.resultOut:
                 self.eqToks = equationTokens
-                self.output = resultLatex(name, equationTokens, comments)
+                self.output = resultLatex(equationTokens, name, comments, self.solutionType)
                 if (mathError(self.eqToks[-1])):
                     self.output += 'Math Error: LHS not equal to RHS' + "\n"
                 if len(availableOperations) == 0:
@@ -662,25 +681,36 @@ class WorkSpace(QWidget):
     def onWRTVariablePress(self, varName, operation):
 
         def calluser():
-
             availableOperations = []
             tokenString = ''
             equationTokens = []
-
+            self.input = str(self.textedit.toPlainText())
             if varName == 'back':
-                self.input = str(self.textedit.toPlainText())
-                self.tokens = tokenizer(self.input)
-                # print(self.tokens)
-                lhs, rhs = getLHSandRHS(self.tokens)
-                operations, self.solutionType = checkTypes(
-                    lhs, rhs)
-                self.refreshButtons(operations)
+                if ';' in self.input:
+                    self.simul = True
+                    afterSplit = self.input.split(';')
+                    eqStr1 = afterSplit[0]
+                    eqStr2 = afterSplit[1]
+                    eqStr3 = afterSplit[2]
+                if self.simul:
+                    self.tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
+                else:
+                    self.tokens = tokenizer(self.input)
+                    # DBP: print(self.tokens)
+                    self.addEquation()
+                    lhs, rhs = getLHSandRHS(self.tokens)
+                    self.lTokens = lhs
+                    self.rTokens = rhs
+                    operations, self.solutionType = checkTypes(lhs, rhs)
+                    self.refreshButtons(operations)
 
             else:
 
                 if operation == 'solve':
-                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
-
+                    if not self.simul:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)
+                    else:
+                        tokenString, equationTokens, comments = simulSolver(self.tokens[0], self.tokens[1], self.tokens[2], varName)
                 elif operation == 'integrate':
                     self.lTokens, availableOperations, tokenString, equationTokens, comments = integrate(self.lTokens, varName)
 
@@ -688,7 +718,8 @@ class WorkSpace(QWidget):
                     self.lTokens, availableOperations, tokenString, equationTokens, comments = differentiate(self.lTokens, varName)
 
                 self.eqToks = equationTokens
-                self.output = resultLatex(operation, equationTokens, comments, varName)
+                renderQuickSol(self, tokenString, self.showQSolver)
+                self.output = resultLatex(equationTokens, operation, comments, self.solutionType, self.simul, varName)
 
                 if len(availableOperations) == 0:
                     self.clearButtons()
