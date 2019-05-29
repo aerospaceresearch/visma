@@ -83,7 +83,26 @@ class Variable(Function):
 
     def __add__(self, other):
         from visma.functions.constant import Constant
-        if isinstance(other, Constant):
+        if isinstance(other, Variable):
+            if self.power == other.power:
+                if self.before == '-':
+                    self.coefficient -= other.coefficient
+                else:
+                    self.coefficient += other.coefficient
+                result = Variable()
+                if self.coefficient != 0:
+                    result.scope = self.scope
+                    result.power = self.power
+                    result.coefficient = self.coefficient
+                return self
+            else:
+                expression = Expression()
+                expression.tokens = [self]
+                expression.tokens.extend([Plus(), other])
+                self.type = 'Expression'
+                self = expression
+                return expression
+        elif isinstance(other, Constant):
             expression = Expression()
             expression.tokens = [self]
             expression.tokens.extend([Plus(), other])
@@ -105,17 +124,6 @@ class Variable(Function):
             self.type = 'Expression'
             self = expression
             return expression
-        elif isinstance(other, Variable):
-            if other.power == self.power:
-                self.coefficient += other.coefficient
-                return self
-            else:
-                expression = Expression()
-                expression.tokens = [self]
-                expression.tokens.extend([Plus(), other])
-                self.type = 'Expression'
-                self = expression
-                return expression
 
     def __rsub__(self, other):
         expression = Expression()
