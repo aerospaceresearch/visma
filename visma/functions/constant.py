@@ -80,8 +80,26 @@ class Constant(Function):
 
     def __sub__(self, other):
         if isinstance(other, Constant):
-            self = Constant(self.calculate() - other.calculate())
-            return self
+            if other.power == self.power:
+                if self.before is None:
+                    self.before = ''
+                if self.before == '+' or self.before == '':
+                    self.value -= other.value
+                else:
+                    self.value += other.value
+                result = Constant()
+                if self.value == 0:
+                    if self.power == 0:
+                        self.value = 1
+                        self.power = 1
+                        result.scope = self.scope
+                        result.power = self.power
+                        result.value = self.value
+                else:
+                    result.scope = self.scope
+                    result.power = self.power
+                    result.value = self.value
+                return result
         elif isinstance(other, Expression):
             expression = Expression()
             expression.tokens = [self]
