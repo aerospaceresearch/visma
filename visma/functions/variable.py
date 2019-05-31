@@ -165,34 +165,47 @@ class Variable(Function):
         return self * other
 
     def __mul__(self, other):
+        from visma.io.checks import isNumber
         from visma.functions.constant import Constant
-        if isinstance(other, Constant):
+
+        if isinstance(other, Variable):
+            for j, var in enumerate(other.value):
+                found = False
+                for k, var2 in enumerate(self.value):
+                    self.coefficient *= other.coefficient
+                    if var == var2:
+                        if isNumber(other.power[j]) and isNumber(self.power[k]):
+                            self.power[k] += other.power[j]
+                            if self.power[k] == 0:
+                                del self.power[k]
+                                del self.value[k]
+                            found = True
+                            break
+                if not found:
+                    self.value.append(other.value[j])
+                    self.power.append(other.power[j])
+
+                if len(self.value) == 0:
+                    result = Constant()
+                    result.scope = self.scope
+                    result.power = 1
+                    result.value = self.coefficient
+                    self = result
+            return self
+        elif isinstance(other, Constant):
             self.coefficient *= other.calculate()
             return self
-        elif isinstance(other, Expression):
-            expression = Expression()
-            expression.coefficient = self.coefficient * other.coefficient
-            for i, token in enumerate(other.tokens):
-                if isinstance(token, Variable) or isinstance(token, Constant):
-                    expression.tokens.extend([self * token])
-                else:
-                    expression.tokens.extend([token])
-            self.type = 'Expression'
-            self = expression
-            return expression
-        elif isinstance(other, Variable):
-            variable = Variable()
-            variable.value.extend(self.value)
-            variable.power.extend(self.power)
-            variable.coefficient = self.coefficient * other.coefficient
-            for i, val in enumerate(other.value):
-                if val in variable.value:
-                    variable.power[i] += other.power[i]
-                else:
-                    variable.value.extend(val)
-                    variable.power.extend([other.power[i]])
-            self = variable
-            return variable
+        # elif isinstance(other, Expression):
+        #     expression = Expression()
+        #     expression.coefficient = self.coefficient * other.coefficient
+        #     for _, token in enumerate(other.tokens):
+        #         if isinstance(token, Variable) or isinstance(token, Constant):
+        #             expression.tokens.extend([self * token])
+        #         else:
+        #             expression.tokens.extend([token])
+        #     self.type = 'Expression'
+        #     self = expression
+        #     return expression
 
     def __rtruediv__(self, other):
         pass                                    # TODO : Add code for expression / variable

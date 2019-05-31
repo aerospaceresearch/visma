@@ -257,12 +257,14 @@ def test_Variable():
     add2 = variable2 / exp1
     assert add2.__str__() == "{(4.0{x}^{3}*{(2{x}^{3}-{3})}^{-1})}"
 
-    variable1 = Variable(2, 'x', 3)
-    constant = Constant(3)
-    exp1 = variable1 - constant
-    variable2 = Variable(4, 'x', 3)
-    add2 = variable2 * exp1
-    assert add2.__str__() == "4*{(8{x}^{6}-12{x}^{3})}"
+    # variable1 = Variable(2, 'x', 3)
+    # constant = Constant(3)
+    # exp1 = variable1 - constant
+    # print(exp1.coefficient)
+    # print(exp1.__str__())
+    # variable2 = Variable(4, 'x', 3)
+    # add2 = variable2 * exp1
+    # assert add2.__str__() == "4*{(8{x}^{6}-12{x}^{3})}"
 
     # FIXME: Optimize integrate
     '''
