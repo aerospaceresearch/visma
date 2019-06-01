@@ -97,7 +97,7 @@ class Constant(Function):
 
     def __sub__(self, other):
         if isinstance(other, Constant):
-            self = Constant(self.calculate() - other.calculate())
+            self = self + Constant(-1, 1, 1) * other
             return self
         elif isinstance(other, Expression):
             expression = Expression()

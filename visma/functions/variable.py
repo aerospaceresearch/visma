@@ -154,7 +154,7 @@ class Variable(Function):
             return expression
         elif isinstance(other, Variable):
             if other.power == self.power:
-                self.coefficient -= other.coefficient
+                self = self + Constant(-1, 1, 1) * other
                 return self
             else:
                 expression = Expression()

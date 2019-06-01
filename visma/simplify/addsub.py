@@ -304,8 +304,7 @@ def expressionAddition(variables, tokens):
                             valChange.value = variable.value
 
                             if v2.coefficient == 0:
-                                removeScopes.append(v2.scope)
-                                removeScopes.append(v2.beforeScope)
+                                removeScopes.extend([v2.scope, v2.beforeScope])
                             else:
                                 if v2.coefficient < 0 and v2.before in ['-', '+']:
                                     valChange.coefficient = - \
@@ -343,8 +342,7 @@ def expressionAddition(variables, tokens):
                             valChange.value = variable.value
 
                             if v2.coefficient == 0:
-                                removeScopes.append(v2.scope)
-                                removeScopes.append(v2.beforeScope)
+                                removeScopes.extend([v2.scope, v2.beforeScope])
                             else:
                                 if v2.coefficient < 0 and v2.before in ['-', '+']:
                                     valChange.coefficient = - \
@@ -386,8 +384,7 @@ def expressionAddition(variables, tokens):
                                 valChange.value = variable.value
 
                                 if v2.coefficient == 0:
-                                    removeScopes.append(v2.scope)
-                                    removeScopes.append(v2.beforeScope)
+                                    removeScopes.extend([v2.scope, v2.beforeScope])
                                 else:
                                     if v2.coefficient < 0 and v2.before in ['-', '+']:
                                         valChange.coefficient = - \
@@ -679,88 +676,75 @@ def expressionSubtraction(variables, tokens):
                     while i < len(constantAdd):
                         for const in constant:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " from " + r"$" + variable.__str__(const, const) + "}" + r"$")
-                                if variable.before[const] == '+' or variable.before[const] == '':
-                                    variable.value[const] -= variable.value[constantAdd[i]]
-                                else:
-                                    variable.value[const] += variable.value[constantAdd[i]]
-                                if variable.value[const] == 0:
-                                    if variable.power[const] == 0:
-                                        variable.value[const] = 1
-                                        variable.power[const] = 1
-                                        change1 = Function()
-                                        change1.scope = variable.scope[const]
-                                        change1.power = variable.power[const]
-                                        change1.value = variable.value[const]
-                                        change.append(change1)
-                                    else:
-                                        removeScopes.append(
-                                            variable.scope[const])
-                                        removeScopes.append(
-                                            variable.beforeScope[const])
-                                else:
-                                    change1 = Function()
-                                    change1.scope = variable.scope[const]
-                                    change1.power = variable.power[const]
-                                    change1.value = variable.value[const]
-                                    if variable.value[const] < 0 and variable.before[const] in ['-', '+']:
-                                        change1.value = - \
-                                            1 * change1.value
-                                        variable.value[const] = - \
-                                            1 * variable.value[const]
-                                        change2 = Binary()
-                                        change2.scope = variable.beforeScope[const]
-                                        if variable.before[const] == '-':
-                                            change2.value = '+'
-                                        elif variable.before[const] == '+':
-                                            change2.value = '-'
-                                        change.append(change2)
-                                    change.append(change1)
-                                removeScopes.append(
-                                    variable.scope[constantAdd[i]])
-                                removeScopes.append(
-                                    variable.beforeScope[constantAdd[i]])
+                                comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " from " + r"$" + variable.__str__(const, const) + r"$")
+
+                                c1 = Constant(variable.value[constantAdd[i]], variable.power[constantAdd[i]])
+                                c1.scope = variable.scope[constantAdd[i]]
+                                c1.after = variable.after[constantAdd[i]]
+                                c1.before = variable.before[constantAdd[i]]
+                                c1.beforeScope = variable.beforeScope[constantAdd[i]]
+
+                                c2 = Constant(variable.value[const], variable.power[const])
+                                c2.scope = variable.scope[const]
+                                c2.after = variable.after[const]
+                                c2.before = variable.before[const]
+                                c2.beforeScope = variable.beforeScope[const]
+
+                                valChange = c2 - c1
+
+                                if c2.value == 0 and c2.power != 0:
+                                    removeScopes.extend([c2.scope, c2.beforeScope])
+
+                                if c2.value < 0 and c2.before in ['-', '+']:
+                                    valChange.value = - \
+                                        1 * valChange.value
+                                    c2.value = - \
+                                        1 * c2.value
+                                    signChange = Binary()
+                                    signChange.scope = c2.beforeScope
+                                    if c2.before == '-':
+                                        signChange.value = '+'
+                                    elif c2.before == '+':
+                                        signChange.value = '-'
+                                    change.append(signChange)
+                                change.append(valChange)
+                                removeScopes.extend([c1.scope, c1.beforeScope])
                                 return variables, tokens, removeScopes, change, comments
+
                         for const in constantAdd:
                             if variable.power[constantAdd[i]] == variable.power[const]:
-                                comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " from " + r"$" + variable.__str__(const, const) + r"$")
-                                variable.value[const] += variable.value[constantAdd[i]]
-                                if variable.value[const] == 0:
-                                    if variable.power[const] == 0:
-                                        variable.value[const] = 1
-                                        variable.power[const] = 1
-                                        change1 = Function()
-                                        change1.scope = variable.scope[const]
-                                        change1.power = variable.power[const]
-                                        change1.value = variable.value[const]
-                                        change.append(change1)
-                                    else:
-                                        removeScopes.append(
-                                            variable.scope[const])
-                                        removeScopes.append(
-                                            variable.beforeScope[const])
-                                else:
-                                    change1 = Function()
-                                    change1.scope = variable.scope[const]
-                                    change1.power = variable.power[const]
-                                    change1.value = variable.value[const]
-                                    if variable.value[const] < 0 and variable.before[const] in ['-', '+']:
-                                        change1.value = - \
-                                            1 * change1.value
-                                        variable.value[const] = - \
-                                            1 * variable.value[const]
-                                        change2 = Binary()
-                                        change2.scope = variable.beforeScope[const]
-                                        if variable.before[const] == '-':
-                                            change2.value = '+'
-                                        elif variable.before[const] == '+':
-                                            change2.value = '-'
-                                        change.append(change2)
-                                    change.append(change1)
-                                removeScopes.append(
-                                    variable.scope[constantAdd[i]])
-                                removeScopes.append(
-                                    variable.beforeScope[constantAdd[i]])
+
+                                c1 = Constant(variable.value[constantAdd[i]], variable.power[constantAdd[i]])
+                                c1.scope = variable.scope[constantAdd[i]]
+                                c1.after = variable.after[constantAdd[i]]
+                                c1.before = variable.before[constantAdd[i]]
+                                c1.beforeScope = variable.beforeScope[constantAdd[i]]
+
+                                c2 = Constant(variable.value[const], variable.power[const])
+                                c2.scope = variable.scope[const]
+                                c2.after = variable.after[const]
+                                c2.before = variable.before[const]
+                                c2.beforeScope = variable.beforeScope[const]
+
+                                valChange = c2 - c1
+
+                                if c2.value == 0 and c2.power != 0:
+                                    removeScopes.append(c2.scope, c2.beforeScope)
+
+                                if c2.value < 0 and c2.before in ['-', '+']:
+                                    valChange.value = - \
+                                        1 * valChange.value
+                                    c2.value = - \
+                                        1 * c2.value
+                                    signChange = Binary()
+                                    signChange.scope = c2.beforeScope
+                                    if c2.before == '-':
+                                        signChange.value = '+'
+                                    elif c2.before == '+':
+                                        signChange.value = '-'
+                                    change.append(signChange)
+                                change.append(valChange)
+                                removeScopes.extend([c1.scope, c1.beforeScope])
                                 return variables, tokens, removeScopes, change, comments
                         i += 1
                 elif len(constant) == 0 and len(constantAdd) > 1:
@@ -770,43 +754,39 @@ def expressionSubtraction(variables, tokens):
                             if i != j:
                                 if variable.power[constantAdd[i]] == variable.power[const]:
                                     comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], const) + r"$" + " from " + r"$" + variable.__str__(const, const) + r"$")
-                                    variable.value[const] += variable.value[constantAdd[i]]
-                                    if variable.value[const] == 0:
-                                        if variable.power[const] == 0:
-                                            variable.value[const] = 1
-                                            variable.power[const] = 1
-                                            change1 = Function()
-                                            change1.scope = variable.scope[const]
-                                            change1.power = variable.power[const]
-                                            change1.value = variable.value[const]
-                                            change.append(change1)
-                                        else:
-                                            removeScopes.append(
-                                                variable.scope[const])
-                                            removeScopes.append(
-                                                variable.beforeScope[const])
-                                    else:
-                                        change1 = Function()
-                                        change1.scope = variable.scope[const]
-                                        change1.power = variable.power[const]
-                                        change1.value = variable.value[const]
-                                        if variable.value[const] < 0 and variable.before[const] in ['-', '+']:
-                                            change1.value = - \
-                                                1 * change1.value
-                                            variable.value[const] = - \
-                                                1 * variable.value[const]
-                                            change2 = Binary
-                                            change2.scope = variable.beforeScope[const]
-                                            if variable.before[const] == '-':
-                                                change2.value = '+'
-                                            elif variable.before[const] == '+':
-                                                change2.value = '-'
-                                            change.append(change2)
-                                        change.append(change1)
-                                    removeScopes.append(
-                                        variable.scope[constantAdd[i]])
-                                    removeScopes.append(
-                                        variable.beforeScope[constantAdd[i]])
+
+                                    c1 = Constant(variable.value[constantAdd[i]], variable.power[constantAdd[i]])
+                                    c1.scope = variable.scope[constantAdd[i]]
+                                    c1.after = variable.after[constantAdd[i]]
+                                    c1.before = variable.before[constantAdd[i]]
+                                    c1.beforeScope = variable.beforeScope[constantAdd[i]]
+
+                                    c2 = Constant(variable.value[const], variable.power[const])
+                                    c2.scope = variable.scope[const]
+                                    c2.after = variable.after[const]
+                                    c2.before = variable.before[const]
+                                    c2.beforeScope = variable.beforeScope[const]
+
+                                    valChange = c2 - c1
+
+                                    if c2.value == 0 and c2.power != 0:
+                                        removeScopes.extend([c2.scope, c2.beforeScope])
+
+                                    if c2.value < 0 and c2.before in ['-', '+']:
+                                        valChange.value = - \
+                                            1 * valChange.value
+                                        c2.value = - \
+                                            1 * c2.value
+                                        signChange = Binary()
+                                        signChange.scope = c2.beforeScope
+                                        if c2.before == '-':
+                                            signChange.value = '+'
+                                        elif c2.before == '+':
+                                            signChange.value = '-'
+                                        change.append(signChange)
+                                    change.append(valChange)
+                                    removeScopes.append(c1.scope)
+                                    removeScopes.append(c1.beforeScope)
                                     return variables, tokens, removeScopes, change, comments
                         i += 1
 
@@ -825,34 +805,37 @@ def expressionSubtraction(variables, tokens):
                         for const in constant:
                             if variable.power[constantAdd[i]] == variable.power[const]:
                                 comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " from " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], const) + r"$")
-                                if variable.before[const] == '+' or variable.before[const] == '':
-                                    variable.coefficient[const] -= variable.coefficient[constantAdd[i]]
+                                v1 = Variable(variable.coefficient[constantAdd[i]])
+                                v1.power = variable.power[constantAdd[i]]
+                                v1.scope = variable.scope[constantAdd[i]]
+                                v1.before = variable.before[constantAdd[i]]
+                                v1.beforeScope = variable.beforeScope[constantAdd[i]]
+
+                                v2 = Variable(variable.coefficient[const])
+                                v2.power = variable.power[const]
+                                v2.scope = variable.scope[const]
+                                v2.before = variable.before[const]
+                                v2.beforeScope = variable.beforeScope[const]
+
+                                valChange = v2 - v1
+                                valChange.value = variable.value
+
+                                if v2.coefficient == 0:
+                                    removeScopes.extend([v2.scope, v2.beforeScope])
                                 else:
-                                    variable.coefficient[const] += variable.coefficient[constantAdd[i]]
-                                if variable.coefficient[const] == 0:
-                                    removeScopes.append(
-                                        variable.scope[const])
-                                    removeScopes.append(
-                                        variable.beforeScope[const])
-                                else:
-                                    change1 = Function()
-                                    change1.scope = variable.scope[const]
-                                    change1.power = variable.power[const]
-                                    change1.value = variable.value
-                                    change1.coefficient = variable.coefficient[const]
-                                    if variable.coefficient[const] < 0 and variable.before[const] in ['-', '+']:
-                                        change1.coefficient = - \
-                                            1 * change1.coefficient
-                                        variable.coefficient[const] = - \
-                                            1 * variable.coefficient[const]
-                                        change2 = Binary()
-                                        change2.scope = variable.beforeScope[const]
-                                        if variable.before[const] == '-':
-                                            change2.value = '+'
-                                        elif variable.before[const] == '+':
-                                            change2.value = '-'
-                                        change.append(change2)
-                                    change.append(change1)
+                                    if v2.coefficient < 0 and v2.before in ['-', '+']:
+                                        valChange.coefficient = - \
+                                            1 * valChange.coefficient
+                                        v2.coefficient = - \
+                                            1 * v2.coefficient
+                                        signChange = Binary()
+                                        signChange.scope = v2.beforeScope
+                                        if v2.before == '-':
+                                            signChange.value = '+'
+                                        elif v2.before == '+':
+                                            signChange.value = '-'
+                                        change.append(signChange)
+                                    change.append(valChange)
                                 removeScopes.append(
                                     variable.scope[constantAdd[i]])
                                 removeScopes.append(
@@ -861,31 +844,37 @@ def expressionSubtraction(variables, tokens):
                         for const in constantAdd:
                             if variable.power[constantAdd[i]] == variable.power[const]:
                                 comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " from " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], const) + r"$")
-                                variable.coefficient[const] += variable.coefficient[constantAdd[i]]
-                                if variable.coefficient[const] == 0:
-                                    removeScopes.append(
-                                        variable.scope[const])
-                                    removeScopes.append(
-                                        variable.beforeScope[const])
+                                v1 = Variable(variable.coefficient[constantAdd[i]])
+                                v1.power = variable.power[constantAdd[i]]
+                                v1.scope = variable.scope[constantAdd[i]]
+                                v1.before = variable.before[constantAdd[i]]
+                                v1.beforeScope = variable.beforeScope[constantAdd[i]]
+
+                                v2 = Variable(variable.coefficient[const])
+                                v2.power = variable.power[const]
+                                v2.scope = variable.scope[const]
+                                v2.before = variable.before[const]
+                                v2.beforeScope = variable.beforeScope[const]
+
+                                valChange = v2 - v1
+                                valChange.value = variable.value
+
+                                if v2.coefficient == 0:
+                                    removeScopes.extend([v2.scope, v2.beforeScope])
                                 else:
-                                    change1 = Function()
-                                    change1.scope = variable.scope[const]
-                                    change1.power = variable.power[const]
-                                    change1.value = variable.value
-                                    change1.coefficient = variable.coefficient[const]
-                                    if variable.coefficient[const] < 0 and variable.before[const] in ['-', '+']:
-                                        change1.coefficient = - \
-                                            1 * change1.coefficient
-                                        variable.coefficient[const] = - \
-                                            1 * variable.coefficient[const]
-                                        change2 = Binary()
-                                        change2.scope = variable.beforeScope[const]
-                                        if variable.before[const] == '-':
-                                            change2.value = '+'
-                                        elif variable.before[const] == '+':
-                                            change2.value = '-'
-                                        change.append(change2)
-                                    change.append(change1)
+                                    if v2.coefficient < 0 and v2.before in ['-', '+']:
+                                        valChange.coefficient = - \
+                                            1 * valChange.coefficient
+                                        v2.coefficient = - \
+                                            1 * v2.coefficient
+                                        signChange = Binary()
+                                        signChange.scope = v2.beforeScope
+                                        if v2.before == '-':
+                                            signChange.value = '+'
+                                        elif v2.before == '+':
+                                            signChange.value = '-'
+                                        change.append(signChange)
+                                    change.append(valChange)
                                 removeScopes.append(
                                     variable.scope[constantAdd[i]])
                                 removeScopes.append(
@@ -899,32 +888,37 @@ def expressionSubtraction(variables, tokens):
                             if i != j:
                                 if variable.power[constantAdd[i]] == variable.power[const]:
                                     comments.append("Subtracting " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], constantAdd[i]) + r"$" + " from " + r"$" + variable.__str__(constantAdd[i], constantAdd[i], const) + r"$")
-                                    variable.coefficient[const] += variable.coefficient[constantAdd[i]]
-                                    if variable.coefficient[const] == 0:
-                                        removeScopes.append(
-                                            variable.scope[const])
-                                        removeScopes.append(
-                                            variable.beforeScope[const])
+                                    v1 = Variable(variable.coefficient[constantAdd[i]])
+                                    v1.power = variable.power[constantAdd[i]]
+                                    v1.scope = variable.scope[constantAdd[i]]
+                                    v1.before = variable.before[constantAdd[i]]
+                                    v1.beforeScope = variable.beforeScope[constantAdd[i]]
+
+                                    v2 = Variable(variable.coefficient[const])
+                                    v2.power = variable.power[const]
+                                    v2.scope = variable.scope[const]
+                                    v2.before = variable.before[const]
+                                    v2.beforeScope = variable.beforeScope[const]
+
+                                    valChange = v2 - v1
+                                    valChange.value = variable.value
+
+                                    if v2.coefficient == 0:
+                                        removeScopes.extend([v2.scope, v2.beforeScope])
                                     else:
-                                        change1 = Function()
-                                        change1.scope = variable.scope[const]
-                                        change1.power = variable.power[const]
-                                        change1.value = variable.value
-                                        change1.coefficient = variable.coefficient[const]
-                                        if variable.coefficient[const] < 0 and variable.before[const] in ['-', '+']:
-                                            change1.coefficient = - \
-                                                1 * change1.coefficient
-                                            variable.coefficient[const] = - \
-                                                1 * \
-                                                variable.coefficient[const]
-                                            change2 = Binary()
-                                            change2.scope = variable.beforeScope[const]
-                                            if variable.before[const] == '-':
-                                                change2.value = '+'
-                                            elif variable.before[const] == '+':
-                                                change2.value = '-'
-                                            change.append(change2)
-                                        change.append(change1)
+                                        if v2.coefficient < 0 and v2.before in ['-', '+']:
+                                            valChange.coefficient = - \
+                                                1 * valChange.coefficient
+                                            v2.coefficient = - \
+                                                1 * v2.coefficient
+                                            signChange = Binary()
+                                            signChange.scope = v2.beforeScope
+                                            if v2.before == '-':
+                                                signChange.value = '+'
+                                            elif v2.before == '+':
+                                                signChange.value = '-'
+                                            change.append(signChange)
+                                        change.append(valChange)
                                     removeScopes.append(
                                         variable.scope[constantAdd[i]])
                                     removeScopes.append(
