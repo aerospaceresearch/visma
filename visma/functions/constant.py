@@ -164,11 +164,15 @@ class Constant(Function):
         elif self.isZero():
             return self
         elif isinstance(other, Constant):
-            if other.isZero():
-                return self     # ToDo: Raise a Division by Zero Error
-            const = Constant()
-            const.value = self.calculate() / other.calculate()
-            return const
+            result = Constant()
+            power = Constant(-1, 1, 1)
+            result = self * (other ** power)
+            return result
+
+        elif isinstance(other, Variable):
+            power = Constant(-1, 1, 1)
+            self = self * (other ** power)
+            return self
         elif isinstance(other, Expression):
             other.power = -1 * other.power
             newCoeff = self * Constant(other.coefficient)
