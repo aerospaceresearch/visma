@@ -221,7 +221,7 @@ class Variable(Function):
                 result.coefficient = one.calculate() / self.coefficient
                 result.power = []
                 for pows in self.power:
-                    result.power.append(-pows) 
+                    result.power.append(-pows)
                 return result
 
     def __rtruediv__(self, other):
