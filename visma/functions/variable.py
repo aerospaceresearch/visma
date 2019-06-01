@@ -195,17 +195,34 @@ class Variable(Function):
         elif isinstance(other, Constant):
             self.coefficient *= other.calculate()
             return self
-        # elif isinstance(other, Expression):
-        #     expression = Expression()
-        #     expression.coefficient = self.coefficient * other.coefficient
-        #     for _, token in enumerate(other.tokens):
-        #         if isinstance(token, Variable) or isinstance(token, Constant):
-        #             expression.tokens.extend([self * token])
-        #         else:
-        #             expression.tokens.extend([token])
-        #     self.type = 'Expression'
-        #     self = expression
-        #     return expression
+        # TO BE IMPROVED
+        """
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.coefficient = self.coefficient * other.coefficient
+            for _, token in enumerate(other.tokens):
+                if isinstance(token, Variable) or isinstance(token, Constant):
+                    expression.tokens.extend([self * token])
+                else:
+                    expression.tokens.extend([token])
+            self.type = 'Expression'
+            self = expression
+            return expression
+        """
+
+    def __pow__(self, other):
+        from visma.functions.constant import Constant
+
+        if isinstance(other, Constant):
+            if other.value == -1:
+                one = Constant(1, 1, 1)
+                result = Variable()
+                result.value = self.value
+                result.coefficient = one.calculate() / self.coefficient
+                result.power = []
+                for pows in self.power:
+                    result.power.append(-pows) 
+                return result
 
     def __rtruediv__(self, other):
         pass                                    # TODO : Add code for expression / variable
@@ -213,8 +230,15 @@ class Variable(Function):
     def __truediv__(self, other):
         from visma.functions.constant import Constant
         if isinstance(other, Constant):
-            self.coefficient /= other.calculate()
+            power = Constant(-1, 1, 1)
+            self = self * (other ** power)
             return self
+
+        elif isinstance(other, Variable):
+            power = Constant(-1, 1, 1)
+            self = self * (other ** power)
+            return self
+
         elif isinstance(other, Expression):
             expression = Expression()
             self.coefficient /= other.coefficient
@@ -224,16 +248,3 @@ class Variable(Function):
             self.type = 'Expression'
             self = expression
             return expression
-        elif isinstance(other, Variable):
-            variable = Variable()
-            variable.value.extend(self.value)
-            variable.power.extend(self.power)
-            variable.coefficient = self.coefficient / other.coefficient
-            for i, val in enumerate(other.value):
-                if val in variable.value:
-                    variable.power[i] -= other.power[i]
-                else:
-                    variable.value.extend(val)
-                    variable.power.extend([-1*other.power[i]])
-            self = variable
-            return variable
