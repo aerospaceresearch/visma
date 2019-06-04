@@ -179,10 +179,7 @@ def expressionAddition(variables, tokens):
                             valChange = c2 + c1
 
                             if c2.value == 0 and c2.power != 0:
-                                removeScopes.append(
-                                    c2.scope)
-                                removeScopes.append(
-                                    c2.beforeScope)
+                                removeScopes.extend([c2.scope, c2.beforeScope])
 
                             if c2.value < 0 and c2.before in ['-', '+']:
                                 valChange.value = - \

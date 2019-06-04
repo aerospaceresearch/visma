@@ -1,6 +1,6 @@
 from visma.functions.structure import Function, Expression
 from visma.functions.exponential import Logarithm
-from visma.functions.operator import Plus, Minus, Multiply, Divide
+from visma.functions.operator import Plus, Minus, Multiply, Divide, Binary
 
 ############
 # Variable #
@@ -31,7 +31,6 @@ class Variable(Function):
         self.power = []
         if power is not None:
             self.power.append(power)
-        self.type = 'Variable'
 
     def inverse(self, rToken, wrtVar):
         l2rVar = Variable()
@@ -84,85 +83,100 @@ class Variable(Function):
     def __add__(self, other):
         from visma.functions.constant import Constant
         if isinstance(other, Variable):
-            sortedValuesSelf = self.value.sort()
-            sortedValuesOther = other.value.sort()
+            sortedValuesSelf = sorted(self.value)
+            sortedValuesOther = sorted(other.value)
+            if self.coefficient == 0:
+                return Constant(0, 1, 1)
             if (self.power == other.power) & (sortedValuesSelf == sortedValuesOther):
                 if self.before == '-':
                     self.coefficient -= other.coefficient
                 else:
                     self.coefficient += other.coefficient
-                result = Variable()
-                if self.coefficient != 0:
-                    result.scope = self.scope
-                    result.power = self.power
-                    result.coefficient = self.coefficient
                 return self
         elif isinstance(other, Constant):
             expression = Expression()
             expression.tokens = [self]
             expression.tokens.extend([Plus(), other])
-            self.type = 'Expression'
             self = expression
             return expression
         elif isinstance(other, Expression):
+            from visma.functions.operator import Binary
             expression = Expression()
             expression.tokens = [self]
             for i, token in enumerate(other.tokens):
                 if isinstance(token, Variable):
-                    if token.power == self.power:
-                        self.coefficient += other.tokens[i].coefficient
+                    tokenValueSorted = sorted(token.value)
+                    selfValueSorted = sorted(self.value)
+                    if (token.power == self.power) & (tokenValueSorted == selfValueSorted):
+                        if other.tokens[i - 1].value == '+' or (i == 0):
+                            self.coefficient += other.tokens[i].coefficient
+                        elif other.tokens[i - 1].value == '-':
+                            self.coefficient -= other.tokens[i].coefficient
                     else:
-                        expression.tokens.extend([Plus(), Variable(token)])
-                elif isinstance(token, Constant):
-                    expression.tokens.extend([Plus(), Constant(token.calculate()*1)])
+                        if other.tokens[i-1].value == '+' or i == 0:
+                            expression.tokens.extend([Plus(), Variable(token)])
+                        elif other.tokens[i-1].value == '-':
+                            expression.tokens.extend([Minus(), Variable(token)])
+                elif not isinstance(token, Binary):
+                    if other.tokens[i - 1].value == '+' or (i == 0):
+                        expression.tokens.extend([Plus(), token])
+                    elif other.tokens[i - 1].value == '-':
+                        expression.tokens.extend([Minus(), token])
             expression.tokens[0] = self
-            self.type = 'Expression'
             self = expression
             return expression
 
     def __rsub__(self, other):
-        expression = Expression()
-        expression.tokens = [other]
-        expression.tokens.extend([Minus(), self])
-        self.type = 'Expression'
-        self = expression
-        return expression
+        from visma.functions.constant import Constant
+        return Constant(0, 1, 1) - self + other
 
     def __sub__(self, other):
         from visma.functions.constant import Constant
-        if isinstance(other, Constant):
-            expression = Expression()
-            expression.tokens = [self]
-            expression.tokens.extend([Minus(), other])
-            self.type = 'Expression'
-            self = expression
-            return expression
-        elif isinstance(other, Expression):
-            expression = Expression()
-            expression.tokens = [self]
-            for i, token in enumerate(other.tokens):
-                if isinstance(token, Variable):
-                    if token.power == self.power:
-                        self.coefficient -= other.tokens[i].coefficient
-                    else:
-                        expression.tokens.extend([Minus(), Variable(token)])
-                elif isinstance(token, Constant):
-                    expression.tokens.extend([Minus(), Constant(token.calculate())])
-            expression.tokens[0] = self
-            self.type = 'Expression'
-            self = expression
-            return expression
-        elif isinstance(other, Variable):
-            if other.power == self.power:
+        if isinstance(other, Variable):
+            otherValueSorted = sorted(other.value)
+            selfValueSorted = sorted(self.value)
+            if (other.power == self.power) & (selfValueSorted == otherValueSorted):
                 self = self + Constant(-1, 1, 1) * other
                 return self
             else:
                 expression = Expression()
                 expression.tokens = [self]
                 expression.tokens.extend([Minus(), other])
-                self.type = 'Expression'
                 self = expression
                 return expression
+        elif isinstance(other, Constant):
+            if other.isZero():
+                return self
+            expression = Expression()
+            expression.tokens = [self]
+            expression.tokens.extend([Minus(), other])
+            self = expression
+            return expression
+        elif isinstance(other, Expression):
+            expression = Expression()
+            expression.tokens = [self]
+            for i, token in enumerate(other.tokens):
+                if isinstance(token, Variable):
+                    tokenValueSorted = sorted(token.value)
+                    selfValueSorted = sorted(self.value)
+                    if (token.power == self.power) & (tokenValueSorted == selfValueSorted):
+                        if other.tokens[i - 1].value == '+' or (i == 0):
+                            self.coefficient -= other.tokens[i].coefficient
+                        elif other.tokens[i - 1].value == '-':
+                            self.coefficient += other.tokens[i].coefficient
+                    else:
+                        if other.tokens[i-1].value == '+' or i == 0:
+                            expression.tokens.extend([Plus(), Variable(token)])
+                        elif other.tokens[i-1].value == '-':
+                            expression.tokens.extend([Minus(), Variable(token)])
+                elif not isinstance(token, Binary):
+                    if other.tokens[i - 1].value == '+' or (i == 0):
+                        expression.tokens.extend([Minus(), token])
+                    elif other.tokens[i - 1].value == '-':
+                        expression.tokens.extend([Plus(), token])
+            expression.tokens[0] = self
+            self = expression
+            return expression
 
     def __rmul__(self, other):
         return self * other
@@ -189,7 +203,7 @@ class Variable(Function):
                     self.power.append(other.power[j])
 
                 if len(self.value) == 0:
-                    result = Constant()
+                    result = Constant(self.coefficient)
                     result.scope = self.scope
                     result.power = 1
                     result.value = self.coefficient
@@ -208,7 +222,6 @@ class Variable(Function):
                     expression.tokens.extend([self * token])
                 else:
                     expression.tokens.extend([token])
-            self.type = 'Expression'
             self = expression
             return expression
         """
@@ -232,14 +245,8 @@ class Variable(Function):
 
     def __truediv__(self, other):
         from visma.functions.constant import Constant
-        if isinstance(other, Constant):
-            power = Constant(-1, 1, 1)
-            self = self * (other ** power)
-            return self
-
-        elif isinstance(other, Variable):
-            power = Constant(-1, 1, 1)
-            self = self * (other ** power)
+        if isinstance(other, Variable) or isinstance(other, Constant):
+            self = self * (other ** Constant(-1, 1, 1))
             return self
 
         elif isinstance(other, Expression):
@@ -248,6 +255,5 @@ class Variable(Function):
             other.power *= -1
             expression.tokens = [self]
             expression.tokens.extend([Multiply(), other])
-            self.type = 'Expression'
             self = expression
             return expression

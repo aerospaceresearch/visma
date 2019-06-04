@@ -189,7 +189,6 @@ def test_Variable():
 
     variable1 = Variable(2, 'x', 3)
     variable2 = Variable(4, 'x', 3)
-    variable3 = Variable(2, 'x', 4)
     add1 = variable1 + variable2
     assert add1.__str__() == "6{x}^{3}"
 
@@ -212,7 +211,7 @@ def test_Variable():
     exp1 = Expression([variable1, Plus(), constant])
     variable2 = Variable(4, 'x', 3)
     add2 = exp1 - variable2
-    assert add2.__str__() == "{({(2{x}^{3}+{3})}-4{x}^{3})}"  # TODO : Can be solved by calling expression simplifaction after it is fixed
+    assert add2.__str__() == "{(-2{x}^{3}+{3})}"
 
     constant = Constant(3)
     variable = Variable(2, 'x', 3)

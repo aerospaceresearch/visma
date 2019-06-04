@@ -23,7 +23,6 @@ class Constant(Function):
         super().__init__()
         self.coefficient = coefficient
         self.power = power
-        self.type = 'Constant'
         if value is not None:
             self.value = value
         if self.value is not None:
@@ -49,36 +48,30 @@ class Constant(Function):
 
     def __add__(self, other):
         if isinstance(other, Constant):
-            if other.power == self.power:
-                if self.before == '-':
-                    self.value = self.calculate() - other.calculate()
-                else:
-                    self.value = self.calculate() + other.calculate()
-                result = Constant()
-                if self.value == 0:
-                    if self.power == 0:
-                        self.value = 1
-                        self.power = 1
-                        result = Constant()
-                        result.scope = self.scope
-                        result.power = self.power
-                        result.value = self.calculate()
-                else:
-                    result = Constant()
-                    result.scope = self.scope
-                    result.power = self.power
-                    result.value = self.calculate()
-                return result
+            if self.before == '-':
+                result = Constant(self.calculate() - other.calculate(), self.power)
+            else:
+                result = Constant(self.calculate() + other.calculate(), self.power)
+            self.value = result.value
+            if result.value == 0 & result.power == 0:
+                result.value = 1
+                result.power = 1
+            result.scope = self.scope
+            result.value = result.calculate()
+            return result
         elif self.isZero():
             return other
         elif other.isZero():
             return self
         elif isinstance(other, Expression):
-            if other.power == 1:
+            if other.power == 1 & other.coefficient == 1:
                 constFound = False
                 for i, var in enumerate(other.tokens):
                     if isinstance(var, Constant):
-                        other.tokens[i] = self + var
+                        if other.tokens[i-1].value == '+' or i == 0:
+                            other.tokens[i] = self + var
+                        elif other.tokens[i-1].value == '-':
+                            other.tokens[i-1] = self - var
                         constFound = True
                         break
                 if not constFound:
@@ -99,6 +92,13 @@ class Constant(Function):
         if isinstance(other, Constant):
             self = self + Constant(-1, 1, 1) * other
             return self
+        elif isinstance(other, Variable):
+            if self.value == 0:
+                other.coefficient *= -1
+                return other
+            expression = Expression()
+            expression.tokens = [self]
+            expression.tokens.extend([Minus(), other])
         elif isinstance(other, Expression):
             expression = Expression()
             expression.tokens = [self]
@@ -111,35 +111,21 @@ class Constant(Function):
                             expression.tokens[0] = Constant(self.calculate() - token.calculate()*coeff)
                         elif other.tokens[i-1].value == '-':
                             expression.tokens[0] = Constant(self.calculate() + token.calculate()*coeff)
-                            print(expression.tokens[0])
                     elif isinstance(token, Variable):
                         if other.tokens[i-1].value == '+' or i == 0:
                             expression.tokens.extend([Minus(), Variable(token)])
                         elif other.tokens[i-1].value == '-':
                             expression.tokens.extend([Plus(), Variable(token)])
-                self.type = 'Expression'
-                self = expression
-                return expression
             else:
                 expression.tokens.extend([Minus(), other])
-                self.type = 'Expression'
-                self = expression
-                return expression
-        elif isinstance(other, Variable):
-            expression = Expression()
-            expression.tokens = [self]
-            expression.tokens.extend([Minus(), other])
-            self.type = 'Expression'
-            self = expression
-            return expression
+        self = expression
+        return expression
 
     def __rmul__(self, other):
         return self * other
 
     def __mul__(self, other):
         if other.isZero():
-            return other
-        if other.value in ['+', '-', '*', '/']:
             return other
         elif self.isZero():
             return self
@@ -151,7 +137,6 @@ class Constant(Function):
             variable.coefficient = self.calculate() * other.coefficient
             variable.value.extend(other.value)
             variable.power.extend(other.power)
-            self.type = 'Variable'
             self = variable
             return variable
         elif isinstance(other, Expression):

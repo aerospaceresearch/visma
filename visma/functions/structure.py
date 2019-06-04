@@ -187,7 +187,6 @@ class Expression(Function):
         self.tokens = []
         if tokens is not None:
             self.tokens.extend(tokens)
-        self.type = 'Expression'
 
     def __str__(self):
         represent = ""
@@ -211,4 +210,3 @@ class Equation(Expression):
     def __init__(self):
         super().__init__()
         self.tokens = None
-        self.type = 'Equation'
