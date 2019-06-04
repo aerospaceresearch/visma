@@ -1,5 +1,10 @@
 from visma.functions.constant import Constant
+from visma.functions.operator import Multiply
+from visma.functions.operator import Minus
+from visma.functions.operator import Plus
+from visma.functions.constant import Zero
 from visma.functions.structure import Expression
+import numpy as np
 from visma.functions.operator import Binary
 
 
@@ -140,11 +145,36 @@ class Matrix(object):
         else:
             return False
 
-    def inverse(self):
-        pass
+    def isIdentity(self):
+        """Checks if matrix is identity
 
-    def cofactor(self):
-        pass
+        Returns:
+            bool -- if identity matrix or not
+        """
+        if self.isDiagonal():
+            for i in range(0, self.dim[0]):
+                if self.value[i][i][0].value != 1:
+                    return False
+            self.__class__ = IdenMat
+            return True
+        else:
+            return False
+
+    def isDiagonal(self):
+        """Checks if matrix is diagonal
+
+        Returns:
+            bool -- if diagonal matrix or not
+        """
+        if self.isSquare():
+            for i in range(0, self.dim[0]):
+                for j in range(0, self.dim[1]):
+                    if i != j and (self.value[i][j][0].value != 0 or len(self.value[i][j]) > 1):
+                        return False
+            self.__class__ = DiagMat
+            return True
+        else:
+            return False
 
     def dimension(self):
         """Gets the dimension of the matrix
@@ -158,14 +188,11 @@ class Matrix(object):
     def transposeMat(self):
         """Returns Transpose of Matrix
 
-        Arguments:
-            mat {visma.matrix.structure.Matrix} -- matrix token
-
         Returns:
             matRes {visma.matrix.structure.Matrix} -- result matrix token
         """
         matRes = Matrix()
-        matRes.empty([self.dim[0], self.dim[1]])
+        matRes.empty([self.dim[1], self.dim[0]])
         for i in range(self.dim[0]):
             for j in range(self.dim[1]):
                 matRes.value[j][i] = self.value[i][j]
@@ -173,27 +200,226 @@ class Matrix(object):
 
 
 class SquareMat(Matrix):
+    """Class for Square matrix
 
-    def determinant(self):
-        pass
+    Square matrix is a matrix with equal dimensions.
+
+    Extends:
+        Matrix
+    """
+
+    def determinant(self, mat=None):
+        """Calculates square matrices' determinant
+
+        Returns:
+            list of tokens forming the determinant
+        """
+        from visma.simplify.simplify import simplify
+        from visma.io.parser import tokensToString
+
+        if mat is None:
+            self.dimension()
+            mat = np.array(self.value)
+        if(mat.shape[0] > 2):
+            ans = []
+            for i in range(mat.shape[0]):
+                mat1 = SquareMat()
+                mat1.value = np.concatenate((mat[1:, :i], mat[1:, i+1:]), axis=1).tolist()
+                a, _, _, _, _ = simplify(mat1.determinant())
+                if(a[0].value != 0 and a != []):
+                    a, _, _, _, _ = simplify(a + [Multiply()] + mat[0][i].tolist())
+                    if(i % 2 == 0):
+                        if(ans != []):
+                            ans, _, _, _, _ = simplify(ans + [Plus()] + a)
+                        else:
+                            ans = a
+                    else:
+                        ans, _, _, _, _ = simplify(ans + [Minus()] + a)
+        elif(mat.shape[0] == 2):
+            a = Multiply()
+            b = Minus()
+            mat = mat.tolist()
+            a1, _, _, _, _ = simplify(mat[0][0] + [a] + mat[1][1])
+            a2, _, _, _, _ = simplify(mat[0][1] + [a] + mat[1][0])
+            ans, _, _, _, _ = simplify([a1[0], b, a2[0]])
+        else:
+            ans, _, _, _, _ = simplify(mat[0][0])
+        if not ans:
+            ans = Zero()
+        print(tokensToString(ans))
+        return ans
+
+    def traceMat(self):
+        """Returns the trace of a square matrix (sum of diagonal elements)
+
+        Arguments:
+            mat {visma.matrix.structure.Matrix} -- matrix token
+
+        Returns:
+            trace {visma.matrix.structure.Matrix} -- string token
+        """
+        from visma.simplify.simplify import simplify
+        trace = []
+        for i in range(self.dim[0]):
+            trace.extend(self.value[i][i])
+            trace.append(Binary('+'))
+        trace.append(Constant(0))
+        trace, _, _, _, _ = simplify(trace)
+        return trace
+
+    def inverse(self):
+        """Calculates the inverse of the matrix using Gauss-Jordan Elimination
+
+        Arguments:
+            matrix {visma.matrix.structure.Matrix} -- matrix token
+
+        Returns:
+            inv {visma.matrix.structure.Matrix} -- result matrix token
+        """
+        from visma.simplify.simplify import simplify
+        from visma.io.tokenize import tokenizer
+        from visma.io.parser import tokensToString
+
+        if tokensToString(self.determinant()) == "0":
+            return -1
+
+        n = self.dim[0]
+        mat = Matrix()
+        mat.empty([n, 2*n])
+        for i in range(0, n):
+            for j in range(0, 2*n):
+                if j < n:
+                    mat.value[i][j] = self.value[i][j]
+                else:
+                    mat.value[i][j] = []
+
+        for i in range(0, n):
+            for j in range(n, 2*n):
+                if j == (i + n):
+                    mat.value[i][j].extend(tokenizer('1'))
+                else:
+                    mat.value[i][j].extend(tokenizer("0"))
+
+        for i in range(n-1, 0, -1):
+            if mat.value[i-1][0][0].value < mat.value[i][0][0].value:
+                for j in range(0, 2*n):
+                    temp = mat.value[i][j]
+                    mat.value[i][j] = mat.value[i-1][j]
+                    mat.value[i-1][j] = temp
+
+        for i in range(0, n):
+            for j in range(0, n):
+                if j != i:
+                    temp = []
+                    if len(mat.value[j][i]) != 1:
+                        temp.append(Expression(mat.value[j][i]))
+                    else:
+                        temp.extend(mat.value[j][i])
+                    temp.append(Binary('/'))
+                    if len(mat.value[i][i]) != 1:
+                        temp.append(Expression(mat.value[i][i]))
+                    else:
+                        temp.extend(mat.value[i][i])
+                    temp, _, _, _, _ = simplify(temp)
+
+                    for k in range(0, 2*n):
+                        t = []
+                        if mat.value[i][k][0].value != 0:
+                            if len(mat.value[i][k]) != 1:
+                                t.append(Expression(mat.value[i][k]))
+                            else:
+                                t.extend(mat.value[i][k])
+                            t.append(Binary('*'))
+                            if len(temp) != 1:
+                                t.append(Expression(temp))
+                            else:
+                                t.extend(temp)
+                            t, _, _, _, _ = simplify(t)
+                            mat.value[j][k].append(Binary('-'))
+                            if len(t) != 1:
+                                mat.value[j][k].append(Expression(t))
+                            else:
+                                mat.value[j][k].extend(t)
+                            mat.value[j][k], _, _, _, _ = simplify(mat.value[j][k])
+
+        for i in range(0, n):
+            temp = []
+            temp.extend(mat.value[i][i])
+            for j in range(0, 2*n):
+                if mat.value[i][j][0].value != 0:
+                    mat.value[i][j].append(Binary('/'))
+                    mat.value[i][j].extend(temp)
+                    mat.value[i][j], _, _, _, _ = simplify(mat.value[i][j])
+
+        inv = SquareMat()
+        inv.empty([n, n])
+        for i in range(0, n):
+            for j in range(n, 2*n):
+                inv.value[i][j-n] = mat.value[i][j]
+        return inv
+
+    def cofactor(self):
+        """Calculates cofactors matrix of the Square Matrix
+
+        Returns:
+            An object of type SquareMat
+        """
+        mat1 = SquareMat()
+        mat1.value = []
+        for i in range(self.dim[0]):
+            if(i % 2 == 0):
+                coeff = -1
+            else:
+                coeff = 1
+            mat1.value.append([])
+            for j in range(self.dim[1]):
+                coeff *= -1
+                mat = SquareMat()
+                temp = np.array(self.value)
+                mat.value = np.concatenate((np.concatenate((temp[:i, :j], temp[i+1:, :j])), np.concatenate((temp[:i, j+1:], temp[i+1:, j+1:]))), axis=1).tolist()
+                val = mat.determinant()[0]
+                val.value *= coeff
+                mat1.value[i].append([val])
+        mat1.dimension()
+        return mat1
 
 
-class IdenMat(SquareMat):
-    """Class for identity matrix
+class DiagMat(SquareMat):
+    """Class for Diagonal matrix
 
-    Identity matrix is a square matrix with all elements as 0 except for the diagonal elements which are 1.
+    Diagonal matrix is a square matrix with all elements as 0 except for the diagonal elements.
 
     Extends:
         SquareMat
     """
 
-    def __init__(self, dim):
+    def __init__(self, dim, diagElem):
+        """
+        dim {list} -- dimension of matrix
+        diagElem {list} -- list of tokens list
+        """
         super().__init__()
+        self.dim = dim
         for i in range(0, dim[0]):
             row = []
             for j in range(0, dim[1]):
                 if i == j:
-                    row.append(Constant(1))
+                    row.append(diagElem[i])
                 else:
-                    row.append(Constant(0))
+                    row.append([Constant(0)])
             self.value.append(row)
+
+
+class IdenMat(DiagMat):
+    """Class for identity matrix
+
+    Identity matrix is a diagonal matrix with all elements as 0 except for the diagonal elements which are 1.
+
+    Extends:
+        DiagMat
+    """
+
+    def __init__(self, dim):
+        super().__init__(dim, [[Constant(1)]]*dim[0])
+        for i in range(0, dim[0]):
+            self.value[i][i] = Constant(1)

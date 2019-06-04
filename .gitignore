@@ -12,3 +12,5 @@ VISualMAth.egg-info/
 __pycache__
 run.sh
 .vscode/
+log.txt
+.idea

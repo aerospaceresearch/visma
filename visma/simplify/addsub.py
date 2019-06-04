@@ -1,6 +1,6 @@
 import copy
 from visma.io.parser import tokensToString
-from visma.io.checks import getLevelVariables, getOperationsEquation, getOperationsExpression
+from visma.io.checks import getLevelVariables, getOperationsEquation, getOperationsExpression, postSimplification
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
@@ -31,6 +31,7 @@ def addition(tokens, direct=False):
         comments.append(com)
         variables = getLevelVariables(tokens)
         availableOperations = getOperationsExpression(variables, tokens)
+    tokens, animation = postSimplification(tokens, animation)
     token_string = tokensToString(tokens)
     return tokens, availableOperations, token_string, animation, comments
 

@@ -12,6 +12,8 @@ def test_simplify():
 
     assert quickTest("1 + 2 - 3", simplify) == "0"
     assert quickTest("1 + 2 - 4", simplify) == "-1.0"
+    assert quickTest("0 + 0 + 1", simplify) == "1.0"
+    assert quickTest("0 + 0 + xyz", simplify) == "xyz"
 
     assert quickTest("3*2 + 4*2 - 3*4", simplify) == "2.0"
     assert quickTest("3*x + 4*x - 2*y", simplify) == "7.0x-2.0y"

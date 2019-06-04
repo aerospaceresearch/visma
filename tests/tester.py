@@ -5,6 +5,15 @@ from visma.io.checks import checkTypes
 
 
 def quickTest(inp, operation, wrtVar=None):
+    if ';' in inp:
+        afterSplit = inp.split(';')
+        # Multiple equations provided by user.
+        eqStr1 = afterSplit[0]
+        eqStr2 = afterSplit[1]
+        eqStr3 = afterSplit[2]
+        tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
+        token_string, _, _ = operation(tokens[0], tokens[1], tokens[2], wrtVar)
+        return removeSpaces(token_string)
     lhs, rhs = getLHSandRHS(tokenizer(inp))
     _, inpType = checkTypes(lhs, rhs)
     if inpType == "equation":

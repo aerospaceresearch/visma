@@ -31,6 +31,10 @@ symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>',
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
 constants = [u'\u03C0', 'e', 'i']
 
+funcFourLetters = ["sinh", "sqrt", "sech", "csch", "cosh", "coth", "frac", "iota", "tanh", "log_"]
+funcThreeLetters = ["tan", "sin", "cos", "sec", "log", "exp", "csc", "cot"]
+funcTwoLetters = ["ln", "pi"]
+
 # TODO: Add module for different inputs(ex: LaTeX)
 inputLaTeX = ['\\times', '\\div', '+', '-', '=', '^', '\\sqrt']
 inputGreek = ['*', '/', '+', '-', '=', '^', 'sqrt']
@@ -64,254 +68,60 @@ def getTerms(eqn):
     terms = []
     while x < len(eqn):
 
-        if (eqn[x] >= 'a' and eqn[x] <= 'z') or (eqn[x] >= 'A' and eqn[x] <= 'Z') or eqn[x] in greek:
+        if ('a' <= eqn[x] <= 'z') or ('A' <= eqn[x] <= 'Z') or eqn[x] in greek:
 
-            if eqn[x] == 's':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("qrt"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sqrt':
+            buf = eqn[x]
+            if x + 3 < len(eqn):
+                for i in range(1, 4):
+                    buf += eqn[x+i]
+            if len(buf) == 4:
+                if buf in funcFourLetters:
                     terms.append(buf)
-                    x = i + 1
+                    x += 4
                     continue
 
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("inh"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sinh':
+            buf = eqn[x]
+            if x + 2 < len(eqn):
+                for i in range(1, 3):
+                    buf += eqn[x + i]
+            if len(buf) == 3:
+                if buf in funcThreeLetters:
                     terms.append(buf)
-                    x = i + 1
+                    x += 3
                     continue
 
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("in"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sin':
+            buf = eqn[x]
+            if x + 1 < len(eqn):
+                buf += eqn[x + 1]
+            if len(buf) == 2:
+                if buf in funcTwoLetters:
                     terms.append(buf)
-                    x = i + 1
+                    x += 2
                     continue
 
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("ech"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sech':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("ec"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'sec':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'l':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("og_"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "log_":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("og"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "log":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("n"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "ln":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'p':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("i"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "pi":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'f':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("rac"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == "frac":
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'e':
-                terms.append('exp')
-
+            if eqn[x] == 'e':   # Special Cases: e , i
+                terms.append("exp")
+                x += 1
+                continue
             elif eqn[x] == 'i':
-                terms.append('iota')
+                terms.append("iota")
+                x += 1
+                continue
 
-            elif eqn[x] == 't':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("anh"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'tanh':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("an"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'tan':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-                terms.append(eqn[x])
-
-            elif eqn[x] == 'c':
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("sch"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'csch':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("sc"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'csc':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("osh"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'cosh':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("os"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'cos':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("oth"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'coth':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                i = x
-                buf = eqn[x]
-                while (i - x) < len("ot"):
-                    i += 1
-                    if i < len(eqn):
-                        buf += eqn[i]
-                if buf == 'cot':
-                    terms.append(buf)
-                    x = i + 1
-                    continue
-
-                terms.append(eqn[x])
-
-            else:
-                terms.append(eqn[x])
+            terms.append(eqn[x])
             x += 1
-        elif eqn[x] >= '0' and eqn[x] <= '9':
-            buf = ''
+
+        elif '0' <= eqn[x] <= '9':
             buf = eqn[x]
             x += 1
-            dot = 0
             while x < len(eqn):
-                if (eqn[x] >= '0' and eqn[x] <= '9'):
+                if '0' <= eqn[x] <= '9' or eqn[x] == '.':
                     buf += eqn[x]
                     x += 1
-                elif eqn[x] == '.':
-                    if dot == 0:
-                        buf += eqn[x]
-                        dot += 1
-                        x += 1
-                    else:
-                        break
                 else:
                     break
             terms.append(buf)
+
         elif eqn[x] in symbols:
             if eqn[x] == '<':
                 i = x

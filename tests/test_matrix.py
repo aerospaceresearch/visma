@@ -1,6 +1,10 @@
 from visma.matrix.checks import isMatrix, dimCheck, multiplyCheck, isEqual
-from visma.matrix.operations import simplifyMatrix, addMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv
+from visma.matrix.operations import simplifyMatrix, addMatrix, subMatrix, scalarAdd, scalarSub, scalarMult, scalarDiv, gauss_elim, row_echelon
+from visma.matrix.structure import DiagMat, IdenMat
+from visma.functions.constant import Constant
 from tests.tester import getTokens
+from visma.io.parser import tokensToString
+
 
 ####################
 # matrix.structure #
@@ -12,6 +16,99 @@ def test_strMatrix():
     mat = getTokens("[1+x, 2; \
                       3  , 4]")
     assert mat.__str__() == "[{1.0}+{x},{2.0};{3.0},{4.0}]"
+
+
+def test_traceMat():
+
+    mat = getTokens("[1, 2, 3; \
+                      3, 4, 7; \
+                      4, 6, 9]")
+    mat.isSquare()
+    trace = mat.traceMat()
+    assert tokensToString(trace) == "14.0"
+
+    mat = getTokens("[7, 5; \
+                      2, 0]")
+    mat.isSquare()
+    trace = mat.traceMat()
+    assert tokensToString(trace) == "7.0"
+
+
+def test_isSquare():
+
+    mat = getTokens("[1, 0, 3; \
+                      2, 1, 2]")
+    assert not mat.isSquare()
+
+    mat = getTokens("[1, 2; \
+                      x, z]")
+    assert mat.isSquare()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isSquare()
+
+
+def test_transposeMat():
+    mat = getTokens("[1, 3; \
+                      2, 6]")
+    matTranspose = mat.transposeMat()
+    assert matTranspose.__str__() == "[{1.0},{2.0};{3.0},{6.0}]"
+
+    mat = getTokens("[5,8,2;\
+                      12,30,9;\
+                      4,17,7]")
+    matTranspose = mat.transposeMat()
+    assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
+
+    mat = getTokens("[5,8,2;\
+                      2,3,4]")
+    matTranspose = mat.transposeMat()
+    assert matTranspose.__str__() == "[{5.0},{2.0};{8.0},{3.0};{2.0},{4.0}]"
+
+    mat = getTokens("[1, 2; \
+                    3,  4]")
+    matTranspose = mat.transposeMat()
+    assert matTranspose.__str__() == "[{1.0},{3.0};{2.0},{4.0}]"
+
+
+def test_isDiagonal():
+
+    mat = getTokens("[1, 0; \
+                      0, z]")
+    assert mat.isDiagonal()
+
+    mat = getTokens("[1+x, 0+y; \
+                      0, z]")
+    assert not mat.isDiagonal()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isDiagonal()
+
+    mat = DiagMat([3, 3], [[Constant(1)], [Constant(5)], [Constant(2)]])
+    assert mat.isDiagonal()
+
+    mat = IdenMat([2, 2])
+    assert mat.isDiagonal()
+
+
+def test_isIdentity():
+
+    mat = getTokens("[1, 0; \
+                      0, 1]")
+    assert mat.isIdentity()
+
+    mat = getTokens("[1+x, 0+y; \
+                      0, 1]")
+    assert not mat.isIdentity()
+
+    mat = getTokens("[1, 2; \
+                      1, 3; \
+                      1, 4]")
+    assert not mat.isIdentity()
 
 
 #################
@@ -108,6 +205,14 @@ def test_addMatrix():
     assert matSum.__str__() == "[{x}+{y}+{1.0},2{x}^{2.0};{5.0},2{x}{y}-{1.0}]"
 
 
+def test_subMatrix():
+
+    matA = getTokens("[y, 2x]")
+    matB = getTokens("[-x, -x]")
+    matSub = subMatrix(matA, matB)
+    assert matSub.__str__() == "[{y}--1.0{x},3.0{x}]"
+
+
 def test_scalarAddMatrix():
 
     mat = getTokens("[1, 2; \
@@ -190,35 +295,97 @@ def test_multiplyMatrix():
     pass
 
 
-#################
-# matrix.structure #
-#################
+def test_determinant():
+    mat = getTokens('[1,2;3,4]')
+    if mat.isSquare():
+        a = ''
+        for i in mat.determinant():
+            a += i.__str__()
+        assert a == "{-2.0}"
+    mat = getTokens('[1,2,3;4,5,6;7,8,9]')
+    if mat.isSquare():
+        a = ''
+        for i in mat.determinant():
+            a += i.__str__()
+        assert a == "{0}"
+    mat = getTokens('[1]')
+    if mat.isSquare():
+        a = ''
+        for i in mat.determinant():
+            a += i.__str__()
+        assert a == "{1.0}"
 
 
-def test_transposeMat():
+def test_inverse():
+    mat = getTokens("[5, 7, 9;\
+                    4, 3, 8;\
+                    7, 5, 6]")
+    if mat.isSquare():
+        assert mat.inverse().__str__() == "[{-0.2095238095238095},{0.02857142857142858},{0.27619047619047615};{0.30476190476190473},{-0.3142857142857144},{-0.03809523809523803};{-0.00952380952380955},{0.22857142857142862},{-0.1238095238095238}]"
 
-    mat = getTokens("[1, 2; \
-                    3,  4]")
-    matTranspose = mat.transposeMat()
-    assert matTranspose.__str__() == "[{1.0},{3.0};{2.0},{4.0}]"
+    mat = getTokens("[4, 5;\
+                    7, 3]")
+    if mat.isSquare():
+        assert mat.inverse().__str__() == "[{-0.13043478260869565},{0.21739130434782608};{0.30434782608695654},{-0.17391304347826086}]"
 
-    mat = getTokens("[5,8,2;\
-                      12,30,9;\
-                      4,17,7]")
-    matTranspose = mat.transposeMat()
-    assert matTranspose.__str__() == "[{5.0},{12.0},{4.0};{8.0},{30.0},{17.0};{2.0},{9.0},{7.0}]"
+    mat = getTokens("[4, 5, 6, 8;\
+                    3, 25, 4, 6;\
+                    5, 1, 8, 4;\
+                    1, 3, 5, 8]")
+    if mat.isSquare():
+        # assert mat.inverse().__str__() == "[{0.501501501501501},{-0.04604604604604621},{-0.08908908908908941},{-0.4224224224224223};{-0.04504504504504507},{0.048048048048048055},{0.006006006006006063},{0.006006006006005994};{-0.41441441441441423},{0.04204204204204206},{0.25525525525525533},{0.2552552552552552};{0.2132132132132132},{-0.038538538538538544},{-0.1506506506506507},{0.016016016016016037}]"
+        assert mat.inverse().__str__() == "[{0.501501501501501},{-0.046046046046046035},{-0.08908908908909013},{-0.4224224224224224};{-0.04504504504504505},{0.04804804804804805},{0.006006006006006055},{0.006006006006006012};{-0.41441441441441407},{0.042042042042042024},{0.2552552552552556},{0.2552552552552553};{0.21321321321321324},{-0.03853853853853855},{-0.15065065065065067},{0.016016016016016026}]"
+
+    mat = getTokens("[1,1;1,1]")
+    if mat.isSquare():
+        assert mat.inverse().__str__() == "-1"
 
 
-def test_isSquare():
+def test_cofactor():
+    mat = getTokens('[1,2;3,4]')
+    if mat.isSquare():
+        assert str(mat.cofactor()) == '[{4.0},{-3.0};{-2.0},{1.0}]'
+    mat = getTokens('[1,2,3;0,4,5;1,0,6]')
+    if mat.isSquare():
+        assert str(mat.cofactor()) == '[24.0,{5.0},{-4.0};-12.0,{3.0},{2.0};{-2.0},-5.0,4.0]'
+    mat = getTokens('[1,2,3,4;5,6,7,8;9,10,11,12;13,14,15,16]')
+    if mat.isSquare():
+        assert str(mat.cofactor()) == '[{0},{0},{0},{0};{0},{0},{0},{0};{0},{0},{0},{0};{0},{0},{0},{0}]'
 
-    mat = getTokens("[1, 2; \
-                      x, z]")
-    assert mat.isSquare()
 
-    mat = getTokens("[1, 2; \
-                      1, 3; \
-                      1, 4]")
-    assert not mat.isSquare()
+def test_echelon():
+    mat = getTokens("[1, 4, 2;\
+                      5, 7, 6;\
+                      2, 4, 9]")
+    assert row_echelon(mat).__str__() == "[{1.0},{4.0},{2.0};{0},{-13.0},{-4.0};{0},{0},{6.230769230769231}]"
+
+    mat = getTokens("[1, 2, 3, 1;\
+                      4, 5, 6, 1;\
+                      7, 8, 9, 2]")
+    assert row_echelon(mat).__str__() == "[{1.0},{2.0},{3.0},{1.0};{0},{-3.0},{-6.0},{-3.0};{0},{0},{0},{1.0}]"
+
+    mat = getTokens("[1, 2, 3, 1;\
+                      4, 5, 6, 1;\
+                      7, 8, 9, 1;\
+                      2, 3 ,1 ,4]")
+    assert row_echelon(mat).__str__() == "[{1.0},{2.0},{3.0},{1.0};{0},{-3.0},{-6.0},{-3.0};{0},{0},{-3.0},{3.0};{0},{0},{0},{0}]"
+
+    mat = getTokens("[6,2,8,26;\
+                      3,5,2,8;\
+                      0,8,2,-7]")
+    assert row_echelon(mat).__str__() == "[{6.0},{2.0},{8.0},{26.0};{0},{4.0},{-2.0},{-5.0};{0.0},{0},{6.0},{3.0}]"
+
+
+def test_multi_variable_solve():
+    mat = getTokens("[1, 2, 3, 1;\
+                      4, 5, 6, 1;\
+                      7, 8, 2, 2]")
+    assert gauss_elim(mat).__str__() == "[{-1.1428571428571428};{1.2857142857142856};{-0.14285714285714285}]"
+
+    mat = getTokens("[6,2,8,26;\
+                      3,5,2,8;\
+                      0,8,2,-7]")
+    assert gauss_elim(mat).__str__() == "[{4.0};{-1.0};{0.5}]"
 
 #######################
 # Operator Overloading

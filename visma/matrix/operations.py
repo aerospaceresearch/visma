@@ -220,3 +220,98 @@ def scalarDiv(const, mat):
         return matRes
     else:
         logger.error("ZeroDivisionError: Cannot divide matrix by zero")
+
+
+def row_echelon(mat):
+    """
+    Returns the row echelon form of the given matrix
+
+    Arguments:
+        mat {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        row_echelon {visma.matrix.structure.Matrix} -- result matrix token
+    """
+
+    N = mat.dim[0]
+    M = mat.dim[1]
+    for k in range(0, N):
+        if abs(mat.value[k][k][0].value) == 0.0:
+            if k == N-1:
+                return simplifyMatrix(mat)
+            else:
+                for i in range(0, N):
+                    t = mat.value[k][i]
+                    mat.value[k][i] = mat.value[k+1][i]
+                    mat.value[k+1][i] = t
+        else:
+            for i in range(k+1, N):
+                temp = []
+                temp.extend(mat.value[i][k])
+                temp.append(Binary('/'))
+                temp.extend(mat.value[k][k])
+                temp, _, _, _, _ = simplify(temp)
+                for j in range(k+1, M):
+                    temp2 = []
+                    temp2.extend(mat.value[k][j])
+                    temp2.append(Binary('*'))
+                    temp2.extend(temp)
+                    temp2, _, _, _, _ = simplify(temp2)
+                    mat.value[i][j].append(Binary('-'))
+                    mat.value[i][j].extend(temp2)
+                mat.value[i][k].append(Binary('*'))
+                mat.value[i][k].append(Constant(0))
+                mat = simplifyMatrix(mat)
+    return simplifyMatrix(mat)
+
+
+def gauss_elim(mat):
+    """
+    Returns calculated values of unknown variables
+
+    Arguments:
+        mat {visma.matrix.structure.Matrix} -- matrix token
+
+    Returns:
+        result {visma.matrix.structure.Matrix} -- result matrix token
+    Note: result is a Nx1 matrix
+    """
+
+    echelon = Matrix()
+    echelon = row_echelon(mat)
+    result = Matrix()
+    result.empty([mat.dim[0], 1])
+
+    N = mat.dim[0]
+    M = mat.dim[1]
+    index = N-1
+    for i in range(N-1, -1, -1):
+        sum_ = []
+        temp = []
+        if echelon.value[i][i][0].value == 0.0:        # no unique solution for this case
+            return -1
+        for j in range(i+1, M-1):
+            temp = []
+            temp.extend(echelon.value[i][j])
+            temp.append(Binary('*'))
+            temp.extend(result.value[j][0])
+            temp, _, _, _, _ = simplify(temp)
+            sum_.extend(temp)
+            if j != M-2:
+                sum_.append(Binary('+'))
+        sum_, _, _, _, _ = simplify(sum_)
+
+        result.value[index][0].extend(echelon.value[i][M-1])
+        if sum_:
+            if sum_[0].value < 0:
+                result.value[index][0].append(Binary('-'))     # negative sign makes the negative sign in value positive
+            else:
+                result.value[index][0].append(Binary('-'))
+            result.value[index][0].extend(sum_)
+        result.value[index][0], _, _, _, _ = simplify(result.value[index][0])
+        result.value[index][0].append(Binary('/'))
+        result.value[index][0].extend(echelon.value[i][i])
+        result.value[index][0], _, _, _, _ = simplify(result.value[index][0])
+        index -= 1
+
+    return result

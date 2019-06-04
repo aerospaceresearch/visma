@@ -24,7 +24,15 @@ from visma.config.values import ROUNDOFF
 
 
 def getRoots(coeffs):
+    '''Applies Quadratic Formula (https://en.wikipedia.org/wiki/Quadratic_formula) on the coefficients
+    of the quadratic equation
 
+    Arguments:
+        coeffs {list} -- list of coefficients of the quadratic equation
+
+    Returns:
+        roots {list} -- list of roots of quadratic equation
+    '''
     roots = []
     if len(coeffs) == 3:
         d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
@@ -42,6 +50,21 @@ def getRoots(coeffs):
 
 
 def quadraticRoots(lTokens, rTokens):
+    '''Used to get quadratic roots of an equation
+    (Main driver function in module)
+
+    Argument:
+        lTokens {list} -- list of LHS tokens
+        rTokens {list} -- list of RHS tokens
+
+    Returns:
+        lTokens {list} -- list of LHS tokens
+        rTokens {list} -- list of RHS tokens
+        {empty list}
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    '''
 
     lTokens, rTokens, _, token_string, animation, comments = simplifyEquation(
         lTokens, rTokens)
@@ -206,6 +229,17 @@ def quadraticRoots(lTokens, rTokens):
 
 
 def findQuadraticRoots(lTokens, rTokens):
+    '''
+    Calcuates coefficients of the Quadratic Equation, which are passed to the getRoots() function to obtain final roots
+
+    Arguments:
+        lTokens {list} -- list of tokens of LHS
+        rTokens {list} -- list of tokens of RHS
+
+    Returns:
+        getRoots(coeff)  {list} -- list of roots of equation
+        getVariables(lTokens) {list} -- list of variables present in the LHS of equation
+    '''
 
     roots = []
     if len(rTokens) > 0:
