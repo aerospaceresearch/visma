@@ -44,15 +44,27 @@ class NaturalLog(Logarithm):
 
 
 class Exponential(FuncOp):
-    """Class for exponential function -- exp(...)
+    """Class for all constant exponential functions -- as exp(...) or 5^(...)
 
     Extends:
         FuncOp
     """
 
-    def __init__(self):
+    def __init__(self, val=None):
         super().__init__()
         self.value = 'exp'
+        if not val:
+            self.base = val
+        else:
+            self.base = math.e
 
-    def calculate(self, val):
-        return self.coefficient * (math.exp(val))
+    def calculate(self):
+        from visma.functions.constant import Constant
+        if isinstance(self.power, int) or isinstance(self.power, float) or isinstance(self.power, Constant):
+            const = Constant()
+            if isinstance(self.power, Constant):
+                self.power = self.power.calculate()
+            const.value = self.coefficient * (self.base ** self.power)
+            return const
+        else:
+            return self

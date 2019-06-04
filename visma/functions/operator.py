@@ -12,7 +12,6 @@ class Operator(object):
         self.tid = None
         self.scope = None
         self.value = None
-        self.type = None
 
     def __str__(self):
         represent = ""
@@ -32,7 +31,6 @@ class Binary(Operator):
 
     def __init__(self, value=None):
         super().__init__()
-        self.type = 'Binary'
         if value is not None:
             self.value = value
 
@@ -43,7 +41,6 @@ class Sqrt(Operator):
         super().__init__()
         self.power = None
         self.operand = None
-        self.type = 'sqrt'
 
     def __str__(self):
         represent = ""
