@@ -4,7 +4,7 @@ from visma.io.parser import tokensToString
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.matrix.special import cramerMatrices
-from visma.io.checks import getVariables
+from visma.io.checks import getVariableSim
 
 
 def coeffCalculator(LandR_tokens, variables):
@@ -16,7 +16,6 @@ def coeffCalculator(LandR_tokens, variables):
     Returns:
         coefficients -- 3 X 4 list -- each each row contains coefficients for x, y, z and constant term respectively.
     '''
-    # TODO: Currently implemented taking with fixed variables x, y and z. To be implemented with different variables like u, v  and w.
     coefficients = []
     coefficients = [[0] * 4 for _ in range(3)]
     for i, LandR_token in enumerate(LandR_tokens):
@@ -40,7 +39,7 @@ def coeffCalculator(LandR_tokens, variables):
     return coefficients
 
 
-def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor):
+def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor=None):
     '''Calculates values of x, y and z
 
     Arguments:
@@ -92,13 +91,25 @@ def getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFo
             resultStr = str(variables[2]) + ' = ' + str(z)
             comments += [[]]
             animation += [tokenizer(resultStr)]
+        elif solveFor is None:
+            resultStr1 = str(variables[0]) + ' = ' + str(x)
+            comments += [[]]
+            animation += [tokenizer(resultStr1)]
+
+            resultStr2 = str(variables[1]) + ' = ' + str(y)
+            comments += [[]]
+            animation += [tokenizer(resultStr2)]
+
+            resultStr3 = str(variables[2]) + ' = ' + str(z)
+            comments += [[]]
+            animation += [tokenizer(resultStr3)]
     elif not trivial:
         comments += [['There is no trivial solution to the the provided set of equations as D = 0']]
         animation += [[]]
     return comments, animation, trivial
 
 
-def simulSolver(eqTok1, eqTok2, eqTok3, solveFor):
+def simulSolver(eqTok1, eqTok2, eqTok3, solveFor=None):
     '''
     Main driver function in simulEqn.py
 
@@ -122,11 +133,9 @@ def simulSolver(eqTok1, eqTok2, eqTok3, solveFor):
 
     for _, tokens in enumerate(eqnTokens):
         lTokens, rTokens = getLHSandRHS(tokens)
-        variablesEach = getVariables(lTokens, rTokens)
-        variables.extend(variablesEach)
         LandR_tokens.append([lTokens, rTokens])
-    variables = list(dict.fromkeys(variables))
-    variables.sort()    # List of all the variables in all 3 equation in sorted order
+
+    variables = getVariableSim(eqnTokens)
 
     for i, tokens in enumerate(LandR_tokens):
         lTokens, rTokens, _, _, animationEach, commentsEach = simplifyEquation(tokens[0], tokens[1])
@@ -143,9 +152,15 @@ def simulSolver(eqTok1, eqTok2, eqTok3, solveFor):
 
     coefficients = coeffCalculator(LandR_tokens, variables)   # (as of now) its a 3 by 4 matrix; each row has coeff of x, y, z and constant term.
     matD, matDx, matDy, matDz = cramerMatrices(coefficients)
-    comments, animation, trivial = getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor)
+    if solveFor is not None:
+        comments, animation, trivial = getResult(matD, matDx, matDy, matDz, variables, comments, animation, solveFor)
+    else:
+        comments, animation, trivial = getResult(matD, matDx, matDy, matDz, variables, comments, animation)
     if trivial:
-        lastTokenString = tokensToString(animation[-1])
+        if solveFor is not None:
+            lastTokenString = tokensToString(animation[-1])
+        else:
+            lastTokenString = tokensToString(animation[-1]) + ';' + tokensToString(animation[-2]) + ';' + tokensToString(animation[-3])
     else:
         lastTokenString = 'No Trivial Solution'
     return lastTokenString, animation, comments

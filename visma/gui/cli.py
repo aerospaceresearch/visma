@@ -16,6 +16,7 @@ def commandExec(command):
     operation = command.split('(', 1)[0]
     inputEquation = command.split('(', 1)[1][:-1]
 
+    varName = None
     if ',' in inputEquation:
         varName = inputEquation.split(',')[1]
         varName = "".join(varName.split())
@@ -84,7 +85,10 @@ def commandExec(command):
         lTokens, rTokens, _, _, equationTokens, comments = quadraticRoots(lTokens, rTokens)
     elif operation == 'solve':
         if simul:
-            _, equationTokens, comments = simulSolver(tokens[0], tokens[1], tokens[2], varName)
+            if varName is not None:
+                _, equationTokens, comments = simulSolver(tokens[0], tokens[1], tokens[2], varName)
+            else:
+                _, equationTokens, comments = simulSolver(tokens[0], tokens[1], tokens[2])
             solutionType = equationTokens
         else:
             lhs, rhs = getLHSandRHS(tokens)
