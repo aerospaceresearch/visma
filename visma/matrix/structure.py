@@ -242,6 +242,8 @@ class SquareMat(Matrix):
             a1, _, _, _, _ = simplify(mat[0][0] + [a] + mat[1][1])
             a2, _, _, _, _ = simplify(mat[0][1] + [a] + mat[1][0])
             ans, _, _, _, _ = simplify([a1[0], b, a2[0]])
+            if (isinstance(ans[0], Minus) or isinstance(ans[0], Plus)) and ans[0].value not in ['+', '-']:
+                ans[0] = Constant(ans[0].value)
         else:
             ans, _, _, _, _ = simplify(mat[0][0])
         if not ans:
