@@ -100,7 +100,6 @@ class Variable(Function):
             self = expression
             return expression
         elif isinstance(other, Expression):
-            from visma.functions.operator import Binary
             expression = Expression()
             expression.tokens = [self]
             for i, token in enumerate(other.tokens):
