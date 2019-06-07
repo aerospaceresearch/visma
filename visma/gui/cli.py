@@ -2,14 +2,15 @@ from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
 from visma.io.checks import checkTypes
 from visma.io.tokenize import tokenizer, getLHSandRHS
-from visma.io.parser import resultStringCLI
-from visma.simplify.simplify import simplify, simplifyEquation
+from visma.io.parser import resultStringCLI, tokensToString
+from visma.simplify.simplify import simplify, simplifyEquation, expressionSimplification
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import quadraticRoots
 from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
+from visma.functions.structure import Expression
 
 
 def commandExec(command):
@@ -41,11 +42,23 @@ def commandExec(command):
         tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
     else:
         tokens = tokenizer(inputEquation)
-        lhs, rhs = getLHSandRHS(tokens)
-        lTokens = lhs
-        rTokens = rhs
-        _, solutionType = checkTypes(lhs, rhs)
+        if '=' in inputEquation:
+            lhs, rhs = getLHSandRHS(tokens)
+            lTokens = lhs
+            rTokens = rhs
+            _, solutionType = checkTypes(lhs, rhs)
+        else:
+            solutionType = 'expression'
 
+    # for i, tok in enumerate(tokens):
+    #     if isinstance(tok, Expression):
+    #         tokens[i].tokens, _, _, _, _ = simplify(tokens[i].tokens)
+    #         tokens[i:i] = tokenizer(tokensToString([tokens[i]])[1:][:-1])
+    #         del tokens[i + 1]
+
+    tokens = expressionSimplification(tokens)
+    print(tokensToString(tokens))
+"""
     if operation == 'simplify':
         if solutionType == 'expression':
             tokens, _, _, equationTokens, comments = simplify(tokens)
@@ -101,3 +114,4 @@ def commandExec(command):
         lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
     final_string = resultStringCLI(equationTokens, operation, comments, solutionType, simul)
     print(final_string)
+"""

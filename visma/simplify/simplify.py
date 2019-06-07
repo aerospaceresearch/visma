@@ -15,8 +15,10 @@ from visma.functions.variable import Variable
 from visma.functions.operator import Binary
 from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression, postSimplification
 from visma.io.parser import tokensToString
+from visma.io.tokenize import tokenizer
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
+from visma.functions.structure import Expression
 
 
 def moveRTokensToLTokens(lTokens, rTokens):
@@ -165,6 +167,107 @@ def simplifyEquation(lToks, rToks):
 
 
 def simplify(tokens):
+    tokens_orig = copy.deepcopy(tokens)
+    animation = [tokens_orig]
+    comments = [[]]
+    tokens, anim1, comment1 = expressionSimplification(tokens_orig)
+    animation.extend(anim1)
+    comments.extend(comment1)
+    tokens, availableOperations, token_string, anim2, comment2 = simplifyNormal(tokens)
+    anim2.pop(0)
+    animation.extend(anim2)
+    comments.extend(comment2)
+    return tokens, availableOperations, token_string, animation, comments
+
+
+def expressionSimplification(tokens1):
+    animation = []
+    comments = []
+    simToks = []
+
+    # TODO: add comments & animations.
+    # TODO: It would fail if more than 50 consecutive expressions are multiplied, make use of flag "mlpre"
+    # while(mlpre):
+    mlpre = True
+    for _ in range(50):
+        if not mlpre:
+            break
+        for i, _ in enumerate(tokens1):
+            mlpre = False
+            if isinstance(tokens1[i], Expression):
+                if (i > 1):
+                    if (tokens1[i - 1].value == '*'):
+                        tokens1[i].tokens, _, _ = expressionSimplification(tokens1[i].tokens)
+                        # animation.extend(anim1)
+                        # comments.extend(comment1)
+                        tokens1[i].tokens, _, _, _, _ = simplifyNormal(tokens1[i].tokens)
+                        # anim2.pop(0)
+                        # animation.extend(anim2)
+                        # comments.extend(comment2)
+
+                        if isinstance(tokens1[i - 2], Expression):
+                            tokens1[i - 2].tokens, _, _ = expressionSimplification(tokens1[i - 2].tokens)
+                            # animation.extend(anim1)
+                            # comments.extend(comment1)
+                            tokens1[i - 2].tokens, _, _, _, _ = simplifyNormal(tokens1[i - 2].tokens)
+                            # anim2.pop(0)
+                            # animation.extend(anim2)
+                            # comments.extend(comment2)
+
+                        mlpre = True
+                        a = tokens1[i - 2]
+                        b = tokens1[i]
+                        c = a * b
+                        if isinstance(c, Expression):
+                            c.tokens, _, _ = expressionSimplification(c.tokens)
+                            # animation.extend(anim3)
+                            # comments.extend(comment3)
+                            c.tokens, _, _, _, _ = simplifyNormal(c.tokens)
+                            # animation.extend(anim4)
+                            # comments.extend(comment4)
+                        tokens1[i] = c
+                        del tokens1[i - 1]
+                        del tokens1[i - 2]
+                        animation.append(tokens1)
+                        break
+
+    for i, _ in enumerate(tokens1):
+        if isinstance(tokens1[i], Expression):
+            newToks, anim5, comment5 = expressionSimplification(tokens1[i].tokens)
+            animation.extend(anim5)
+            comments.extend(comment5)
+            newToks, _, _, anim6, comment6 = simplifyNormal(newToks)
+            anim6.pop(0)
+            animation.extend(anim6)
+            comments.extend(comment6)
+            if not simToks:
+                simToks.extend(newToks)
+            elif (simToks[len(simToks) - 1].value == '+'):
+                if isinstance(newToks[0], Constant):
+                    if (newToks[0].value < 0):
+                        simToks.pop()
+                simToks.extend(newToks)
+            elif (simToks[len(simToks) - 1].value == '-'):
+                for _, x in enumerate(newToks):
+                    if x.value == '+':
+                        x.value = '-'
+                    elif x.value == '-':
+                        x.value = '+'
+                if (isinstance(newToks[0], Constant)):
+                    if (newToks[0].value < 0):
+                        simToks[-1].value = '+'
+                        newToks[0].value = abs(newToks[0].value)
+                elif (isinstance(newToks[0], Variable)):
+                    if (newToks[0].coefficient < 0):
+                        simToks[-1].value = '+'
+                        newToks[0].coefficient = abs(newToks[0].coefficient)
+                simToks.extend(newToks)
+        else:
+            simToks.extend([tokens1[i]])
+    return tokenizer(tokensToString(simToks)), animation, comments
+
+
+def simplifyNormal(tokens):
     """Simplifies given expression tokens
 
     Arguments:
@@ -180,7 +283,7 @@ def simplify(tokens):
     tokens_orig = copy.deepcopy(tokens)
     animation = [tokens_orig]
     variables = []
-    comments = [[]]
+    comments = []
     variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while len(availableOperations) > 0:
