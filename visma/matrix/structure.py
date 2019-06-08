@@ -29,6 +29,79 @@ class Matrix(object):
         self.power = 1
         self.dim = [0, 0]
 
+    def __add__(self, other):
+        """Adds two matrices
+         Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+         Returns:
+            matSum {visma.matrix.structure.Matrix} -- sum matrix token
+         Note:
+            Make dimCheck before calling addMatrix
+        """
+        matSum = Matrix()
+        matSum.empty(self.dim)
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matSum.value[i][j].extend(self.value[i][j])
+                matSum.value[i][j].append(Binary('+'))
+                matSum.value[i][j].extend(other.value[i][j])
+        from visma.matrix.operations import simplifyMatrix
+        matSum = simplifyMatrix(matSum)
+        return matSum
+
+    def __sub__(self, other):
+        """Subtracts two matrices
+         Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+         Returns:
+            matSub {visma.matrix.structure.Matrix} -- subtracted matrix token
+         Note:
+            Make dimCheck before calling subMatrix
+        """
+        matSub = Matrix()
+        matSub.empty(self.dim)
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                matSub.value[i][j].extend(self.value[i][j])
+                matSub.value[i][j].append(Binary('-'))
+                matSub.value[i][j].extend(other.value[i][j])
+        from visma.matrix.operations import simplifyMatrix
+        matSub = simplifyMatrix(matSub)
+        return matSub
+
+    def __mul__(self, other):
+        """Multiplies two matrices
+         Arguments:
+            self {visma.matrix.structure.Matrix} -- matrix token
+            other {visma.matrix.structure.Matrix} -- matrix token
+         Returns:
+            matPro {visma.matrix.structure.Matrix} -- product matrix token
+         Note:
+            Make mulitplyCheck before calling multiplyMatrix
+            Not commutative
+        """
+        matPro = Matrix()
+        matPro.empty([self.dim[0], other.dim[1]])
+        for i in range(self.dim[0]):
+            for j in range(other.dim[1]):
+                for k in range(self.dim[1]):
+                    if matPro.value[i][j] != []:
+                        matPro.value[i][j].append(Binary('+'))
+                    if len(self.value[i][k]) != 1:
+                        matPro.value[i][j].append(Expression(self.value[i][k]))
+                    else:
+                        matPro.value[i][j].extend(self.value[i][k])
+                    matPro.value[i][j].append(Binary('*'))
+                    if len(other.value[k][j]) != 1:
+                        matPro.value[i][j].append(Expression(other.value[k][j]))
+                    else:
+                        matPro.value[i][j].extend(other.value[k][j])
+        from visma.matrix.operations import simplifyMatrix
+        matPro = simplifyMatrix(matPro)
+        return matPro
+
     def __str__(self):
         represent = "["
         for i in range(self.dim[0]):
@@ -142,6 +215,8 @@ class SquareMat(Matrix):
             list of tokens forming the determinant
         """
         from visma.simplify.simplify import simplify
+        from visma.io.parser import tokensToString
+
         if mat is None:
             self.dimension()
             mat = np.array(self.value)
@@ -167,10 +242,13 @@ class SquareMat(Matrix):
             a1, _, _, _, _ = simplify(mat[0][0] + [a] + mat[1][1])
             a2, _, _, _, _ = simplify(mat[0][1] + [a] + mat[1][0])
             ans, _, _, _, _ = simplify([a1[0], b, a2[0]])
+            if (isinstance(ans[0], Minus) or isinstance(ans[0], Plus)) and ans[0].value not in ['+', '-']:
+                ans[0] = Constant(ans[0].value)
         else:
             ans, _, _, _, _ = simplify(mat[0][0])
         if not ans:
             ans = Zero()
+        print(tokensToString(ans))
         return ans
 
     def traceMat(self):
@@ -280,7 +358,6 @@ class SquareMat(Matrix):
         for i in range(0, n):
             for j in range(n, 2*n):
                 inv.value[i][j-n] = mat.value[i][j]
-
         return inv
 
     def cofactor(self):
