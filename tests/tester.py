@@ -15,7 +15,10 @@ def quickTest(inp, operation, wrtVar=None):
         token_string, _, _ = operation(tokens[0], tokens[1], tokens[2], wrtVar)
         return removeSpaces(token_string)
     lhs, rhs = getLHSandRHS(tokenizer(inp))
-    _, inpType = checkTypes(lhs, rhs)
+    if '=' in inp:
+        _, inpType = checkTypes(lhs, rhs)
+    else:
+        inpType = "expression"
     if inpType == "equation":
         if wrtVar is not None:
             _, _, _, token_string, _, _ = operation(lhs, rhs, wrtVar)

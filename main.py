@@ -63,7 +63,7 @@ def init():
             '''Directs to CommandExec and performs operations thereafter'''
             try:
                 commandExec(inp)
-            except ZeroDivisionError:
+            except Exception:
                 logger.error('Invalid Expression: ' + inp)
                 print('Invalid Expression: ' + inp + '\n')
 
