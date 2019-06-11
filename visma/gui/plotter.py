@@ -291,15 +291,26 @@ def plot(workspace):
     graphVars, func, variables = graphPlot(workspace, False)
     renderPlot(workspace, graphVars, func, variables)
     if (dim == 1):
-        if variables[0] == 'x':
-            workspace.eqToks[-1] += tokenizer("0y + 0z")
-        elif variables[0] == 'y':
-            workspace.eqToks[-1] += tokenizer("0z + 0x")
-        elif variables[0] == 'z':
-            workspace.eqToks[-1] += tokenizer("0x + 0y")
-    if ((dim == 2 and eqType == "equation") or (dim == 1)):
+        var2, var3 = selectAdditionalVariable(variables[0])
+        workspace.eqToks[-1] += tokenizer("0" + var2 + "+" + "0" + var3)
+
+    if (((dim == 2) or (dim == 1)) & (eqType == 'equation')):
         graphVars, func, variables = graphPlot(workspace, True)
         renderPlot(workspace, graphVars, func, variables)
+
+
+def selectAdditionalVariable(var1):
+    if var1 == 'z':
+        var2 = 'a'
+        var3 = 'b'
+        return var2, var3
+    if var1 == 'Z':
+        var2 = 'A'
+        var3 = 'B'
+        return var2, var3
+    var2 = chr(ord(var1) + 1)
+    var3 = chr(ord(var1) + 2)
+    return var2, var3
 
 
 def refreshPlot(workspace):
