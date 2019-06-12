@@ -38,7 +38,8 @@ def graphPlot(workspace, again):
     LHStok, RHStok = getLHSandRHS(tokens)
     variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
-    if (dim == 1 and eqType == "expression") or ((dim == 2) and eqType == "equation"):
+    # if (dim == 1 and eqType == "expression") or ((dim == 2) and eqType == "equation"):
+    if (dim == 1) or ((dim == 2) and eqType == "equation"):
         if again:
             variables.append('f(' + variables[0] + ')')
             graphVars, func = plotIn3D(LHStok, RHStok, variables, axisRange)
@@ -278,22 +279,38 @@ def plot(workspace):
     Arguments:
         workspace {QtWidgets.QWidget} -- main layout
     """
+    from visma.io.tokenize import tokenizer
+
     workspace.figure2D.clear()
     workspace.figure3D.clear()
-
     tokens = workspace.eqToks[-1]
     eqType = getTokensType(tokens)
     LHStok, RHStok = getLHSandRHS(tokens)
     variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
-
     graphVars, func, variables = graphPlot(workspace, False)
     renderPlot(workspace, graphVars, func, variables)
+    if (dim == 1):
+        var2, var3 = selectAdditionalVariable(variables[0])
+        workspace.eqToks[-1] += tokenizer("0" + var2 + "+" + "0" + var3)
 
-    # Handles case when a equation (like x^2 + y^2 = 5) can be rendered in 2D as well as 3D.
-    if ((dim == 2) and eqType == "equation"):
+    if (((dim == 2) or (dim == 1)) & (eqType == 'equation')):
         graphVars, func, variables = graphPlot(workspace, True)
         renderPlot(workspace, graphVars, func, variables)
+
+
+def selectAdditionalVariable(var1):
+    if var1 == 'z':
+        var2 = 'a'
+        var3 = 'b'
+        return var2, var3
+    if var1 == 'Z':
+        var2 = 'A'
+        var3 = 'B'
+        return var2, var3
+    var2 = chr(ord(var1) + 1)
+    var3 = chr(ord(var1) + 2)
+    return var2, var3
 
 
 def refreshPlot(workspace):
