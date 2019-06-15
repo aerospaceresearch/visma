@@ -46,10 +46,12 @@ def test_simplify():
     assert quickTest("x/5 + x/4 = 2/y", simplifyEquation) == "0.45x-2.0y^(-1)=0"
     assert quickTest("x/y + x/x + x/x^2 + x^2/x = x/y^2 + x^2/y + x - 1", simplifyEquation) == "xy^(-1)+2.0+x^(-1.0)-xy^(-2.0)-x^(2.0)y^(-1)=0"
 
-    assert quickTest("(x + 1) * (x + 1) * (x + 1)", simplify) == "x^(3.0)+3.0x^(2.0)+3.0x+1.0"
+    assert quickTest("(x + 1) * (x + 1) * (x + 1)", simplify) == "x^(3.0)+3x^(2.0)+3x+1.0"
     assert quickTest("(x + 1) * (x - 1) + (x + 2)", simplify) == "x^(2.0)+1.0+x"
     assert quickTest("(x + 1) + (x - 1)", simplify) == "2x"
-    assert quickTest("(x + 1) * (x * (1 + x))", simplify) == "2.0x^(2.0)+x^(3.0)+x"
+    assert quickTest("(x + 1) * (x * (1 + x))", simplify) == "2x^(2.0)+x^(3.0)+x"
+    assert quickTest("(x + 1) * (x - 1) + (100 + 1)", simplify) == "x^(2.0)+100.0"
+    assert quickTest("((x + 1) * (x - 1) + (100 + 1))", simplify) == "x^(2.0)+100.0"
 
 
 def test_addsub():

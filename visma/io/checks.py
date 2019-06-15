@@ -248,6 +248,19 @@ def checkTypes(lTokens=None, rTokens=None):
     if rTokens is None:
         rTokens = []
 
+    # Temporary solution to handle Expressions until tokezizing modules are made expression friendly.
+    expressionPresent = False
+    for x in lTokens:
+        if isinstance(x, Expression):
+            expressionPresent = True
+            break
+    for x in rTokens:
+        if isinstance(x, Expression):
+            expressionPresent = True
+            break
+    if expressionPresent:
+        return ['integrate', 'differentiate'], 'expression'
+
     if len(rTokens) != 0:
         equationCompatible = EquationCompatibility(lTokens, rTokens)
         availableOperations = equationCompatible.availableOperations

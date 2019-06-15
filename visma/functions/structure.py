@@ -210,8 +210,9 @@ class Expression(Function):
             result = Expression()
             for i, _ in enumerate(self.tokens):
                 c = copy.deepcopy(self)
+                d = copy.deepcopy(other)
                 if isinstance(c.tokens[i], Constant) or isinstance(c.tokens[i], Variable):
-                    result.tokens.extend([c.tokens[i] * other])
+                    result.tokens.extend([c.tokens[i] * d])
                 else:
                     result.tokens.extend([c.tokens[i]])
             return result

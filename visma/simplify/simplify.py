@@ -170,76 +170,53 @@ def simplify(tokens):
     tokens_orig = copy.deepcopy(tokens)
     animation = [tokens_orig]
     comments = [[]]
-    tokens, anim1, comment1 = expressionSimplification(tokens_orig)
+    tokens, availableOperations, token_string, anim1, comment1 = expressionSimplification(tokens_orig, [], tokens)
     animation.extend(anim1)
     comments.extend(comment1)
-    tokens, availableOperations, token_string, anim2, comment2 = simplifyNormal(tokens)
-    anim2.pop(0)
-    animation.extend(anim2)
-    comments.extend(comment2)
     return tokens, availableOperations, token_string, animation, comments
 
 
-def expressionSimplification(tokens1):
+def expressionSimplification(tokens_now, scope, tokens1):
     animation = []
     comments = []
     simToks = []
-
-    # TODO: add comments & animations.
-    # TODO: It would fail if more than 50 consecutive expressions are multiplied, make use of flag "mlpre"
-    # while(mlpre):
-    mlpre = True
+    mulFlag = True
+    expressionMultiplication = False
     for _ in range(50):
-        if not mlpre:
-            break
         for i, _ in enumerate(tokens1):
-            mlpre = False
+            mulFlag = False
             if isinstance(tokens1[i], Expression):
                 if (i > 1):
                     if (tokens1[i - 1].value == '*'):
-                        tokens1[i].tokens, _, _ = expressionSimplification(tokens1[i].tokens)
-                        # animation.extend(anim1)
-                        # comments.extend(comment1)
-                        tokens1[i].tokens, _, _, _, _ = simplifyNormal(tokens1[i].tokens)
-                        # anim2.pop(0)
-                        # animation.extend(anim2)
-                        # comments.extend(comment2)
-
+                        scope.append(i)
+                        tokens1[i].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i].tokens)
                         if isinstance(tokens1[i - 2], Expression):
-                            tokens1[i - 2].tokens, _, _ = expressionSimplification(tokens1[i - 2].tokens)
-                            # animation.extend(anim1)
-                            # comments.extend(comment1)
-                            tokens1[i - 2].tokens, _, _, _, _ = simplifyNormal(tokens1[i - 2].tokens)
-                            # anim2.pop(0)
-                            # animation.extend(anim2)
-                            # comments.extend(comment2)
-
-                        mlpre = True
+                            scope.append(i - 2)
+                            tokens1[i - 2].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i - 2].tokens)
                         a = tokens1[i - 2]
                         b = tokens1[i]
                         c = a * b
+                        mulFlag = True
+                        expressionMultiplication = True
                         if isinstance(c, Expression):
-                            c.tokens, _, _ = expressionSimplification(c.tokens)
-                            # animation.extend(anim3)
-                            # comments.extend(comment3)
-                            c.tokens, _, _, _, _ = simplifyNormal(c.tokens)
-                            # animation.extend(anim4)
-                            # comments.extend(comment4)
+                            scope.append(i)
+                            c.tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, c.tokens)
                         tokens1[i] = c
                         del tokens1[i - 1]
                         del tokens1[i - 2]
-                        animation.append(tokens1)
                         break
-
+        if not mulFlag:
+            break
+    if expressionMultiplication:
+        animation.append(tokens1)
+        comments.append(['Multiplying expressions'])
+    # TODO: Implement verbose multiplication steps.
+    expressionPresent = False
     for i, _ in enumerate(tokens1):
         if isinstance(tokens1[i], Expression):
-            newToks, anim5, comment5 = expressionSimplification(tokens1[i].tokens)
-            animation.extend(anim5)
-            comments.extend(comment5)
-            newToks, _, _, anim6, comment6 = simplifyNormal(newToks)
-            anim6.pop(0)
-            animation.extend(anim6)
-            comments.extend(comment6)
+            expressionPresent = True
+            scope.append(i)
+            newToks, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i].tokens)
             if not simToks:
                 simToks.extend(newToks)
             elif (simToks[len(simToks) - 1].value == '+'):
@@ -264,10 +241,24 @@ def expressionSimplification(tokens1):
                 simToks.extend(newToks)
         else:
             simToks.extend([tokens1[i]])
-    return tokenizer(tokensToString(simToks)), animation, comments
+    simToks = tokenizer(tokensToString(simToks))
+    if expressionPresent:
+        animation += [simToks]
+        comments += [['Opening up all the brackets']]
+    if scope == []:
+        simToks, availableOperations, token_string, animExtra, commentExtra = simplifification(simToks)
+        animExtra.pop(0)
+        animation += animExtra
+        comments += commentExtra
+    else:
+        availableOperations = ''
+        token_string = ''
+    if scope != []:
+        scope.pop()
+    return simToks, availableOperations, token_string, animation, comments
 
 
-def simplifyNormal(tokens):
+def simplifification(tokens):
     """Simplifies given expression tokens
 
     Arguments:
