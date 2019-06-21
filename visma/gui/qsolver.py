@@ -37,8 +37,8 @@ def quickSimplify(workspace):
             tokens = getToken(normalizedTerms, symTokens)
             tokens = tokens.tokens
             lhs, rhs = getLHSandRHS(tokens)
-            _, solutionType = checkTypes(
-                lhs, rhs)
+            _, solutionType = checkTypes(lhs, rhs)
+            lhs, rhs = getLHSandRHS(tokens)
             if solutionType == 'expression':
                 _, _, _, equationTokens, _ = simplify(tokens)
                 qSolution = r'$ ' + '= \ '

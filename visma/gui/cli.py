@@ -41,10 +41,16 @@ def commandExec(command):
         tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
     else:
         tokens = tokenizer(inputEquation)
-        lhs, rhs = getLHSandRHS(tokens)
-        lTokens = lhs
-        rTokens = rhs
-        _, solutionType = checkTypes(lhs, rhs)
+        if '=' in inputEquation:
+            lhs, rhs = getLHSandRHS(tokens)
+            lTokens = lhs
+            rTokens = rhs
+            _, solutionType = checkTypes(lhs, rhs)
+        else:
+            solutionType = 'expression'
+            lhs, rhs = getLHSandRHS(tokens)
+            lTokens = lhs
+            rTokens = rhs
 
     if operation == 'simplify':
         if solutionType == 'expression':
