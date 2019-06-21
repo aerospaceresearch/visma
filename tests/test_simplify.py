@@ -15,6 +15,11 @@ def test_simplify():
     assert quickTest("0 + 0 + 1", simplify) == "1.0"
     assert quickTest("0 + 0 + xyz", simplify) == "xyz"
 
+    assert quickTest("(2 + 3) * (4 + 5) * (6 + 7)", simplify) == "585.0"
+    assert quickTest("3 * (3 * (3 * ( 3 * 3)))", simplify) == "243.0"
+    assert quickTest("3 + (3 + (3 * 1))", simplify) == "9.0"
+    assert quickTest("3 - (1 - 3 - (1 + 2))", simplify) == "8.0"
+
     assert quickTest("3*2 + 4*2 - 3*4", simplify) == "2.0"
     assert quickTest("3*x + 4*x - 2*y", simplify) == "7.0x-2.0y"
     assert quickTest("x*y + x*x + x*x^2 + x^2*x + x*y^2 + x^2*y", simplify) == "xy+x^(2)+2x^(3.0)+xy^(2.0)+x^(2.0)y"
@@ -40,6 +45,13 @@ def test_simplify():
     assert quickTest("3/2 + 4/2 = 2/4", simplifyEquation) == "3.0=0"
     assert quickTest("x/5 + x/4 = 2/y", simplifyEquation) == "0.45x-2.0y^(-1)=0"
     assert quickTest("x/y + x/x + x/x^2 + x^2/x = x/y^2 + x^2/y + x - 1", simplifyEquation) == "xy^(-1)+2.0+x^(-1.0)-xy^(-2.0)-x^(2.0)y^(-1)=0"
+
+    assert quickTest("(x + 1) * (x + 1) * (x + 1)", simplify) == "x^(3.0)+3x^(2.0)+3x+1.0"
+    assert quickTest("(x + 1) * (x - 1) + (x + 2)", simplify) == "x^(2.0)+1.0+x"
+    assert quickTest("(x + 1) + (x - 1)", simplify) == "2x"
+    assert quickTest("(x + 1) * (x * (1 + x))", simplify) == "2x^(2.0)+x^(3.0)+x"
+    assert quickTest("(x + 1) * (x - 1) + (100 + 1)", simplify) == "x^(2.0)+100.0"
+    assert quickTest("((x + 1) * (x - 1) + (100 + 1))", simplify) == "x^(2.0)+100.0"
 
 
 def test_addsub():

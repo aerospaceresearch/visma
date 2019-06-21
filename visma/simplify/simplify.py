@@ -15,8 +15,10 @@ from visma.functions.variable import Variable
 from visma.functions.operator import Binary
 from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression, postSimplification
 from visma.io.parser import tokensToString
+from visma.io.tokenize import tokenizer
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
+from visma.functions.structure import Expression
 
 
 def moveRTokensToLTokens(lTokens, rTokens):
@@ -165,6 +167,98 @@ def simplifyEquation(lToks, rToks):
 
 
 def simplify(tokens):
+    tokens_orig = copy.deepcopy(tokens)
+    animation = [tokens_orig]
+    comments = [[]]
+    tokens, availableOperations, token_string, anim1, comment1 = expressionSimplification(tokens_orig, [], tokens)
+    animation.extend(anim1)
+    comments.extend(comment1)
+    return tokens, availableOperations, token_string, animation, comments
+
+
+def expressionSimplification(tokens_now, scope, tokens1):
+    animation = []
+    comments = []
+    simToks = []
+    mulFlag = True
+    expressionMultiplication = False
+    for _ in range(50):
+        for i, _ in enumerate(tokens1):
+            mulFlag = False
+            if isinstance(tokens1[i], Expression):
+                if (i > 1):
+                    if (tokens1[i - 1].value == '*'):
+                        scope.append(i)
+                        tokens1[i].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i].tokens)
+                        if isinstance(tokens1[i - 2], Expression):
+                            scope.append(i - 2)
+                            tokens1[i - 2].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i - 2].tokens)
+                        a = tokens1[i - 2]
+                        b = tokens1[i]
+                        c = a * b
+                        mulFlag = True
+                        expressionMultiplication = True
+                        if isinstance(c, Expression):
+                            scope.append(i)
+                            c.tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, c.tokens)
+                        tokens1[i] = c
+                        del tokens1[i - 1]
+                        del tokens1[i - 2]
+                        break
+        if not mulFlag:
+            break
+    if expressionMultiplication:
+        animation.append(tokens1)
+        comments.append(['Multiplying expressions'])
+    # TODO: Implement verbose multiplication steps.
+    expressionPresent = False
+    for i, _ in enumerate(tokens1):
+        if isinstance(tokens1[i], Expression):
+            expressionPresent = True
+            scope.append(i)
+            newToks, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i].tokens)
+            if not simToks:
+                simToks.extend(newToks)
+            elif (simToks[len(simToks) - 1].value == '+'):
+                if isinstance(newToks[0], Constant):
+                    if (newToks[0].value < 0):
+                        simToks.pop()
+                simToks.extend(newToks)
+            elif (simToks[len(simToks) - 1].value == '-'):
+                for _, x in enumerate(newToks):
+                    if x.value == '+':
+                        x.value = '-'
+                    elif x.value == '-':
+                        x.value = '+'
+                if (isinstance(newToks[0], Constant)):
+                    if (newToks[0].value < 0):
+                        simToks[-1].value = '+'
+                        newToks[0].value = abs(newToks[0].value)
+                elif (isinstance(newToks[0], Variable)):
+                    if (newToks[0].coefficient < 0):
+                        simToks[-1].value = '+'
+                        newToks[0].coefficient = abs(newToks[0].coefficient)
+                simToks.extend(newToks)
+        else:
+            simToks.extend([tokens1[i]])
+    simToks = tokenizer(tokensToString(simToks))
+    if expressionPresent:
+        animation += [simToks]
+        comments += [['Opening up all the brackets']]
+    if scope == []:
+        simToks, availableOperations, token_string, animExtra, commentExtra = simplifification(simToks)
+        animExtra.pop(0)
+        animation += animExtra
+        comments += commentExtra
+    else:
+        availableOperations = ''
+        token_string = ''
+    if scope != []:
+        scope.pop()
+    return simToks, availableOperations, token_string, animation, comments
+
+
+def simplifification(tokens):
     """Simplifies given expression tokens
 
     Arguments:
@@ -180,7 +274,7 @@ def simplify(tokens):
     tokens_orig = copy.deepcopy(tokens)
     animation = [tokens_orig]
     variables = []
-    comments = [[]]
+    comments = []
     variables.extend(getLevelVariables(tokens))
     availableOperations = getOperationsExpression(variables, tokens)
     while len(availableOperations) > 0:

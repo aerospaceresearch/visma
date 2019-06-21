@@ -1,3 +1,4 @@
+import copy
 from visma.functions.structure import Function, Expression
 from visma.functions.exponential import Logarithm
 from visma.functions.operator import Plus, Minus, Multiply, Divide, Binary
@@ -211,19 +212,15 @@ class Variable(Function):
         elif isinstance(other, Constant):
             self.coefficient *= other.calculate()
             return self
-        # TO BE IMPROVED
-        """
         elif isinstance(other, Expression):
-            expression = Expression()
-            expression.coefficient = self.coefficient * other.coefficient
+            result = Expression()
             for _, token in enumerate(other.tokens):
                 if isinstance(token, Variable) or isinstance(token, Constant):
-                    expression.tokens.extend([self * token])
+                    c = copy.deepcopy(self)
+                    result.tokens.extend([c * token])
                 else:
-                    expression.tokens.extend([token])
-            self = expression
-            return expression
-        """
+                    result.tokens.extend([token])
+            return result
 
     def __pow__(self, other):
         from visma.functions.constant import Constant
