@@ -96,6 +96,11 @@ def test_Constant():
     mul3 = constant1 / (constant2 + variable0)
     assert mul3.__str__() == "{25}*{({16}+3{X}^{3})}^{-1}"
 
+    constant1 = Constant(5)
+    constant2 = Constant(4)
+    div1 = constant1 / constant2
+    assert div1.__str__() == "{1.25}"
+
     constant1 = Constant(3, 2)
     constant2 = Constant(4, 2)
     variable0 = Variable(3, 'X', 3)
