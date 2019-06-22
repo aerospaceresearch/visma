@@ -53,7 +53,7 @@ class Constant(Function):
             else:
                 result = Constant(self.calculate() + other.calculate(), self.power)
             self.value = result.value
-            if result.value == 0 & result.power == 0:
+            if result.value == 0 and result.power == 0:
                 result.value = 1
                 result.power = 1
             result.scope = self.scope
@@ -64,7 +64,7 @@ class Constant(Function):
         elif other.isZero():
             return self
         elif isinstance(other, Expression):
-            if other.power == 1 & other.coefficient == 1:
+            if other.power == 1 and other.coefficient == 1:
                 constFound = False
                 for i, var in enumerate(other.tokens):
                     if isinstance(var, Constant):
