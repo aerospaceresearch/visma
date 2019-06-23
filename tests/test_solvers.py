@@ -1,4 +1,4 @@
-from visma.solvers.polynomial.roots import quadraticRoots
+from visma.solvers.polynomial.roots import rootFinder
 from visma.solvers.simulEqn import simulSolver
 from visma.solvers.solve import solveFor
 from tests.tester import quickTest
@@ -8,30 +8,36 @@ from tests.tester import quickTest
 ############################
 
 
-def test_quadraticRoots():
+def test_rootFinder():
 
-    assert quickTest("x^2 + 2x + 1 = 0", quadraticRoots) == "(x+1.0)^(2)=0"
-    assert quickTest("x^2 + 2x = - 1", quadraticRoots) == "(x+1.0)^(2)=0"
-    assert quickTest("x^2 = - 2x - 1", quadraticRoots) == "(x+1.0)^(2)=0"
-    assert quickTest("0 = x^2 + 2x + 1", quadraticRoots) == "(x+1.0)^(2)=0"
+    assert quickTest("x^2 + 2x + 1 = 0", rootFinder) == "(x+1.0)^(2)=0"
+    assert quickTest("x^2 + 2x = - 1", rootFinder) == "(x+1.0)^(2)=0"
+    assert quickTest("x^2 = - 2x - 1", rootFinder) == "(x+1.0)^(2)=0"
+    assert quickTest("0 = x^2 + 2x + 1", rootFinder) == "(x+1.0)^(2)=0"
 
-    assert quickTest("x^2 + 1 - 2x = 0", quadraticRoots) == "(x-1.0)^(2)=0"
-    assert quickTest("x^2 + 1 = 2x", quadraticRoots) == "(x-1.0)^(2)=0"
-    assert quickTest("x^2 = 2x - 1", quadraticRoots) == "(x-1.0)^(2)=0"
-    assert quickTest("-2x = - x^2 - 1", quadraticRoots) == "(x-1.0)^(2)=0"
-    # FIXME: assert quickTest("0 = 2x - x^2 - 1", quadraticRoots) == "(x-1.0)^(2)=0"
+    assert quickTest("x^2 + 1 - 2x = 0", rootFinder) == "(x-1.0)^(2)=0"
+    assert quickTest("x^2 + 1 = 2x", rootFinder) == "(x-1.0)^(2)=0"
+    assert quickTest("x^2 = 2x - 1", rootFinder) == "(x-1.0)^(2)=0"
+    assert quickTest("-2x = - x^2 - 1", rootFinder) == "(x-1.0)^(2)=0"
+    # FIXME: assert quickTest("0 = 2x - x^2 - 1", rootFinder) == "(x-1.0)^(2)=0"
 
-    assert quickTest("2x^2 - 4x - 6 = 0", quadraticRoots) == "(x+1.0)*(x-3.0)=0"
-    assert quickTest("3x^2 + 7x + 1 = 0", quadraticRoots) == "(x+2.18)*(x+0.15)=0"
-    assert quickTest("3x^2 - 7x + 1 = 0", quadraticRoots) == "(x-0.15)*(x-2.18)=0"
+    assert quickTest("2x^2 - 4x - 6 = 0", rootFinder) == "(x+1.0)*(x-3.0)=0"
+    assert quickTest("3x^2 + 7x + 1 = 0", rootFinder) == "(x+2.18)*(x+0.15)=0"
+    assert quickTest("3x^2 - 7x + 1 = 0", rootFinder) == "(x-0.15)*(x-2.18)=0"
 
-    assert quickTest("x^2 + x + 1 = 0", quadraticRoots) == "(x+0.5+0.87*sqrt[2](-1))*(x+0.5-0.87*sqrt[2](-1))=0"
-    assert quickTest("x^2 - x + 1 = 0", quadraticRoots) == "(x-0.5+0.87*sqrt[2](-1))*(x-0.5-0.87*sqrt[2](-1))=0"
+    assert quickTest("x^2 + x + 1 = 0", rootFinder) == "(x+0.5+0.87*sqrt[2](-1))*(x+0.5-0.87*sqrt[2](-1))=0"
+    assert quickTest("x^2 - x + 1 = 0", rootFinder) == "(x-0.5+0.87*sqrt[2](-1))*(x-0.5-0.87*sqrt[2](-1))=0"
 
+    # Tests for Cubic Equations
+    assert quickTest("2x^3 - 4x^2 - 22x + 24 = 0", rootFinder) == "(x-4.0)*(x+3.0)*(x-1.0)=0"
+    assert quickTest("x^3 + 6x^2 + 12x + 8 = 0", rootFinder) == "(x+2.0)^(3)=0"
+    # FIXME: result should be (x-1.0)*(x-(-0.5+0.87i))*(x-(-0.5-0.87i))=0; Modify "tokensToString" to generate string for Iota Token.
+    assert quickTest("x^3 = 1", rootFinder) == "(x-1.0)*(x-(-0.5+0.87))*(x-(-0.5-0.87))=0"
 
 ###############################
 # solvers.simulEqn #
 ###############################
+
 
 def test_simulSolvers():
     assert quickTest("1000x + 2y + 3z = 4; 5x + 6y + 7z = 8; 9x + 10y + 1100z = 12", simulSolver, 'x') == "x=0.0"
