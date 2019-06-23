@@ -7,7 +7,7 @@ from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 from visma.solvers.solve import solveFor
-from visma.solvers.polynomial.roots import quadraticRoots
+from visma.solvers.polynomial.roots import rootFinder
 from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
 
@@ -88,7 +88,7 @@ def commandExec(command):
     elif operation == 'factorize':
         tokens, _, _, equationTokens, comments = factorize(tokens)
     elif operation == 'find-roots':
-        lTokens, rTokens, _, _, equationTokens, comments = quadraticRoots(lTokens, rTokens)
+        lTokens, rTokens, _, _, equationTokens, comments = rootFinder(lTokens, rTokens)
     elif operation == 'solve':
         if simul:
             if varName is not None:
