@@ -36,7 +36,6 @@ def init():
         prompt = '>>> '
         intro = "Welcome! This is Visual Maths Interactive Shell...\n" + "type 'help' for a User Manual and Ctrl + D to Exit prompt\n"
 
-        @classmethod
         def do_exit(self, inp):
             '''Exits VisMa Prompt'''
             print("Exiting VisMa...")
@@ -51,14 +50,12 @@ def init():
             '''Displays a list of commands that can be used'''
             print(self.userManual)
 
-        @classmethod
         def do_gui(self, inp):
             '''Starts GUI of VisMa'''
             initGUI()
             print("Initiating GUI...")
             logger.info("Initiating GUI...")
 
-        @classmethod
         def default(self, inp):
             '''Directs to CommandExec and performs operations thereafter'''
             try:
