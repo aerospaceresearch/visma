@@ -1,8 +1,10 @@
 from visma.io.checks import getVariables, areTokensEqual, isTokenInToken
-from visma.io.parser import tokensToString
+from visma.io.parser import tokensToString, tokensToLatex
 from visma.io.tokenize import getTerms, normalize
-from visma.functions.operator import Operator, Plus
+from visma.functions.operator import Operator, Plus, Binary
 from visma.functions.structure import Expression
+from visma.functions.variable import Variable
+from visma.functions.constant import Constant
 from tests.tester import getTokens
 
 #############
@@ -74,6 +76,18 @@ def test_tokensToString():
 
     mat = getTokens("[1+x, 2] + [1, y + z^2]")
     assert tokensToString(mat) == "[1.0 + x,2.0] + [1.0,y + z^(2.0)]"
+
+def test_tokensToLatex():
+
+    mat = getTokens("[1+x, 2; \
+                      3  , 4]")
+    assert tokensToLatex([mat]) == "\\begin{bmatrix}{1.0}+{x}&{2.0}\\\\{3.0}&{4.0}\\end{bmatrix}"
+
+    mat1 = getTokens("[1+x, 2] + [1, y + z^2]")
+    assert tokensToLatex(mat1) == "\\begin{bmatrix}{1.0}+{x}&{2.0}\\end{bmatrix}+\\begin{bmatrix}{1.0}&{y}+{z}^{2.0}\\end{bmatrix}"
+    
+    eqn = [Variable('x^2'), Binary('+'), Variable('2x'), Binary('+'), Constant(1)]
+    assert tokensToLatex(eqn) == "x^2+2x+{1}"
 
 
 ###############
