@@ -31,8 +31,7 @@ def test_rootFinder():
     # Tests for Cubic Equations
     assert quickTest("2x^3 - 4x^2 - 22x + 24 = 0", rootFinder) == "(x-4.0)*(x+3.0)*(x-1.0)=0"
     assert quickTest("x^3 + 6x^2 + 12x + 8 = 0", rootFinder) == "(x+2.0)^(3)=0"
-    # FIXME: result should be (x-1.0)*(x-(-0.5+0.87i))*(x-(-0.5-0.87i))=0; Modify "tokensToString" to generate string for Iota Token.
-    assert quickTest("x^3 = 1", rootFinder) == "(x-1.0)*(x-(-0.5+0.87))*(x-(-0.5-0.87))=0"
+    assert quickTest("x^3 = 1", rootFinder) == "(x-1.0)*(x-(-0.5+0.87*sqrt[2](-1)))*(x-(-0.5-0.87*sqrt[2](-1)))=0"
 
 ###############################
 # solvers.simulEqn #

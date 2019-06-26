@@ -267,7 +267,7 @@ def checkTypes(lTokens=None, rTokens=None):
         isPoly, polyDegree = preprocessCheckPolynomial(copy.deepcopy(lTokens), copy.deepcopy(rTokens))
         if isPoly:
             availableOperations.append('factorize')
-            if(polyDegree == 2):
+            if(polyDegree == 2 or polyDegree == 3):
                 availableOperations.append("find roots")
         inputType = "equation"
     else:

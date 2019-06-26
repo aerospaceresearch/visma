@@ -33,20 +33,28 @@ def getRoots(coeffs):
     Returns:
         roots {list} -- list of roots of quadratic equation
     '''
+    animations = []
+    comments = []
     roots = []
     if len(coeffs) == 3:
         d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
         if d == 0:
             roots.append(-(coeffs[1] / (2 * coeffs[2])))
+            animations += [[]]
+            comments += [['Value of determinant is: ' + str(d) + ' thus, Only one roots']]
         elif d > 0:
             d = math.sqrt(d)
             roots.append(-(coeffs[1] + d) / (2 * coeffs[2]))
             roots.append(-(coeffs[1] - d) / (2 * coeffs[2]))
+            animations += [[]]
+            comments += [['Value of determinant is: ' + str(d) + ' thus, two (real) roots']]
         else:
             imaginary = [-(coeffs[1] / (2 * coeffs[2])), -1,
                          (math.sqrt(-d)) / (2 * coeffs[2])]
             roots = imaginary
-    return roots
+            animations += [[]]
+            comments += [['Value of determinant is: ' + str(d) + ' thus, two (imaginary) roots']]
+    return roots, animations, comments
 
 
 def quadraticRoots(lTokens, rTokens):
@@ -67,13 +75,18 @@ def quadraticRoots(lTokens, rTokens):
     '''
     from visma.solvers.polynomial.roots import getCoefficients
 
-    lTokens, rTokens, _, token_string, animation, comments = simplifyEquation(
-        lTokens, rTokens)
+    animations = []
+    comments = []
+    lTokens, rTokens, _, token_string, animNew1, commentNew1 = simplifyEquation(lTokens, rTokens)
+    animations.extend(animNew1)
+    comments.extend(commentNew1)
     if len(rTokens) > 0:
         lTokens, rTokens = moveRTokensToLTokens(lTokens, rTokens)
     coeffs = getCoefficients(lTokens, rTokens, 2)
     var = getVariables(lTokens)
-    roots = getRoots(coeffs)
+    roots, animNew2, commentNew2 = getRoots(coeffs)
+    animations.extend(animNew2)
+    comments.extend(commentNew2)
     if len(roots) == 1:
         tokens = []
         expression = Expression()
@@ -148,9 +161,7 @@ def quadraticRoots(lTokens, rTokens):
         lTokens = [expression, binary3, expression2]
 
     elif len(roots) == 3:
-        sqrtPow = Constant()
-        sqrtPow.value = 2
-        sqrtPow.power = 1
+        sqrtPow = Constant(2, 1)
 
         binary4 = Binary()
         if roots[0] < 0:
@@ -228,6 +239,6 @@ def quadraticRoots(lTokens, rTokens):
     equalTo.value = '='
     tokenToStringBuilder.append(equalTo)
     tokenToStringBuilder.extend(rTokens)
-    animation.append(copy.deepcopy(tokenToStringBuilder))
+    animations.append(copy.deepcopy(tokenToStringBuilder))
     token_string = tokensToString(tokenToStringBuilder)
-    return lTokens, rTokens, [], token_string, animation, comments
+    return lTokens, rTokens, [], token_string, animations, comments
