@@ -23,7 +23,7 @@ from visma.config.values import ROUNDOFF
 # FIXME: Extend to polynomials of all degrees
 
 
-def getRoots(coeffs):
+def getRootsQuadratic(coeffs):
     '''Applies Quadratic Formula (https://en.wikipedia.org/wiki/Quadratic_formula) on the coefficients
     of the quadratic equation
 
@@ -84,7 +84,7 @@ def quadraticRoots(lTokens, rTokens):
         lTokens, rTokens = moveRTokensToLTokens(lTokens, rTokens)
     coeffs = getCoefficients(lTokens, rTokens, 2)
     var = getVariables(lTokens)
-    roots, animNew2, commentNew2 = getRoots(coeffs)
+    roots, animNew2, commentNew2 = getRootsQuadratic(coeffs)
     animations.extend(animNew2)
     comments.extend(commentNew2)
     if len(roots) == 1:

@@ -10,7 +10,7 @@ from visma.simplify.simplify import simplifyEquation, moveRTokensToLTokens
 from visma.config.values import ROUNDOFF
 
 
-def getRoots(coeffs):
+def getRootsCubic(coeffs):
     """ Applies an implementation of Cardano's Method (https://en.wikipedia.org/wiki/Cubic_function) on the coefficients
         of the cubic equation
     """
@@ -87,7 +87,7 @@ def cubicRoots(lTokens, rTokens):
         lTokens, rTokens = moveRTokensToLTokens(lTokens, rTokens)
     coeffs = getCoefficients(lTokens, rTokens, 3)
     var = getVariables(lTokens)
-    roots, animNew2, commentNew2 = getRoots(coeffs)
+    roots, animNew2, commentNew2 = getRootsCubic(coeffs)
     animations.extend(animNew2)
     comments.extend(commentNew2)
     tokens1 = []
