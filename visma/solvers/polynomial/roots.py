@@ -1,3 +1,9 @@
+'''This module hosts the driver functions used for finding roots of an equation & also contains utility
+functions used by other files of visma.solvers.polynomial
+
+Note: Please try maintain proper documentation
+'''
+
 import copy
 import math
 from visma.io.checks import evaluateConstant, preprocessCheckPolynomial
@@ -10,6 +16,20 @@ from visma.solvers.polynomial.quartic import quarticRoots
 
 
 def rootFinder(lTokens, rTokens):
+    '''Main function called by driver modules to calculate roots of equation
+
+    Argument:
+        lTokens {list} -- list of left side tokens
+        rTokens {list} -- list of right side tokens
+
+    Returns:
+        lTokens {list} -- list of left side tokens
+        rTokens {list} -- list of right side tokens
+        {empty list}
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    '''
     lTokensTemp = copy.deepcopy(lTokens)
     rTokensTemp = copy.deepcopy(rTokens)
     _, polyDegree = preprocessCheckPolynomial(lTokensTemp, rTokensTemp)
@@ -23,7 +43,16 @@ def rootFinder(lTokens, rTokens):
 
 
 def getCoefficients(lTokens, rTokens, degree):
+    '''Used by root finder modules to get a list of coefficients of equation
 
+    Argument:
+        lTokens {list} -- list of left side tokens
+        rTokens {list} -- list of right side tokens
+        degree {int} -- degree of equation
+
+    Returns:
+        coeffs {list} -- list of coefficients of equation (item at ith index is coefficient of x^i)
+    '''
     coeffs = [0] * (degree + 1)
     for i, token in enumerate(lTokens):
         if isinstance(token, Constant):
@@ -67,6 +96,14 @@ def getCoefficients(lTokens, rTokens, degree):
 
 
 def squareRootComplex(value):
+    '''Used by root finder modules to get square root of a complex number
+
+    Argument:
+        value {list of 2 elements} -- 1st element indicates real part & other element indicates imaginary part
+
+    Returns:
+        root {float} -- root of imaginary number
+    '''
     a = value[0]
     b = value[1]
     root = 2*[0]
@@ -78,6 +115,14 @@ def squareRootComplex(value):
 
 
 def cubeRoot(value):
+    '''Used by root finder modules to get cube root of floats
+
+    Argument:
+        value {float} -- whose cube root is to be found
+
+    Returns:
+        root {float} -- cube root of "value"
+    '''
     if value >= 0:
         return value ** (1./3.)
     else:

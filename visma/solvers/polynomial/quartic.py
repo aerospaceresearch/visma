@@ -1,3 +1,10 @@
+'''
+Owner: AerospaceResearch.net
+About: This module hosts the functions used for finding roots of a  quartic equation
+Note: Please try to maintain proper documentation
+Logic Description:
+'''
+
 import math
 import copy
 from operator import itemgetter
@@ -13,6 +20,18 @@ from visma.solvers.polynomial.cubic import getRootsCubic
 
 
 def getRootsQuartic(coeffs):
+    """ Applies an implementation of Determinant Method (https://en.wikipedia.org/wiki/Cubic_function) on the coefficients
+        of the Quartic equation to get roots
+
+        Arguments:
+            coeffs {list} -- list of coefficients of the equation
+
+        Returns:
+            roots {list} -- list of roots of quartic equation
+            (each element of roots {list} is a list of two elements, where 1st one denotes real part & second part shows imaginary part)
+            animation {list} -- list of equation solving process
+            comments {list} -- list of comments in equation solving process
+    """
     from visma.solvers.polynomial.roots import squareRootComplex
     roots = []
     a = coeffs[4]
@@ -118,6 +137,21 @@ def getRootsQuartic(coeffs):
 
 
 def quarticRoots(lTokens, rTokens):
+    '''Used to get roots of a quartic equation
+    This functions also translates roots {list} into final result of solution
+
+    Argument:
+        lTokens {list} -- list of LHS tokens
+        rTokens {list} -- list of RHS tokens
+
+    Returns:
+        lTokens {list} -- list of LHS tokens
+        rTokens {list} -- list of RHS tokens
+        {empty list}
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    '''
     from visma.solvers.polynomial.roots import getCoefficients
 
     lTokens, rTokens, _, _, _, _ = simplifyEquation(lTokens, rTokens)

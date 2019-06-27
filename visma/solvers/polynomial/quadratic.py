@@ -2,8 +2,7 @@
 Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
 Other Authors:
 Owner: AerospaceResearch.net
-About: This module is aimed at first checking if quadratic roots can be found for the given equation, and then in the next step find the quadratic roots and display them.
-
+About: This module hosts the functions used for finding roots of a  quartic equation
 Note: Please try to maintain proper documentation
 Logic Description:
 """
@@ -59,7 +58,6 @@ def getRootsQuadratic(coeffs):
 
 def quadraticRoots(lTokens, rTokens):
     '''Used to get quadratic roots of an equation
-    (Main driver function in module)
 
     Argument:
         lTokens {list} -- list of LHS tokens
