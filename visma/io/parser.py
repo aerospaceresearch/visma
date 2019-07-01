@@ -107,7 +107,20 @@ def tokensToLatex(eqTokens):
     """
     eqLatex = ""
     for token in eqTokens:
-        eqLatex += token.__str__()
+        if isinstance(token, Matrix):
+            eqLatex += "\\begin{bmatrix}"
+            for row in token.value:
+                for column in row:
+                    for term in column:
+                        eqLatex += term.__str__()
+                    if row.index(column) < len(row) - 1:
+                        eqLatex += '&'
+                    elif row.index(column) == len(row) - 1 and token.value.index(row) < len(token.value) - 1:
+                        eqLatex += '\\\\'
+            eqLatex += "\\end{bmatrix}"
+
+        else:
+            eqLatex += token.__str__()
     return eqLatex
 
 

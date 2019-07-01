@@ -1,5 +1,5 @@
 from visma.io.checks import getVariables, areTokensEqual, isTokenInToken
-from visma.io.parser import tokensToString
+from visma.io.parser import tokensToString, tokensToLatex
 from visma.io.tokenize import getTerms, normalize
 from visma.functions.operator import Operator, Plus
 from visma.functions.structure import Expression
@@ -74,6 +74,17 @@ def test_tokensToString():
 
     mat = getTokens("[1+x, 2] + [1, y + z^2]")
     assert tokensToString(mat) == "[1.0 + x,2.0] + [1.0,y + z^(2.0)]"
+
+
+def test_tokensToLatex():
+
+    # Matrix token to latex
+    mat = getTokens("[1+x, 2; \
+                      3  , 4]")
+    assert tokensToLatex([mat]) == "\\begin{bmatrix}{1.0}+{x}&{2.0}\\\\{3.0}&{4.0}\\end{bmatrix}"
+
+    mat = getTokens("[1+x, 2] + [1, y + z^2]")
+    assert tokensToLatex(mat) == "\\begin{bmatrix}{1.0}+{x}&{2.0}\\end{bmatrix}+\\begin{bmatrix}{1.0}&{y}+{z}^{2.0}\\end{bmatrix}"
 
 
 ###############
