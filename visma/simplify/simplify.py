@@ -177,6 +177,20 @@ def simplify(tokens):
 
 
 def expressionSimplification(tokens_now, scope, tokens1):
+    '''Makes an input equation free from Expressions, i.e. solving each Expression recursively to convert them in other tokens.
+
+    Arguments:
+        tokens_now {list} -- list of original tokens as function gets called recursively
+        scope {list} -- integers (bounds) indicating which Expression we are currently solving
+        tokens1 {list} -- list of current tokens as function gets called recursively
+
+    Returns:
+        simToks {list} -- list of simplified tokens of each Expression
+        availableOperations {list} -- list of operations which can be performed on a equation token
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    '''
     animation = []
     comments = []
     simToks = []
