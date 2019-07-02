@@ -87,13 +87,8 @@ def quadraticRoots(lTokens, rTokens):
     comments.extend(commentNew2)
     if len(roots) == 1:
         tokens = []
-        expression = Expression()
-        expression.coefficient = 1
-        expression.power = 2
-        variable = Variable()
-        variable.value = var
-        variable.power = [1]
-        variable.coefficient = 1
+        expression = Expression(coefficient=1, power=2)
+        variable = Variable(1, var[0], 1)
         tokens.append(variable)
         binary = Binary()
         if roots[0] < 0:
@@ -102,22 +97,15 @@ def quadraticRoots(lTokens, rTokens):
         else:
             binary.value = '-'
         tokens.append(binary)
-        constant = Constant()
-        constant.value = round(roots[0], ROUNDOFF)
-        constant.power = 1
+        constant = Constant(round(roots[0], ROUNDOFF), 1)
         tokens.append(constant)
         expression.tokens = tokens
         lTokens = [expression]
 
     elif len(roots) == 2:
         tokens = []
-        expression = Expression()
-        expression.coefficient = 1
-        expression.power = 1
-        variable = Variable()
-        variable.value = var
-        variable.power = [1]
-        variable.coefficient = 1
+        expression = Expression(coefficient=1, power=1)
+        variable = Variable(1, var[0], 1)
         tokens.append(variable)
         binary = Binary()
         if roots[0] < 0:
@@ -126,20 +114,12 @@ def quadraticRoots(lTokens, rTokens):
         else:
             binary.value = '-'
         tokens.append(binary)
-        constant = Constant()
-        constant.value = round(roots[0], ROUNDOFF)
-        constant.power = 1
+        constant = Constant(round(roots[0], ROUNDOFF), 1)
         tokens.append(constant)
         expression.tokens = tokens
 
         tokens2 = []
-        expression2 = Expression()
-        expression2.coefficient = 1
-        expression2.power = 1
-        variable2 = Variable()
-        variable2.value = var
-        variable2.power = [1]
-        variable2.coefficient = 1
+        expression2 = Expression(coefficient=1, power=1)
         tokens2.append(variable)
         binary2 = Binary()
         if roots[1] < 0:
@@ -148,9 +128,7 @@ def quadraticRoots(lTokens, rTokens):
         else:
             binary2.value = '-'
         tokens2.append(binary2)
-        constant2 = Constant()
-        constant2.value = round(roots[1], ROUNDOFF)
-        constant2.power = 1
+        constant2 = Constant(round(roots[1], ROUNDOFF), 1)
         tokens2.append(constant2)
         expression2.tokens = tokens2
 
@@ -159,8 +137,6 @@ def quadraticRoots(lTokens, rTokens):
         lTokens = [expression, binary3, expression2]
 
     elif len(roots) == 3:
-        sqrtPow = Constant(2, 1)
-
         binary4 = Binary()
         if roots[0] < 0:
             roots[0] *= -1
@@ -168,61 +144,33 @@ def quadraticRoots(lTokens, rTokens):
         else:
             binary4.value = '-'
 
-        constant3 = Constant()
-        constant3.value = round(roots[0], ROUNDOFF)
-        constant3.power = 1
+        constant3 = Constant(round(roots[0], ROUNDOFF), 1)
 
         binary5 = Binary()
         binary5.value = '*'
 
-        constant2 = Constant()
-        constant2.value = round(roots[2], ROUNDOFF)
-        constant2.power = 1
+        constant2 = Constant(round(roots[2], ROUNDOFF), 1)
 
         tokens = []
-        expression = Expression()
-        expression.coefficient = 1
-        expression.power = 1
-        variable = Variable()
-        variable.value = var
-        variable.power = [1]
-        variable.coefficient = 1
-        tokens.append(variable)
-        tokens.append(binary4)
-        tokens.append(constant3)
+        expression = Expression(coefficient=1, power=1)
+        variable = Variable(1, var[0], 1)
+        tokens.extend([variable, binary4, constant3])
         binary = Binary()
         binary.value = '+'
-        tokens.append(binary)
-        tokens.append(constant2)
-        tokens.append(binary5)
-        constant = Constant()
-        constant.value = round(roots[1], ROUNDOFF)
-        constant.power = 1
-        sqrt = Sqrt()
-        sqrt.power = sqrtPow
-        sqrt.operand = constant
+        tokens.extend([binary, constant2, binary5])
+        constant = Constant(round(roots[1], ROUNDOFF), 1)
+        sqrt = Sqrt(Constant(2, 1), constant)
         tokens.append(sqrt)
         expression.tokens = tokens
 
         tokens2 = []
-        expression2 = Expression()
-        expression2.coefficient = 1
-        expression2.power = 1
-        variable2 = Variable()
-        variable2.value = var
-        variable2.power = [1]
-        variable2.coefficient = 1
-        tokens2.append(variable)
-        tokens2.append(binary4)
-        tokens2.append(constant3)
+        expression2 = Expression(coefficient=1, power=1)
+        variable2 = Variable(1, var[0], 1)
+        tokens2.extend([variable2, binary4, constant3])
         binary2 = Binary()
         binary2.value = '-'
-        tokens2.append(binary2)
-        tokens2.append(constant2)
-        tokens2.append(binary5)
-        tokens2.append(sqrt)
+        tokens2.extend([binary2, constant2, binary5, sqrt])
         expression2.tokens = tokens2
-
         binary3 = Binary()
         binary3.value = '*'
         lTokens = [expression, binary3, expression2]

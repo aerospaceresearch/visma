@@ -10,7 +10,7 @@ from tests.tester import quickTest
 
 def test_rootFinder():
 
-    #  Tests for Quardatic (2nd Degree) Equations
+    #  Tests for Quadratic (2nd Degree) Equations
     assert quickTest("x^2 + 2x + 1 = 0", rootFinder) == "(x+1.0)^(2)=0"
     assert quickTest("x^2 + 2x = - 1", rootFinder) == "(x+1.0)^(2)=0"
     assert quickTest("x^2 = - 2x - 1", rootFinder) == "(x+1.0)^(2)=0"
@@ -21,6 +21,7 @@ def test_rootFinder():
     assert quickTest("x^2 = 2x - 1", rootFinder) == "(x-1.0)^(2)=0"
     assert quickTest("-2x = - x^2 - 1", rootFinder) == "(x-1.0)^(2)=0"
     # FIXME: assert quickTest("0 = 2x - x^2 - 1", rootFinder) == "(x-1.0)^(2)=0"
+    # assert quickTest("0 = 2x - x^2 - 1", rootFinder) == "(x-1.0)^(2)=0"
 
     assert quickTest("2x^2 - 4x - 6 = 0", rootFinder) == "(x+1.0)*(x-3.0)=0"
     assert quickTest("3x^2 + 7x + 1 = 0", rootFinder) == "(x+2.18)*(x+0.15)=0"
@@ -37,7 +38,7 @@ def test_rootFinder():
     # Tests for Quartic (4th Degree) Equations
     assert quickTest("3x^4 + 6x^3 - 123x^2 - 126x + 1080 = 0", rootFinder) == "(x-5.0)*(x+4.0)*(x-3.0)*(x+6.0)=0"
     assert quickTest("-20x^4 + 5x^3 + 17x^2 - 29x + 87 = 0", rootFinder) == "(x-1.49)*(x-(0.22+1.3*sqrt[2](-1)))*(x-(0.22-1.3*sqrt[2](-1)))*(x+1.69)=0"
-    assert quickTest("2x^4+4x^3+6x^2+8x+10=0", rootFinder) == "(x-(0.28+1.42*sqrt[2](-1)))*(x-(-1.28+0.85*sqrt[2](-1)))*(x-(-1.28-0.85*sqrt[2](-1)))*(x-(0.28-1.42*sqrt[2](-1)))=0"
+    assert quickTest("2x^4 + 4x^3 + 6x^2 + 8x + 10 = 0", rootFinder) == "(x-(0.28+1.42*sqrt[2](-1)))*(x-(-1.28+0.85*sqrt[2](-1)))*(x-(-1.28-0.85*sqrt[2](-1)))*(x-(0.28-1.42*sqrt[2](-1)))=0"
 
 ###############################
 # solvers.simulEqn #

@@ -122,13 +122,8 @@ def cubicRoots(lTokens, rTokens):
     animations.extend(animNew2)
     comments.extend(commentNew2)
     tokens1 = []
-    expression1 = Expression()
-    expression1.coefficient = 1
-    expression1.power = 3
-    variable = Variable()
-    variable.value = var
-    variable.power = [1]
-    variable.coefficient = 1
+    expression1 = Expression(coefficient=1, power=3)
+    variable = Variable(1, var[0], 1)
     tokens1.append(variable)
     if roots[0][1] == 0:
         binary = Binary()
@@ -138,9 +133,7 @@ def cubicRoots(lTokens, rTokens):
         else:
             binary.value = '-'
         tokens1.append(binary)
-        constant = Constant()
-        constant.value = round(roots[0][0], ROUNDOFF)
-        constant.power = 1
+    constant = Constant(round(roots[0][0], ROUNDOFF), 1)
     tokens1.append(constant)
 
     expression1.tokens = tokens1
@@ -150,13 +143,8 @@ def cubicRoots(lTokens, rTokens):
         expression1.power = 1
         for _, root in enumerate(roots[1:]):
             tokens2 = []
-            expression2 = Expression()
-            expression2.coefficient = 1
-            expression2.power = 1
-            variable = Variable()
-            variable.value = var
-            variable.power = [1]
-            variable.coefficient = 1
+            expression2 = Expression(coefficient=1, power=1)
+            variable = Variable(1, var[0], 1)
             tokens2.append(variable)
             binary = Binary()
             if root[1] == 0:
@@ -166,35 +154,23 @@ def cubicRoots(lTokens, rTokens):
                 else:
                     binary.value = '-'
                 tokens2.append(binary)
-                constant = Constant()
-                constant.value = round(root[0], ROUNDOFF)
-                constant.power = 1
+                constant = Constant(round(root[0], ROUNDOFF), 1)
                 tokens2.append(constant)
             else:
                 binary.value = '-'
                 tokens2.append(binary)
-                expressionResult = Expression()
-                expressionResult.power = 1
-                expressionResult.coefficient = 1
+                expressionResult = Expression(coefficient=1, power=1)
                 tokensResult = []
-                real = Constant()
-                real.value = round(root[0], ROUNDOFF)
-                real.power = 1
+                real = Constant(round(root[0], ROUNDOFF), 1)
                 tokensResult.append(real)
-                imaginary = Constant()
-                imaginary.value = round(root[1], ROUNDOFF)
-                imaginary.power = 1
+                imaginary = Constant(round(root[1], ROUNDOFF), 1)
                 if imaginary.value < 0:
                     tokensResult.append(Minus())
                     imaginary.value = abs(imaginary.value)
                     tokensResult.append(imaginary)
                 else:
-                    tokensResult.append(Plus())
-                    tokensResult.append(imaginary)
-                sqrtPow = Constant(2, 1)
-                sqrt = Sqrt()
-                sqrt.power = sqrtPow
-                sqrt.operand = Constant(-1)
+                    tokensResult.extend([Plus(), imaginary])
+                sqrt = Sqrt(Constant(2, 1), Constant(-1, 1))
                 tokensResult.append(Binary('*'))
                 tokensResult.append(sqrt)
                 expressionResult.tokens = tokensResult

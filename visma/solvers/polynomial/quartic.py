@@ -34,6 +34,8 @@ def getRootsQuartic(coeffs):
     """
     from visma.solvers.polynomial.roots import squareRootComplex
     roots = []
+    animations = []
+    comments = []
     a = coeffs[4]
     b = coeffs[3]
     c = coeffs[2]
@@ -43,14 +45,19 @@ def getRootsQuartic(coeffs):
     f = c - (3*(b**2)/8)
     g = d + (b**3)/8 - (b*c/2)
     h = e - (3*(b**4)/256) + ((b**2)*c/16) - (b*d/4)
+    animations += [[]]
+    comments += [['Value of determinants [f, g, h] are ' + str(f) + ', ' + str(g) + ', ' + str(h)]]
 
     reducedCubicEquation = [-(g*g)/64, (f*f - 4*h)/16, (f/2), 1]
     rootsReducedCubic, _, _ = getRootsCubic(reducedCubicEquation)
+    animations += [[]]
+    comments += [['Can be solved using a cubic equation with coefficients ' + str(1) + ', ' + str((f/2)) + ', ' + str((f*f - 4*h)/16) + ' and ' + str(-(g*g)/64)]]
     for i in range(3):
         rootsReducedCubic[i][0] = round(rootsReducedCubic[i][0], ROUNDOFF)
         rootsReducedCubic[i][1] = round(rootsReducedCubic[i][1], ROUNDOFF)
     if (rootsReducedCubic[0][1] == 0 and rootsReducedCubic[1][1] == 0 and rootsReducedCubic[2][1] == 0):
-        #   Imaginary part doesn't exists in reduced Cubic equation
+        animations += [[]]
+        comments += [['Depending on imaginary roots exist for cubic, roots are be determined as: ']]
         if (rootsReducedCubic[0][0] >= 0 and rootsReducedCubic[1][0] >= 0 and rootsReducedCubic[2][0] >= 0):
             rootsReducedCubicSorted = sorted(rootsReducedCubic, key=itemgetter(0))
             p = math.sqrt(rootsReducedCubicSorted[1][0])
@@ -133,7 +140,7 @@ def getRootsQuartic(coeffs):
         valueRealX4 = -2*p[0] + r - s
         valueImaginaryX4 = 0
         roots.append([valueRealX4, valueImaginaryX4])
-    return roots
+    return roots, animations, comments
 
 
 def quarticRoots(lTokens, rTokens):
@@ -154,7 +161,11 @@ def quarticRoots(lTokens, rTokens):
     '''
     from visma.solvers.polynomial.roots import getCoefficients
 
-    lTokens, rTokens, _, _, _, _ = simplifyEquation(lTokens, rTokens)
+    animations = []
+    comments = []
+    lTokens, rTokens, _, _, animNew1, commentNew1 = simplifyEquation(lTokens, rTokens)
+    animations.extend(animNew1)
+    comments.extend(commentNew1)
     if len(rTokens) > 0:
         lTokens, rTokens = moveRTokensToLTokens(lTokens, rTokens)
     coeffs = getCoefficients(lTokens, rTokens, 4)
@@ -165,19 +176,16 @@ def quarticRoots(lTokens, rTokens):
         if not isinstance(rTok, Binary):
             rTokens[i] /= Constant(coeffs[4])
     coeffs = getCoefficients(lTokens, rTokens, 4)
-    roots = getRootsQuartic(coeffs)
+    roots, animNew2, commentnew2 = getRootsQuartic(coeffs)
+    animations.extend(animNew2)
+    comments.extend(commentnew2)
     var = getVariables(lTokens)
     lTokens = []
     rTokens = []
     for _, root in enumerate(roots):
         tokens2 = []
-        expression2 = Expression()
-        expression2.coefficient = 1
-        expression2.power = 1
-        variable = Variable()
-        variable.value = var
-        variable.power = [1]
-        variable.coefficient = 1
+        expression2 = Expression(coefficient=1, power=1)
+        variable = Variable(1, var[0], 1)
         tokens2.append(variable)
         binary = Binary()
         if root[1] == 0:
@@ -187,24 +195,16 @@ def quarticRoots(lTokens, rTokens):
             else:
                 binary.value = '-'
             tokens2.append(binary)
-            constant = Constant()
-            constant.value = round(root[0], ROUNDOFF)
-            constant.power = 1
+            constant = Constant(round(root[0], ROUNDOFF), 1)
             tokens2.append(constant)
         else:
             binary.value = '-'
             tokens2.append(binary)
-            expressionResult = Expression()
-            expressionResult.power = 1
-            expressionResult.coefficient = 1
+            expressionResult = Expression(coefficient=1, power=1)
             tokensResult = []
-            real = Constant()
-            real.value = round(root[0], ROUNDOFF)
-            real.power = 1
+            real = Constant(round(root[0], ROUNDOFF), 1)
             tokensResult.append(real)
-            imaginary = Constant()
-            imaginary.value = round(root[1], ROUNDOFF)
-            imaginary.power = 1
+            imaginary = Constant(round(root[1], ROUNDOFF), 1)
             if imaginary.value < 0:
                 tokensResult.append(Minus())
                 imaginary.value = abs(imaginary.value)
@@ -212,11 +212,8 @@ def quarticRoots(lTokens, rTokens):
             else:
                 tokensResult.append(Plus())
                 tokensResult.append(imaginary)
-            sqrtPow = Constant(2, 1)
-            sqrt = Sqrt()
-            sqrt.power = sqrtPow
-            sqrt.operand = Constant(-1)
             tokensResult.append(Binary('*'))
+            sqrt = Sqrt(Constant(2, 1), Constant(-1, 1))
             tokensResult.append(sqrt)
             expressionResult.tokens = tokensResult
             tokens2.append(expressionResult)
@@ -232,4 +229,6 @@ def quarticRoots(lTokens, rTokens):
     tokenToStringBuilder.append(equalTo)
     tokenToStringBuilder.extend(rTokens)
     token_string = tokensToString(tokenToStringBuilder)
-    return lTokens, rTokens, [], token_string, [], []
+    animations.append(copy.deepcopy(tokenToStringBuilder))
+    comments.append([])
+    return lTokens, rTokens, [], token_string, animations, comments
