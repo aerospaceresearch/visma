@@ -246,7 +246,7 @@ def expressionAddition(variables, tokens):
                                 c1.before = variable.before[constantAdd[i]]
                                 c1.beforeScope = variable.beforeScope[constantAdd[i]]
 
-                                c2 = Constant(variable.power[const], variable.power[const])
+                                c2 = Constant(variable.value[const], variable.power[const])
                                 c2.scope = variable.scope[const]
                                 c2.after = variable.after[const]
                                 c2.before = variable.before[const]

@@ -37,10 +37,12 @@ class Binary(Operator):
 
 class Sqrt(Operator):
 
-    def __init__(self):
+    def __init__(self, power=None, operand=None):
         super().__init__()
-        self.power = None
-        self.operand = None
+        if power is not None:
+            self.power = power
+        if operand is not None:
+            self.operand = operand
 
     def __str__(self):
         represent = ""

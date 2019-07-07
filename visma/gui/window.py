@@ -27,7 +27,7 @@ from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
 from visma.solvers.solve import solveFor
-from visma.solvers.polynomial.roots import quadraticRoots
+from visma.solvers.polynomial.roots import rootFinder
 from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
 from visma.gui import logger
@@ -639,7 +639,7 @@ class WorkSpace(QWidget):
             elif name == 'factorize':
                 self.tokens, availableOperations, tokenString, equationTokens, comments = factorize(self.tokens)
             elif name == 'find roots':
-                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = quadraticRoots(self.lTokens, self.rTokens)
+                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = rootFinder(self.lTokens, self.rTokens)
             elif name == 'solve':
                 if not self.simul:
                     lhs, rhs = getLHSandRHS(self.tokens)

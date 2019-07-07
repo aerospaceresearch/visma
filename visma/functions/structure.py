@@ -182,8 +182,14 @@ class Expression(Function):
 
     def __init__(self, tokens=None, coefficient=None, power=None):
         super().__init__()
-        self.coefficient = 1
-        self.power = 1
+        if coefficient is not None:
+            self.coefficient = coefficient
+        else:
+            self.coefficient = 1
+        if power is not None:
+            self.power = power
+        else:
+            self.power = 1
         self.tokens = []
         if tokens is not None:
             self.tokens.extend(tokens)
