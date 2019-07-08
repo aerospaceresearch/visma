@@ -214,6 +214,11 @@ class Constant(Function):
     def functionOf(self):
         return []
 
+    def binary(self):
+        '''Returns a binary string of the given constant
+        '''
+        return bin(self.calculate())[2:]
+
 
 class Zero(Constant):
 
