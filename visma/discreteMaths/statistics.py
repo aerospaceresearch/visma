@@ -19,9 +19,9 @@ def ArithemeticMean(sampleSpace):
     animations = []
     comments = []
     if sampleSpace.values is not []:
-        sum = sum(sampleSpace.values)
+        sm = sum(sampleSpace.values)
         animations += [[]]
-        comments += [['Sum of all the values of the sample space provided by user: ' + sum]]
+        comments += [['Sum of all the values of the sample space provided by user: ' + sm]]
         summationString = ''
         for val in sampleSpace.values:
             summationString += str(val) + '+'
