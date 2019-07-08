@@ -16,6 +16,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
+from visma.discreteMaths.combinatorics import factorial, combination, permutation
 from visma.io.checks import checkTypes, getVariables, getVariableSim, mathError
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultLatex
@@ -365,16 +366,26 @@ class WorkSpace(QWidget):
         if len(self.input) == 0:
             return self.warning("No input given!")
         self.simul = False
+        self.combi = False
         if ';' in self.input:
             self.simul = True
-            afterSplit = self.input.split(';')
-            eqStr1 = afterSplit[0]
-            eqStr2 = afterSplit[1]
-            eqStr3 = afterSplit[2]
+            if (self.input.count(';') == 2):
+                afterSplit = self.input.split(';')
+                eqStr1 = afterSplit[0]
+                eqStr2 = afterSplit[1]
+                eqStr3 = afterSplit[2]
+            elif (self.input.count(';') == 1):
+                self.combi = True
+                afterSplit = self.input.split(';')
+                eqStr1 = afterSplit[0]
+                eqStr2 = afterSplit[1]
+                eqStr3 = ''
         if self.simul:
             self.tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
             self.addEquation()
             operations = ['solve']
+            if self.combi:
+                operations.extend(['combination', 'permutation'])
             self.solutionType = 'equation'
         else:
             self.tokens = tokenizer(self.input)
@@ -648,6 +659,16 @@ class WorkSpace(QWidget):
                     variables = getVariableSim(self.tokens)
                 self.wrtVariableButtons(variables, name)
                 self.resultOut = False
+            elif name == 'factorial':
+                self.tokens, availableOperations, tokenString, equationTokens, comments = factorial(self.tokens)
+            elif name == 'combination':
+                nTokens = self.tokens[0]
+                rTokens = self.tokens[1]
+                self.tokens, _, _, equationTokens, comments = combination(nTokens, rTokens)
+            elif name == 'permutation':
+                nTokens = self.tokens[0]
+                rTokens = self.tokens[1]
+                self.tokens, _, _, equationTokens, comments = permutation(nTokens, rTokens)
             elif name == 'integrate':
                 lhs, rhs = getLHSandRHS(self.tokens)
                 variables = getVariables(lhs, rhs)
@@ -688,10 +709,16 @@ class WorkSpace(QWidget):
             if varName == 'back':
                 if ';' in self.input:
                     self.simul = True
-                    afterSplit = self.input.split(';')
-                    eqStr1 = afterSplit[0]
-                    eqStr2 = afterSplit[1]
-                    eqStr3 = afterSplit[2]
+                    if (self.input.count(';') == 2):
+                        afterSplit = self.input.split(';')
+                        eqStr1 = afterSplit[0]
+                        eqStr2 = afterSplit[1]
+                        eqStr3 = afterSplit[2]
+                    elif (self.input.count(';') == 1):
+                        afterSplit = self.input.split(';')
+                        eqStr1 = afterSplit[0]
+                        eqStr2 = afterSplit[1]
+                        eqStr3 = ''
                 if self.simul:
                     self.tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
                 else:
@@ -705,7 +732,6 @@ class WorkSpace(QWidget):
                     self.refreshButtons(operations)
 
             else:
-
                 if operation == 'solve':
                     if not self.simul:
                         self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = solveFor(self.lTokens, self.rTokens, varName)

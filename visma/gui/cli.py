@@ -1,5 +1,6 @@
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
+from visma.discreteMaths.combinatorics import factorial, combination, permutation
 from visma.io.checks import checkTypes
 from visma.io.tokenize import tokenizer, getLHSandRHS
 from visma.io.parser import resultStringCLI
@@ -23,7 +24,7 @@ def commandExec(command):
         inputEquation = inputEquation.split(',')[0]
 
     simul = False
-    if ';' in inputEquation:
+    if (inputEquation.count(';') == 2) and (operation == 'solve'):
         simul = True
         afterSplit = inputEquation.split(';')
         eqStr1 = afterSplit[0]
@@ -99,6 +100,16 @@ def commandExec(command):
         else:
             lhs, rhs = getLHSandRHS(tokens)
             lTokens, rTokens, _, _, equationTokens, comments = solveFor(lTokens, rTokens, varName)
+    elif operation == 'factorial':
+        tokens, _, _, equationTokens, comments = factorial(tokens)
+    elif operation == 'combination':
+        n = tokenizer(inputEquation)
+        r = tokenizer(varName)
+        tokens, _, _, equationTokens, comments = combination(n, r)
+    elif operation == 'permutation':
+        n = tokenizer(inputEquation)
+        r = tokenizer(varName)
+        tokens, _, _, equationTokens, comments = permutation(n, r)
     elif operation == 'integrate':
         lhs, rhs = getLHSandRHS(tokens)
         lTokens, _, _, equationTokens, comments = integrate(lTokens, varName)
