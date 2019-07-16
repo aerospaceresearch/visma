@@ -2,16 +2,17 @@ import copy
 
 from visma.functions.structure import Function, Expression
 from visma.functions.constant import Constant, Zero
-from visma.functions.operator import Operator, Multiply
+from visma.functions.operator import Operator, Multiply, Plus
 from visma.simplify.simplify import simplify
 from visma.functions.variable import Variable
 from visma.functions.exponential import Logarithm
 from visma.functions.trigonometry import Sine, Cosine, Tangent, Cosecant, Secant, Cotangent
-
+from visma.io.parser import tokensToString
 
 ###################
 # Differentiation #
 ###################
+
 
 def differentiate(tokens, wrtVar):
     """Simplifies and then differentiates given tokens wrt given variable
@@ -27,7 +28,6 @@ def differentiate(tokens, wrtVar):
         animation {list} -- equation tokens for step-by-step
         comments {list} -- comments for step-by-step
     """
-
     animation = []
     comments = []
     tokens, availableOperations, token_string, animation, comments = simplify(tokens)
@@ -86,6 +86,22 @@ def differentiateTokens(funclist, wrtVar):
             newfunc.pop()
             newExpression.tokens = newfunc
             diffFunc.extend([newExpression])
-
     animNew.extend(diffFunc)
     return diffFunc, animNew, commentsNew
+
+
+def differentiationProductRule(tokens, wrtVar):
+    resultTokens = []
+    for i in range(0, len(tokens), 2):
+        currentDiff = Expression()
+        currentDiffTokens, _, _, _, _ = differentiate([tokens[i]], wrtVar)
+        currentDiff.tokens = currentDiffTokens
+        tempTokens = copy.deepcopy(tokens)
+        tempTokens[i] = currentDiff
+        resultTokens.extend(tempTokens)
+        resultTokens.append(Plus())
+    resultTokens.pop()
+    token_string = tokensToString(resultTokens)
+    # TODO: Make simplify module to simplify expressions involving Trigonometric Expressions (to some extent)
+    # resultTokens, _, token_string, _, _ = simplify(resultTokens)
+    return tokens, [], token_string, [], []

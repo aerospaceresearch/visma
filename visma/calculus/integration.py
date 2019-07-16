@@ -1,9 +1,11 @@
 import copy
 from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.functions.operator import Operator
+from visma.functions.operator import Operator, Binary
 from visma.simplify.simplify import simplify
 from visma.functions.trigonometry import Sine, Cosine, Tangent, Cosecant, Secant, Cotangent
+from visma.calculus.differentiation import differentiate
+from visma.io.parser import tokensToString
 
 ###############
 # Integration #
@@ -36,11 +38,6 @@ def integrate(tokens, wrtVar):
     comments.extend(comments2)
     return tokens, availableOperations, token_string, animation, comments
 
-
-# This is only applicable to Variable and Constant type
-# Kind of hacky as of now
-# Must be modified to accomodate other function types
-# Have to add integrate class method to individual functions
 
 def integrateTokens(funclist, wrtVar):
     """Integrates given tokens wrt given variable
@@ -93,3 +90,16 @@ def integrateTokens(funclist, wrtVar):
             intFunc.extend(newfunc)
     animNew.extend(intFunc)
     return intFunc, animNew, commentsNew
+
+
+def integrationByParts(tokens, wrtVar):
+    if (isinstance(tokens[1], Binary) and tokens[1].value == '*'):
+        u = tokens[0]
+        v = tokens[2]
+        vIntegral, _, _, _, _ = integrate(v, wrtVar)
+        uDerivative, _, _, _, _ = differentiate(u, wrtVar)
+        term1 = u * vIntegral
+        term2, _, _, _, _ = integrate(uDerivative * vIntegral, 'x')
+        resultToken = term1 - term2
+        token_string = tokensToString(resultToken)
+        return resultToken, [], token_string, [], []
