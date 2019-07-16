@@ -277,7 +277,7 @@ def expressionSimplification(tokens_now, scope, tokens1):
             token_string = ''
     else:
         availableOperations = []
-        token_string = []
+        token_string = tokensToString(simToks)
     if scope != []:
         scope.pop()
     return simToks, availableOperations, token_string, animation, comments

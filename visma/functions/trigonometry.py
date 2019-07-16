@@ -136,7 +136,6 @@ class Cotangent(FuncOp):
         super().inverse(RHS)
         self.__class__ = ArcCot
 
-    #  FIXME:
     def differentiate(self, wrtVar):
         term1 = Constant(-1, 1, 1)
         term2 = copy.deepcopy(self)
