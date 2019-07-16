@@ -1,4 +1,5 @@
 import math
+import copy
 from visma.functions.structure import FuncOp
 
 #########################
@@ -28,6 +29,16 @@ class Logarithm(FuncOp):
 
     def calculate(self, val):
         return self.coefficient * ((math.log(val, self.base)))
+
+    def differentiate(self, wrtVar=None):
+        from visma.functions.variable import Variable
+        result = copy.deepcopy(self)
+        result.__class__ = Variable
+        result.coefficient = 1
+        result.value = wrtVar
+        result.power = [-1]
+        result.operand = None
+        return result
 
 
 class NaturalLog(Logarithm):

@@ -18,6 +18,9 @@ class Operator(object):
         represent += str(self.value)
         return represent
 
+    def differentiate(self):
+        return self
+
 
 class Binary(Operator):
     """Binary operator takes two operands
