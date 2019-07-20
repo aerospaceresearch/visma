@@ -3,7 +3,7 @@ from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.functions.operator import Operator, Binary
 from visma.simplify.simplify import simplify
-from visma.functions.trigonometry import Sine, Cosine, Tangent, Cosecant, Secant, Cotangent
+from visma.functions.trigonometry import Trigonometric
 from visma.calculus.differentiation import differentiate
 from visma.io.parser import tokensToString
 
@@ -71,7 +71,7 @@ def integrateTokens(funclist, wrtVar):
                     else:
                         commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
                         newfunc.append(funcCopy)
-                elif isinstance(funcCopy, Sine) or isinstance(funcCopy, Cosine) or isinstance(funcCopy, Tangent) or isinstance(funcCopy, Cosecant) or isinstance(funcCopy, Secant) or isinstance(funcCopy, Cotangent):
+                elif isinstance(funcCopy, Trigonometric):
                     funcCopy = funcCopy.integrate(wrtVar)
                     newfunc.append(funcCopy)
                     commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"

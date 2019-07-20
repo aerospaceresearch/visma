@@ -5,8 +5,8 @@ from visma.functions.constant import Constant, Zero
 from visma.functions.operator import Operator, Multiply, Plus
 from visma.simplify.simplify import simplify
 from visma.functions.variable import Variable
-from visma.functions.exponential import Logarithm
-from visma.functions.trigonometry import Sine, Cosine, Tangent, Cosecant, Secant, Cotangent
+from visma.functions.exponential import Logarithm, Exponential
+from visma.functions.trigonometry import Trigonometric
 from visma.io.parser import tokensToString
 
 ###################
@@ -67,7 +67,7 @@ def differentiateTokens(funclist, wrtVar):
                 commentsNew[0] += r"$" + "\\frac{d}{d" + wrtVar + "} ( " + func.__str__() + ")" + r"$"
                 funcCopy = copy.deepcopy(func)
                 if wrtVar in funcCopy.functionOf():
-                    if isinstance(funcCopy, Sine) or isinstance(funcCopy, Cosine) or isinstance(funcCopy, Tangent) or isinstance(funcCopy, Cosecant) or isinstance(funcCopy, Secant) or isinstance(funcCopy, Cotangent) or isinstance(funcCopy, Logarithm) or isinstance(funcCopy, Variable) or isinstance(funcCopy, exponential):
+                    if isinstance(funcCopy, Trigonometric) or isinstance(funcCopy, Logarithm) or isinstance(funcCopy, Variable) or isinstance(funcCopy, Exponential):
                         funcCopy = funcCopy.differentiate(wrtVar)
                         newfunc.append(funcCopy)
                         commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"

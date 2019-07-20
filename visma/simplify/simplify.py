@@ -13,7 +13,7 @@ import copy
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary
-from visma.functions.trigonometry import Sine, Cosine, Tangent, Cosecant, Secant, Cotangent
+from visma.functions.trigonometry import Trigonometric
 from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression, postSimplification
 from visma.io.parser import tokensToString
 from visma.io.tokenize import tokenizer
@@ -263,7 +263,7 @@ def expressionSimplification(tokens_now, scope, tokens1):
 
     trigonometricError = False
     for tk in simToks:
-        if isinstance(tk, Sine) or isinstance(tk, Cosine) or isinstance(tk, Tangent) or isinstance(tk, Cosecant) or isinstance(tk, Secant) or isinstance(tk, Cotangent):
+        if isinstance(tk, Trigonometric):
             trigonometricError = True
             break
     if not trigonometricError:

@@ -5,7 +5,7 @@ from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
 from visma.io.checks import isNumber, mathError
 from visma.matrix.structure import Matrix
-from visma.functions.trigonometry import Sine, Cosine, Tangent, Cosecant, Secant, Cotangent
+from visma.functions.trigonometry import Trigonometric
 
 
 def resultLatex(equationTokens, operation, comments, solutionType, simul=False, wrtVar=None):
@@ -222,7 +222,7 @@ def tokensToString(tokens):
                 if token.power != 1:
                     tokenString += "^" + "(" + str(token.power) + ")"
                 tokenString += "(" + tokensToString([token.operand]) + ")"
-        elif isinstance(token, Sine) or isinstance(token, Cosine) or isinstance(token, Tangent) or isinstance(token, Cosecant) or isinstance(token, Secant) or isinstance(token, Cotangent):
+        elif isinstance(token, Trigonometric):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:

@@ -10,11 +10,18 @@ from visma.functions. exponential import NaturalLog
 ##########################
 
 
-class Sine(FuncOp):
+class Trigonometric(FuncOp):
+    """Parent Class for all the Trigonometric Classes like Sine, Cosine, Tangent etc.
+
+    """
+    pass
+
+
+class Sine(Trigonometric):
     """Class for sin function -- sin(...)
 
     Extends:
-        FuncOp
+        Trigonometric
     """
 
     def __init__(self):
@@ -47,11 +54,11 @@ class Sine(FuncOp):
         return result
 
 
-class Cosine(FuncOp):
+class Cosine(Trigonometric):
     """Class for cos function -- cos(...)
 
     Extends:
-        FuncOp
+        Trigonometric
     """
 
     def __init__(self):
@@ -82,11 +89,11 @@ class Cosine(FuncOp):
         return self.coefficient * ((math.cos(val))**self.power)
 
 
-class Tangent(FuncOp):
+class Tangent(Trigonometric):
     """Class for tan function -- tan(...)
 
     Extends:
-        FuncOp
+        Trigonometric
     """
 
     def __init__(self):
@@ -121,11 +128,11 @@ class Tangent(FuncOp):
         return self.coefficient * ((math.tan(val))**self.power)
 
 
-class Cotangent(FuncOp):
+class Cotangent(Trigonometric):
     """Class for cot function -- cot(...)
 
     Extends:
-        FuncOp
+        Trigonometric
     """
 
     def __init__(self):
@@ -160,11 +167,11 @@ class Cotangent(FuncOp):
         return self.coefficient * ((math.cot(val))**self.power)
 
 
-class Cosecant(FuncOp):
+class Cosecant(Trigonometric):
     """Class for csc function -- csc(...)
 
     Extends:
-        FuncOp
+        Trigonometric
     """
 
     def __init__(self):
@@ -216,11 +223,11 @@ class Cosecant(FuncOp):
         return self.coefficient * ((math.cosec(val))**self.power)
 
 
-class Secant(FuncOp):
+class Secant(Trigonometric):
     """Class for sec function -- sec(...)
 
     Extends:
-        FuncOp
+        Trigonometric
     """
 
     def __init__(self):
@@ -269,25 +276,25 @@ class Secant(FuncOp):
 ##################################
 
 
-class ArcSin(FuncOp):
+class ArcSin(Trigonometric):
     pass
 
 
-class ArcCos(FuncOp):
+class ArcCos(Trigonometric):
     pass
 
 
-class ArcTan(FuncOp):
+class ArcTan(Trigonometric):
     pass
 
 
-class ArcCot(FuncOp):
+class ArcCot(Trigonometric):
     pass
 
 
-class ArcSec(FuncOp):
+class ArcSec(Trigonometric):
     pass
 
 
-class ArcCsc(FuncOp):
+class ArcCsc(Trigonometric):
     pass
