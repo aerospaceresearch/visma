@@ -278,6 +278,7 @@ def checkTypes(lTokens=None, rTokens=None):
             availableOperations.append('factorize')
         availableOperations.append("integrate")
         availableOperations.append("differentiate")
+        availableOperations.append("factorial")
         inputType = "expression"
 
     return availableOperations, inputType

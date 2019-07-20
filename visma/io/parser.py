@@ -28,7 +28,10 @@ def resultLatex(equationTokens, operation, comments, solutionType, simul=False, 
 
     finalSteps = ''
     if not simul:
-        finalSteps = 'INPUT: ' + r'$' + equationLatex[0] + r'$' + '\n'
+        if operation in ['combination', 'permutation']:
+            finalSteps = 'INPUT: ' + '(Combinatorics ' + r'$' + ' tokens)' + r'$' + '\n'
+        else:
+            finalSteps = 'INPUT: ' + r'$' + equationLatex[0] + r'$' + '\n'
     else:
         finalSteps = 'INPUT: ' + '(Multiple ' + r'$' + ' equations)' + r'$' + '\n'
     finalSteps += 'OPERATION: ' + operation + '\n'
