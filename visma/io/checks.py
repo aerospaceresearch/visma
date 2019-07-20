@@ -872,7 +872,8 @@ def evaluateExpressions(variables):
                     if variables[i - 1].value in ['-', '+']:
                         prev = True
                 else:
-                    print(variables[i - 1])
+                    pass
+                    # print(variables[i - 1])
             else:
                 prev = True
 
@@ -881,7 +882,8 @@ def evaluateExpressions(variables):
                     if variables[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
-                    print(variables[i + 1])
+                    pass
+                    # print(variables[i + 1])
             else:
                 nxt = True
             if nxt and prev:
@@ -905,7 +907,8 @@ def evaluateExpressions(variables):
                     if variables[i - 1].value in ['-', '+']:
                         prev = True
                 else:
-                    print(variables[i - 1])
+                    pass
+                    # print(variables[i - 1])
             else:
                 prev = True
 
@@ -914,7 +917,8 @@ def evaluateExpressions(variables):
                     if variables[i + 1].value in ['-', '+']:
                         nxt = True
                 else:
-                    print(variables[i + 1])
+                    pass
+                    # print(variables[i + 1])
             else:
                 nxt = True
             if nxt and prev:
