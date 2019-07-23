@@ -2,6 +2,7 @@ from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.functions.structure import Expression
 from visma.functions.operator import Plus, Minus
+from visma.io.parser import tokensToString
 
 ######################
 # functions.constant #
@@ -184,7 +185,7 @@ def test_Variable():
 
     variable1 = Variable(2, 'x', 3)
     assert variable1.__str__() == "2{x}^{3}"
-    variable1.integrate('x')
+    variable1, _ = variable1.integrate('x')
     assert variable1.__str__() == "0.5{x}^{4}"
 
     constant = Constant(3)
@@ -275,10 +276,6 @@ def test_Variable():
     add2 = exp1 * exp2
     assert add2.__str__() == "{({(8{x}^{6}-8{x}^{3})}-{(12{x}^{3}-{12})})}"
 
-    # FIXME: Optimize integrate
-    '''
     variable2 = Variable(3, 'x', -1)
-    variable2.integrate('x')
-    assert isinstance(variable2, Expression)
-    assert variable2.__str__() == '{3log{x}}'
-    '''
+    variable2, _ = variable2.integrate('x')
+    assert tokensToString(variable2) == '3 * log(x)'

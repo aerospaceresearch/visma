@@ -3,6 +3,7 @@ from visma.functions.structure import Function, Expression
 from visma.functions.exponential import Logarithm
 from visma.functions.operator import Plus, Minus, Multiply, Divide, Binary
 
+
 ############
 # Variable #
 ############
@@ -48,32 +49,56 @@ class Variable(Function):
         comment = "Therefore, " + r"$" + wrtVar + r"$" + " can be written as:"
         return self, rToken, comment
 
-    def differentiate(self):
-        from visma.functions.constant import Constant
-        super().differentiate()
-        self.value = 1
-        self.__class__ = Constant
-
-    def integrate(self, wrtVar):
-        if wrtVar not in self.value:
-            self.value.append(wrtVar)
-            self.power.append(1)
+    def differentiate(self, wrtVar):
+        from visma.functions.constant import Constant, Zero
+        result = copy.deepcopy(self)
+        if wrtVar in result.functionOf():
+            for i, var in enumerate(result.value):
+                if var == wrtVar:
+                    result.coefficient *= result.power[i]
+                    result.power[i] -= 1
+                    if(result.power[i] == 0):
+                        del result.power[i]
+                        del result.value[i]
+                        if result.value == []:
+                            result.__class__ = Constant
+                            result.value = result.coefficient
+                            result.coefficient = 1
+                            result.power = 1
         else:
-            for i, val in enumerate(self.value):
-                if val == 'wrtVar':
-                    break
-            if self.power[i] == -1:
-                self.power.pop(i)
-                self.value.pop(i)
-                expression = Expression()
-                expression.tokens = [self]
-                variable = Variable(1, 'wrtVar', 1)
-                expression.tokens.append(Logarithm(variable))
-                self.__class__ = Expression
-                self = expression
-            else:
-                self.coefficient /= self.power[i] + 1
-                self.power[i] += 1
+            result = Zero()
+        return result
+
+    def integrate(self, wrtVar=None):
+        from visma.functions.constant import Constant
+        result = copy.deepcopy(self)
+        log = False
+        for i, var in enumerate(result.value):
+            if var == wrtVar:
+                if(result.power[i] == -1):
+                    log = True
+                    funcLog = Logarithm()
+                    funcLog.operand = Variable()
+                    funcLog.operand.coefficient = 1
+                    funcLog.operand.value.append(result.value[i])
+                    funcLog.operand.power.append(1)
+                    del result.power[i]
+                    del result.value[i]
+                    if result.value == []:
+                        result.__class__ = Constant
+                        result.value = result.coefficient
+                        result.coefficient = 1
+                        result.power = 1
+                    result = [result]
+                    funcJoin = Binary()
+                    funcJoin.value = '*'
+                    result.append(funcJoin)
+                    result.append(funcLog)
+                else:
+                    result.power[i] += 1
+                    result.coefficient /= result.power[i]
+        print(result)
+        return result, log
 
     def calculate(self, val):
         return self.coefficient * ((val**(self.power)))

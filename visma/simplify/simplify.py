@@ -13,6 +13,7 @@ import copy
 from visma.functions.constant import Constant, Zero
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary
+from visma.functions.trigonometry import Trigonometric
 from visma.io.checks import isEquation, getLevelVariables, getOperationsEquation, getOperationsExpression, postSimplification
 from visma.io.parser import tokensToString
 from visma.io.tokenize import tokenizer
@@ -259,14 +260,24 @@ def expressionSimplification(tokens_now, scope, tokens1):
     if expressionPresent:
         animation += [simToks]
         comments += [['Opening up all the brackets']]
-    if scope == []:
-        simToks, availableOperations, token_string, animExtra, commentExtra = simplifification(simToks)
-        animExtra.pop(0)
-        animation += animExtra
-        comments += commentExtra
+
+    trigonometricError = False
+    for tk in simToks:
+        if isinstance(tk, Trigonometric):
+            trigonometricError = True
+            break
+    if not trigonometricError:
+        if scope == []:
+            simToks, availableOperations, token_string, animExtra, commentExtra = simplifification(simToks)
+            animExtra.pop(0)
+            animation += animExtra
+            comments += commentExtra
+        else:
+            availableOperations = ''
+            token_string = ''
     else:
-        availableOperations = ''
-        token_string = ''
+        availableOperations = []
+        token_string = tokensToString(simToks)
     if scope != []:
         scope.pop()
     return simToks, availableOperations, token_string, animation, comments

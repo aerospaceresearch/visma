@@ -5,6 +5,7 @@ from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
 from visma.io.checks import isNumber, mathError
 from visma.matrix.structure import Matrix
+from visma.functions.trigonometry import Trigonometric
 
 
 def resultLatex(equationTokens, operation, comments, solutionType, simul=False, wrtVar=None):
@@ -213,6 +214,18 @@ def tokensToString(tokens):
                 tokenString += tokensToString(token.operand.tokens)
             tokenString += ')'
         elif isinstance(token, Logarithm):
+            if token.coefficient == 1:
+                pass
+            elif token.coefficient == -1:
+                tokenString += '-'
+            else:
+                tokenString += str(token.coefficient)
+            if token.operand is not None:
+                tokenString += token.value
+                if token.power != 1:
+                    tokenString += "^" + "(" + str(token.power) + ")"
+                tokenString += "(" + tokensToString([token.operand]) + ")"
+        elif isinstance(token, Trigonometric):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
