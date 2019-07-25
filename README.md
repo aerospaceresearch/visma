@@ -46,13 +46,28 @@ $ visma
 >>> gui
 ```
 
-**Note:** For windows user (and those for whom) the above launching option is not available, to launch **visma** GUI do
+- For windows user (and those for whom) the above launching option is not available, to launch **visma** do, from here you will be redirected to VisMa interactive shell, which can be used to open GUI or CLI
 
 ```shell
-$ python3
+mayank@mayank-Lenovo-ideapad-310-15IKB:~$ python3
 >>> from visma.main import init
->>> init()      # for starting visma
->>> gui         # for visma gui
+>>> init()
+Welcome! This is Visual Maths Interactive Shell...
+type 'help' for a User Manual and Ctrl + D to Exit prompt
+
+>>> simplify(2 + x + 11)
+INPUT: 2.0 + x + 11.0
+OPERATION: simplify
+OUTPUT: 13.0 + x
+
+2.0 + x + 11.0
+
+(Adding 11.0 and 2.0)
+13.0 + x
+
+>>> 
+[5]+  Stopped                 python3
+
 ```
 
 
@@ -91,12 +106,14 @@ $ pip --version
 
 For code documentation and learning how to use **visma** check out the [wiki](https://github.com/aerospaceresearch/visma/wiki).
 
-Below is a quick demo of using **visma** and some of its capabilities.
-
-
 ## Demo
 
+Below are some demos showing visma and its capabilities:
+- GUI
 ![visma](https://raw.githubusercontent.com/wiki/aerospaceresearch/visma/assets/demo.gif)
+
+- CLI
+![](/assets/demo-cli.gif)
 
 To see all features of **visma**, check [this](https://github.com/aerospaceresearch/visma/wiki/Features) out.
 
