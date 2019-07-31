@@ -49,7 +49,7 @@ $ visma
 - For windows user (and those for whom) the above launching option is not available, to launch **visma** do, from here you will be redirected to VisMa interactive shell, which can be used to open GUI or CLI
 
 ```shell
-mayank@mayank-Lenovo-ideapad-310-15IKB:~$ python3
+$ python3
 >>> from visma.main import init
 >>> init()
 Welcome! This is Visual Maths Interactive Shell...
