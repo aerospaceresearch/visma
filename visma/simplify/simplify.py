@@ -241,32 +241,40 @@ def expressionSimplification(tokens_now, scope, tokens1):
                         del tokens1[i - 1]
                         del tokens1[i - 2]
                         break
+    trigonometricError = False
     # Check for the case: {Expression} * {Non-Expression}
-    for _ in range(50):
-        for i, _ in enumerate(tokens1):
-            mulFlag = False
-            if isinstance(tokens1[i], Expression):
-                if (i + 2 < len(tokens1)):
-                    if (tokens1[i + 1].value == '*'):
-                        scope.append(i)
-                        tokens1[i].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i].tokens)
-                        if isinstance(tokens1[i + 2], Expression):
-                            scope.append(i + 2)
-                            tokens1[i + 2].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 2].tokens)
-                        a = tokens1[i + 2]
-                        b = tokens1[i]
-                        c = a * b
-                        mulFlag = True
-                        expressionMultiplication = True
-                        if isinstance(c, Expression):
+    if not trigonometricError:
+        for _ in range(50):
+            for i, _ in enumerate(tokens1):
+                mulFlag = False
+                if isinstance(tokens1[i], Expression):
+                    if i + 2 < len(tokens1):
+                        if (tokens1[i + 1].value == '*'):
                             scope.append(i)
-                            c.tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, c.tokens)
-                        tokens1[i] = c
-                        del tokens1[i + 1]
-                        del tokens1[i + 1]
-                        break
-        if not mulFlag:
-            break
+                            tokens1[i].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i].tokens)
+                            if isinstance(tokens1[i + 2], Expression):
+                                scope.append(i + 2)
+                                tokens1[i + 2].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 2].tokens)
+                            a = tokens1[i + 2]
+                            b = tokens1[i]
+                            trigonometricError = False
+                            for ec in b.tokens:
+                                if isinstance(ec, Trigonometric):
+                                    trigonometricError = True
+                                    break
+                            if not trigonometricError:
+                                c = a * b
+                                mulFlag = True
+                                expressionMultiplication = True
+                                if isinstance(c, Expression):
+                                    scope.append(i)
+                                    c.tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, c.tokens)
+                                tokens1[i] = c
+                                del tokens1[i + 1]
+                                del tokens1[i + 1]
+                                break
+            if not mulFlag:
+                break
     if expressionMultiplication:
         animation.append(tokens1)
         comments.append(['Multiplying expressions'])
