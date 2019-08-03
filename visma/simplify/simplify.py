@@ -194,30 +194,9 @@ def expressionSimplification(tokens_now, scope, tokens1):
     '''
     animation = []
     comments = []
-    pfTokens = []
-    i = 0
-    while(i < len(tokens1)):
-        if (i + 1 < len(tokens1)):
-            if isinstance(tokens1[i + 1], Expression) and isinstance(tokens1[i], Binary) and tokens1[i].value == '^':
-                tokens1[i + 1].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 1].tokens)
-                if len(tokens1[i + 1].tokens) == 1 and isinstance(tokens1[i + 1].tokens[0], Constant):
-                    tokens1[i + 1] = Constant(tokens1[i + 1].tokens[0].calculate(), 1, 1)
-            if (isinstance(tokens1[i], Binary) and tokens1[i].value == '^') and isinstance(tokens1[i + 1], Constant):
-                rep = int(tokens1[i + 1].calculate())
-                for _ in range(rep - 1):
-                    pfTokens.extend([Binary('*'), tokens1[i - 1]])
-                i += 1
-            else:
-                pfTokens.append(tokens1[i])
-        else:
-            pfTokens.append(tokens1[i])
-        i += 1
-    tokens1 = copy.deepcopy(pfTokens)
-    animation.append(pfTokens)
-    comments.append(['Expanding the powers of expressions'])
+    simToks = []
     mulFlag = True
     expressionMultiplication = False
-    # Check for the case: {Non-Expression} * {Expression}
     for _ in range(50):
         for i, _ in enumerate(tokens1):
             mulFlag = False
@@ -241,37 +220,12 @@ def expressionSimplification(tokens_now, scope, tokens1):
                         del tokens1[i - 1]
                         del tokens1[i - 2]
                         break
-    # Check for the case: {Expression} * {Non-Expression}
-    for _ in range(50):
-        for i, _ in enumerate(tokens1):
-            mulFlag = False
-            if isinstance(tokens1[i], Expression):
-                if (i + 2 < len(tokens1)):
-                    if (tokens1[i + 1].value == '*'):
-                        scope.append(i)
-                        tokens1[i].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i].tokens)
-                        if isinstance(tokens1[i + 2], Expression):
-                            scope.append(i + 2)
-                            tokens1[i + 2].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 2].tokens)
-                        a = tokens1[i + 2]
-                        b = tokens1[i]
-                        c = a * b
-                        mulFlag = True
-                        expressionMultiplication = True
-                        if isinstance(c, Expression):
-                            scope.append(i)
-                            c.tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, c.tokens)
-                        tokens1[i] = c
-                        del tokens1[i + 1]
-                        del tokens1[i + 1]
-                        break
         if not mulFlag:
             break
     if expressionMultiplication:
         animation.append(tokens1)
         comments.append(['Multiplying expressions'])
     # TODO: Implement verbose multiplication steps.
-    simToks = []
     expressionPresent = False
     for i, _ in enumerate(tokens1):
         if isinstance(tokens1[i], Expression):

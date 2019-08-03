@@ -188,12 +188,7 @@ def tokenizeSymbols(terms):
     for i, term in enumerate(terms):
         symTokens.append('')
         if term in symbols:
-            if term == '^':
-                if i + 1 < len(terms) and not isVariable(terms[i - 1]):
-                    symTokens[-1] = 'Binary'
-                else:
-                    symTokens[-1] = False
-            elif term == '*' or term == '/':
+            if term == '*' or term == '/':
                 if i + 1 < len(terms):
                     if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2])))):
                         symTokens[-1] = 'Binary'
@@ -1481,10 +1476,9 @@ def getLHSandRHS(tokens):
 
 
 if __name__ == "__main__":
-    pass
     # logger.setLevel = 0
     # logger.setLogName = 'tokenize'
-    # print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
+    print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
 
 # -xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 # x+y=2^-{x+y}
