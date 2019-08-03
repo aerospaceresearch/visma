@@ -53,7 +53,7 @@ def resultLatex(equationTokens, operation, comments, solutionType, simul=False, 
     return finalSteps
 
 
-def resultStringCLI(equationTokens, operation, comments, solutionType, simul=False):
+def resultStringCLI(equationTokens, operation, comments, solutionType, simul=False, mat=False):
     """Converts tokens to final string format for displaying in terminal in CLI
 
     Arguments:
@@ -97,6 +97,40 @@ def resultStringCLI(equationTokens, operation, comments, solutionType, simul=Fal
     if mathError(equationTokens[-1]) and (not simul):
         finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
 
+    return finalSteps
+
+
+def resultMatrix_CLI(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
+    if operation == 'sub':
+        operation = 'Subtraction'
+    elif operation == 'add':
+        operation = 'Addition'
+    elif operation == 'mult':
+        operation = 'Multiplication'
+    elif operation == 'determinant':
+        operation = 'Determinant'
+    elif operation == 'trace':
+        operation = 'Trace: sum of diagonal elements'
+    elif operation == 'simplify':
+        operation = 'Simplification'
+    finalSteps = ''
+    if operand2 is not None:
+        finalSteps += 'INPUT: ' + 'Two matrices provided as follows:' + 2*'\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertInCLIString() + '\n'
+        finalSteps += '2nd Matrix Provided: \n'
+        finalSteps += operand2.convertInCLIString() + 2*'\n'
+    else:
+        finalSteps += 'INPUT: ' + 'Single matrix provided as follows:' + '\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertInCLIString() + '\n'
+    finalSteps += 'OPERATION: ' + operation + 2*'\n'
+    if not nonMatrixResult:
+        finalSteps += 'RESULT: Result Matrix calculated as: \n'
+        finalSteps += result.convertInCLIString() + '\n'
+    else:
+        finalSteps += 'RESULT: Result calculated as: \n'
+        finalSteps += tokensToString(result) + '\n'
     return finalSteps
 
 

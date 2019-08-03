@@ -15,6 +15,8 @@ def simplifyMatrix(mat):
     Returns:
         mat {visma.matrix.structure.Matrix} -- simplified matrix token
     """
+    mat.dim[0] = len(mat.value)
+    mat.dim[1] = len(mat.value[0])
     for i in range(mat.dim[0]):
         for j in range(mat.dim[1]):
             mat.value[i][j], _, _, _, _ = simplify(mat.value[i][j])
@@ -35,6 +37,8 @@ def addMatrix(matA, matB):
         Make dimCheck before calling addMatrix
     """
     matSum = Matrix()
+    matA.dim[0] = len(matA.value)
+    matA.dim[1] = len(matA.value[0])
     matSum.empty(matA.dim)
     for i in range(matA.dim[0]):
         for j in range(matA.dim[1]):
@@ -59,6 +63,8 @@ def subMatrix(matA, matB):
         Make dimCheck before calling subMatrix
     """
     matSub = Matrix()
+    matA.dim[0] = len(matA.value)
+    matA.dim[1] = len(matA.value[0])
     matSub.empty(matA.dim)
     for i in range(matA.dim[0]):
         for j in range(matA.dim[1]):
@@ -84,6 +90,10 @@ def multiplyMatrix(matA, matB):
         Not commutative
     """
     matPro = Matrix()
+    matA.dim[0] = len(matA.value)
+    matA.dim[1] = len(matA.value[0])
+    matB.dim[0] = len(matB.value)
+    matB.dim[1] = len(matB.value[0])
     matPro.empty([matA.dim[0], matB.dim[1]])
     for i in range(matA.dim[0]):
         for j in range(matB.dim[1]):
@@ -120,6 +130,8 @@ def scalarAdd(const, mat):
 
     """
     matRes = Matrix()
+    mat.dim[0] = len(mat.value)
+    mat.dim[1] = len(mat.value[0])
     matRes.empty(mat.dim)
     for i in range(mat.dim[0]):
         for j in range(mat.dim[1]):

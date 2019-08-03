@@ -22,12 +22,35 @@ class Matrix(object):
         and stored in matrix.value.
     """
 
-    def __init__(self):
+    def __init__(self, value=None, coefficient=None, power=None, dim=None, scope=None):
         self.scope = None
-        self.value = []
-        self.coefficient = 1
-        self.power = 1
-        self.dim = [0, 0]
+        if value is not None:
+            self.value = value
+        else:
+            self.value = []
+        if coefficient is not None:
+            self.coefficient = coefficient
+        else:
+            self.coefficient = 1
+        if power is not None:
+            self.power = power
+        else:
+            self.power = 1
+        if dim is not None:
+            self.dim = dim
+        else:
+            self.dim = [0, 0]
+
+    def convertInCLIString(self):
+        from visma.io.parser import tokensToString
+        MatrixString = ''
+        self.dim[0] = len(self.value)
+        self.dim[1] = len(self.value[0])
+        for i in range(self.dim[0]):
+            for j in range(self.dim[1]):
+                MatrixString += tokensToString(self.value[i][j]) + '\t'
+            MatrixString += '\n'
+        return MatrixString
 
     def __add__(self, other):
         """Adds two matrices
@@ -215,7 +238,6 @@ class SquareMat(Matrix):
             list of tokens forming the determinant
         """
         from visma.simplify.simplify import simplify
-        from visma.io.parser import tokensToString
 
         if mat is None:
             self.dimension()
@@ -248,7 +270,6 @@ class SquareMat(Matrix):
             ans, _, _, _, _ = simplify(mat[0][0])
         if not ans:
             ans = Zero()
-        print(tokensToString(ans))
         return ans
 
     def traceMat(self):
@@ -262,10 +283,12 @@ class SquareMat(Matrix):
         """
         from visma.simplify.simplify import simplify
         trace = []
+        self.dim[0] = len(self.value)
+        self.dim[1] = len(self.value[0])
         for i in range(self.dim[0]):
             trace.extend(self.value[i][i])
             trace.append(Binary('+'))
-        trace.append(Constant(0))
+        trace.pop()
         trace, _, _, _, _ = simplify(trace)
         return trace
 
@@ -284,7 +307,8 @@ class SquareMat(Matrix):
 
         if tokensToString(self.determinant()) == "0":
             return -1
-
+        self.dim[0] = len(self.value)
+        self.dim[1] = len(self.value[0])
         n = self.dim[0]
         mat = Matrix()
         mat.empty([n, 2*n])
