@@ -41,14 +41,17 @@ class Matrix(object):
         else:
             self.dim = [0, 0]
 
-    def convertInCLIString(self):
+    def convertMatrixToString(self, Latex=False):
         from visma.io.parser import tokensToString
         MatrixString = ''
         self.dim[0] = len(self.value)
         self.dim[1] = len(self.value[0])
         for i in range(self.dim[0]):
             for j in range(self.dim[1]):
-                MatrixString += tokensToString(self.value[i][j]) + '\t'
+                if not Latex:
+                    MatrixString += tokensToString(self.value[i][j]) + '\t'
+                else:
+                    MatrixString += tokensToString(self.value[i][j]) + '    '
             MatrixString += '\n'
         return MatrixString
 

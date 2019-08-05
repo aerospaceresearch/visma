@@ -100,7 +100,7 @@ def resultStringCLI(equationTokens, operation, comments, solutionType, simul=Fal
     return finalSteps
 
 
-def resultMatrix_CLI(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
+def resultMatrix_String(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
     if operation == 'sub':
         operation = 'Subtraction'
     elif operation == 'add':
@@ -117,17 +117,53 @@ def resultMatrix_CLI(operation=None, operand1=None, operand2=None, nonMatrixResu
     if operand2 is not None:
         finalSteps += 'INPUT: ' + 'Two matrices provided as follows:' + 2*'\n'
         finalSteps += '1st Matrix Provided: \n'
-        finalSteps += operand1.convertInCLIString() + '\n'
+        finalSteps += operand1.convertMatrixToString(False) + '\n'
         finalSteps += '2nd Matrix Provided: \n'
-        finalSteps += operand2.convertInCLIString() + 2*'\n'
+        finalSteps += operand2.convertMatrixToString(False) + 2*'\n'
     else:
         finalSteps += 'INPUT: ' + 'Single matrix provided as follows:' + '\n'
         finalSteps += '1st Matrix Provided: \n'
-        finalSteps += operand1.convertInCLIString() + '\n'
+        finalSteps += operand1.convertMatrixToString(False) + '\n'
     finalSteps += 'OPERATION: ' + operation + 2*'\n'
     if not nonMatrixResult:
         finalSteps += 'RESULT: Result Matrix calculated as: \n'
-        finalSteps += result.convertInCLIString() + '\n'
+        finalSteps += result.convertMatrixToString(False) + '\n'
+    else:
+        finalSteps += 'RESULT: Result calculated as: \n'
+        finalSteps += tokensToString(result) + '\n'
+    return finalSteps
+
+
+def resultMatrix_String_Latex(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
+    # TODO: use package /asmath for displaying Matrices in Step By Step figure
+
+    if operation == 'sub':
+        operation = 'Subtraction'
+    elif operation == 'add':
+        operation = 'Addition'
+    elif operation == 'mult':
+        operation = 'Multiplication'
+    elif operation == 'determinant':
+        operation = 'Determinant'
+    elif operation == 'trace':
+        operation = 'Trace: sum of diagonal elements'
+    elif operation == 'simplify':
+        operation = 'Simplification'
+    finalSteps = ''
+    if operand2 is not None:
+        finalSteps += 'INPUT: ' + 'Two matrices provided as follows:' + 2*'\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertMatrixToString(True) + '\n'
+        finalSteps += '2nd Matrix Provided: \n'
+        finalSteps += operand2.convertMatrixToString(True) + 2*'\n'
+    else:
+        finalSteps += 'INPUT: ' + 'Single matrix provided as follows:' + '\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertMatrixToString(True) + '\n'
+    finalSteps += 'OPERATION: ' + operation + 2*'\n'
+    if not nonMatrixResult:
+        finalSteps += 'RESULT: Result Matrix calculated as: \n'
+        finalSteps += result.convertMatrixToString(True) + '\n'
     else:
         finalSteps += 'RESULT: Result calculated as: \n'
         finalSteps += tokensToString(result) + '\n'
@@ -156,7 +192,6 @@ def tokensToLatex(eqTokens):
                     elif row.index(column) == len(row) - 1 and token.value.index(row) < len(token.value) - 1:
                         eqLatex += '\\\\'
             eqLatex += "\\end{bmatrix}"
-
         else:
             eqLatex += token.__str__()
     return eqLatex

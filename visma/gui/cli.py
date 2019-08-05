@@ -4,7 +4,7 @@ from visma.calculus.integration import integrate
 from visma.discreteMaths.combinatorics import factorial, combination, permutation
 from visma.io.checks import checkTypes
 from visma.io.tokenize import tokenizer, getLHSandRHS
-from visma.io.parser import resultStringCLI, resultMatrix_CLI
+from visma.io.parser import resultStringCLI, resultMatrix_String
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
@@ -207,12 +207,12 @@ def commandExec(command):
         finalCLIstring = ''
         if dualOperand:
             if not scalarOperations:
-                finalCLIstring = resultMatrix_CLI(operation=operation, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
+                finalCLIstring = resultMatrix_String(operation=operation, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
             else:
-                finalCLIstring = resultMatrix_CLI(operation=operation, operand1=scalarTokens_copy, operand2=Matrix2_copy, result=MatrixResult)
+                finalCLIstring = resultMatrix_String(operation=operation, operand1=scalarTokens_copy, operand2=Matrix2_copy, result=MatrixResult)
         else:
             if nonMatrixResult:
-                finalCLIstring = resultMatrix_CLI(operation=operation, operand1=Matrix0_copy, nonMatrixResult=True, result=result)
+                finalCLIstring = resultMatrix_String(operation=operation, operand1=Matrix0_copy, nonMatrixResult=True, result=result)
             else:
-                finalCLIstring = resultMatrix_CLI(operation=operation, operand1=Matrix0_copy, result=MatrixResult)
+                finalCLIstring = resultMatrix_String(operation=operation, operand1=Matrix0_copy, result=MatrixResult)
         print(finalCLIstring)
