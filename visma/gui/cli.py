@@ -4,7 +4,7 @@ from visma.calculus.integration import integrate
 from visma.discreteMaths.combinatorics import factorial, combination, permutation
 from visma.io.checks import checkTypes
 from visma.io.tokenize import tokenizer, getLHSandRHS
-from visma.io.parser import resultStringCLI, resultMatrix_String
+from visma.io.parser import resultStringCLI, resultMatrixString
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
@@ -24,6 +24,12 @@ def commandExec(command):
         matrix = True
 
     if not matrix:
+        """
+        This part handles the cases when VisMa is NOT dealing with matrices.
+
+        Boolean flags used in code below:
+        simul -- {True} when VisMa is dealing with simultaneous equations & {False} in all other cases
+        """
         varName = None
         if ',' in inputEquation:
             varName = inputEquation.split(',')[1]
@@ -118,6 +124,14 @@ def commandExec(command):
         final_string = resultStringCLI(equationTokens, operation, comments, solutionType, simul)
         print(final_string)
     else:
+        """
+        This part handles the cases when VisMa is dealing with matrices.
+
+        Boolean flags used in code below:
+        dualOperand -- {True} when the matrix operations require two operands (used in operations like addition, subtraction etc)
+        nonMatrixResult -- {True} when the result after performing operations on the Matrix is not a Matrix (in operations like Determinant, Trace etc.)
+        scalarOperations -- {True} when one of the operand in a scalar (used in operations like Scalar Addition, Scalar Subtraction etc.)
+        """
         operation = operation[4:]
         dualOperand = False
         nonMatrixResult = False
@@ -207,12 +221,12 @@ def commandExec(command):
         finalCLIstring = ''
         if dualOperand:
             if not scalarOperations:
-                finalCLIstring = resultMatrix_String(operation=operation, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
+                finalCLIstring = resultMatrixString(operation=operation, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
             else:
-                finalCLIstring = resultMatrix_String(operation=operation, operand1=scalarTokens_copy, operand2=Matrix2_copy, result=MatrixResult)
+                finalCLIstring = resultMatrixString(operation=operation, operand1=scalarTokens_copy, operand2=Matrix2_copy, result=MatrixResult)
         else:
             if nonMatrixResult:
-                finalCLIstring = resultMatrix_String(operation=operation, operand1=Matrix0_copy, nonMatrixResult=True, result=result)
+                finalCLIstring = resultMatrixString(operation=operation, operand1=Matrix0_copy, nonMatrixResult=True, result=result)
             else:
-                finalCLIstring = resultMatrix_String(operation=operation, operand1=Matrix0_copy, result=MatrixResult)
+                finalCLIstring = resultMatrixString(operation=operation, operand1=Matrix0_copy, result=MatrixResult)
         print(finalCLIstring)

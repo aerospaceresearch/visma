@@ -20,7 +20,7 @@ from visma.calculus.integration import integrate
 from visma.discreteMaths.combinatorics import factorial, combination, permutation
 from visma.io.checks import checkTypes, getVariables, getVariableSim, mathError
 from visma.io.tokenize import tokenizer, getLHSandRHS
-from visma.io.parser import resultLatex, resultMatrix_String_Latex
+from visma.io.parser import resultLatex, resultMatrixStringLatex
 from visma.gui.plotter import plotFigure2D, plotFigure3D, plot
 from visma.gui.qsolver import quickSimplify, qSolveFigure, renderQuickSol
 from visma.gui.settings import preferenceLayout
@@ -689,6 +689,12 @@ class WorkSpace(QWidget):
             equationTokens = []
             self.resultOut = True
             if not self.matrix:
+                """
+                This part handles the cases when VisMa is NOT dealing with matrices.
+
+                Boolean flags used in code below:
+                simul -- {True} when VisMa is dealing with simultaneous equations & {False} in all other cases
+                """
                 if name == 'addition':
                     if self.solutionType == 'expression':
                         self.tokens, availableOperations, tokenString, equationTokens, comments = addition(
@@ -755,6 +761,14 @@ class WorkSpace(QWidget):
                     self.wrtVariableButtons(variables, name)
                     self.resultOut = False
             else:
+                """
+                This part handles the cases when VisMa is dealing with matrices.
+
+                Boolean flags used in code below:
+                dualOperand -- {True} when the matrix operations require two operands (used in operations like addition, subtraction etc)
+                nonMatrixResult -- {True} when the result after performing operations on the Matrix is not a Matrix (in operations like Determinant, Trace etc.)
+                scalarOperations -- {True} when one of the operand in a scalar (used in operations like Scalar Addition, Scalar Subtraction etc.)
+                """
                 if self.dualOperandMatrix:
                     Matrix1_copy = copy.deepcopy(self.Matrix1)
                     Matrix2_copy = copy.deepcopy(self.Matrix2)
@@ -811,16 +825,16 @@ class WorkSpace(QWidget):
                 else:
                     if self.dualOperandMatrix:
                         if not self.scalarOperationsMatrix:
-                            self.output = resultMatrix_String_Latex(operation=name, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
+                            self.output = resultMatrixStringLatex(operation=name, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
                         else:
                             # TODO: Scalar Matrix Operation
                             pass
                             # finalCLIstring = resultMatrix_Latex(operation=name, operand1=scalarTokens_copy, operand2=Matrix2_copy, result=MatrixResult)
                     else:
                         if self.nonMatrixResult:
-                            self.output = resultMatrix_String_Latex(operation=name, operand1=Matrix0_copy, nonMatrixResult=True, result=result)
+                            self.output = resultMatrixStringLatex(operation=name, operand1=Matrix0_copy, nonMatrixResult=True, result=result)
                         else:
-                            self.output = resultMatrix_String_Latex(operation=name, operand1=Matrix0_copy, result=MatrixResult)
+                            self.output = resultMatrixStringLatex(operation=name, operand1=Matrix0_copy, result=MatrixResult)
                     if self.mode == 'normal':
                         self.textedit.setText(tokenString)
                     elif self.mode == 'interaction':

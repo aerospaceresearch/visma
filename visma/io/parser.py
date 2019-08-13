@@ -100,7 +100,7 @@ def resultStringCLI(equationTokens, operation, comments, solutionType, simul=Fal
     return finalSteps
 
 
-def resultMatrix_String(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
+def resultMatrixString(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
     if operation == 'sub':
         operation = 'Subtraction'
     elif operation == 'add':
@@ -134,7 +134,7 @@ def resultMatrix_String(operation=None, operand1=None, operand2=None, nonMatrixR
     return finalSteps
 
 
-def resultMatrix_String_Latex(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
+def resultMatrixStringLatex(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
     # TODO: use package /asmath for displaying Matrices in Step By Step figure
 
     if operation == 'sub':
