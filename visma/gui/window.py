@@ -7,6 +7,7 @@ About: This module is created to handle the GUI of the project, this module inte
 
 import sys
 import os
+import copy
 
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QTextEdit, QSplitter, QFrame, QAbstractButton, QDialog, QMessageBox, QFileDialog
@@ -19,7 +20,7 @@ from visma.calculus.integration import integrate
 from visma.discreteMaths.combinatorics import factorial, combination, permutation
 from visma.io.checks import checkTypes, getVariables, getVariableSim, mathError
 from visma.io.tokenize import tokenizer, getLHSandRHS
-from visma.io.parser import resultLatex
+from visma.io.parser import resultLatex, resultMatrixStringLatex
 from visma.gui.plotter import plotFigure2D, plotFigure3D, plot
 from visma.gui.qsolver import quickSimplify, qSolveFigure, renderQuickSol
 from visma.gui.settings import preferenceLayout
@@ -27,6 +28,8 @@ from visma.gui.steps import stepsFigure, showSteps
 from visma.simplify.simplify import simplify, simplifyEquation
 from visma.simplify.addsub import addition, additionEquation, subtraction, subtractionEquation
 from visma.simplify.muldiv import multiplication, multiplicationEquation, division, divisionEquation
+from visma.matrix.structure import Matrix, SquareMat
+from visma.matrix.operations import simplifyMatrix, addMatrix, subMatrix, multiplyMatrix
 from visma.solvers.solve import solveFor
 from visma.solvers.polynomial.roots import rootFinder
 from visma.solvers.simulEqn import simulSolver
@@ -250,15 +253,19 @@ class WorkSpace(QWidget):
             self.enableQSolver = True
             self.enableInteraction = False
         try:
-            if self.enableQSolver and self.showQSolver:
-                self.qSol, self.enableInteraction, self.simul = quickSimplify(self)
-                if self.qSol is None:
+            if self.textedit.toPlainText()[:4] != 'mat_':
+                if self.enableQSolver and self.showQSolver:
+                    self.qSol, self.enableInteraction, self.simul = quickSimplify(self)
+                    if self.qSol is None:
+                        self.qSol = ""
+                    if not self.simul:
+                        renderQuickSol(self, self.qSol, self.showQSolver)
+                elif self.showQSolver is False:
                     self.qSol = ""
-                if not self.simul:
                     renderQuickSol(self, self.qSol, self.showQSolver)
-            elif self.showQSolver is False:
-                self.qSol = ""
-                renderQuickSol(self, self.qSol, self.showQSolver)
+            else:
+                self.matrix = True
+                self.enableInteraction = True
         except Exception:
             logger.error('Invalid Expression')
             self.enableInteraction = False
@@ -352,8 +359,9 @@ class WorkSpace(QWidget):
         return vbox
 
     def interactionMode(self):
-        self.enableQSolver = False
-        renderQuickSol(self, self.qSol, self.enableQSolver)
+        if not self.matrix:
+            self.enableQSolver = False
+            renderQuickSol(self, self.qSol, self.enableQSolver)
         cursor = self.textedit.textCursor()
         interactionText = cursor.selectedText()
         if str(interactionText) == '':
@@ -367,53 +375,119 @@ class WorkSpace(QWidget):
             return self.warning("No input given!")
         self.simul = False
         self.combi = False
-        if ';' in self.input:
-            self.simul = True
-            if (self.input.count(';') == 2):
-                afterSplit = self.input.split(';')
-                eqStr1 = afterSplit[0]
-                eqStr2 = afterSplit[1]
-                eqStr3 = afterSplit[2]
-            elif (self.input.count(';') == 1):
-                self.combi = True
-                afterSplit = self.input.split(';')
-                eqStr1 = afterSplit[0]
-                eqStr2 = afterSplit[1]
-                eqStr3 = ''
-        if self.simul:
-            self.tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
-            self.addEquation()
-            operations = ['solve']
-            if self.combi:
-                operations.extend(['combination', 'permutation'])
-            self.solutionType = 'equation'
-        else:
-            self.tokens = tokenizer(self.input)
-            # DBP: print(self.tokens)
-            self.addEquation()
-            lhs, rhs = getLHSandRHS(self.tokens)
-            self.lTokens = lhs
-            self.rTokens = rhs
-            operations, self.solutionType = checkTypes(lhs, rhs)
-        if isinstance(operations, list) and showbuttons:
-            opButtons = []
-            if len(operations) > 0:
-                if len(operations) == 1:
-                    if (operations[0] not in ['integrate', 'differentiate', 'find roots', 'factorize']) and (not self.simul):
+        self.matrix = False
+        self.dualOperandMatrix = False
+        self.scalarOperationsMatrix = False
+        self.nonMatrixResult = False
+        if self.input[0:4] == 'mat_':
+            self.input = self.input[4:]
+            self.input = self.input[0:-1]
+            self.input = self.input[1:]
+            self.matrix = True
+        if not self.matrix:
+            if ';' in self.input:
+                self.simul = True
+                if (self.input.count(';') == 2):
+                    afterSplit = self.input.split(';')
+                    eqStr1 = afterSplit[0]
+                    eqStr2 = afterSplit[1]
+                    eqStr3 = afterSplit[2]
+                elif (self.input.count(';') == 1):
+                    self.combi = True
+                    afterSplit = self.input.split(';')
+                    eqStr1 = afterSplit[0]
+                    eqStr2 = afterSplit[1]
+                    eqStr3 = ''
+            if self.simul:
+                self.tokens = [tokenizer(eqStr1), tokenizer(eqStr2), tokenizer(eqStr3)]
+                self.addEquation()
+                operations = ['solve']
+                if self.combi:
+                    operations.extend(['combination', 'permutation'])
+                self.solutionType = 'equation'
+            else:
+                self.tokens = tokenizer(self.input)
+                # DBP: print(self.tokens)
+                self.addEquation()
+                lhs, rhs = getLHSandRHS(self.tokens)
+                self.lTokens = lhs
+                self.rTokens = rhs
+                operations, self.solutionType = checkTypes(lhs, rhs)
+            if isinstance(operations, list) and showbuttons:
+                opButtons = []
+                if len(operations) > 0:
+                    if len(operations) == 1:
+                        if (operations[0] not in ['integrate', 'differentiate', 'find roots', 'factorize']) and (not self.simul):
+                            opButtons = ['simplify']
+                    else:
                         opButtons = ['simplify']
+                for operation in operations:
+                    if operation == '+':
+                        opButtons.append("addition")
+                    elif operation == '-':
+                        opButtons.append("subtraction")
+                    elif operation == '*':
+                        opButtons.append("multiplication")
+                    elif operation == '/':
+                        opButtons.append("division")
+                    else:
+                        opButtons.append(operation)
+        else:
+            if ',' in self.input:
+                self.dualOperandMatrix = True
+                [inputEquation1, inputEquation2] = self.input.split(', ')
+                if '[' in inputEquation1:
+                    inputEquation1 = inputEquation1[1:][:-1]
+                    inputEquation1 = inputEquation1.split('; ')
+                    matrixOperand1 = []
+                    for row in inputEquation1:
+                        row1 = row.split(' ')
+                        for i, _ in enumerate(row1):
+                            row1[i] = tokenizer(row1[i])
+                        matrixOperand1.append(row1)
+                    self.Matrix1 = Matrix()
+                    self.Matrix1.value = matrixOperand1
+                    inputEquation2 = inputEquation2[1:][:-1]
+                    inputEquation2 = inputEquation2.split('; ')
+                    matrixOperand2 = []
+                    for row in inputEquation2:
+                        row1 = row.split(' ')
+                        for i, _ in enumerate(row1):
+                            row1[i] = tokenizer(row1[i])
+                        matrixOperand2.append(row1)
+                    self.Matrix2 = Matrix()
+                    self.Matrix2.value = matrixOperand2
                 else:
-                    opButtons = ['simplify']
-            for operation in operations:
-                if operation == '+':
-                    opButtons.append("addition")
-                elif operation == '-':
-                    opButtons.append("subtraction")
-                elif operation == '*':
-                    opButtons.append("multiplication")
-                elif operation == '/':
-                    opButtons.append("division")
-                else:
-                    opButtons.append(operation)
+                    self.scalarOperationsMatrix = True
+                    inputEquation2 = inputEquation2[1:][:-1]
+                    inputEquation2 = inputEquation2.split('; ')
+                    matrixOperand2 = []
+                    for row in inputEquation2:
+                        row1 = row.split(' ')
+                        for i, _ in enumerate(row1):
+                            row1[i] = tokenizer(row1[i])
+                        matrixOperand2.append(row1)
+                    self.Matrix2 = Matrix()
+                    self.Matrix2.value = matrixOperand2
+            else:
+                self.dualOperandMatrix = False
+                inputEquation = self.input[:-2]
+                inputEquation = inputEquation[:-1][1:]
+                inputEquation = inputEquation.split('; ')
+                matrixOperand = []
+                for row in inputEquation:
+                    row1 = row.split(' ')
+                    for i, _ in enumerate(row1):
+                        row1[i] = tokenizer(row1[i])
+                    matrixOperand.append(row1)
+                self.Matrix0 = Matrix()
+                self.Matrix0.value = matrixOperand
+
+            opButtons = []
+            if ',' in self.input:
+                opButtons.extend(['Addition', 'Subtraction', 'Multiply'])
+            else:
+                opButtons.extend(['Determinant', 'Trace', 'Inverse'])
 
             if self.buttonSet:
                 for i in reversed(range(self.solutionOptionsBox.count())):
@@ -614,89 +688,160 @@ class WorkSpace(QWidget):
             tokenString = ''
             equationTokens = []
             self.resultOut = True
-            if name == 'addition':
-                if self.solutionType == 'expression':
-                    self.tokens, availableOperations, tokenString, equationTokens, comments = addition(
-                        self.tokens, True)
-                else:
-                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = additionEquation(
-                        self.lTokens, self.rTokens, True)
-            elif name == 'subtraction':
-                if self.solutionType == 'expression':
-                    self.tokens, availableOperations, tokenString, equationTokens, comments = subtraction(
-                        self.tokens, True)
-                else:
-                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = subtractionEquation(
-                        self.lTokens, self.rTokens, True)
-            elif name == 'multiplication':
-                if self.solutionType == 'expression':
-                    self.tokens, availableOperations, tokenString, equationTokens, comments = multiplication(
-                        self.tokens, True)
-                else:
-                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = multiplicationEquation(
-                        self.lTokens, self.rTokens, True)
-            elif name == 'division':
-                if self.solutionType == 'expression':
-                    self.tokens, availableOperations, tokenString, equationTokens, comments = division(
-                        self.tokens, True)
-                else:
-                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = divisionEquation(
-                        self.lTokens, self.rTokens, True)
-            elif name == 'simplify':
-                if self.solutionType == 'expression':
-                    self.tokens, availableOperations, tokenString, equationTokens, comments = simplify(self.tokens)
-                else:
-                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
-            elif name == 'factorize':
-                self.tokens, availableOperations, tokenString, equationTokens, comments = factorize(self.tokens)
-            elif name == 'find roots':
-                self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = rootFinder(self.lTokens, self.rTokens)
-            elif name == 'solve':
-                if not self.simul:
+            if not self.matrix:
+                """
+                This part handles the cases when VisMa is NOT dealing with matrices.
+
+                Boolean flags used in code below:
+                simul -- {True} when VisMa is dealing with simultaneous equations & {False} in all other cases
+                """
+                if name == 'addition':
+                    if self.solutionType == 'expression':
+                        self.tokens, availableOperations, tokenString, equationTokens, comments = addition(
+                            self.tokens, True)
+                    else:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = additionEquation(
+                            self.lTokens, self.rTokens, True)
+                elif name == 'subtraction':
+                    if self.solutionType == 'expression':
+                        self.tokens, availableOperations, tokenString, equationTokens, comments = subtraction(
+                            self.tokens, True)
+                    else:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = subtractionEquation(
+                            self.lTokens, self.rTokens, True)
+                elif name == 'multiplication':
+                    if self.solutionType == 'expression':
+                        self.tokens, availableOperations, tokenString, equationTokens, comments = multiplication(
+                            self.tokens, True)
+                    else:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = multiplicationEquation(
+                            self.lTokens, self.rTokens, True)
+                elif name == 'division':
+                    if self.solutionType == 'expression':
+                        self.tokens, availableOperations, tokenString, equationTokens, comments = division(
+                            self.tokens, True)
+                    else:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = divisionEquation(
+                            self.lTokens, self.rTokens, True)
+                elif name == 'simplify':
+                    if self.solutionType == 'expression':
+                        self.tokens, availableOperations, tokenString, equationTokens, comments = simplify(self.tokens)
+                    else:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
+                elif name == 'factorize':
+                    self.tokens, availableOperations, tokenString, equationTokens, comments = factorize(self.tokens)
+                elif name == 'find roots':
+                    self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = rootFinder(self.lTokens, self.rTokens)
+                elif name == 'solve':
+                    if not self.simul:
+                        lhs, rhs = getLHSandRHS(self.tokens)
+                        variables = getVariables(lhs, rhs)
+                    else:
+                        variables = getVariableSim(self.tokens)
+                    self.wrtVariableButtons(variables, name)
+                    self.resultOut = False
+                elif name == 'factorial':
+                    self.tokens, availableOperations, tokenString, equationTokens, comments = factorial(self.tokens)
+                elif name == 'combination':
+                    nTokens = self.tokens[0]
+                    rTokens = self.tokens[1]
+                    self.tokens, _, _, equationTokens, comments = combination(nTokens, rTokens)
+                elif name == 'permutation':
+                    nTokens = self.tokens[0]
+                    rTokens = self.tokens[1]
+                    self.tokens, _, _, equationTokens, comments = permutation(nTokens, rTokens)
+                elif name == 'integrate':
                     lhs, rhs = getLHSandRHS(self.tokens)
                     variables = getVariables(lhs, rhs)
+                    self.wrtVariableButtons(variables, name)
+                    self.resultOut = False
+                elif name == 'differentiate':
+                    lhs, rhs = getLHSandRHS(self.tokens)
+                    variables = getVariables(lhs, rhs)
+                    self.wrtVariableButtons(variables, name)
+                    self.resultOut = False
+            else:
+                """
+                This part handles the cases when VisMa is dealing with matrices.
+
+                Boolean flags used in code below:
+                dualOperand -- {True} when the matrix operations require two operands (used in operations like addition, subtraction etc)
+                nonMatrixResult -- {True} when the result after performing operations on the Matrix is not a Matrix (in operations like Determinant, Trace etc.)
+                scalarOperations -- {True} when one of the operand in a scalar (used in operations like Scalar Addition, Scalar Subtraction etc.)
+                """
+                if self.dualOperandMatrix:
+                    Matrix1_copy = copy.deepcopy(self.Matrix1)
+                    Matrix2_copy = copy.deepcopy(self.Matrix2)
                 else:
-                    variables = getVariableSim(self.tokens)
-                self.wrtVariableButtons(variables, name)
-                self.resultOut = False
-            elif name == 'factorial':
-                self.tokens, availableOperations, tokenString, equationTokens, comments = factorial(self.tokens)
-            elif name == 'combination':
-                nTokens = self.tokens[0]
-                rTokens = self.tokens[1]
-                self.tokens, _, _, equationTokens, comments = combination(nTokens, rTokens)
-            elif name == 'permutation':
-                nTokens = self.tokens[0]
-                rTokens = self.tokens[1]
-                self.tokens, _, _, equationTokens, comments = permutation(nTokens, rTokens)
-            elif name == 'integrate':
-                lhs, rhs = getLHSandRHS(self.tokens)
-                variables = getVariables(lhs, rhs)
-                self.wrtVariableButtons(variables, name)
-                self.resultOut = False
-            elif name == 'differentiate':
-                lhs, rhs = getLHSandRHS(self.tokens)
-                variables = getVariables(lhs, rhs)
-                self.wrtVariableButtons(variables, name)
-                self.resultOut = False
+                    Matrix0_copy = copy.deepcopy(self.Matrix0)
+                if name == 'Addition':
+                    MatrixResult = addMatrix(self.Matrix1, self.Matrix2)
+                elif name == 'Subtraction':
+                    MatrixResult = subMatrix(self.Matrix1, self.Matrix2)
+                elif name == 'Multiply':
+                    MatrixResult = multiplyMatrix(self.Matrix1, self.Matrix2)
+                elif name == 'Simplify':
+                    MatrixResult = simplifyMatrix(self.Matrix0)
+                elif name == 'Trace':
+                    sqMatrix = SquareMat()
+                    sqMatrix.value = self.Matrix0.value
+                    result = sqMatrix.traceMat()
+                elif name == 'Determinant':
+                    sqMatrix = SquareMat()
+                    sqMatrix.value = self.Matrix0.value
+                    result = sqMatrix.determinant()
+                elif name == 'Inverse':
+                    sqMatrix = SquareMat()
+                    sqMatrix.value = self.Matrix0.value
+                    MatrixResult = SquareMat()
+                    MatrixResult = sqMatrix.inverse()
+                if name in ['Addition', 'Subtraction', 'Multiply']:
+                    self.dualOperandMatrix = True
+                else:
+                    self.dualOperandMatrix = False
+                if name in ['Determinant', 'Trace']:
+                    self.nonMatrixResult = True
+                else:
+                    self.nonMatrixResult = False
             if self.resultOut:
-                self.eqToks = equationTokens
-                self.output = resultLatex(equationTokens, name, comments, self.solutionType)
-                if (mathError(self.eqToks[-1])):
-                    self.output += 'Math Error: LHS not equal to RHS' + "\n"
-                if len(availableOperations) == 0:
-                    self.clearButtons()
+                if not self.matrix:
+                    self.eqToks = equationTokens
+                    self.output = resultLatex(equationTokens, name, comments, self.solutionType)
+                    if (mathError(self.eqToks[-1])):
+                        self.output += 'Math Error: LHS not equal to RHS' + '\n'
+                    if len(availableOperations) == 0:
+                        self.clearButtons()
+                    else:
+                        self.refreshButtons(availableOperations)
+                    if self.mode == 'normal':
+                        self.textedit.setText(tokenString)
+                    elif self.mode == 'interaction':
+                        cursor = self.textedit.textCursor()
+                        cursor.insertText(tokenString)
+                    if self.showStepByStep is True:
+                        showSteps(self)
+                    if self.showPlotter is True:
+                        plot(self)
                 else:
-                    self.refreshButtons(availableOperations)
-                if self.mode == 'normal':
-                    self.textedit.setText(tokenString)
-                elif self.mode == 'interaction':
-                    cursor = self.textedit.textCursor()
-                    cursor.insertText(tokenString)
-                if self.showStepByStep is True:
-                    showSteps(self)
-                if self.showPlotter is True:
-                    plot(self)
+                    if self.dualOperandMatrix:
+                        if not self.scalarOperationsMatrix:
+                            self.output = resultMatrixStringLatex(operation=name, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
+                        else:
+                            # TODO: Scalar Matrix Operation
+                            pass
+                            # finalCLIstring = resultMatrix_Latex(operation=name, operand1=scalarTokens_copy, operand2=Matrix2_copy, result=MatrixResult)
+                    else:
+                        if self.nonMatrixResult:
+                            self.output = resultMatrixStringLatex(operation=name, operand1=Matrix0_copy, nonMatrixResult=True, result=result)
+                        else:
+                            self.output = resultMatrixStringLatex(operation=name, operand1=Matrix0_copy, result=MatrixResult)
+                    if self.mode == 'normal':
+                        self.textedit.setText(tokenString)
+                    elif self.mode == 'interaction':
+                        cursor = self.textedit.textCursor()
+                        cursor.insertText(tokenString)
+                    if self.showStepByStep is True:
+                        showSteps(self)
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
@@ -707,6 +852,10 @@ class WorkSpace(QWidget):
             equationTokens = []
             self.input = str(self.textedit.toPlainText())
             if varName == 'back':
+                if self.input[0:4] == 'mat_':
+                    self.input = self.input[4:]
+                    self.input = self.input[0:-1]
+                    self.input = self.input[1:]
                 if ';' in self.input:
                     self.simul = True
                     if (self.input.count(';') == 2):
