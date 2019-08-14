@@ -339,6 +339,7 @@ class WorkSpace(QWidget):
         self.textedit.setText(name)
 
     def buttonsLayout(self):
+        self.matrix = False
         vbox = QVBoxLayout()
         interactionModeLayout = QVBoxLayout()
         self.interactionModeButton = QtWidgets.QPushButton('visma')
@@ -489,35 +490,35 @@ class WorkSpace(QWidget):
             else:
                 opButtons.extend(['Determinant', 'Trace', 'Inverse'])
 
-            if self.buttonSet:
-                for i in reversed(range(self.solutionOptionsBox.count())):
-                    self.solutionOptionsBox.itemAt(i).widget().setParent(None)
-                for i in range(int(len(opButtons) / 2) + 1):
-                    for j in range(2):
-                        if len(opButtons) > (i * 2 + j):
-                            self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
-                                opButtons[i * 2 + j])
-                            self.solutionButtons[(i, j)].resize(100, 100)
-                            self.solutionButtons[(i, j)].clicked.connect(
-                                self.onSolvePress(opButtons[i * 2 + j]))
-                            self.solutionOptionsBox.addWidget(
-                                self.solutionButtons[(i, j)], i, j)
-            else:
-                self.bottomButton.setParent(None)
-                self.solutionWidget = QWidget()
-                for i in range(int(len(opButtons) / 2) + 1):
-                    for j in range(2):
-                        if len(opButtons) > (i * 2 + j):
-                            self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
-                                opButtons[i * 2 + j])
-                            self.solutionButtons[(i, j)].resize(100, 100)
-                            self.solutionButtons[(i, j)].clicked.connect(
-                                self.onSolvePress(opButtons[i * 2 + j]))
-                            self.solutionOptionsBox.addWidget(
-                                self.solutionButtons[(i, j)], i, j)
-                self.solutionWidget.setLayout(self.solutionOptionsBox)
-                self.buttonSplitter.addWidget(self.solutionWidget)
-                self.buttonSet = True
+        if self.buttonSet:
+            for i in reversed(range(self.solutionOptionsBox.count())):
+                self.solutionOptionsBox.itemAt(i).widget().setParent(None)
+            for i in range(int(len(opButtons) / 2) + 1):
+                for j in range(2):
+                    if len(opButtons) > (i * 2 + j):
+                        self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
+                            opButtons[i * 2 + j])
+                        self.solutionButtons[(i, j)].resize(100, 100)
+                        self.solutionButtons[(i, j)].clicked.connect(
+                            self.onSolvePress(opButtons[i * 2 + j]))
+                        self.solutionOptionsBox.addWidget(
+                            self.solutionButtons[(i, j)], i, j)
+        else:
+            self.bottomButton.setParent(None)
+            self.solutionWidget = QWidget()
+            for i in range(int(len(opButtons) / 2) + 1):
+                for j in range(2):
+                    if len(opButtons) > (i * 2 + j):
+                        self.solutionButtons[(i, j)] = QtWidgets.QPushButton(
+                            opButtons[i * 2 + j])
+                        self.solutionButtons[(i, j)].resize(100, 100)
+                        self.solutionButtons[(i, j)].clicked.connect(
+                            self.onSolvePress(opButtons[i * 2 + j]))
+                        self.solutionOptionsBox.addWidget(
+                            self.solutionButtons[(i, j)], i, j)
+            self.solutionWidget.setLayout(self.solutionOptionsBox)
+            self.buttonSplitter.addWidget(self.solutionWidget)
+            self.buttonSet = True
 
     def refreshButtons(self, operations):
         if isinstance(operations, list):
