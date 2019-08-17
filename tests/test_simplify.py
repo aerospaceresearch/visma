@@ -46,6 +46,11 @@ def test_simplify():
     assert quickTest("x/5 + x/4 = 2/y", simplifyEquation) == "0.45x-2.0y^(-1)=0"
     assert quickTest("x/y + x/x + x/x^2 + x^2/x = x/y^2 + x^2/y + x - 1", simplifyEquation) == "xy^(-1)+2.0+x^(-1.0)-xy^(-2.0)-x^(2.0)y^(-1)=0"
 
+    # Tests regarding Expression used in equations
+    assert quickTest("(1 + 2) = ( 3 + 44)", simplifyEquation) == "-44.0=0"
+    assert quickTest("x = -1 * (z + 10)", simplifyEquation) == "x+z+10.0=0"
+    assert quickTest("x = 2*(z + q)", simplifyEquation) == "x-2.0z-2.0q=0"
+
     # Tests regarding Expression Simplifications
     assert quickTest("(x + 1) * (x + 1) * (x + 1)", simplify) == "x^(3.0)+3x^(2.0)+3x+1.0"
     assert quickTest("(x + 1) * (x - 1) + (x + 2)", simplify) == "x^(2.0)+1.0+x"
@@ -53,6 +58,7 @@ def test_simplify():
     assert quickTest("(x + 1) * (x * (1 + x))", simplify) == "2x^(2.0)+x^(3.0)+x"
     assert quickTest("(x + 1) * (x - 1) + (100 + 1)", simplify) == "x^(2.0)+100.0"
     assert quickTest("((x + 1) * (x - 1) + (100 + 1))", simplify) == "x^(2.0)+100.0"
+    #  assert quickTest("-1 * (- x - 1)", simplify) == "x--1"   FIXME: case should have a probably fix with the overlaoding of Constant Function
 
     # Tests regarding Exponents & Expressions
     assert quickTest("(x + 1)^3", simplify) == "x^(3.0)+3x^(2.0)+3x+1.0"
