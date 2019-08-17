@@ -68,6 +68,13 @@ def test_simplify():
     assert quickTest("(x + 1)^(1 + 1)*x", simplify) == "x^(3.0)+2x^(2.0)+x"
     assert quickTest("(x + 1)^(3 + 0 + 0)", simplify) == "x^(3.0)+3x^(2.0)+3x+1.0"
 
+    assert quickTest("3^(1 + 1)", simplify) == "9.0"
+    assert quickTest("2^(3/2) + 12", simplify) == "2.0^1.5+12.0"
+    assert quickTest("2^(4/2) + 12", simplify) == "16.0"
+    assert quickTest("(1 + 2)^(1 + 1)", simplify) == "9.0"
+    assert quickTest("(1 + 3)^(x) + (2 + 3)^(x)", simplify) == "4.0^x+5.0^x"
+    assert quickTest("(1 + 3)^(1/3) + (2 + 3)^(2/3)", simplify) == "4.0^0.33+5.0^0.67"
+
 
 def test_addsub():
 

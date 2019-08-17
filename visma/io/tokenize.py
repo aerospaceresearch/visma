@@ -1330,15 +1330,15 @@ def evaluateConstant(constant):
        constant value -- value of input term
     """
     if isinstance(constant, Function):
-        if isNumber(constant.value):
-            return math.pow(constant.value[0], constant.power[0])
-        elif isinstance(constant.value, list):
+        if isinstance(constant.value, list):
             val = 1
             if constant.coefficient is not None:
                 val *= constant.coefficient
             for i, c_val in enumerate(constant.value):
                 val *= math.pow(c_val, constant.power[i])
             return val
+        elif isNumber(constant.value):
+            return math.pow(constant.value[0], constant.power[0])
     elif isNumber(constant):
         return constant
 

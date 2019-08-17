@@ -228,15 +228,21 @@ def expressionSimplification(tokens_now, scope, tokens1):
     i = 0
     while(i < len(tokens1)):
         if (i + 1 < len(tokens1)):
-            if isinstance(tokens1[i + 1], Expression) and isinstance(tokens1[i], Binary) and tokens1[i].value == '^':
-                tokens1[i + 1].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 1].tokens)
-                if len(tokens1[i + 1].tokens) == 1 and isinstance(tokens1[i + 1].tokens[0], Constant):
-                    tokens1[i + 1] = Constant(tokens1[i + 1].tokens[0].calculate(), 1, 1)
+            if isinstance(tokens1[i], Binary) and tokens1[i].value == '^':
+                if isinstance(tokens1[i - 1], Expression):
+                    tokens1[i - 1].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i - 1].tokens)
+                if isinstance(tokens1[i + 1], Expression):
+                    tokens1[i + 1].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 1].tokens)
+                    if len(tokens1[i + 1].tokens) == 1 and isinstance(tokens1[i + 1].tokens[0], Constant):
+                        tokens1[i + 1] = Constant(tokens1[i + 1].tokens[0].calculate(), 1, 1)
             if (isinstance(tokens1[i], Binary) and tokens1[i].value == '^') and isinstance(tokens1[i + 1], Constant):
-                rep = int(tokens1[i + 1].calculate())
-                for _ in range(rep - 1):
-                    pfTokens.extend([Binary('*'), tokens1[i - 1]])
-                i += 1
+                if float(tokens1[i + 1].calculate()).is_integer():
+                    rep = int(tokens1[i + 1].calculate())
+                    for _ in range(rep - 1):
+                        pfTokens.extend([Binary('*'), tokens1[i - 1]])
+                    i += 1
+                else:
+                    pfTokens.append(tokens1[i])
             else:
                 pfTokens.append(tokens1[i])
         else:
