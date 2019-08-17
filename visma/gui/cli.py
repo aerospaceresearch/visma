@@ -1,4 +1,6 @@
 import copy
+import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QVBoxLayout
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
 from visma.discreteMaths.combinatorics import factorial, combination, permutation
@@ -14,6 +16,33 @@ from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
 from visma.matrix.structure import Matrix, SquareMat
 from visma.matrix.operations import simplifyMatrix, addMatrix, subMatrix, multiplyMatrix
+from visma.gui.plotter import plotFigure2D, plotFigure3D, plot
+
+
+class App(QMainWindow):
+    def __init__(self, tokens):
+        super().__init__()
+        self.setWindowTitle('Plots')
+        self.setGeometry(300, 300, 450, 450)
+        self.table_widget = PlotWindow(self, tokens)
+        self.setCentralWidget(self.table_widget)
+        self.show()
+
+
+class PlotWindow(QWidget):
+    def __init__(self, parent, tokens):
+        super(QWidget, self).__init__(parent)
+        self.layout = QVBoxLayout(self)
+        self.tabPlot = QTabWidget()
+        self.tabPlot.tab1 = QWidget()
+        self.tabPlot.tab2 = QWidget()
+        self.tabPlot.resize(300, 200)
+        self.tabPlot.addTab(self.tabPlot.tab1, "2D-Plot")
+        self.tabPlot.addTab(self.tabPlot.tab2, "3D-Plot")
+        self.tabPlot.tab1.setLayout(plotFigure2D(self))
+        self.tabPlot.tab2.setLayout(plotFigure3D(self))
+        self.layout.addWidget(self.tabPlot)
+        plot(self, tokens)
 
 
 def commandExec(command):
@@ -66,7 +95,11 @@ def commandExec(command):
                 lTokens = lhs
                 rTokens = rhs
 
-        if operation == 'simplify':
+        if operation == 'plot':
+            app = QApplication(sys.argv)
+            App(tokens)
+            sys.exit(app.exec_())
+        elif operation == 'simplify':
             if solutionType == 'expression':
                 tokens, _, _, equationTokens, comments = simplify(tokens)
             else:
@@ -121,8 +154,9 @@ def commandExec(command):
         elif operation == 'differentiate':
             lhs, rhs = getLHSandRHS(tokens)
             lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
-        final_string = resultStringCLI(equationTokens, operation, comments, solutionType, simul)
-        print(final_string)
+        if operation != 'plot':
+            final_string = resultStringCLI(equationTokens, operation, comments, solutionType, simul)
+            print(final_string)
     else:
         """
         This part handles the cases when VisMa is dealing with matrices.

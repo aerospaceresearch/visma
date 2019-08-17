@@ -15,7 +15,7 @@ from visma.functions.structure import FuncOp
 from visma.functions.variable import Variable
 
 
-def graphPlot(workspace, again):
+def graphPlot(workspace, again, tokens):
     """Function for plotting graphs in 2D and 3D space
 
     2D graphs are plotted for expression in one variable and equations in two variables. 3D graphs are plotted for expressions in two variables and equations in three variables.
@@ -32,13 +32,15 @@ def graphPlot(workspace, again):
     Note:
         The func obtained from graphPlot() function is of different type for 2D and 3D plots. For 2D, func is a numpy array, and for 3D, func is a function.
     """
-    tokens = workspace.eqToks[-1]
-    axisRange = workspace.axisRange
+    if tokens is None:
+        axisRange = workspace.axisRange
+        tokens = workspace.eqToks[-1]
+    else:
+        axisRange = [10, 10, 10, 30]
     eqType = getTokensType(tokens)
     LHStok, RHStok = getLHSandRHS(tokens)
     variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
-    # if (dim == 1 and eqType == "expression") or ((dim == 2) and eqType == "equation"):
     if (dim == 1) or ((dim == 2) and eqType == "equation"):
         if again:
             variables.append('f(' + variables[0] + ')')
@@ -217,7 +219,7 @@ def plotFigure3D(workspace):
     return layout
 
 
-def renderPlot(workspace, graphVars, func, variables):
+def renderPlot(workspace, graphVars, func, variables, tokens=None):
     """Renders plot for functions in 2D and 3D
 
     Maps points from the numpy arrays for variables in given equation on the 2D/3D plot figure
@@ -256,7 +258,10 @@ def renderPlot(workspace, graphVars, func, variables):
             Y, Z = np.meshgrid(yrange, zrange)
             X = func(x, Y, Z)
             ax.contour(X + x, Y, Z, [x], zdir='x')
-        axisRange = workspace.axisRange
+        if tokens is None:
+            axisRange = workspace.axisRange
+        else:
+            axisRange = [10, 10, 10, 30]
         xmin = -axisRange[0]
         xmax = axisRange[0]
         ymin = -axisRange[1]
@@ -273,7 +278,7 @@ def renderPlot(workspace, graphVars, func, variables):
         workspace.tabPlot.setCurrentIndex(1)
 
 
-def plot(workspace):
+def plot(workspace, tokens=None):
     """When called from window.py it initiates rendering of equations.
 
     Arguments:
@@ -283,20 +288,23 @@ def plot(workspace):
 
     workspace.figure2D.clear()
     workspace.figure3D.clear()
-    tokens = workspace.eqToks[-1]
+    if tokens is None:
+        tokens = workspace.eqToks[-1]
     eqType = getTokensType(tokens)
     LHStok, RHStok = getLHSandRHS(tokens)
     variables = sorted(getVariables(LHStok, RHStok))
     dim = len(variables)
-    graphVars, func, variables = graphPlot(workspace, False)
-    renderPlot(workspace, graphVars, func, variables)
+    graphVars, func, variables = graphPlot(workspace, False, tokens)
+    renderPlot(workspace, graphVars, func, variables, tokens)
     if (dim == 1):
         var2, var3 = selectAdditionalVariable(variables[0])
-        workspace.eqToks[-1] += tokenizer("0" + var2 + "+" + "0" + var3)
-
+        if tokens is None:
+            workspace.eqToks[-1] += tokenizer("0" + var2 + "+" + "0" + var3)
+        else:
+            tokens += tokenizer("0" + var2 + "+" + "0" + var3)
     if (((dim == 2) or (dim == 1)) & (eqType == 'equation')):
-        graphVars, func, variables = graphPlot(workspace, True)
-        renderPlot(workspace, graphVars, func, variables)
+        graphVars, func, variables = graphPlot(workspace, True, tokens)
+        renderPlot(workspace, graphVars, func, variables, tokens)
 
 
 def selectAdditionalVariable(var1):

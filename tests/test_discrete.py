@@ -1,5 +1,6 @@
 from tests.tester import quickTest
 from visma.discreteMaths.combinatorics import factorial, permutation, combination
+from visma.discreteMaths.statistics import ArithemeticMean, Mode, Median
 
 
 def test_factorial():
@@ -24,3 +25,15 @@ def test_combination():
     assert quickTest("2;2", permutation) == "2.0"
     assert quickTest("11;0", permutation) == "1.0"
     assert quickTest("11;11 - 11", permutation) == "1.0"
+
+
+def test_statistics():
+
+    assert quickTest([12, 1, -12, -1, 0], ArithemeticMean) == "0.0"
+    assert quickTest([11, 1, -2, -1, 0], ArithemeticMean) == "1.8"
+
+    assert quickTest([12, 12, 12, 12, 1, -12, -1, 0], Mode) == "Mode=12;ModeFrequency=4"
+    assert quickTest([-1, -1, 2, 3, 4, 5, 6], Mode) == "Mode=-1;ModeFrequency=2"
+
+    assert quickTest([1, 2, 3, 4, 5], Median) == "3"
+    assert quickTest([1, 2, 3, 4, 5, 12], Median) == "3.5"
