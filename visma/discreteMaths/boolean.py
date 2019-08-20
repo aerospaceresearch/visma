@@ -2,9 +2,22 @@ from visma.simplify.simplify import simplify
 from visma.functions.constant import Constant
 from visma.io.tokenize import tokenizer
 
+# TODO: Test cases.
+# TODO: Implement GUI/CLI.
+
 
 def logicalAND(token1, token2):
-    # TODO: Comments, animations & test cases.
+    """Implements Bitwise AND
+    Arguments:
+        token1 -- {list} -- List of tokens of a constant number
+        token2 -- {list} -- List of tokens of a constant number
+
+    Returns:
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
+
     comments = []
     animations = []
     token1, _, _, _, _ = simplify(token1)
@@ -30,7 +43,17 @@ def logicalAND(token1, token2):
 
 
 def logicalOR(token1, token2):
-    # TODO: Comments, animations & test cases.
+    """Implements Bitwise OR
+    Arguments:
+        token1 -- {list} -- List of tokens of a constant number
+        token2 -- {list} -- List of tokens of a constant number
+
+    Returns:
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
+
     comments = []
     animations = []
     token1, _, _, _, _ = simplify(token1)
@@ -56,7 +79,16 @@ def logicalOR(token1, token2):
 
 
 def logicalNOT(token1):
-    # TODO: Test cases.
+    """Implements Bitwise NOT
+    Arguments:
+        token1 -- {list} -- List of tokens of a constant number
+
+    Returns:
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
+
     comments = []
     animations = []
     token1, _, _, _, _ = simplify(token1)

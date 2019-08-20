@@ -13,6 +13,19 @@ from visma.io.tokenize import changeToken, removeToken
 
 
 def addition(tokens, direct=False):
+    """Function deals with addition related operations (driver function in addition module)
+
+    Arguments:
+        tokens {list} -- list of tokens
+        direct {bool} -- True when we are only concerned about multiplications terms in the input
+
+    Returns:
+        tokens {list} -- list of tokens
+        availableOperations {list} -- list of operations which can be performed on a equation token
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
 
     animation = [copy.deepcopy(tokens)]
     variables = []
@@ -37,6 +50,21 @@ def addition(tokens, direct=False):
 
 
 def additionEquation(lToks, rToks, direct=False):
+    """Function deals with multiplication related operations FOR EQUATIONS (driver function in multiplication module)
+
+    Arguments:
+        rtoks {list} -- list of right tokens
+        ltoks {list} -- list of left tokens
+        direct {bool} -- True when we are only concerned about multiplications terms in the input
+
+    Returns:
+        rtoks {list} -- list of right tokens
+        ltoks {list} -- list of left tokens
+        availableOperations {list} -- list of operations which can be performed on a equation token
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
 
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
@@ -146,6 +174,18 @@ def additionEquation(lToks, rToks, direct=False):
 
 
 def expressionAddition(variables, tokens):
+    """Function deals with addition related operations of two terms (called from driver function)
+
+    Arguments:
+        variables {list} -- list of LevelVariables
+        tokens {list} -- list of tokens
+
+    Returns:
+        variables {list} -- list of LevelVariables
+        tokens {list} -- list of tokens
+        removeScopes {list} -- indices of those tokens (/terms) which are removed as two terms in the equations get multiplied
+        comments {list} -- list of comments in equation solving process
+    """
 
     removeScopes = []
     change = []
@@ -522,6 +562,19 @@ def equationAddition(lVariables, lTokens, rVariables, rTokens):
 
 
 def subtraction(tokens, direct=False):
+    """Function deals with subtraction related operations (driver function in subtraction module)
+
+    Arguments:
+        tokens {list} -- list of tokens
+        direct {bool} -- True when we are only concerned about multiplications terms in the input
+
+    Returns:
+        tokens {list} -- list of tokens
+        availableOperations {list} -- list of operations which can be performed on a equation token
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
 
     animation = [copy.deepcopy(tokens)]
     comments = []
@@ -544,6 +597,21 @@ def subtraction(tokens, direct=False):
 
 
 def subtractionEquation(lToks, rToks, direct=False):
+    """Function deals with multiplication related operations FOR EQUATIONS (driver function in multiplication module)
+
+    Arguments:
+        rtoks {list} -- list of right tokens
+        ltoks {list} -- list of left tokens
+        direct {bool} -- True when we are only concerned about multiplications terms in the input
+
+    Returns:
+        rtoks {list} -- list of right tokens
+        ltoks {list} -- list of left tokens
+        availableOperations {list} -- list of operations which can be performed on a equation token
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
 
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
@@ -655,6 +723,18 @@ def subtractionEquation(lToks, rToks, direct=False):
 
 
 def expressionSubtraction(variables, tokens):
+    """Function deals with multiplication related operations of two terms (called from driver function)
+
+    Arguments:
+        variables {list} -- list of LevelVariables
+        tokens {list} -- list of tokens
+
+    Returns:
+        variables {list} -- list of LevelVariables
+        tokens {list} -- list of tokens
+        removeScopes {list} -- indices of those tokens (/terms) which are removed as two terms in the equations get multiplied
+        comments {list} -- list of comments in equation solving process
+    """
 
     removeScopes = []
     change = []

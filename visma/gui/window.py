@@ -770,6 +770,7 @@ class WorkSpace(QWidget):
                 nonMatrixResult -- {True} when the result after performing operations on the Matrix is not a Matrix (in operations like Determinant, Trace etc.)
                 scalarOperations -- {True} when one of the operand in a scalar (used in operations like Scalar Addition, Scalar Subtraction etc.)
                 """
+                #   TODO: use latex tools like /amsmath for displaying matrices
                 if self.dualOperandMatrix:
                     Matrix1_copy = copy.deepcopy(self.Matrix1)
                     Matrix2_copy = copy.deepcopy(self.Matrix2)
@@ -828,7 +829,7 @@ class WorkSpace(QWidget):
                         if not self.scalarOperationsMatrix:
                             self.output = resultMatrixStringLatex(operation=name, operand1=Matrix1_copy, operand2=Matrix2_copy, result=MatrixResult)
                         else:
-                            # TODO: Scalar Matrix Operation
+                            # TODO: Implement Scalar Matrices operations.
                             pass
                             # finalCLIstring = resultMatrix_Latex(operation=name, operand1=scalarTokens_copy, operand2=Matrix2_copy, result=MatrixResult)
                     else:
