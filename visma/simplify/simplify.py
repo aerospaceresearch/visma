@@ -74,6 +74,34 @@ def moveRTokensToLTokens(lTokens, rTokens):
     return lTokens, rTokens
 
 
+def equationAnimationBuilder(lTokens, rTokens):
+    """Given LHS & RHS tokens for an equation it builds the tokens of complete equation
+
+    Arguments:
+        lTokens {list} -- Tokens of LHS
+        rTokens {list} -- Tokens of RHS
+
+    Returns:
+        animBulder {list} -- list of tokens of complete equation
+    """
+    animBuilder = []
+    lToks = copy.deepcopy(lTokens)
+    rToks = copy.deepcopy(rTokens)
+    animBuilder = lToks
+    lenToks = len(lToks)
+    equalTo = Binary()
+    equalTo.scope = [lenToks]
+    equalTo.value = '='
+    animBuilder.append(equalTo)
+    if len(rToks) == 0:
+        zero = Zero()
+        zero.scope = [lenToks + 1]
+        animBuilder.append(zero)
+    else:
+        animBuilder.extend(rToks)
+    return animBuilder
+
+
 def simplifyEquation(lToks, rToks):
     """Simplifies given equation tokens
 
@@ -92,26 +120,32 @@ def simplifyEquation(lToks, rToks):
     lTokens = copy.deepcopy(lToks)
     rTokens = copy.deepcopy(rToks)
     animation = []
-    comments = [[]]
+    comments = []
+    comments += [[]]
+    animation.append(equationAnimationBuilder(lTokens, rTokens))
+    lTokens = copy.deepcopy(lToks)
+    rTokens = copy.deepcopy(rToks)
+    expressionPresent = False
+    for toks in lTokens:
+        if isinstance(toks, Expression):
+            expressionPresent = True
+    if expressionPresent:
+        lTokens, _, _, _, _ = expressionSimplification(lTokens, [], lTokens)
+        comments += [['Opening brackets in the LHS']]
+        animation.append(equationAnimationBuilder(lTokens, rTokens))
+    expressionPresent = False
+    for toks in rTokens:
+        if isinstance(toks, Expression):
+            expressionPresent = True
+    if expressionPresent:
+        rTokens, _, _, _, _ = expressionSimplification(rTokens, [], rTokens)
+        comments += [['Opening brackets in the RHS']]
+        animation.append(equationAnimationBuilder(lTokens, rTokens))
     lVariables = []
     lVariables.extend(getLevelVariables(lTokens))
     rVariables = []
     rVariables.extend(getLevelVariables(rTokens))
-    animBuilder = lToks
-    lenToks = len(lToks)
-    equalTo = Binary()
-    equalTo.scope = [lenToks]
-    equalTo.value = '='
-    animBuilder.append(equalTo)
-    if len(rToks) == 0:
-        zero = Zero()
-        zero.scope = [lenToks + 1]
-        animBuilder.append(zero)
-    else:
-        animBuilder.extend(rToks)
-    animation.append(copy.deepcopy(animBuilder))
-    availableOperations = getOperationsEquation(
-        lVariables, lTokens, rVariables, rTokens)
+    availableOperations = getOperationsEquation(lVariables, lTokens, rVariables, rTokens)
     while len(availableOperations) > 0:
         if '/' in availableOperations:
             lTokens, rTokens, availableOperations, token_string, anim, com = divisionEquation(
@@ -137,12 +171,9 @@ def simplifyEquation(lToks, rToks):
             animation.pop(len(animation) - 1)
             animation.extend(anim)
             comments.extend(com)
-
         lVariables = getLevelVariables(lTokens)
         rVariables = getLevelVariables(rTokens)
-        availableOperations = getOperationsEquation(
-            lVariables, lTokens, rVariables, rTokens)
-
+        availableOperations = getOperationsEquation(lVariables, lTokens, rVariables, rTokens)
     moved = False
     if len(rTokens) > 0:
         moved = True
@@ -162,7 +193,6 @@ def simplifyEquation(lToks, rToks):
     if moved:
         animation.append(copy.deepcopy(tokenToStringBuilder))
         comments.append(['Moving the rest of variables/constants to LHS'])
-
     token_string = tokensToString(tokenToStringBuilder)
     return lTokens, rTokens, availableOperations, token_string, animation, comments
 
@@ -212,15 +242,21 @@ def expressionSimplification(tokens_now, scope, tokens1):
     i = 0
     while(i < len(tokens1)):
         if (i + 1 < len(tokens1)):
-            if isinstance(tokens1[i + 1], Expression) and isinstance(tokens1[i], Binary) and tokens1[i].value == '^':
-                tokens1[i + 1].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 1].tokens)
-                if len(tokens1[i + 1].tokens) == 1 and isinstance(tokens1[i + 1].tokens[0], Constant):
-                    tokens1[i + 1] = Constant(tokens1[i + 1].tokens[0].calculate(), 1, 1)
+            if isinstance(tokens1[i], Binary) and tokens1[i].value == '^':
+                if isinstance(tokens1[i - 1], Expression):
+                    tokens1[i - 1].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i - 1].tokens)
+                if isinstance(tokens1[i + 1], Expression):
+                    tokens1[i + 1].tokens, _, _, _, _ = expressionSimplification(tokens_now, scope, tokens1[i + 1].tokens)
+                    if len(tokens1[i + 1].tokens) == 1 and isinstance(tokens1[i + 1].tokens[0], Constant):
+                        tokens1[i + 1] = Constant(tokens1[i + 1].tokens[0].calculate(), 1, 1)
             if (isinstance(tokens1[i], Binary) and tokens1[i].value == '^') and isinstance(tokens1[i + 1], Constant):
-                rep = int(tokens1[i + 1].calculate())
-                for _ in range(rep - 1):
-                    pfTokens.extend([Binary('*'), tokens1[i - 1]])
-                i += 1
+                if float(tokens1[i + 1].calculate()).is_integer():
+                    rep = int(tokens1[i + 1].calculate())
+                    for _ in range(rep - 1):
+                        pfTokens.extend([Binary('*'), tokens1[i - 1]])
+                    i += 1
+                else:
+                    pfTokens.append(tokens1[i])
             else:
                 pfTokens.append(tokens1[i])
         else:

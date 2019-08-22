@@ -259,7 +259,10 @@ def checkTypes(lTokens=None, rTokens=None):
             expressionPresent = True
             break
     if expressionPresent:
-        return ['integrate', 'differentiate'], 'expression'
+        if len(rTokens) == 0:
+            return ['integrate', 'differentiate'], 'expression'
+        else:
+            return ['integrate', 'differentiate'], 'equation'
 
     if len(rTokens) != 0:
         equationCompatible = EquationCompatibility(lTokens, rTokens)
