@@ -48,7 +48,7 @@ class PlotWindow(QWidget):
 def commandExec(command):
     operation = command.split('(', 1)[0]
     inputEquation = command.split('(', 1)[1][:-1]
-    matrix = False
+    matrix = False      # True when matrices operations are present in the code.
     if operation[0:4] == 'mat_':
         matrix = True
 
@@ -65,7 +65,7 @@ def commandExec(command):
             varName = "".join(varName.split())
             inputEquation = inputEquation.split(',')[0]
 
-        simul = False
+        simul = False   # True when simultaneous equation is present
         if (inputEquation.count(';') == 2) and (operation == 'solve'):
             simul = True
             afterSplit = inputEquation.split(';')
@@ -155,6 +155,7 @@ def commandExec(command):
             lhs, rhs = getLHSandRHS(tokens)
             lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
         if operation != 'plot':
+            # FIXME: when either plotting window or GUI window is opened from CLI and after it is closed entire CLI exits, it would be better if it is avoided
             final_string = resultStringCLI(equationTokens, operation, comments, solutionType, simul)
             print(final_string)
     else:

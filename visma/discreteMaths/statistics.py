@@ -4,8 +4,12 @@ from visma.simplify.simplify import simplify
 from visma.io.parser import tokensToString
 from visma.functions.constant import Constant
 
+# TODO: Implement this module in GUI/CLI
+
 
 class sampleSpace(object):
+    """Class used to represent sample space of a data.
+    """
     values = []
     size = 0
 
@@ -16,6 +20,16 @@ class sampleSpace(object):
 
 
 def ArithemeticMean(sampleSpace):
+    """Implements arithemetic mean
+
+    Arguments:
+        sampleSpace -- {visma.discreteMaths.statistics.ArithemeticMean}
+
+    Returns:
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
     animations = []
     comments = []
     if sampleSpace.values is not []:
@@ -40,6 +54,17 @@ def ArithemeticMean(sampleSpace):
 
 
 def Mode(sampleSpace):
+    """Implements Mode
+
+    Arguments:
+        sampleSpace -- {visma.discreteMaths.statistics.ArithemeticMean}
+
+    Returns:
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
+
     animations = []
     comments = []
     token_string = ''
@@ -56,6 +81,17 @@ def Mode(sampleSpace):
 
 
 def Median(sampleSpace):
+    """Implements Median
+
+    Arguments:
+        sampleSpace -- {visma.discreteMaths.statistics.ArithemeticMean}
+
+    Returns:
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
+
     animations = []
     comments = []
     token_string = ''

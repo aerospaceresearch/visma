@@ -2,6 +2,18 @@ from visma.io.tokenize import tokenizer
 
 
 def simpleProbability(sampleSpace, requiredEvent=None):
+    """Implements simple probability
+
+    Arguments:
+        sampleSpace -- {visma.discreteMaths.statistics.ArithemeticMean}
+        requiredEvent -- {Event whose probability is to be calculated}
+
+    Returns:
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    """
+
     animations = []
     comments = []
     events = []

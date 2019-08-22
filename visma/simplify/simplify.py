@@ -168,6 +168,20 @@ def simplifyEquation(lToks, rToks):
 
 
 def simplify(tokens):
+    """
+    Main simplify function which is called from driver modules
+
+    Arguments:
+        tokens {list} -- list of tokens
+
+    Returns:
+        tokens {list} -- list of simplified
+        availableOperations {list} -- list of operations which can be performed on a equation token
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+
+    """
     tokens_orig = copy.deepcopy(tokens)
     animation = [tokens_orig]
     comments = [[]]
@@ -315,6 +329,7 @@ def expressionSimplification(tokens_now, scope, tokens1):
         animation += [simToks]
         comments += [['Opening up all the brackets']]
 
+    # TODO: Implement Trigonometric functions in the simplify module.
     trigonometricError = False
     for tk in simToks:
         if isinstance(tk, Trigonometric):
@@ -332,6 +347,7 @@ def expressionSimplification(tokens_now, scope, tokens1):
     else:
         availableOperations = []
         token_string = tokensToString(simToks)
+    # TODO: Implement verbose steps in simplification of Expressions (steps shown can be varied depending on length of expression)
     if scope != []:
         scope.pop()
     return simToks, availableOperations, token_string, animation, comments
