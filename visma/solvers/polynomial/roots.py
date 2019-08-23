@@ -1,217 +1,59 @@
-"""
-Initial Author: Siddharth Kothiyal (sidkothiyal, https://github.com/sidkothiyal)
-Other Authors:
-Owner: AerospaceResearch.net
-About: This module is aimed at first checking if quadratic roots can be found for the given equation, and then in the next step find the quadratic roots and display them.
+'''This module hosts the driver functions used for finding roots of an equation & also contains utility
+functions used by other files of visma.solvers.polynomial
 
-Note: Please try to maintain proper documentation
-Logic Description:
-"""
+Note: Please try maintain proper documentation
+'''
 
-import math
 import copy
-from visma.io.checks import evaluateConstant, getVariables
-from visma.io.parser import tokensToString
-from visma.functions.structure import Expression
-from visma.functions.constant import Constant, Zero
+import math
+from visma.io.checks import evaluateConstant, preprocessCheckPolynomial
+from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.functions.operator import Binary, Sqrt
-from visma.simplify.simplify import simplifyEquation, moveRTokensToLTokens
-
-from visma.config.values import ROUNDOFF
-
-# FIXME: Extend to polynomials of all degrees
+from visma.functions.operator import Binary
+from visma.solvers.polynomial.quadratic import quadraticRoots
+from visma.solvers.polynomial.cubic import cubicRoots
+from visma.solvers.polynomial.quartic import quarticRoots
 
 
-def getRoots(coeffs):
+def rootFinder(lTokens, rTokens):
+    '''Main function called by driver modules to calculate roots of equation
 
-    roots = []
-    if len(coeffs) == 3:
-        d = (coeffs[1] * coeffs[1]) - (4 * coeffs[0] * coeffs[2])
-        if d == 0:
-            roots.append(-(coeffs[1] / (2 * coeffs[2])))
-        elif d > 0:
-            d = math.sqrt(d)
-            roots.append(-(coeffs[1] + d) / (2 * coeffs[2]))
-            roots.append(-(coeffs[1] - d) / (2 * coeffs[2]))
-        else:
-            imaginary = [-(coeffs[1] / (2 * coeffs[2])), -1,
-                         (math.sqrt(-d)) / (2 * coeffs[2])]
-            roots = imaginary
-    return roots
+    Argument:
+        lTokens {list} -- list of left side tokens
+        rTokens {list} -- list of right side tokens
 
-
-def quadraticRoots(lTokens, rTokens):
-
-    lTokens, rTokens, _, token_string, animation, comments = simplifyEquation(
-        lTokens, rTokens)
-    roots, var = findQuadraticRoots(lTokens, rTokens)
-    if len(roots) == 1:
-        tokens = []
-        expression = Expression()
-        expression.coefficient = 1
-        expression.power = 2
-        variable = Variable()
-        variable.value = var
-        variable.power = [1]
-        variable.coefficient = 1
-        tokens.append(variable)
-        binary = Binary()
-        if roots[0] < 0:
-            roots[0] *= -1
-            binary.value = '+'
-        else:
-            binary.value = '-'
-        tokens.append(binary)
-        constant = Constant()
-        constant.value = round(roots[0], ROUNDOFF)
-        constant.power = 1
-        tokens.append(constant)
-        expression.tokens = tokens
-        lTokens = [expression]
-
-    elif len(roots) == 2:
-        tokens = []
-        expression = Expression()
-        expression.coefficient = 1
-        expression.power = 1
-        variable = Variable()
-        variable.value = var
-        variable.power = [1]
-        variable.coefficient = 1
-        tokens.append(variable)
-        binary = Binary()
-        if roots[0] < 0:
-            roots[0] *= -1
-            binary.value = '+'
-        else:
-            binary.value = '-'
-        tokens.append(binary)
-        constant = Constant()
-        constant.value = round(roots[0], ROUNDOFF)
-        constant.power = 1
-        tokens.append(constant)
-        expression.tokens = tokens
-
-        tokens2 = []
-        expression2 = Expression()
-        expression2.coefficient = 1
-        expression2.power = 1
-        variable2 = Variable()
-        variable2.value = var
-        variable2.power = [1]
-        variable2.coefficient = 1
-        tokens2.append(variable)
-        binary2 = Binary()
-        if roots[1] < 0:
-            roots[1] *= -1
-            binary2.value = '+'
-        else:
-            binary2.value = '-'
-        tokens2.append(binary2)
-        constant2 = Constant()
-        constant2.value = round(roots[1], ROUNDOFF)
-        constant2.power = 1
-        tokens2.append(constant2)
-        expression2.tokens = tokens2
-
-        binary3 = Binary()
-        binary3.value = '*'
-        lTokens = [expression, binary3, expression2]
-
-    elif len(roots) == 3:
-        sqrtPow = Constant()
-        sqrtPow.value = 2
-        sqrtPow.power = 1
-
-        binary4 = Binary()
-        if roots[0] < 0:
-            roots[0] *= -1
-            binary4.value = '+'
-        else:
-            binary4.value = '-'
-
-        constant3 = Constant()
-        constant3.value = round(roots[0], ROUNDOFF)
-        constant3.power = 1
-
-        binary5 = Binary()
-        binary5.value = '*'
-
-        constant2 = Constant()
-        constant2.value = round(roots[2], ROUNDOFF)
-        constant2.power = 1
-
-        tokens = []
-        expression = Expression()
-        expression.coefficient = 1
-        expression.power = 1
-        variable = Variable()
-        variable.value = var
-        variable.power = [1]
-        variable.coefficient = 1
-        tokens.append(variable)
-        tokens.append(binary4)
-        tokens.append(constant3)
-        binary = Binary()
-        binary.value = '+'
-        tokens.append(binary)
-        tokens.append(constant2)
-        tokens.append(binary5)
-        constant = Constant()
-        constant.value = round(roots[1], ROUNDOFF)
-        constant.power = 1
-        sqrt = Sqrt()
-        sqrt.power = sqrtPow
-        sqrt.operand = constant
-        tokens.append(sqrt)
-        expression.tokens = tokens
-
-        tokens2 = []
-        expression2 = Expression()
-        expression2.coefficient = 1
-        expression2.power = 1
-        variable2 = Variable()
-        variable2.value = var
-        variable2.power = [1]
-        variable2.coefficient = 1
-        tokens2.append(variable)
-        tokens2.append(binary4)
-        tokens2.append(constant3)
-        binary2 = Binary()
-        binary2.value = '-'
-        tokens2.append(binary2)
-        tokens2.append(constant2)
-        tokens2.append(binary5)
-        tokens2.append(sqrt)
-        expression2.tokens = tokens2
-
-        binary3 = Binary()
-        binary3.value = '*'
-        lTokens = [expression, binary3, expression2]
-
-    zero = Zero()
-    rTokens = [zero]
-    comments.append([])
-    tokenToStringBuilder = copy.deepcopy(lTokens)
-    tokLen = len(lTokens)
-    equalTo = Binary()
-    equalTo.scope = [tokLen]
-    equalTo.value = '='
-    tokenToStringBuilder.append(equalTo)
-    tokenToStringBuilder.extend(rTokens)
-    animation.append(copy.deepcopy(tokenToStringBuilder))
-    token_string = tokensToString(tokenToStringBuilder)
+    Returns:
+        lTokens {list} -- list of left side tokens
+        rTokens {list} -- list of right side tokens
+        {empty list}
+        token_string {string} -- final result stored in a string
+        animation {list} -- list of equation solving process
+        comments {list} -- list of comments in equation solving process
+    '''
+    lTokensTemp = copy.deepcopy(lTokens)
+    rTokensTemp = copy.deepcopy(rTokens)
+    _, polyDegree = preprocessCheckPolynomial(lTokensTemp, rTokensTemp)
+    if polyDegree == 2:
+        lTokens, rTokens, _, token_string, animation, comments = quadraticRoots(lTokens, rTokens)
+    elif polyDegree == 3:
+        lTokens, rTokens, _, token_string, animation, comments = cubicRoots(lTokens, rTokens)
+    elif polyDegree == 4:
+        lTokens, rTokens, _, token_string, animation, comments = quarticRoots(lTokens, rTokens)
     return lTokens, rTokens, [], token_string, animation, comments
 
 
-def findQuadraticRoots(lTokens, rTokens):
+def getCoefficients(lTokens, rTokens, degree):
+    '''Used by root finder modules to get a list of coefficients of equation
 
-    roots = []
-    if len(rTokens) > 0:
-        lTokens, rTokens = moveRTokensToLTokens(
-            lTokens, rTokens)
-    coeffs = [0, 0, 0]
+    Argument:
+        lTokens {list} -- list of left side tokens
+        rTokens {list} -- list of right side tokens
+        degree {int} -- degree of equation
+
+    Returns:
+        coeffs {list} -- list of coefficients of equation (item at ith index is coefficient of x^i)
+    '''
+    coeffs = [0] * (degree + 1)
     for i, token in enumerate(lTokens):
         if isinstance(token, Constant):
             cons = evaluateConstant(token)
@@ -224,7 +66,7 @@ def findQuadraticRoots(lTokens, rTokens):
                 if lTokens[i + 1].value not in ['*', '/']:
                     coeffs[0] += cons
                 else:
-                    return roots
+                    return []
             else:
                 coeffs[0] += cons
         if isinstance(token, Variable):
@@ -237,18 +79,51 @@ def findQuadraticRoots(lTokens, rTokens):
                                 var *= -1
                 if (i + 1) < len(lTokens):
                     if lTokens[i + 1].value not in ['*', '/']:
-                        if token.power[0] == 1 or token.power[0] == 2:
+                        if token.power[0] in [1, 2, 3, 4]:
                             coeffs[int(token.power[0])] += var
                         else:
-                            return roots
+                            return []
                     else:
-                        return roots
+                        return []
                 else:
-                    if token.power[0] == 1 or token.power[0] == 2:
+                    if token.power[0] in [1, 2, 3, 4]:
                         coeffs[int(token.power[0])] += var
                     else:
-                        return roots
+                        return []
             else:
-                return roots
+                return []
+    return coeffs
 
-    return getRoots(coeffs), getVariables(lTokens)
+
+def squareRootComplex(value):
+    '''Used by root finder modules to get square root of a complex number
+
+    Argument:
+        value {list of 2 elements} -- 1st element indicates real part & other element indicates imaginary part
+
+    Returns:
+        root {float} -- root of imaginary number
+    '''
+    a = value[0]
+    b = value[1]
+    root = 2*[0]
+    root[0] = math.sqrt((a + math.sqrt(a*a + b*b))/2)
+    root[1] = math.sqrt((math.sqrt(a*a + b*b) - a)/2)
+    if b < 0:
+        root[1] = -root[1]
+    return root
+
+
+def cubeRoot(value):
+    '''Used by root finder modules to get cube root of floats
+
+    Argument:
+        value {float} -- whose cube root is to be found
+
+    Returns:
+        root {float} -- cube root of "value"
+    '''
+    if value >= 0:
+        return value ** (1./3.)
+    else:
+        return (-(-value) ** (1./3.))

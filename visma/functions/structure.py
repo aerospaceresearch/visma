@@ -114,6 +114,15 @@ class Function(object):
             inst = inst.operand
         return inst.value
 
+    def isZero(self):
+        """
+        It checks if the Function is equal to Zero or not, to decide it should be Added, Subtracted,...etc. or not.
+        :returns: bool
+        """
+        if (self.value == 0 and self.power != 0) or self.coefficient == 0:
+            return True
+        return False
+
 
 ##########
 # FuncOp #
@@ -173,12 +182,17 @@ class Expression(Function):
 
     def __init__(self, tokens=None, coefficient=None, power=None):
         super().__init__()
-        self.coefficient = 1
-        self.power = 1
+        if coefficient is not None:
+            self.coefficient = coefficient
+        else:
+            self.coefficient = 1
+        if power is not None:
+            self.power = power
+        else:
+            self.power = 1
         self.tokens = []
         if tokens is not None:
             self.tokens.extend(tokens)
-        self.type = 'Expression'
 
     def __str__(self):
         represent = ""
@@ -194,6 +208,89 @@ class Expression(Function):
             represent += "{(" + str(self.operand) + ")}"
         return represent
 
+    def __mul__(self, other):
+        from visma.functions.constant import Constant
+        from visma.functions.variable import Variable
+
+        if isinstance(other, Expression):
+            result = Expression()
+            for i, _ in enumerate(self.tokens):
+                c = copy.deepcopy(self)
+                d = copy.deepcopy(other)
+                if isinstance(c.tokens[i], Constant) or isinstance(c.tokens[i], Variable):
+                    result.tokens.extend([c.tokens[i] * d])
+                else:
+                    result.tokens.extend([c.tokens[i]])
+            return result
+
+    def __add__(self, other):
+        from visma.functions.constant import Constant
+        from visma.functions.variable import Variable
+        from visma.functions.operator import Plus
+        if isinstance(other, Expression):
+            result = Expression()
+            for tok1 in self.tokens:
+                result.tokens.append(tok1)
+            result.tokens.append(Plus())
+            if (other.tokens[0], Constant):
+                if (other.tokens[0].value < 0):
+                    result.tokens.pop()
+            elif (other.tokens[0], Variable):
+                if (other.tokens[0].coefficient < 0):
+                    result.tokens.pop()
+            for tok2 in other.tokens:
+                result.tokens.append(tok2)
+            return result
+        elif isinstance(other, Constant):
+            result = self
+            constFound = False
+            for i, _ in enumerate(self.tokens):
+                if isinstance(self.tokens[i], Constant):
+                    self.tokens[i] += other
+                    constFound = True
+            if constFound:
+                return result
+            else:
+                result.tokens += other
+                return result
+        elif isinstance(other, Variable):
+            result = Expression()
+            result = other + self
+            return result
+
+    def __sub__(self, other):
+        from visma.functions.constant import Constant
+        from visma.functions.variable import Variable
+        from visma.functions.operator import Plus, Minus
+        if isinstance(other, Expression):
+            result = Expression()
+            for tok1 in self.tokens:
+                result.tokens.append(tok1)
+            for _, x in enumerate(other.tokens):
+                if x.value == '+':
+                    x.value = '-'
+                elif x.value == '-':
+                    x.value = '+'
+            result.tokens.append(Minus())
+            if (isinstance(other.tokens[0], Constant)):
+                if (other.tokens[0].value < 0):
+                    result.tokens[-1] = Plus()
+                    other.tokens[0].value = abs(other.tokens[0].value)
+            elif (isinstance(other.tokens[0], Variable)):
+                if (other.tokens[0].coefficient < 0):
+                    result.tokens[-1] = Plus()
+                    other.tokens[0].coefficient = abs(other.tokens[0].coefficient)
+            return result
+        elif isinstance(other, Constant):
+            result = self
+            result += (Constant(0) - other)
+            return result
+        elif isinstance(other, Variable):
+            result = self
+            a = Constant(0) - other
+            result = a + result
+            return result
+
 
 class Equation(Expression):
     """Class for equation type
@@ -202,4 +299,3 @@ class Equation(Expression):
     def __init__(self):
         super().__init__()
         self.tokens = None
-        self.type = 'Equation'

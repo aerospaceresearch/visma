@@ -1,10 +1,11 @@
 import copy
-from visma.functions.structure import Function
-from visma.functions.constant import Constant, Zero
+from visma.functions.constant import Constant
 from visma.functions.variable import Variable
-from visma.functions.exponential import Logarithm
 from visma.functions.operator import Operator, Binary
 from visma.simplify.simplify import simplify
+from visma.functions.trigonometry import Trigonometric
+from visma.calculus.differentiation import differentiate
+from visma.io.parser import tokensToString
 
 ###############
 # Integration #
@@ -27,26 +28,16 @@ def integrate(tokens, wrtVar):
     """
 
     tokens, availableOperations, token_string, animation, comments = simplify(tokens)
-
     tokens, animNew, commentsNew = (integrateTokens(tokens, wrtVar))
-
     animation.append(animNew)
     comments.append(commentsNew)
-
     tokens, availableOperations, token_string, animation2, comments2 = simplify(tokens)
-
     animation2.pop(0)
     comments2.pop(0)
     animation.extend(animation2)
     comments.extend(comments2)
-
     return tokens, availableOperations, token_string, animation, comments
 
-
-# This is only applicable to Variable and Constant type
-# Kind of hacky as of now
-# Must be modified to accomodate other function types
-# Have to add integrate class method to individual functions
 
 def integrateTokens(funclist, wrtVar):
     """Integrates given tokens wrt given variable
@@ -68,65 +59,47 @@ def integrateTokens(funclist, wrtVar):
             intFunc.append(func)
         else:
             newfunc = []
-            while(isinstance(func, Function)):
-                commentsNew[0] += r"$" + r"\int \ " + r"( " + func.__str__() + ")" + r" d" + wrtVar + r"$"
-                funcCopy = copy.deepcopy(func)
-                if wrtVar in funcCopy.functionOf():
-                    if not isinstance(funcCopy, Constant):
-                        for i, var in enumerate(funcCopy.value):
-                            log = False
-                            if var == wrtVar:
-                                if(funcCopy.power[i] == -1):
-                                    log = True
-                                    funcLog = Logarithm()
-                                    funcLog.operand = Variable()
-                                    funcLog.operand.coefficient = 1
-                                    funcLog.operand.value.append(funcCopy.value[i])
-                                    funcLog.operand.power.append(1)
-                                    del funcCopy.power[i]
-                                    del funcCopy.value[i]
-                                    if funcCopy.value == []:
-                                        funcCopy.__class__ = Constant
-                                        funcCopy.value = funcCopy.coefficient
-                                        funcCopy.coefficient = 1
-                                        funcCopy.power = 1
-                                    funcCopy = [funcCopy]
-                                    funcJoin = Binary()
-                                    funcJoin.value = '*'
-                                    funcCopy.append(funcJoin)
-                                    funcCopy.append(funcLog)
-                                else:
-                                    funcCopy.power[i] += 1
-                                    funcCopy.coefficient /= funcCopy.power[i]
-
-                        if log:
-                            commentsNew[0] += r"$" + r"= " + funcCopy[0].__str__() + r"*" + funcCopy[2].__str__() + r"\ ;\ " + r"$"
-                            newfunc.extend(funcCopy)
-                        else:
-                            commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
-                            newfunc.append(funcCopy)
-                else:
-                    if isinstance(funcCopy, Variable):
-                        funcCopy.value.append(wrtVar)
-                        funcCopy.power.append(1)
-                    if isinstance(funcCopy, Constant):
-                        coeff = funcCopy.value
-                        funcCopy = Variable()
-                        funcCopy.coefficient = coeff
-                        funcCopy.value.append(wrtVar)
-                        funcCopy.power.append(1)
+            commentsNew[0] += r"$" + r"\int \ " + r"( " + func.__str__() + ")" + r" d" + wrtVar + r"$"
+            funcCopy = copy.deepcopy(func)
+            if wrtVar in funcCopy.functionOf():
+                if isinstance(funcCopy, Variable):
+                    log = False
+                    funcCopy, log = funcCopy.integrate(wrtVar)
+                    if log:
+                        commentsNew[0] += r"$" + r"= " + funcCopy[0].__str__() + r"*" + funcCopy[2].__str__() + r"\ ;\ " + r"$"
+                        newfunc.extend(funcCopy)
+                    else:
+                        commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
+                        newfunc.append(funcCopy)
+                elif isinstance(funcCopy, Trigonometric):
+                    funcCopy = funcCopy.integrate(wrtVar)
                     newfunc.append(funcCopy)
                     commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
-
-                if func.operand is None:
-                    break
-                else:
-                    func = func.operand
-                    if isinstance(func, Constant):
-                        intFunc = Zero()
-                        break
-
+            else:
+                if isinstance(funcCopy, Variable):
+                    funcCopy.value.append(wrtVar)
+                    funcCopy.power.append(1)
+                if isinstance(funcCopy, Constant):
+                    coeff = funcCopy.value
+                    funcCopy = Variable()
+                    funcCopy.coefficient = coeff
+                    funcCopy.value.append(wrtVar)
+                    funcCopy.power.append(1)
+                newfunc.append(funcCopy)
+                commentsNew[0] += r"$" + r"= " + funcCopy.__str__() + r"\ ;\ " + r"$"
             intFunc.extend(newfunc)
-
     animNew.extend(intFunc)
     return intFunc, animNew, commentsNew
+
+
+def integrationByParts(tokens, wrtVar):
+    if (isinstance(tokens[1], Binary) and tokens[1].value == '*'):
+        u = tokens[0]
+        v = tokens[2]
+        vIntegral, _, _, _, _ = integrate(v, wrtVar)
+        uDerivative, _, _, _, _ = differentiate(u, wrtVar)
+        term1 = u * vIntegral
+        term2, _, _, _, _ = integrate(uDerivative * vIntegral, 'x')
+        resultToken = term1 - term2
+        token_string = tokensToString(resultToken)
+        return resultToken, [], token_string, [], []

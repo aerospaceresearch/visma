@@ -3,11 +3,12 @@ from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
-from visma.io.checks import isNumber
+from visma.io.checks import isNumber, mathError
 from visma.matrix.structure import Matrix
+from visma.functions.trigonometry import Trigonometric
 
 
-def resultLatex(operation, equations, comments, wrtVar=None):
+def resultLatex(equationTokens, operation, comments, solutionType, simul=False, wrtVar=None):
     """Converts tokens to LaTeX format for displaying in step-by-step solution figure
 
     Arguments:
@@ -23,21 +24,149 @@ def resultLatex(operation, equations, comments, wrtVar=None):
     """
 
     equationLatex = []
-    for eqTokens in equations:
+    for eqTokens in equationTokens:
         equationLatex.append(tokensToLatex(eqTokens))
 
-    finalSteps = "INPUT: " + r"$" + equationLatex[0] + r"$" + "\n"
-    finalSteps += "OPERATION: " + operation
-    if wrtVar is not None:
-        finalSteps += " with respect to " + r"$" + wrtVar + r"$"
-    finalSteps += "\n"
-    finalSteps += "OUTPUT: " + r"$" + equationLatex[-1] + r"$" + "\n"*2
+    finalSteps = ''
+    if not simul:
+        if operation in ['combination', 'permutation']:
+            finalSteps = 'INPUT: ' + '(Combinatorics ' + r'$' + ' tokens)' + r'$' + '\n'
+        else:
+            finalSteps = 'INPUT: ' + r'$' + equationLatex[0] + r'$' + '\n'
+    else:
+        finalSteps = 'INPUT: ' + '(Multiple ' + r'$' + ' equations)' + r'$' + '\n'
+    finalSteps += 'OPERATION: ' + operation + '\n'
+    finalSteps += 'OUTPUT: ' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
 
     for i, _ in enumerate(equationLatex):
-        if comments[i] != []:
-            finalSteps += str(comments[i][0]) + "\n"
-        finalSteps += r"$" + equationLatex[i] + r"$" + "\n"*2
+        if comments[i] != [] and equationLatex[i] != '':
+            finalSteps += '(' + str(comments[i][0]) + ')' + '\n'
+            finalSteps += r'$' + equationLatex[i] + r'$' + 2*"\n"
+        elif comments[i] != [] and equationLatex[i] == '':
+            finalSteps += '\n' + '[' + str(comments[i][0]) + ']' + '\n'
+        elif comments[i] == [] and equationLatex[i] != '':
+            finalSteps += '\n' + r'$' + equationLatex[i] + r'$' + 2*'\n'
 
+    if mathError(equationTokens[-1]) and (not simul):
+        finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
+
+    return finalSteps
+
+
+def resultStringCLI(equationTokens, operation, comments, solutionType, simul=False, mat=False):
+    """Converts tokens to final string format for displaying in terminal in CLI
+
+    Arguments:
+        equationTokens {list} -- list of animations or step by step tokens
+        operation {string} -- operation performed on input
+        comments {list} -- list of comments
+        solutionType {string} -- type of solution expression/equation
+        simul{bool} -- True indicates user has entered simultaneous equation
+
+    Returns:
+        finalSteps {string} -- final result to be displayed in CLI
+    """
+
+    equationString = []
+    for x in equationTokens:
+        equationString.append(tokensToString(x))
+
+    commentsString = []
+    for x in comments:
+        if not x:
+            commentsString.append([])
+        else:
+            for y in x:
+                commentsString.append([y.translate({ord(c): None for c in '${\}'})])
+
+    finalSteps = ''
+    finalSteps = 'INPUT: ' + equationString[0] + '\n'
+    finalSteps += 'OPERATION: ' + operation + '\n'
+    finalSteps += 'OUTPUT: ' + equationString[-1] + 2*'\n'
+    finalSteps += 'STEP-BY-STEP SOLUTION: ' + '\n'
+
+    for i, _ in enumerate(equationString):
+        if comments[i] != [] and equationString[i] != '':
+            finalSteps += '(' + str(commentsString[i][0]) + ')' + '\n'
+            finalSteps += equationString[i] + 2*"\n"
+        elif comments[i] != [] and equationString[i] == '':
+            finalSteps += '\n' + '[' + str(commentsString[i][0]) + ']' + '\n'
+        elif comments[i] == [] and equationString[i] != '':
+            finalSteps += '\n' + equationString[i] + 2*'\n'
+
+    if mathError(equationTokens[-1]) and (not simul):
+        finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
+
+    return finalSteps
+
+
+def resultMatrixString(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
+    if operation == 'sub':
+        operation = 'Subtraction'
+    elif operation == 'add':
+        operation = 'Addition'
+    elif operation == 'mult':
+        operation = 'Multiplication'
+    elif operation == 'determinant':
+        operation = 'Determinant'
+    elif operation == 'trace':
+        operation = 'Trace: sum of diagonal elements'
+    elif operation == 'simplify':
+        operation = 'Simplification'
+    finalSteps = ''
+    if operand2 is not None:
+        finalSteps += 'INPUT: ' + 'Two matrices provided as follows:' + 2*'\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertMatrixToString(False) + '\n'
+        finalSteps += '2nd Matrix Provided: \n'
+        finalSteps += operand2.convertMatrixToString(False) + 2*'\n'
+    else:
+        finalSteps += 'INPUT: ' + 'Single matrix provided as follows:' + '\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertMatrixToString(False) + '\n'
+    finalSteps += 'OPERATION: ' + operation + 2*'\n'
+    if not nonMatrixResult:
+        finalSteps += 'RESULT: Result Matrix calculated as: \n'
+        finalSteps += result.convertMatrixToString(False) + '\n'
+    else:
+        finalSteps += 'RESULT: Result calculated as: \n'
+        finalSteps += tokensToString(result) + '\n'
+    return finalSteps
+
+
+def resultMatrixStringLatex(operation=None, operand1=None, operand2=None, nonMatrixResult=False, result=None):
+    # TODO: use package /asmath for displaying Matrices in Step By Step figure
+
+    if operation == 'sub':
+        operation = 'Subtraction'
+    elif operation == 'add':
+        operation = 'Addition'
+    elif operation == 'mult':
+        operation = 'Multiplication'
+    elif operation == 'determinant':
+        operation = 'Determinant'
+    elif operation == 'trace':
+        operation = 'Trace: sum of diagonal elements'
+    elif operation == 'simplify':
+        operation = 'Simplification'
+    finalSteps = ''
+    if operand2 is not None:
+        finalSteps += 'INPUT: ' + 'Two matrices provided as follows:' + 2*'\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertMatrixToString(True) + '\n'
+        finalSteps += '2nd Matrix Provided: \n'
+        finalSteps += operand2.convertMatrixToString(True) + 2*'\n'
+    else:
+        finalSteps += 'INPUT: ' + 'Single matrix provided as follows:' + '\n'
+        finalSteps += '1st Matrix Provided: \n'
+        finalSteps += operand1.convertMatrixToString(True) + '\n'
+    finalSteps += 'OPERATION: ' + operation + 2*'\n'
+    if not nonMatrixResult:
+        finalSteps += 'RESULT: Result Matrix calculated as: \n'
+        finalSteps += result.convertMatrixToString(True) + '\n'
+    else:
+        finalSteps += 'RESULT: Result calculated as: \n'
+        finalSteps += tokensToString(result) + '\n'
     return finalSteps
 
 
@@ -52,7 +181,19 @@ def tokensToLatex(eqTokens):
     """
     eqLatex = ""
     for token in eqTokens:
-        eqLatex += token.__str__()
+        if isinstance(token, Matrix):
+            eqLatex += "\\begin{bmatrix}"
+            for row in token.value:
+                for column in row:
+                    for term in column:
+                        eqLatex += term.__str__()
+                    if row.index(column) < len(row) - 1:
+                        eqLatex += '&'
+                    elif row.index(column) == len(row) - 1 and token.value.index(row) < len(token.value) - 1:
+                        eqLatex += '\\\\'
+            eqLatex += "\\end{bmatrix}"
+        else:
+            eqLatex += token.__str__()
     return eqLatex
 
 
@@ -142,6 +283,18 @@ def tokensToString(tokens):
                 tokenString += tokensToString(token.operand.tokens)
             tokenString += ')'
         elif isinstance(token, Logarithm):
+            if token.coefficient == 1:
+                pass
+            elif token.coefficient == -1:
+                tokenString += '-'
+            else:
+                tokenString += str(token.coefficient)
+            if token.operand is not None:
+                tokenString += token.value
+                if token.power != 1:
+                    tokenString += "^" + "(" + str(token.power) + ")"
+                tokenString += "(" + tokensToString([token.operand]) + ")"
+        elif isinstance(token, Trigonometric):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:

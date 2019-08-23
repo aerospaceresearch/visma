@@ -12,12 +12,14 @@ class Operator(object):
         self.tid = None
         self.scope = None
         self.value = None
-        self.type = None
 
     def __str__(self):
         represent = ""
         represent += str(self.value)
         return represent
+
+    def differentiate(self):
+        return self
 
 
 class Binary(Operator):
@@ -32,18 +34,18 @@ class Binary(Operator):
 
     def __init__(self, value=None):
         super().__init__()
-        self.type = 'Binary'
         if value is not None:
             self.value = value
 
 
 class Sqrt(Operator):
 
-    def __init__(self):
+    def __init__(self, power=None, operand=None):
         super().__init__()
-        self.power = None
-        self.operand = None
-        self.type = 'sqrt'
+        if power is not None:
+            self.power = power
+        if operand is not None:
+            self.operand = operand
 
     def __str__(self):
         represent = ""

@@ -114,18 +114,10 @@ def getTerms(eqn):
         elif '0' <= eqn[x] <= '9':
             buf = eqn[x]
             x += 1
-            dot = 0
             while x < len(eqn):
-                if '0' <= eqn[x] <= '9':
+                if '0' <= eqn[x] <= '9' or eqn[x] == '.':
                     buf += eqn[x]
                     x += 1
-                elif eqn[x] == '.':
-                    if dot == 0:
-                        buf += eqn[x]
-                        dot += 1
-                        x += 1
-                    else:
-                        break
                 else:
                     break
             terms.append(buf)
@@ -196,7 +188,12 @@ def tokenizeSymbols(terms):
     for i, term in enumerate(terms):
         symTokens.append('')
         if term in symbols:
-            if term == '*' or term == '/':
+            if term == '^':
+                if i + 1 < len(terms) and not isVariable(terms[i - 1]):
+                    symTokens[-1] = 'Binary'
+                else:
+                    symTokens[-1] = False
+            elif term == '*' or term == '/':
                 if i + 1 < len(terms):
                     if (isVariable(terms[i - 1]) or isNumber(terms[i - 1]) or terms[i - 1] == ')' or terms[i - 1] == ']') and (isVariable(terms[i + 1]) or isNumber(terms[i + 1]) or terms[i + 1] == '(' or terms[i + 1] == '[' or ((terms[i + 1] == '-' or terms[i + 1] == '+') and (isVariable(terms[i + 2]) or isNumber(terms[i + 2])))):
                         symTokens[-1] = 'Binary'
@@ -1333,15 +1330,15 @@ def evaluateConstant(constant):
        constant value -- value of input term
     """
     if isinstance(constant, Function):
-        if isNumber(constant.value):
-            return math.pow(constant.value[0], constant.power[0])
-        elif isinstance(constant.value, list):
+        if isinstance(constant.value, list):
             val = 1
             if constant.coefficient is not None:
                 val *= constant.coefficient
             for i, c_val in enumerate(constant.value):
                 val *= math.pow(c_val, constant.power[i])
             return val
+        elif isNumber(constant.value):
+            return math.pow(constant.value[0], constant.power[0])
     elif isNumber(constant):
         return constant
 
@@ -1484,9 +1481,10 @@ def getLHSandRHS(tokens):
 
 
 if __name__ == "__main__":
+    pass
     # logger.setLevel = 0
     # logger.setLogName = 'tokenize'
-    print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
+    # print(getLHSandRHS(tokenizer('0.2x^(2.0)+ 7.0x - 34.0')))
 
 # -xy^22^22^-z^{s+y}^22=sqrt[x+1]{x}
 # x+y=2^-{x+y}
