@@ -21,17 +21,17 @@ A math equation solver and visualizer
 </p>
 
 
-An equation solver and visualizer, which aims to help in grasping how mathematical equations are transformed and solved. By this the threshold for obtaining deeper mathematical understanding can be reduced.
+An equation solver and visualizer, which aims to help in grasping how mathematical equations are transformed and solved. By this, the threshold for obtaining deeper mathematical understanding can be reduced.
 
 
-## Installation
+## Installation:
 
 [![PyPI](https://img.shields.io/pypi/v/VISualMAth.svg?style=for-the-badge)](https://pypi.org/project/VISualMAth)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/VISualMAth.svg?style=for-the-badge)](https://pypi.org/project/VISualMAth)
 
 **NOTE:** VISualMAth is supported for python3 and above only. The recommended installation method is through pip/pip3.
 
-- To install do
+- To install do:
 
 ```shell
 $ pip3 install visualmath
@@ -39,14 +39,14 @@ $ pip3 install visualmath
 
 This sets up the environment to run on your computer.
 
-- For launching **visma** do
+- For launching **visma** do:
 
 ```shell
 $ visma
 >>> gui
 ```
 
-- For windows user (and those for whom) the above launching option is not available, to launch **visma** do, from here you will be redirected to VisMa interactive shell, which can be used to open GUI or CLI
+- For windows user (and those for whom) the above launching option is not available, to launch **visma** do, from here you will be redirected to VisMa interactive shell, which can be used to open GUI or CLI.
 
 ```shell
 $ python3
@@ -65,7 +65,7 @@ OUTPUT: 13.0 + x
 (Adding 11.0 and 2.0)
 13.0 + x
 
->>> 
+>>>
 [5]+  Stopped                 python3
 
 ```
@@ -81,13 +81,13 @@ OUTPUT: 13.0 + x
 If **visma** is to be installed locally or for development:
 
 - Download the [source zip](https://github.com/aerospaceresearch/visma/archive/master.zip) and extract.
-- For installing dependencies, from source folder do
+- For installing dependencies, from source folder do:
 
 ```shell
 $ pip3 install -r requirements.txt
 ```
 
-- For launching do
+- For launching do:
 
 ```shell
 $ python3 main.py
@@ -99,14 +99,14 @@ $ python3 main.py
 $ pip --version
 ```
 
-## Docs
+## Docs:
 
 [![Github Wiki](https://img.shields.io/badge/wiki-visma-green.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/wiki)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/aerospaceresearch/visma.svg?style=for-the-badge)
 
 For code documentation and learning how to use **visma** check out the [wiki](https://github.com/aerospaceresearch/visma/wiki).
 
-## Demo
+## Demo:
 
 Below are some demos showing visma and its capabilities:
 - GUI
@@ -124,7 +124,7 @@ To see all features of **visma**, check [this](https://github.com/aerospaceresea
 [![GitHub issues](https://img.shields.io/github/issues/aerospaceresearch/visma.svg?style=for-the-badge)](https://github.com/aerospaceresearch/visma/issues)
 [![Zulip](https://img.shields.io/badge/Chat-on%20Zulip-17C789.svg?style=for-the-badge)](https://aerospaceresearch.zulipchat.com/#narrow/stream/181873-visma)
 
-PRs are welcomed. For contributing to **visma** refer [CONTRIBUTING.md](https://github.com/aerospaceresearch/visma/blob/master/CONTRIBUTING.md). If there are any issues or ideas they can be addressed through the [issues](https://github.com/aerospaceresearch/visma/issues) or in [chat room](https://aerospaceresearch.zulipchat.com/#narrow/stream/181873-visma).
+PRs are welcomed. For contributing to **visma** refer [CONTRIBUTING.md](https://github.com/aerospaceresearch/visma/blob/master/CONTRIBUTING.md). If there are any issues or ideas they can be addressed through the [issues](https://github.com/aerospaceresearch/visma/issues) or in [a chat room](https://aerospaceresearch.zulipchat.com/#narrow/stream/181873-visma).
 
 
 ## License:
