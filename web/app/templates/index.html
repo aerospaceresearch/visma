@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="d-md-flex" class="left-half" style="margin-top: 5%;">
+        <div class="col-md-6 p-0 bg-indigo h-md-100">
+            <div class="text-white d-md-flex align-items-center h-100 p-5 text-center justify-content-center">
+                <textarea name="user_input" id="user_input" cols="100" rows="2" placeholder="Enter Here">{{ ans }}</textarea>
+            </div>
+            <table>
+                <tr>
+                    <td><button class="input_expr" id="btn" value="x" onclick="getValue()">x</button></td>
+                    <td><button class="input_expr" id="btn" value="y" onclick="getValue()">y</button></td>
+                    <td><button class="input_expr" id="btn" value="z" onclick="getValue()">z</button></td>
+                    <td><button class="input_expr" id="btn" value="(" onclick="getValue()">(</button></td>
+                    <td><button class="input_expr" id="btn" value=")" onclick="getValue()">)</button></td>
+                    <td><button class="input_expr" id="btn" value="7" onclick="getValue()">7</button></td>
+                    <td><button class="input_expr" id="btn" value="8" onclick="getValue()">8</button></td>
+                    <td><button class="input_expr" id="btn" value="9" onclick="getValue()">9</button></td>
+                    <td><button class="input_expr" id="btn" value="DEL" onclick="getValue()">DEL</button></td>
+                    <td><button class="input_expr" id="btn" value="CLEAR" onclick="getValue()">CLEAR</button></td>
+                </tr>
+                <tr>
+                    <td><button class="input_expr" id="btn"  value="f" onclick="getValue()">f</button></td>
+                    <td><button class="input_expr" id="btn"  value="q" onclick="getValue()">q</button></td>
+                    <td><button class="input_expr" id="btn" value="h" onclick="getValue()">h</button></td>
+                    <td><button class="input_expr" id="btn" value="{" onclick="getValue()">{</button></td>
+                    <td><button class="input_expr" id="btn" value="}" onclick="getValue()">}</button></td>
+                    <td><button class="input_expr" id="btn" value="4" onclick="getValue()">4</button></td>
+                    <td><button class="input_expr" id="btn" value="5" onclick="getValue()">5</button></td>
+                    <td><button class="input_expr" id="btn" value="6" onclick="getValue()">6</button></td>
+                    <td><button class="input_expr" id="btn" value="/" onclick="getValue()">/</button></td>
+                    <td><button class="input_expr" id="btn" value="*" onclick="getValue()">*</button></td>
+                </tr>            
+                <tr>
+                    <td><button class="input_expr" id="btn" value="sin" onclick="getValue()">sin</button></td>
+                    <td><button class="input_expr" id="btn" value="cos" onclick="getValue()">cos</button></td>
+                    <td><button class="input_expr" id="btn" value="tan" onclick="getValue()">tan</button></td>
+                    <td><button class="input_expr" id="btn" value="[" onclick="getValue()">[</button></td>
+                    <td><button class="input_expr" id="btn" value="]" onclick="getValue()">]</button></td>
+                    <td><button class="input_expr" id="btn" value="1" onclick="getValue()">1</button></td>
+                    <td><button class="input_expr" id="btn" value="2" onclick="getValue()">2</button></td>
+                    <td><button class="input_expr" id="btn" value="3" onclick="getValue()">3</button></td>
+                    <td><button class="input_expr" id="btn" value="+" onclick="getValue()">+</button></td>
+                    <td><button class="input_expr" id="btn" value="-" onclick="getValue()">-</button></td>
+                </tr>            
+                <tr>
+                    <td><button class="input_expr" id="btn" value="log" onclick="getValue()">log</button></td>
+                    <td><button class="input_expr" id="btn" value="exp" onclick="getValue()">exp</button></td>
+                    <td><button class="input_expr" id="btn" value="^" onclick="getValue()">^</button></td>
+                    <td><button class="input_expr" id="btn" value="i" onclick="getValue()">i</button></td>
+                    <td><button class="input_expr" id="btn" value="pi" onclick="getValue()">pi</button></td>
+                    <td><button class="input_expr" id="btn" value="." onclick="getValue()">.</button></td>
+                    <td><button class="input_expr" id="btn" value="0" onclick="getValue()">0</button></td>
+                    <td><button class="input_expr" id="btn" value="=" onclick="getValue()">=</button></td>
+                    <td><button class="input_expr" id="btn" value="<" onclick="getValue()"><</button></td>
+                    <td><button class="input_expr" id="btn" value=">" onclick="getValue()">></button></td>
+                </tr>            
+            </table>
+            <div class="solution">    
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="#step-by-step" class="nav-link active text-dark" data-toggle="tab">Step-byStep</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#logger" class="nav-link text-dark" data-toggle="tab">logger</a>
+                    </li>
+                </ul>
+                <div class="tab-content bg-light" class="">
+                    <div class="tab-pane fade show active left-tab-content" id="step-by-step">
+                        <p class="data">Step By Step Solution will be Shown Here</p>
+                    </div>
+                    <div class="tab-pane fade left-tab-content" id="logger">
+                        <p class="data">Logger</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" class="right-half" >
+            <div class="d-sm-flex h-sm-100 p-5 justify-content-center">
+                <button class="btn btn-info" onclick="showButton()">Visma</button>
+            </div>
+            <div class="visma_btn" id="visma_btn">
+                <a href="#"><button class="btn btn-success" onclick="getExpr()" id="simplify" value="">Simplify</button></a>
+                <a href="#"><button class="btn btn-success" onclick="getExpr()" value="factorial">Factorial</button><br></a>
+                <a href="#"><button class="btn btn-success" onclick="getExpr()" value="integrate">Integrate</button></a>
+                <a href="#"><button class="btn btn-success" onclick="getExpr()" value="differentiate">Differentiate</button></a>
+            </div>     
+            <div class="history">    
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="#history" class="nav-link active text-dark" data-toggle="tab">History</a>
+                    </li>
+                </ul>
+                <div class="tab-content bg-light">
+                    <div class="tab-pane show active" id="History">
+                        <p class="show-history">History will be Shown Here</p>
+                    </div>
+                </div>
+            </div>                       
+        </div>     
+    </div>
+{% endblock %}

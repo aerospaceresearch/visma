@@ -1,0 +1,2 @@
+FLASK_APP = visma.py
+FLASK_DEBUG = 1

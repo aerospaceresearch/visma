@@ -13,4 +13,4 @@ __pycache__
 run.sh
 .vscode/
 log.txt
-.idea
+venv

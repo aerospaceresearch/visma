@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../static/styles/style.css">
+    {% if title %}
+    <title>{{ title }} - Visma</title>
+    {% else %}
+    <title>Welcome to Visma</title>
+    {% endif %}
+</head>
+<body style="background-color:rgb(248, 244, 244); margin-bottom: 10%;">
+    <div class="nav fixed-top" style="height:10%; background-color: rgb(248, 244, 235);">
+        <a href="/index" class="btn text-dark" style="margin-top: 0.3%; margin-left: 2%;font-size: x-large;">Visma</a>
+    </div>
+    {% block content %}{% endblock %}
+
+    <script src="../static/js/app.js"></script>
+</body>
+</html>
