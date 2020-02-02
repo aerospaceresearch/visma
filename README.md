@@ -69,6 +69,18 @@ OUTPUT: 13.0 + x
 [5]+  Stopped                 python3
 
 ```
+## Run Visma Web:
+
+
+To launch Visma on web do:
+```shell
+>>> pip install -r requirements.txt
+Change Directory to web folder
+>>> cd web
+run flask server
+>>> flask run
+launch Your localhost http://127.0.0.1:5000
+```
 
 
 ## Download:

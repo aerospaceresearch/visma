@@ -5,30 +5,35 @@ $(document).ready(function() {
     }
 })
 
-// Get a value expression
-function getExpr() {
-    // alert("here")
-    var url = 'http://127.0.0.1:5000/simplify/posts';
+// Get expression value
+function getExpr(type_of_operation) {
+    console.log(type_of_operation);
+    var url = `http://127.0.0.1:5000/${type_of_operation}/posts`;
     var d = document.getElementById("user_input").value;
-    
-    var data = {'expr':d}
-    console.log("data is being sent");
-    $.post({
-        url,
-        data,
-        function (data,status) {
-            console.log(`${data} and status is ${status}` );  
-        }
-    });
-    document.getElementById('simplify').href = "{{ url_for('index') }}"
-    hideButton();
-}
 
-function getValue() {
-    console.log("getting value");
-    // var v = $(this).val();
-    // console.log(v);
-    // document.getElementById('user_input').innerHTML = document.getElementById('user_input')
+    // Checking number is negative for not for Factorial
+    var check_negative_num = parseInt(d, 10);
+    if(type_of_operation==="factorial" && check_negative_num < 0) {
+            alert('Factorial is not defined for negative numbers');
+    }
+
+    else {
+        var data = {'expr':d}
+        console.log("data is being sent");
+        $.post({
+            url,
+            data,
+            success: function (data,status) {
+                console.log(status);
+                console.log(`${data} and status is ${status}` );  
+                document.getElementById('user_input').value = data
+            },
+            error: function() {
+                alert('It seems that something is wrong in your Input')
+            }
+        });
+        hideButton();
+    }
 }
 
 $(".input_expr").click(function() {
@@ -41,14 +46,18 @@ $(".input_expr").click(function() {
 function showButton() {
     var x = document.getElementById("visma_btn");
     console.log("show");
-    if(x.style.display === "none") {
+    input_val = document.getElementById('user_input').value;
+    if(input_val === "") {
+        alert('Please Provide a Input')
+    }
+    
+    else if(x.style.display === "none") {
         x.style.display = "block";
     }
 }
 
 function hideButton() {
     var x = document.getElementById("visma_btn");
-    var ui = document.getElementById("user_input").value;
     console.log("hide");
     if(x.style.display !== "none") {
         x.style.display = "none";
