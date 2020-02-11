@@ -23,7 +23,6 @@ def simplify():
         ans = N(value)
         ans = str(ans)
         check = 0 
-        breakpoint
         for i in range(ans.index('.')+1, len(ans)):
             if ans[i] != '0': check=1
         if check:
@@ -38,7 +37,6 @@ def simplify():
 @app.route('/factorial/posts', methods=['POST'])
 def factorial():
     value = request.form['expr']
-    # print(type(value))
     ans = math.factorial(int(value))
     return str(ans)
 

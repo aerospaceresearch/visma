@@ -38,9 +38,19 @@ function getExpr(type_of_operation) {
 
 $(".input_expr").click(function() {
     var input_val = $(this).val();
-    console.log(input_val);
-    
-    document.getElementById("user_input").value = document.getElementById('user_input').value + input_val
+    // console.log(input_val);
+    if(input_val == 'del') {
+        input_box_val = document.getElementById("user_input").value;
+        input_box_val_size = input_box_val.length;
+        // console.log(input_box_val);
+        document.getElementById("user_input").value = input_box_val.slice(0,input_box_val_size-1);
+    }
+    else if(input_val == "clear") {
+        document.getElementById("user_input").value = "";
+    }
+    else {
+        document.getElementById("user_input").value = document.getElementById('user_input').value + input_val
+    }
 });
 
 function showButton() {
