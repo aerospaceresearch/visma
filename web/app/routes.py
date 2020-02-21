@@ -1,9 +1,12 @@
 from flask import render_template, request, redirect, url_for, jsonify
 from app import app
-from sympy import *
-from sympy.parsing.sympy_parser import parse_expr
+# from sympy import *
+import sympy
+# from sympy.parsing.sympy_parser import parse_expr
 import mpmath
 import math
+
+# x,y,z = symbols('x y z')
 
 @app.route('/')
 @app.route('/index', methods=['GET'])
@@ -18,9 +21,7 @@ def simplify():
         if '^' in value:
             value = value.replace('^', '**')
         print(value)
-        # ans = parse_expr(value)
-        # ans = ans.evalf()
-        ans = N(value)
+        ans = sympy.N(value)
         ans = str(ans)
         check = 0 
         for i in range(ans.index('.')+1, len(ans)):
@@ -39,6 +40,15 @@ def factorial():
     value = request.form['expr']
     ans = math.factorial(int(value))
     return str(ans)
+
+#simplifying algebric and Trignometric expressions
+@app.route('/simplify_expr/posts', methods=['POST'])
+def simplify_expr():
+    expr = request.form['expr']
+    if '^' in expr:
+        expr = expr.replace('^', '**')
+    expr_result = sympy.simplify(expr)
+    return str(expr_result)
 
 # Integrating the given expression
 # TODO !
