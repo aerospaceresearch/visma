@@ -68,7 +68,7 @@ def getTerms(eqn):
     terms = []
     while x < len(eqn):
 
-        if ('a' <= eqn[x] <= 'z') or ('A' <= eqn[x] <= 'Z') or eqn[x] in greek:
+        if ('a' <= eqn[x] <= 'z') or ('A' <= eqn[x] <= 'Z') or eqn[x] in greek or eqn[x] in constants:
 
             buf = eqn[x]
             if x + 3 < len(eqn):
@@ -101,6 +101,10 @@ def getTerms(eqn):
 
             if eqn[x] == 'e':   # Special Cases: e , i
                 terms.append("exp")
+                x += 1
+                continue
+            elif eqn[x] ==constants[0]:
+                terms.append(str(math.pi))
                 x += 1
                 continue
             elif eqn[x] == 'i':
