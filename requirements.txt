@@ -3,6 +3,7 @@ matplotlib>=2.0.0
 numpy>=1.12
 PyQt5>=5
 PyQtWebEngine>=5.12
+spyder
 
 # for testing
 pylama
