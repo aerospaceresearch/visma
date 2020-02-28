@@ -1,12 +1,9 @@
 from flask import render_template, request, redirect, url_for, jsonify
 from app import app
-# from sympy import *
 import sympy
-# from sympy.parsing.sympy_parser import parse_expr
 import mpmath
 import math
 
-# x,y,z = symbols('x y z')
 
 @app.route('/')
 @app.route('/index', methods=['GET'])
@@ -14,7 +11,7 @@ def index():
     return render_template('index.html', title='home')
 
 # Simplifying the expression
-@app.route('/simplify/posts',methods=['POST'])
+@app.route('/simplify/posts', methods=['POST'])
 def simplify():
     try:
         value = request.form['expr']
@@ -25,7 +22,8 @@ def simplify():
         ans = str(ans)
         check = 0 
         for i in range(ans.index('.')+1, len(ans)):
-            if ans[i] != '0': check=1
+            if ans[i] != '0': 
+                check=1
         if check:
             return ans[:ans.index('.')+5]
         else:
@@ -41,7 +39,7 @@ def factorial():
     ans = math.factorial(int(value))
     return str(ans)
 
-#simplifying algebric and Trignometric expressions
+# simplifying algebric and Trignometric expressions
 @app.route('/simplify_expr/posts', methods=['POST'])
 def simplify_expr():
     expr = request.form['expr']
