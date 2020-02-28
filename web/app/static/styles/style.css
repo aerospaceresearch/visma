@@ -1,0 +1,41 @@
+table {
+        width: 90%; 
+        margin-left: 5%;
+        margin-top: 5%;
+}
+#btn { 
+        width: 100%; 
+}
+.btn-info {
+            width: 20%;
+}
+.visma_btn {
+            margin-left: 30%;
+}
+.btn-success {
+                width:30%;
+                margin: 1%;
+}
+a {
+    text-decoration: none;
+}
+.solution {
+            margin-top: 5%; 
+            margin-right: 5%;
+}
+.history {
+            margin-left: 20%; 
+            margin-right: 10%;
+}
+.show-history {
+                margin-left: 30%;
+}
+#history {
+            height: 50%;
+}
+.left-tab-content {
+                    height: 200px;
+}
+.data {
+        margin-left: 15%;
+}
