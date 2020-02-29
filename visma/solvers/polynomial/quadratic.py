@@ -40,19 +40,19 @@ def getRootsQuadratic(coeffs):
         if d == 0:
             roots.append(-(coeffs[1] / (2 * coeffs[2])))
             animations += [[]]
-            comments += [['Value of determinant is: ' + str(d) + ' thus, Only one roots']]
+            comments += [['Value of discriminant is: ' + str(d) + ' thus, Only one roots']]
         elif d > 0:
+            comments += [['Value of discriminant is: ' + str(d) + ' thus, two (real) roots']]
             d = math.sqrt(d)
             roots.append(-(coeffs[1] + d) / (2 * coeffs[2]))
             roots.append(-(coeffs[1] - d) / (2 * coeffs[2]))
             animations += [[]]
-            comments += [['Value of determinant is: ' + str(d) + ' thus, two (real) roots']]
         else:
             imaginary = [-(coeffs[1] / (2 * coeffs[2])), -1,
                          (math.sqrt(-d)) / (2 * coeffs[2])]
             roots = imaginary
             animations += [[]]
-            comments += [['Value of determinant is: ' + str(d) + ' thus, two (imaginary) roots']]
+            comments += [['Value of discriminant is: ' + str(d) + ' thus, two (imaginary) roots']]
     return roots, animations, comments
 
 

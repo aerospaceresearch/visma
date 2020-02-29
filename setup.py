@@ -6,9 +6,9 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="VISualMAth",
     description="visma - VISual MAth : A math equation solver and visualizer",
-    version="0.2.3",
-    author="Siddharth Kothiyal, Shantanu Mishra",
-    author_email="sid.kothiyal27@gmail.com, 8hantanu@gmail.com",
+    version="1.0.0.0",
+    author="Siddharth Kothiyal, Shantanu Mishra, Mayank Dhiman",
+    author_email="sid.kothiyal27@gmail.com, 8hantanu@gmail.com, mdhiman536@gmail.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/aerospaceresearch/visma",
