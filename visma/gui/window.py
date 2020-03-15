@@ -971,6 +971,9 @@ def initGUI():
         ex = Window()
         ex.initUI()
         logger.setLogName('main')
-        sys.exit(app.exec_())
+        app.exec_()
+        sys.exit(restart())
     finally:
         logger.info('Existing VisMa...')
+def restart():
+    os.system("python3 main.py 1 1")
