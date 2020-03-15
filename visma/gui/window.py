@@ -971,6 +971,10 @@ def initGUI():
         ex = Window()
         ex.initUI()
         logger.setLogName('main')
-        sys.exit(app.exec_())
+        app.exec_()
+        if name == 'nt':
+            _ = system('cls')
+        else:
+            _ = system('clear')
     finally:
-        logger.info('Existing VisMa...')
+        logger.info('Existing VisMa GUI...')
