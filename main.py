@@ -55,6 +55,7 @@ def init():
             initGUI()
             print("Initiating GUI...")
             logger.info("Initiating GUI...")
+            init()
 
         def default(self, inp):
             '''Directs to CommandExec and performs operations thereafter'''
