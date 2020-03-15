@@ -1,3 +1,4 @@
+import sys
 import os
 from cmd import Cmd
 from visma.gui.cli import commandExec
@@ -5,7 +6,7 @@ from visma.gui.window import initGUI
 from visma.gui import logger
 
 
-def init():
+def init(argLength):
     open(os.path.abspath("log.txt"), "w").close()
     logger.setLevel(10)
     logger.setLogName('main')
@@ -34,8 +35,10 @@ def init():
                      "|_________________________________________________________________________________________________|\n"\
 
         prompt = '>>> '
-        intro = "Welcome! This is Visual Maths Interactive Shell...\n" + "type 'help' for a User Manual and Ctrl + D to Exit prompt\n"
-
+        if argLength ==3:
+            intro = ""
+        else:
+            intro="Welcome! This is Visual Maths Interactive Shell...\n" + "type 'help' for a User Manual and Ctrl + D to Exit prompt\n"
         def do_exit(self, inp):
             '''Exits VisMa Prompt'''
             print("Exiting VisMa...")
@@ -56,7 +59,8 @@ def init():
             print("Initiating GUI...")
             logger.info("Initiating GUI...")
 
-        def default(self, inp):
+
+        def default(self, inp=0):
             '''Directs to CommandExec and performs operations thereafter'''
             try:
                 commandExec(inp)
@@ -68,6 +72,6 @@ def init():
 
     VisMa_Prompt().cmdloop()
 
-
 if __name__ == '__main__':
-    init()
+    argLength=len(sys.argv)
+    init(argLength)
