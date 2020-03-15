@@ -155,7 +155,6 @@ def commandExec(command):
             lhs, rhs = getLHSandRHS(tokens)
             lTokens, _, _, equationTokens, comments = differentiate(lTokens, varName)
         if operation != 'plot':
-            # FIXME: when either plotting window or GUI window is opened from CLI and after it is closed entire CLI exits, it would be better if it is avoided
             final_string = resultStringCLI(equationTokens, operation, comments, solutionType, simul)
             print(final_string)
     else:
