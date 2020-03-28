@@ -26,7 +26,7 @@ def factorial(tokens):
     animation = []
     comments = []
     result = []
-    token_string = ''
+
     if (isinstance(tokens[0], Constant) & len(tokens) == 1):
         value = int(tokens[0].calculate())
         if value == 0:
