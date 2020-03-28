@@ -25,6 +25,8 @@ def factorial(tokens):
     tokens, _, _, _, _ = simplify(tokens)
     animation = []
     comments = []
+    result = []
+    token_string = ''
     if (isinstance(tokens[0], Constant) & len(tokens) == 1):
         value = int(tokens[0].calculate())
         if value == 0:
@@ -40,9 +42,11 @@ def factorial(tokens):
             comments += [['Expanding the factorial as']]
             animation += [resultTokens]
             result, _, _, _, _ = simplify(resultTokens)
-        token_string = tokensToString(result)
-        comments += [['Hence result: ']]
-        animation += [tokenizer('f = ' + token_string)]
+
+    token_string = tokensToString(result)
+    comments += [['Hence result: ']]
+    animation += [tokenizer('f = ' + token_string)]
+
     return result, [], token_string, animation, comments
 
 
