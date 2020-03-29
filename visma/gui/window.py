@@ -243,6 +243,7 @@ class WorkSpace(QWidget):
 
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
+        self.textChangeTrigger()
 
         self.logBox.append(logger.info('UI Initialised...'))
 
