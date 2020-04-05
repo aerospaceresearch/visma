@@ -344,6 +344,7 @@ class WorkSpace(QWidget):
         interactionModeLayout = QVBoxLayout()
         self.interactionModeButton = QtWidgets.QPushButton('visma')
         self.interactionModeButton.clicked.connect(self.interactionMode)
+        self.interactionModeButton.setEnabled(False)
         interactionModeLayout.addWidget(self.interactionModeButton)
         interactionModeWidget = QWidget(self)
         interactionModeWidget.setLayout(interactionModeLayout)
