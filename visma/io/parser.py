@@ -241,7 +241,7 @@ def tokensToString(tokens):
                         tokenString += str(val)
             elif isNumber(token.value):
                 if token.power != 1:
-                    tokenString += (str(numOptimizer(token.value)) + '^(' + str(numOptimizer(token.power)) + ')')
+                    tokenString += (str(numOptimizer(token.value)) + '^(' + str(token.power) + ')')
                 else:
                     tokenString += str(numOptimizer(token.value))
         elif isinstance(token, Variable):
@@ -253,7 +253,7 @@ def tokensToString(tokens):
                 tokenString += str(numOptimizer(token.coefficient))
             for j, val in enumerate(token.value):
                 if token.power[j] != 1:
-                    tokenString += (str(val) + '^(' + str(numOptimizer(token.power[j])) + ')')
+                    tokenString += (str(val) + '^(' + str(token.power[j]) + ')')
                 else:
                     tokenString += str(val)
         elif isinstance(token, Binary):
@@ -265,7 +265,7 @@ def tokensToString(tokens):
             tokenString += tokensToString(token.tokens)
             tokenString += ')'
             if token.power != 1:
-                tokenString += '^(' + str(numOptimizer(token.power)) + ')'
+                tokenString += '^(' + str(token.power) + ')'
         elif isinstance(token, Sqrt):
             tokenString += 'sqrt['
             if isinstance(token.power, Constant):
@@ -292,7 +292,7 @@ def tokensToString(tokens):
             if token.operand is not None:
                 tokenString += token.value
                 if token.power != 1:
-                    tokenString += "^" + "(" + str(numOptimizer(token.power)) + ")"
+                    tokenString += "^" + "(" + str(token.power) + ")"
                 tokenString += "(" + tokensToString([token.operand]) + ")"
         elif isinstance(token, Trigonometric):
             if token.coefficient == 1:
@@ -304,7 +304,7 @@ def tokensToString(tokens):
             if token.operand is not None:
                 tokenString += token.value
                 if token.power != 1:
-                    tokenString += "^" + "(" + str(numOptimizer(token.power)) + ")"
+                    tokenString += "^" + "(" + str(token.power) + ")"
                 tokenString += "(" + tokensToString([token.operand]) + ")"
         elif isinstance(token, Matrix):
             tokenString += "["
