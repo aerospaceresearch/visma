@@ -64,6 +64,12 @@ def isNumber(term):
     else:
         return False
 
+def numOptimizer(val):
+    # Optimizes numerical representation in equation
+    if val == int(val):
+        return int(val)
+    else:
+        return val
 
 def isVariable(term):
 
