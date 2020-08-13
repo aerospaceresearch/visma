@@ -3,7 +3,7 @@ from visma.functions.constant import Constant
 from visma.functions.variable import Variable
 from visma.functions.operator import Binary, Sqrt
 from visma.functions.exponential import Logarithm
-from visma.io.checks import isNumber, mathError
+from visma.io.checks import isNumber, numOptimizer, mathError
 from visma.matrix.structure import Matrix
 from visma.functions.trigonometry import Trigonometric
 
@@ -241,31 +241,31 @@ def tokensToString(tokens):
                         tokenString += str(val)
             elif isNumber(token.value):
                 if token.power != 1:
-                    tokenString += (str(token.value) + '^(' + str(token.power) + ')')
+                    tokenString += (str(numOptimizer(token.value)) + '^(' + str(numOptimizer(token.power)) + ')')
                 else:
-                    tokenString += str(token.value)
+                    tokenString += str(numOptimizer(token.value))
         elif isinstance(token, Variable):
             if token.coefficient == 1:
                 pass
             elif token.coefficient == -1:
                 tokenString += '-'
             else:
-                tokenString += str(token.coefficient)
+                tokenString += str(numOptimizer(token.coefficient))
             for j, val in enumerate(token.value):
                 if token.power[j] != 1:
-                    tokenString += (str(val) + '^(' + str(token.power[j]) + ')')
+                    tokenString += (str(val) + '^(' + str(numOptimizer(token.power[j])) + ')')
                 else:
                     tokenString += str(val)
         elif isinstance(token, Binary):
             tokenString += ' ' + str(token.value) + ' '
         elif isinstance(token, Expression):
             if token.coefficient != 1:
-                tokenString += str(token.coefficient) + '*'
+                tokenString += str(numOptimizer(token.coefficient)) + '*'
             tokenString += '('
             tokenString += tokensToString(token.tokens)
             tokenString += ')'
             if token.power != 1:
-                tokenString += '^(' + str(token.power) + ')'
+                tokenString += '^(' + str(numOptimizer(token.power)) + ')'
         elif isinstance(token, Sqrt):
             tokenString += 'sqrt['
             if isinstance(token.power, Constant):
@@ -288,11 +288,11 @@ def tokensToString(tokens):
             elif token.coefficient == -1:
                 tokenString += '-'
             else:
-                tokenString += str(token.coefficient)
+                tokenString += str(numOptimizer(token.coefficient))
             if token.operand is not None:
                 tokenString += token.value
                 if token.power != 1:
-                    tokenString += "^" + "(" + str(token.power) + ")"
+                    tokenString += "^" + "(" + str(numOptimizer(token.power)) + ")"
                 tokenString += "(" + tokensToString([token.operand]) + ")"
         elif isinstance(token, Trigonometric):
             if token.coefficient == 1:
@@ -300,11 +300,11 @@ def tokensToString(tokens):
             elif token.coefficient == -1:
                 tokenString += '-'
             else:
-                tokenString += str(token.coefficient)
+                tokenString += str(numOptimizer(token.coefficient))
             if token.operand is not None:
                 tokenString += token.value
                 if token.power != 1:
-                    tokenString += "^" + "(" + str(token.power) + ")"
+                    tokenString += "^" + "(" + str(numOptimizer(token.power)) + ")"
                 tokenString += "(" + tokensToString([token.operand]) + ")"
         elif isinstance(token, Matrix):
             tokenString += "["
