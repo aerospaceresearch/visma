@@ -1,7 +1,7 @@
 <h1 align="center">
   visma - VISual MAth
 </h1>
-
+<!-- bruh momento -->
 <h4 align="center">
 A math equation solver and visualizer
 </h4>
