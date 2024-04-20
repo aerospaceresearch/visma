@@ -70,7 +70,6 @@ def resultLatex(equationTokens, operation, comments, solutionType, simul=False, 
 
 def round_equation_latex_output(equationLatex, index, round_length):
     equationSlice = equationLatex[index][0:]
-    print(equationSlice)
     while '{' in equationSlice:
         open_bracket_index = equationSlice.index("{")
         close_bracket_index = equationSlice.index("}")
@@ -80,18 +79,14 @@ def round_equation_latex_output(equationLatex, index, round_length):
                 value = round(float(equationSlice[:open_bracket_index]), round_length)
             except ValueError:
                 pass
-            print(equationLatex[index])
             equationLatex[index] = equationLatex[index][0:equationLatex[index].index(equationSlice)] \
                                     + str(value) + equationSlice[open_bracket_index:]
-            print(equationLatex[index])
             equationSlice = equationSlice[close_bracket_index + 1:]
             pass
         else:
             value = round(float(equationSlice[open_bracket_index + 1:close_bracket_index]), round_length)
-            print(equationLatex[index])
             equationLatex[index] = equationLatex[index][0:equationLatex[index].index(equationSlice)] \
                                     + equationSlice[0: open_bracket_index] + '{' + str(value) + '}' + equationSlice[close_bracket_index + 1:]
-            print(equationLatex[index])
             equationSlice = equationSlice[close_bracket_index + 1:]
     return equationLatex[index]
 
