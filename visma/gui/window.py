@@ -419,12 +419,14 @@ class WorkSpace(QWidget):
                 operations, self.solutionType = checkTypes(lhs, rhs)
             if isinstance(operations, list) and showbuttons:
                 opButtons = []
+                if 'differentiate' in operations:
+                    opButtons.append('graph')
                 if len(operations) > 0:
                     if len(operations) == 1:
                         if (operations[0] not in ['integrate', 'differentiate', 'find roots', 'factorize']) and (not self.simul):
-                            opButtons = ['simplify']
+                            opButtons.append('simplify')
                     else:
-                        opButtons = ['simplify']
+                        opButtons.append('simplify')
                 for operation in operations:
                     if operation == '+':
                         opButtons.append("addition")
@@ -526,12 +528,14 @@ class WorkSpace(QWidget):
     def refreshButtons(self, operations):
         if isinstance(operations, list):
             opButtons = []
+            if 'differentiate' in operations:
+                opButtons.append('graph')
             if len(operations) > 0:
                 if len(operations) == 1:
                     if operations[0] == 'solve':
-                        opButtons = ['simplify']
+                        opButtons.append('simplify')
                 else:
-                    opButtons = ['simplify']
+                    opButtons.append('simplify')
             for operation in operations:
                 if operation == '+':
                     opButtons.append("addition")
@@ -766,6 +770,12 @@ class WorkSpace(QWidget):
                     variables = getVariables(lhs, rhs)
                     self.wrtVariableButtons(variables, name)
                     self.resultOut = False
+                elif name == 'graph':
+                    if self.solutionType == 'expression':
+                        self.tokens, availableOperations, tokenString, equationTokens, comments = simplify(self.tokens)
+                    else:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
+                    self.showPlotter = True
                 self.previousAnswer = tokenString
             else:
                 """
