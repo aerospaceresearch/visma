@@ -38,28 +38,30 @@ def resultLatex(equationTokens, operation, comments, solutionType, simul=False, 
     finalSteps += 'OPERATION: ' + operation + '\n'
     rounded_step = round_equation_latex_output(equationLatex, -1, 6)
     finalSteps += 'OUTPUT: ' + r'$' + rounded_step + r'$' + 2*'\n'
+    # finalSteps += 'OUTPUT: ' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
 
     for i, _ in enumerate(equationLatex):
         if comments[i] != [] and equationLatex[i] != '':
             finalSteps += '(' + str(comments[i][0]) + ')' + '\n'
             if i == len(equationLatex) - 1:
-                # print(equationLatex[i])
-                # rounded_step = round_equation_latex_output(equationLatex, i, 6)
+                rounded_step = round_equation_latex_output(equationLatex, i, 6)
                 pass
             else:
-                # rounded_step = round_equation_latex_output(equationLatex, i, 2)
+                rounded_step = round_equation_latex_output(equationLatex, i, 2)
                 pass
             finalSteps += r'$' + rounded_step + r'$' + 2*"\n"
+            # finalSteps += '\n' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
         elif comments[i] != [] and equationLatex[i] == '':
             finalSteps += '\n' + '[' + str(comments[i][0]) + ']' + '\n'
         elif comments[i] == [] and equationLatex[i] != '':
             if i == len(equationLatex) - 1:
-                # rounded_step = round_equation_latex_output(equationLatex, i, 6)
+                rounded_step = round_equation_latex_output(equationLatex, i, 6)
                 pass
             else:
-                # rounded_step = round_equation_latex_output(equationLatex, i, 2)
+                rounded_step = round_equation_latex_output(equationLatex, i, 2)
                 pass
             finalSteps += '\n' + r'$' + rounded_step + r'$' + 2*'\n'
+            # finalSteps += '\n' + r'$' + equationLatex[i] + r'$' + 2*'\n'
 
     if mathError(equationTokens[-1]) and (not simul):
         finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
@@ -67,16 +69,16 @@ def resultLatex(equationTokens, operation, comments, solutionType, simul=False, 
     return finalSteps
 
 def round_equation_latex_output(equationLatex, index, round_length):
-    print(equationLatex[index])
-    starting_index = 0
-    equationSlice = equationLatex[index][starting_index:]
+    equationSlice = equationLatex[index][0:]
     while '{' in equationSlice:
         open_bracket_index = equationSlice.index("{")
         close_bracket_index = equationSlice.index("}")
         value = round(float(equationSlice[open_bracket_index + 1:close_bracket_index]), round_length)
-        equationLatex[index] = equationLatex[index][0:starting_index] + equationSlice[0: open_bracket_index] + '{' + str(value) + '}' + equationSlice[close_bracket_index + 1:]
+        print(equationLatex[index])
+        equationLatex[index] = equationLatex[index][0:equationLatex[index].index(equationSlice)] \
+                                + equationSlice[0: open_bracket_index] + '{' + str(value) + '}' + equationSlice[close_bracket_index + 1:]
+        print(equationLatex[index])
         equationSlice = equationSlice[close_bracket_index + 1:]
-        starting_index = close_bracket_index + 1
     return equationLatex[index]
 
 def resultStringCLI(equationTokens, operation, comments, solutionType, simul=False, mat=False):
