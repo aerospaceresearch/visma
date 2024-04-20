@@ -113,7 +113,7 @@ class Window(QtWidgets.QMainWindow):
 
 class WorkSpace(QWidget):
 
-    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', u'\u03C0', '.', '0', '=', '<', '>']
+    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', '<', '>', '.', '0', '=', 'i', 'Ans']
     inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g',  'h', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', '\\pi', '.', '0', '=', '<', '>']
 
     mode = 'interaction'
@@ -243,6 +243,8 @@ class WorkSpace(QWidget):
 
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
+
+        self.previousAnswer = ''
 
         self.logBox.append(logger.info('UI Initialised...'))
 
@@ -679,6 +681,9 @@ class WorkSpace(QWidget):
             elif name == 'DEL':
                 cursor = self.textedit.textCursor()
                 cursor.deletePreviousChar()
+            elif name == 'Ans':
+                print("Get previous answer")
+                self.textedit.insertPlainText(self.previousAnswer)
             else:
                 self.textedit.insertPlainText(str(name))
         return calluser
@@ -761,6 +766,7 @@ class WorkSpace(QWidget):
                     variables = getVariables(lhs, rhs)
                     self.wrtVariableButtons(variables, name)
                     self.resultOut = False
+                self.previousAnswer = tokenString
             else:
                 """
                 This part handles the cases when VisMa is dealing with matrices.
@@ -824,6 +830,7 @@ class WorkSpace(QWidget):
                         showSteps(self)
                     if self.showPlotter is True:
                         plot(self)
+                    self.previousAnswer = tokenString
                 else:
                     if self.dualOperandMatrix:
                         if not self.scalarOperationsMatrix:
@@ -844,6 +851,7 @@ class WorkSpace(QWidget):
                         cursor.insertText(tokenString)
                     if self.showStepByStep is True:
                         showSteps(self)
+                    self.previousAnswer = tokenString
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
