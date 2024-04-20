@@ -75,7 +75,11 @@ def round_equation_latex_output(equationLatex, index, round_length):
         open_bracket_index = equationSlice.index("{")
         close_bracket_index = equationSlice.index("}")
         if not equationSlice[close_bracket_index - 1].isnumeric():
-            value = round(float(equationSlice[:open_bracket_index]), round_length)
+            value = ''
+            try:
+                value = round(float(equationSlice[:open_bracket_index]), round_length)
+            except ValueError:
+                pass
             print(equationLatex[index])
             equationLatex[index] = equationLatex[index][0:equationLatex[index].index(equationSlice)] \
                                     + str(value) + equationSlice[open_bracket_index:]
