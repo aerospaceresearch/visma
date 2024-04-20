@@ -36,22 +36,48 @@ def resultLatex(equationTokens, operation, comments, solutionType, simul=False, 
     else:
         finalSteps = 'INPUT: ' + '(Multiple ' + r'$' + ' equations)' + r'$' + '\n'
     finalSteps += 'OPERATION: ' + operation + '\n'
-    finalSteps += 'OUTPUT: ' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
+    rounded_step = round_equation_latex_output(equationLatex, -1, 6)
+    finalSteps += 'OUTPUT: ' + r'$' + rounded_step + r'$' + 2*'\n'
 
     for i, _ in enumerate(equationLatex):
         if comments[i] != [] and equationLatex[i] != '':
             finalSteps += '(' + str(comments[i][0]) + ')' + '\n'
-            finalSteps += r'$' + equationLatex[i] + r'$' + 2*"\n"
+            if i == len(equationLatex) - 1:
+                # print(equationLatex[i])
+                # rounded_step = round_equation_latex_output(equationLatex, i, 6)
+                pass
+            else:
+                # rounded_step = round_equation_latex_output(equationLatex, i, 2)
+                pass
+            finalSteps += r'$' + rounded_step + r'$' + 2*"\n"
         elif comments[i] != [] and equationLatex[i] == '':
             finalSteps += '\n' + '[' + str(comments[i][0]) + ']' + '\n'
         elif comments[i] == [] and equationLatex[i] != '':
-            finalSteps += '\n' + r'$' + equationLatex[i] + r'$' + 2*'\n'
+            if i == len(equationLatex) - 1:
+                # rounded_step = round_equation_latex_output(equationLatex, i, 6)
+                pass
+            else:
+                # rounded_step = round_equation_latex_output(equationLatex, i, 2)
+                pass
+            finalSteps += '\n' + r'$' + rounded_step + r'$' + 2*'\n'
 
     if mathError(equationTokens[-1]) and (not simul):
         finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
 
     return finalSteps
 
+def round_equation_latex_output(equationLatex, index, round_length):
+    print(equationLatex[index])
+    starting_index = 0
+    equationSlice = equationLatex[index][starting_index:]
+    while '{' in equationSlice:
+        open_bracket_index = equationSlice.index("{")
+        close_bracket_index = equationSlice.index("}")
+        value = round(float(equationSlice[open_bracket_index + 1:close_bracket_index]), round_length)
+        equationLatex[index] = equationLatex[index][0:starting_index] + equationSlice[0: open_bracket_index] + '{' + str(value) + '}' + equationSlice[close_bracket_index + 1:]
+        equationSlice = equationSlice[close_bracket_index + 1:]
+        starting_index = close_bracket_index + 1
+    return equationLatex[index]
 
 def resultStringCLI(equationTokens, operation, comments, solutionType, simul=False, mat=False):
     """Converts tokens to final string format for displaying in terminal in CLI

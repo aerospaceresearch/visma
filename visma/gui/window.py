@@ -346,6 +346,7 @@ class WorkSpace(QWidget):
         interactionModeLayout = QVBoxLayout()
         self.interactionModeButton = QtWidgets.QPushButton('visma')
         self.interactionModeButton.clicked.connect(self.interactionMode)
+        self.interactionModeButton.setEnabled(False)
         interactionModeLayout.addWidget(self.interactionModeButton)
         interactionModeWidget = QWidget(self)
         interactionModeWidget.setLayout(interactionModeLayout)
@@ -682,7 +683,6 @@ class WorkSpace(QWidget):
                 cursor = self.textedit.textCursor()
                 cursor.deletePreviousChar()
             elif name == 'Ans':
-                print("Get previous answer")
                 self.textedit.insertPlainText(self.previousAnswer)
             else:
                 self.textedit.insertPlainText(str(name))
@@ -889,7 +889,6 @@ class WorkSpace(QWidget):
                     self.rTokens = rhs
                     operations, self.solutionType = checkTypes(lhs, rhs)
                     self.refreshButtons(operations)
-
             else:
                 if operation == 'solve':
                     if not self.simul:
