@@ -11,6 +11,7 @@ This is a brief guide on using **visma(VISualMAth)** and for making any contribu
 * **Integration** - integrate a polynomial expression wrt a chosen variable
 * **Differentiation** - differentiate a polynomial expression wrt a chosen variable
 * **Plot** - plots an interactive 2D or 3D graph
+* **Matrix Operations** -  This feature will allow you to add, subtract, and multiply two matrices. Can also perform various simplifications on an individual matrix.
 
 ![visma](https://raw.githubusercontent.com/wiki/aerospaceresearch/visma/assets/demo.gif)
 
