@@ -81,7 +81,7 @@ def qSolveFigure(workspace):
     """
 
     bg = workspace.palette().window().color()
-    workspace.qSolveFigure = Figure(edgecolor="none", facecolor="none")
+    workspace.qSolveFigure = Figure(edgecolor="none", facecolor="none") # Make transparent so parent can override background
     workspace.solcanvas = FigureCanvas(workspace.qSolveFigure)
     workspace.qSolveFigure.clear()
     qSolLayout = QtWidgets.QVBoxLayout()
