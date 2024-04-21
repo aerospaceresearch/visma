@@ -219,8 +219,8 @@ class WorkSpace(QWidget):
         self.tabPlot.tab1.setStatusTip("Visualize equation in 2D")
         self.tabPlot.tab2.setLayout(plotFigure3D(self))
         self.tabPlot.tab2.setStatusTip("Visualize equation in 3D")
-        self.tabPlot.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors plots
-        self.tabPlot.tab2.setStyleSheet("background-color: rgb(120, 120, 120)")
+        self.tabPlot.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors 2D plots
+        self.tabPlot.tab2.setStyleSheet("background-color: rgb(120, 120, 120)") # colors 3D plots
 
         self.tabPlot.setDocumentMode(True)  # removes white borders
 
