@@ -164,7 +164,7 @@ class WorkSpace(QWidget):
 
     def initUI(self):
         hbox = QHBoxLayout(self)
-        #self.setStyleSheet("background-color: rgb(210, 210, 210);") # changes color of nearly everything to blue
+        #self.setStyleSheet("background-color: blue;") # changes color of nearly everything to blue
         #self.setStyleSheet("color: lightblue") # changes color of all text to blue
         #self.setStyleSheet("border: black") # removes button colors
         #self.setStyleSheet("border-color: blue") # changes nothing basically
@@ -176,7 +176,7 @@ class WorkSpace(QWidget):
         # self.equationList.addTab(self.equationList.tab2, "favourites")
 
 
-        self.equationList.setStyleSheet("background-color: rgb(120, 120, 120)") # colors whole widget
+        self.equationList.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors border of history widget
         self.equationList.tab1.setLayout(self.equationsLayout()) # color modified
         self.myQListWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors inside of widget
         self.clearButton.setStyleSheet("background-color: rgb(210, 210, 210)") # colors button
@@ -194,8 +194,8 @@ class WorkSpace(QWidget):
         inputSpace.tab2.setLayout(preferenceLayout(self))
         inputSpace.tab1.setStatusTip("Input characters")
         inputSpace.setFixedHeight(200)
-        inputSpace.tab1.setStyleSheet("background-color: rgb(120, 120, 120)")
-        inputSpace.tab2.setStyleSheet("background-color: rgb(210, 210, 210)")
+        inputSpace.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors border of step by step
+        inputSpace.tab2.setStyleSheet("background-color: rgb(210, 210, 210)") # colors border of logger
 
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
@@ -211,7 +211,8 @@ class WorkSpace(QWidget):
         self.tabPlot.tab1.setStatusTip("Visualize equation in 2D")
         self.tabPlot.tab2.setLayout(plotFigure3D(self))
         self.tabPlot.tab2.setStatusTip("Visualize equation in 3D")
-        # self.tabPlot.setStyleSheet("background-color: rgb(120, 120, 120)")
+        self.tabPlot.tab1.setStyleSheet("background-color: rgb(120, 120, 120)")
+        self.tabPlot.tab2.setStyleSheet("background-color: rgb(120, 120, 120)")
 
 
         tabStepsLogs = QTabWidget()
@@ -315,6 +316,7 @@ class WorkSpace(QWidget):
             self.myQListWidget.addItem(myQListWidgetItem)
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
+            myQCustomQWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors border around equations
         self.myQListWidget.resize(400, 300)
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
