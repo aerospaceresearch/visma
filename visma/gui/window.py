@@ -77,6 +77,8 @@ class Window(QtWidgets.QMainWindow):
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(wikiAction)
         self.workSpace = WorkSpace()
+        self.setStyleSheet('background-color: rgb(90, 90, 90);')
+        menubar.setStyleSheet("background-color: rgb(210, 210, 210)")
         self.setCentralWidget(self.workSpace)
         self.GUIwidth = 1300
         self.GUIheight = 900
@@ -188,6 +190,7 @@ class WorkSpace(QWidget):
 
         self.equationList.tab1.setStatusTip("Track of old equations")
         self.equationList.setFixedWidth(300)
+        self.equationList.setDocumentMode(True)  # removes white borders
 
         inputSpace = QTabWidget()
         inputSpace.tab1 = QWidget()
@@ -200,6 +203,7 @@ class WorkSpace(QWidget):
         inputSpace.setFixedHeight(200)
         inputSpace.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors border of step by step
         inputSpace.tab2.setStyleSheet("background-color: rgb(210, 210, 210)") # colors border of logger
+        inputSpace.setDocumentMode(True) # removes white borders
 
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
@@ -215,9 +219,10 @@ class WorkSpace(QWidget):
         self.tabPlot.tab1.setStatusTip("Visualize equation in 2D")
         self.tabPlot.tab2.setLayout(plotFigure3D(self))
         self.tabPlot.tab2.setStatusTip("Visualize equation in 3D")
-        self.tabPlot.tab1.setStyleSheet("background-color: rgb(120, 120, 120)")
+        self.tabPlot.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors plots
         self.tabPlot.tab2.setStyleSheet("background-color: rgb(120, 120, 120)")
 
+        self.tabPlot.setDocumentMode(True)  # removes white borders
 
         tabStepsLogs = QTabWidget()
         tabStepsLogs.tab1 = QWidget()
@@ -230,7 +235,8 @@ class WorkSpace(QWidget):
         tabStepsLogs.tab2.setStatusTip("Logger")
         tabStepsLogs.tab1.setStyleSheet("background-color: rgb(120, 120, 120)")
         tabStepsLogs.tab2.setStyleSheet("background-color: rgb(120, 120, 120)")
-        #tabStepsLogs.tab2.
+
+        tabStepsLogs.setDocumentMode(True)  # removes white borders
 
         font = QtGui.QFont()
         font.setPointSize(16)
