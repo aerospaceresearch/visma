@@ -10,6 +10,9 @@ from tests.tester import quickTest
 
 def test_simplify():
 
+    assert quickTest("4 + (3/(3-4)*3)", simplify) == "-5"
+
+
     assert quickTest("1 + 2 - 3", simplify) == "0"
     assert quickTest("1 + 2 - 4", simplify) == "-1.0"
     assert quickTest("0 + 0 + 1", simplify) == "1.0"

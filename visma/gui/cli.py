@@ -1,6 +1,7 @@
 import copy
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QVBoxLayout
+from PyQt5.QtCore import Qt
 from visma.calculus.differentiation import differentiate
 from visma.calculus.integration import integrate
 from visma.discreteMaths.combinatorics import factorial, combination, permutation

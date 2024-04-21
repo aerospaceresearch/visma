@@ -164,13 +164,24 @@ class WorkSpace(QWidget):
 
     def initUI(self):
         hbox = QHBoxLayout(self)
+        #self.setStyleSheet("background-color: rgb(120, 120, 120);") # changes color of nearly everything to blue
+        #self.setStyleSheet("color: lightblue") # changes color of all text to blue
+        #self.setStyleSheet("border: black") # removes button colors
+        #self.setStyleSheet("border-color: blue") # changes nothing basically
 
         self.equationList = QTabWidget()
         self.equationList.tab1 = QWidget()
         # self.equationList.tab2 = QWidget()
         self.equationList.addTab(self.equationList.tab1, "History")
         # self.equationList.addTab(self.equationList.tab2, "favourites")
-        self.equationList.tab1.setLayout(self.equationsLayout())
+
+
+        self.equationList.setStyleSheet("background-color: rgb(120, 120, 120)") # colors whole widget
+        self.equationList.tab1.setLayout(self.equationsLayout()) # color modified
+        self.myQListWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors inside of widget
+        self.clearButton.setStyleSheet("background-color: rgb(210, 210, 210)") # colors button
+
+
         self.equationList.tab1.setStatusTip("Track of old equations")
         self.equationList.setFixedWidth(300)
 
@@ -183,12 +194,14 @@ class WorkSpace(QWidget):
         inputSpace.tab2.setLayout(preferenceLayout(self))
         inputSpace.tab1.setStatusTip("Input characters")
         inputSpace.setFixedHeight(200)
+        inputSpace.tab1.setStyleSheet("background-color: rgb(120, 120, 120)")
+        inputSpace.tab2.setStyleSheet("background-color: rgb(210, 210, 210)")
 
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
         buttonSpace.setFixedWidth(300)
         buttonSpace.setStatusTip("Interact")
-
+        
         self.tabPlot = QTabWidget()
         self.tabPlot.tab1 = QWidget()
         self.tabPlot.tab2 = QWidget()
@@ -248,6 +261,8 @@ class WorkSpace(QWidget):
 
         self.logBox.append(logger.info('UI Initialised...'))
 
+
+
     def textChangeTrigger(self):
         self.enableInteraction = True
         self.clearButtons()
@@ -285,6 +300,7 @@ class WorkSpace(QWidget):
 
     def equationsLayout(self):
         self.myQListWidget = QtWidgets.QListWidget(self)
+
         for index, name in self.equations:
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(index)
@@ -327,6 +343,7 @@ class WorkSpace(QWidget):
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
             i += 1
+            myQCustomQWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors equation border on every iteration
         file.close()
         self.myQListWidget.resize(400, 300)
         self.myQListWidget.itemClicked.connect(self.Clicked)
@@ -334,6 +351,8 @@ class WorkSpace(QWidget):
         self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
+        self.myQListWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors inside of widget again
+        self.clearButton.setStyleSheet("background-color: rgb(210, 210, 210)") # colors button again
         return self.equationListVbox
 
     def Clicked(self, item):
@@ -637,6 +656,7 @@ class WorkSpace(QWidget):
                     if (i * 10 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtWidgets.QPushButton(
                             self.inputGreek[i * 10 + j])
+                        self.checkForColorChange(self.buttons[(i, j)])
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
                             self.onInputPress(self.inputGreek[i * 10 + j]))
@@ -654,7 +674,31 @@ class WorkSpace(QWidget):
         # inputSplitter.addWidget(inputTypeSplitter)
         # inputSplitter.addWidget(inputWidget)
         inputLayout.addWidget(inputWidget)
+        inputWidget.setStyleSheet("background-color: rgb(120, 120, 120);") # colors the space around input buttons
+
         return inputLayout
+
+    def checkForColorChange(self, button): # changes button color
+        match button.text():
+            case "Ans":
+                button.setStyleSheet("font-weight: bold;")
+                button.setStyleSheet("background-color: green;")
+            case "C" | "DEL":
+                button.setStyleSheet("font-weight: bold;")
+                button.setStyleSheet("background-color: red;") #rgb(34, 34, 34)
+            case "+" | "*" | "/" | "-":
+                button.setStyleSheet("font-weight: bold;")
+                button.setStyleSheet("background-color: orange;")
+            case _:
+                button.setStyleSheet("background-color: rgb(210, 210, 210)")
+
+
+        """if self.button.text() == "Ans":
+            self.button.setStyleSheet("background-color: green;")
+        else:
+            self.buttons[(i, j)].setStyleSheet("background-color: orange;")"""
+
+
 
     def onActivated(self, text):
         for i in reversed(range(self.inputBox.count())):
@@ -955,10 +999,10 @@ class QCustomQWidget(QtWidgets.QWidget):
         self.setLayout(self.allQHBoxLayout)
         self.textUpQLabel.setStyleSheet('''
         color: black;
-        ''')
+        ''') # Colors the text in history tab: the equation number
         self.textDownQLabel.setStyleSheet('''
         color: black;
-        ''')
+        ''') # Colors the text in history tab: the input
 
     def setTextUp(self, text):
         self.textUpQLabel.setText(text)
