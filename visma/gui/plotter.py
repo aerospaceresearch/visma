@@ -307,6 +307,7 @@ def plot(workspace, tokens=None):
         renderPlot(workspace, graphVars, func, variables, tokens)
 
 
+
 def selectAdditionalVariable(var1):
     if var1 == 'z':
         var2 = 'a'

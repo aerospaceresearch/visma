@@ -164,7 +164,7 @@ class WorkSpace(QWidget):
 
     def initUI(self):
         hbox = QHBoxLayout(self)
-        #self.setStyleSheet("background-color: rgb(120, 120, 120);") # changes color of nearly everything to blue
+        #self.setStyleSheet("background-color: rgb(210, 210, 210);") # changes color of nearly everything to blue
         #self.setStyleSheet("color: lightblue") # changes color of all text to blue
         #self.setStyleSheet("border: black") # removes button colors
         #self.setStyleSheet("border-color: blue") # changes nothing basically
@@ -211,6 +211,8 @@ class WorkSpace(QWidget):
         self.tabPlot.tab1.setStatusTip("Visualize equation in 2D")
         self.tabPlot.tab2.setLayout(plotFigure3D(self))
         self.tabPlot.tab2.setStatusTip("Visualize equation in 3D")
+        self.tabPlot.setStyleSheet("background-color: rgb(120, 120, 120)")
+
 
         tabStepsLogs = QTabWidget()
         tabStepsLogs.tab1 = QWidget()
@@ -221,6 +223,9 @@ class WorkSpace(QWidget):
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
         tabStepsLogs.tab2.setLayout(logger.logTextBox(self))
         tabStepsLogs.tab2.setStatusTip("Logger")
+        tabStepsLogs.tab1.setStyleSheet("background-color: rgb(120, 120, 120)")
+        tabStepsLogs.tab2.setStyleSheet("background-color: rgb(120, 120, 120)")
+        #tabStepsLogs.tab2.
 
         font = QtGui.QFont()
         font.setPointSize(16)
