@@ -18,9 +18,11 @@ def stepsFigure(workspace):
     """
     workspace.stepsfigure = Figure()
     workspace.stepscanvas = FigureCanvas(workspace.stepsfigure)
+    workspace.stepsfigure.set_facecolor("none")
     workspace.stepsfigure.clear()
     workspace.scroll = QScrollArea()
     workspace.scroll.setWidget(workspace.stepscanvas)
+    workspace.scroll.setStyleSheet("background-color: rgb(210, 210, 210)")
     stepslayout = QVBoxLayout()
     stepslayout.addWidget(workspace.scroll)
     return stepslayout
