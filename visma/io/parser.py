@@ -84,10 +84,10 @@ def round_equation_latex_output(equationLatex, index, round_length):
         open_bracket_index = equationSlice.index("{")
         close_bracket_index = equationSlice.index("}")
         temp_open_bracket_index = open_bracket_index
-        while '{' in equationSlice[temp_open_bracket_index + 1: close_bracket_index]:
+        while '{' in equationSlice[temp_open_bracket_index + 1: close_bracket_index] and close_bracket_index != len(equationLatex[index]) - 1:
             temp_open_bracket_index = equationSlice[open_bracket_index + 1: close_bracket_index].index('{') + open_bracket_index + 1
             close_bracket_index = equationSlice[close_bracket_index + 1:].index('}') + close_bracket_index + 1
-        print(open_bracket_index, close_bracket_index)
+            print(open_bracket_index, close_bracket_index)
         if not equationSlice[close_bracket_index - 1].isnumeric():
             value = ''
             try:
