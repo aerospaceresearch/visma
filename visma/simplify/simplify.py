@@ -250,18 +250,21 @@ def expressionSimplification(tokens_now, scope, tokens1):
                     if len(tokens1[i + 1].tokens) == 1 and isinstance(tokens1[i + 1].tokens[0], Constant):
                         tokens1[i + 1] = Constant(tokens1[i + 1].tokens[0].calculate(), 1, 1)
             if (isinstance(tokens1[i], Binary) and tokens1[i].value == '^') and isinstance(tokens1[i + 1], Constant):
-                if float(tokens1[i + 1].calculate()).is_integer():
-                    rep = int(tokens1[i + 1].calculate())
-                    for _ in range(rep - 1):
-                        pfTokens.extend([Binary('*'), tokens1[i - 1]])
-                    i += 1
-                else:
-                    pfTokens.append(tokens1[i])
+                value = str(tokens1[i - 1])[1:len(str(tokens1[i - 1])) - 1]
+                value = float(value)
+                value **= tokens1[i + 1].calculate()
+                tokens1[i + 1] = Constant(value, 1, 1)
+
+                del pfTokens[len(pfTokens) - 1]
+                pfTokens.append(tokens1[i + 1])
+                del tokens1[i]
+                del tokens1[i - 1]
             else:
                 pfTokens.append(tokens1[i])
         else:
             pfTokens.append(tokens1[i])
         i += 1
+
     tokens1 = copy.deepcopy(pfTokens)
     animation.append(pfTokens)
     comments.append(['Expanding the powers of expressions'])
