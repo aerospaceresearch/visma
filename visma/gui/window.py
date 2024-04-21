@@ -35,7 +35,7 @@ from visma.solvers.polynomial.roots import rootFinder
 from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
 from visma.gui import logger
-
+from PyQt5.QtGui import QPalette, QColor
 
 class Window(QtWidgets.QMainWindow):
 
@@ -164,10 +164,14 @@ class WorkSpace(QWidget):
 
     def initUI(self):
         hbox = QHBoxLayout(self)
-        #self.setStyleSheet("background-color: blue;") # changes color of nearly everything to blue
+        #self.setStyleSheet("border-color: rgb(60, 60, 60);") # changes color of nearly everything to blue
         #self.setStyleSheet("color: lightblue") # changes color of all text to blue
         #self.setStyleSheet("border: black") # removes button colors
-        #self.setStyleSheet("border-color: blue") # changes nothing basically
+        # self.setStyleSheet("""
+        #         background-color: rgb(90, 90, 90);
+        #         border-color: rgb(90, 90, 90);
+        #         """
+        # ) # changes nothing basically
 
         self.equationList = QTabWidget()
         self.equationList.tab1 = QWidget()
@@ -264,6 +268,15 @@ class WorkSpace(QWidget):
         self.setLayout(hbox)
 
         self.previousAnswer = ''
+
+        self.textedit.setStyleSheet("background-color: rgb(210, 210, 210)")
+
+        self.setStyleSheet(
+            """
+            background-color: rgb(90, 90, 90);
+            border-color: rgb(90, 90, 90);
+            """
+        )
 
         self.logBox.append(logger.info('UI Initialised...'))
 
@@ -386,6 +399,11 @@ class WorkSpace(QWidget):
         self.buttonSplitter.addWidget(topButtonSplitter)
         self.buttonSplitter.addWidget(self.bottomButton)
         vbox.addWidget(self.buttonSplitter)
+        self.interactionModeButton.setStyleSheet("""
+                background-color: rgb(210, 210, 210);
+                font-size: 16px;
+                """
+        )
         return vbox
 
     def interactionMode(self):
@@ -534,6 +552,11 @@ class WorkSpace(QWidget):
                             self.onSolvePress(opButtons[i * 2 + j]))
                         self.solutionOptionsBox.addWidget(
                             self.solutionButtons[(i, j)], i, j)
+                        self.solutionButtons[(i, j)].setStyleSheet("""
+                                background-color: rgb(210, 210, 210);
+                                font-size: 16px;
+                                """
+                        )
         else:
             self.bottomButton.setParent(None)
             self.solutionWidget = QWidget()
@@ -547,6 +570,11 @@ class WorkSpace(QWidget):
                             self.onSolvePress(opButtons[i * 2 + j]))
                         self.solutionOptionsBox.addWidget(
                             self.solutionButtons[(i, j)], i, j)
+                        self.solutionButtons[(i, j)].setStyleSheet("""
+                                background-color: rgb(210, 210, 210);
+                                font-size: 16px;
+                                """
+                        )
             self.solutionWidget.setLayout(self.solutionOptionsBox)
             self.buttonSplitter.addWidget(self.solutionWidget)
             self.buttonSet = True
@@ -666,7 +694,7 @@ class WorkSpace(QWidget):
                     if (i * 10 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtWidgets.QPushButton(
                             self.inputGreek[i * 10 + j])
-                        self.checkForColorChange(self.buttons[(i, j)])
+                        self.checkForColorChange(self.buttons[(i, j)]) # color change function
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
                             self.onInputPress(self.inputGreek[i * 10 + j]))
@@ -701,12 +729,6 @@ class WorkSpace(QWidget):
                 button.setStyleSheet("background-color: orange;")
             case _:
                 button.setStyleSheet("background-color: rgb(210, 210, 210)")
-
-
-        """if self.button.text() == "Ans":
-            self.button.setStyleSheet("background-color: green;")
-        else:
-            self.buttons[(i, j)].setStyleSheet("background-color: orange;")"""
 
 
 

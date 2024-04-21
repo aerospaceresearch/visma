@@ -16,7 +16,7 @@ now = datetime.datetime.now()
 def logTextBox(workspace):
     workspace.logBox = QTextEdit()
     workspace.logBox.setReadOnly(True)
-    workspace.logBox.setStyleSheet("background-color: rgb(210, 210, 210)")
+    workspace.logBox.setStyleSheet("background-color: rgb(210, 210, 210)") # colors inside of logger
     textLayout = QVBoxLayout()
     textLayout.addWidget(workspace.logBox)
     return textLayout
