@@ -251,6 +251,7 @@ class WorkSpace(QWidget):
         quickSolve.setLayout(qSolveFigure(self))
         quickSolve.setFixedHeight(45)
         quickSolve.setStatusTip("Quick solver")
+        quickSolve.setStyleSheet("background-color: rgb(150, 150, 150)")
 
         splitter4 = QSplitter(Qt.Vertical)
         splitter4.addWidget(self.textedit)
@@ -723,18 +724,25 @@ class WorkSpace(QWidget):
         return inputLayout
 
     def checkForColorChange(self, button): # changes button color
+        color = "rgb(210, 210, 210)"
+        bold = "normal"
         match button.text():
             case "Ans":
-                button.setStyleSheet("font-weight: bold;")
-                button.setStyleSheet("background-color: green;")
+                color = "green"
+                bold = "bold"
             case "C" | "DEL":
-                button.setStyleSheet("font-weight: bold;")
-                button.setStyleSheet("background-color: red;") #rgb(34, 34, 34)
+                color = "red"
+                bold = "bold"
             case "+" | "*" | "/" | "-":
-                button.setStyleSheet("font-weight: bold;")
-                button.setStyleSheet("background-color: orange;")
-            case _:
-                button.setStyleSheet("background-color: rgb(210, 210, 210)")
+                color = "orange"
+                bold = "bold"
+
+        button.setStyleSheet(f"""
+                background-color: {color};
+                font-weight: {bold};
+                font-size: 16px;
+                """
+        )
 
 
 
