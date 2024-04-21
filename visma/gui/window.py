@@ -636,6 +636,7 @@ class WorkSpace(QWidget):
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
             i += 1
+            myQCustomQWidget.setStyleSheet("background-color: rgb(210, 210, 210);")
         file.close()
         self.myQListWidget.resize(400, 300)
         self.myQListWidget.itemClicked.connect(self.Clicked)
@@ -644,6 +645,8 @@ class WorkSpace(QWidget):
         self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
+        self.myQListWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors inside of widget
+        self.clearButton.setStyleSheet("background-color: rgb(210, 210, 210)") # colors button
         return self.equationListVbox
 
     def inputsLayout(self, loadList="Greek"):
