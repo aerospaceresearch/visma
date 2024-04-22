@@ -25,7 +25,6 @@ from visma.functions.operator import Binary, Sqrt
 from visma.matrix.structure import Matrix
 from visma.matrix.checks import isMatrix
 from visma.io.parser import latexToTerms
-# from visma.gui import logger
 
 symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', '^', '=', '<', '>', '<=', '>=', ',', ';', '$']
 greek = [u'\u03B1', u'\u03B2', u'\u03B3']
@@ -1378,7 +1377,6 @@ def tokenizer(eqnString):
     """
     _, tokens = constantConversion(preprocess(eqnString))
     return tokens
-
 
 def changeToken(tokens, variables, scope_times=0):
 

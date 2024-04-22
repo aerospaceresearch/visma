@@ -193,6 +193,8 @@ def plotFigure2D(workspace):
     layout = QVBoxLayout()
     layout.addWidget(workspace.canvas2D)
     layout.addWidget(workspace.toolbar2D)
+    workspace.figure2D.set_facecolor("none") # makes color transparent
+    workspace.canvas2D.setStyleSheet("background-color: rgb(210, 210, 210)")
     return layout
 
 
@@ -216,6 +218,9 @@ def plotFigure3D(workspace):
     layout = QVBoxLayout()
     layout.addWidget(workspace.canvas3D)
     layout.addWidget(workspace.toolbar3D)
+    workspace.figure3D.set_facecolor("none") # makes color transparent
+    workspace.canvas3D.setStyleSheet("background-color: rgb(210, 210, 210)")
+
     return layout
 
 
@@ -305,6 +310,7 @@ def plot(workspace, tokens=None):
     if (((dim == 2) or (dim == 1)) & (eqType == 'equation')):
         graphVars, func, variables = graphPlot(workspace, True, tokens)
         renderPlot(workspace, graphVars, func, variables, tokens)
+
 
 
 def selectAdditionalVariable(var1):

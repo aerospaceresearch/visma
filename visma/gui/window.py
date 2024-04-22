@@ -35,7 +35,7 @@ from visma.solvers.polynomial.roots import rootFinder
 from visma.solvers.simulEqn import simulSolver
 from visma.transform.factorization import factorize
 from visma.gui import logger
-
+from PyQt5.QtGui import QPalette, QColor
 
 class Window(QtWidgets.QMainWindow):
 
@@ -77,6 +77,8 @@ class Window(QtWidgets.QMainWindow):
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(wikiAction)
         self.workSpace = WorkSpace()
+        self.setStyleSheet('background-color: rgb(90, 90, 90);')
+        menubar.setStyleSheet("background-color: rgb(210, 210, 210)")
         self.setCentralWidget(self.workSpace)
         self.GUIwidth = 1300
         self.GUIheight = 900
@@ -113,7 +115,7 @@ class Window(QtWidgets.QMainWindow):
 
 class WorkSpace(QWidget):
 
-    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', u'\u03C0', '.', '0', '=', '<', '>']
+    inputGreek = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g', 'h', '{', '}', '4', '5', '6', '/', '*', 'sin', 'cos', 'tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', '<', '>', '.', '0', '=', 'i', 'Ans']
     inputLaTeX = ['x', 'y', 'z', '(', ')', '7', '8', '9', 'DEL', 'C', 'f', 'g',  'h', '{', '}', '4', '5', '6', '\\div', '\\times', '\\sin', '\\cos', '\\tan', '[', ']', '1', '2', '3', '+', '-', 'log', 'exp', '^', 'i', '\\pi', '.', '0', '=', '<', '>']
 
     mode = 'interaction'
@@ -164,15 +166,31 @@ class WorkSpace(QWidget):
 
     def initUI(self):
         hbox = QHBoxLayout(self)
+        #self.setStyleSheet("border-color: rgb(60, 60, 60);") # changes color of nearly everything to blue
+        #self.setStyleSheet("color: lightblue") # changes color of all text to blue
+        #self.setStyleSheet("border: black") # removes button colors
+        # self.setStyleSheet("""
+        #         background-color: rgb(90, 90, 90);
+        #         border-color: rgb(90, 90, 90);
+        #         """
+        # ) # changes nothing basically
 
         self.equationList = QTabWidget()
         self.equationList.tab1 = QWidget()
         # self.equationList.tab2 = QWidget()
         self.equationList.addTab(self.equationList.tab1, "History")
         # self.equationList.addTab(self.equationList.tab2, "favourites")
-        self.equationList.tab1.setLayout(self.equationsLayout())
+
+
+        self.equationList.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors border of history widget
+        self.equationList.tab1.setLayout(self.equationsLayout()) # color modified
+        self.myQListWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors inside of widget
+        self.clearButton.setStyleSheet("background-color: rgb(210, 210, 210)") # colors button
+
+
         self.equationList.tab1.setStatusTip("Track of old equations")
         self.equationList.setFixedWidth(300)
+        self.equationList.setDocumentMode(True)  # removes white borders
 
         inputSpace = QTabWidget()
         inputSpace.tab1 = QWidget()
@@ -183,12 +201,15 @@ class WorkSpace(QWidget):
         inputSpace.tab2.setLayout(preferenceLayout(self))
         inputSpace.tab1.setStatusTip("Input characters")
         inputSpace.setFixedHeight(200)
+        inputSpace.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors border of step by step
+        inputSpace.tab2.setStyleSheet("background-color: rgb(210, 210, 210)") # colors border of logger
+        inputSpace.setDocumentMode(True) # removes white borders
 
         buttonSpace = QWidget()
         buttonSpace.setLayout(self.buttonsLayout())
         buttonSpace.setFixedWidth(300)
         buttonSpace.setStatusTip("Interact")
-
+        
         self.tabPlot = QTabWidget()
         self.tabPlot.tab1 = QWidget()
         self.tabPlot.tab2 = QWidget()
@@ -198,6 +219,10 @@ class WorkSpace(QWidget):
         self.tabPlot.tab1.setStatusTip("Visualize equation in 2D")
         self.tabPlot.tab2.setLayout(plotFigure3D(self))
         self.tabPlot.tab2.setStatusTip("Visualize equation in 3D")
+        self.tabPlot.tab1.setStyleSheet("background-color: rgb(120, 120, 120)") # colors 2D plots
+        self.tabPlot.tab2.setStyleSheet("background-color: rgb(120, 120, 120)") # colors 3D plots
+
+        self.tabPlot.setDocumentMode(True)  # removes white borders
 
         tabStepsLogs = QTabWidget()
         tabStepsLogs.tab1 = QWidget()
@@ -208,6 +233,10 @@ class WorkSpace(QWidget):
         tabStepsLogs.tab1.setStatusTip("Step-by-step solver")
         tabStepsLogs.tab2.setLayout(logger.logTextBox(self))
         tabStepsLogs.tab2.setStatusTip("Logger")
+        tabStepsLogs.tab1.setStyleSheet("background-color: rgb(120, 120, 120)")
+        tabStepsLogs.tab2.setStyleSheet("background-color: rgb(120, 120, 120)")
+
+        tabStepsLogs.setDocumentMode(True)  # removes white borders
 
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -222,6 +251,7 @@ class WorkSpace(QWidget):
         quickSolve.setLayout(qSolveFigure(self))
         quickSolve.setFixedHeight(45)
         quickSolve.setStatusTip("Quick solver")
+        quickSolve.setStyleSheet("background-color: rgb(150, 150, 150)")
 
         splitter4 = QSplitter(Qt.Vertical)
         splitter4.addWidget(self.textedit)
@@ -244,7 +274,20 @@ class WorkSpace(QWidget):
         hbox.addWidget(splitter1)
         self.setLayout(hbox)
 
+        self.previousAnswer = ''
+
+        self.textedit.setStyleSheet("background-color: rgb(210, 210, 210)")
+
+        self.setStyleSheet(
+            """
+            background-color: rgb(90, 90, 90);
+            border-color: rgb(90, 90, 90);
+            """
+        )
+
         self.logBox.append(logger.info('UI Initialised...'))
+
+
 
     def textChangeTrigger(self):
         self.enableInteraction = True
@@ -283,6 +326,7 @@ class WorkSpace(QWidget):
 
     def equationsLayout(self):
         self.myQListWidget = QtWidgets.QListWidget(self)
+
         for index, name in self.equations:
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(index)
@@ -292,6 +336,7 @@ class WorkSpace(QWidget):
             self.myQListWidget.addItem(myQListWidgetItem)
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
+            myQCustomQWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors border around equations
         self.myQListWidget.resize(400, 300)
         self.equationListVbox.addWidget(self.myQListWidget)
         self.myQListWidget.itemClicked.connect(self.Clicked)
@@ -325,6 +370,7 @@ class WorkSpace(QWidget):
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
             i += 1
+            myQCustomQWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors equation border on every iteration
         file.close()
         self.myQListWidget.resize(400, 300)
         self.myQListWidget.itemClicked.connect(self.Clicked)
@@ -332,6 +378,8 @@ class WorkSpace(QWidget):
         self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
+        self.myQListWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors inside of widget again
+        self.clearButton.setStyleSheet("background-color: rgb(210, 210, 210)") # colors button again
         return self.equationListVbox
 
     def Clicked(self, item):
@@ -344,6 +392,7 @@ class WorkSpace(QWidget):
         interactionModeLayout = QVBoxLayout()
         self.interactionModeButton = QtWidgets.QPushButton('visma')
         self.interactionModeButton.clicked.connect(self.interactionMode)
+        self.interactionModeButton.setEnabled(False)
         interactionModeLayout.addWidget(self.interactionModeButton)
         interactionModeWidget = QWidget(self)
         interactionModeWidget.setLayout(interactionModeLayout)
@@ -357,6 +406,12 @@ class WorkSpace(QWidget):
         self.buttonSplitter.addWidget(topButtonSplitter)
         self.buttonSplitter.addWidget(self.bottomButton)
         vbox.addWidget(self.buttonSplitter)
+        self.interactionModeButton.setStyleSheet(
+                """
+                background-color: rgb(210, 210, 210);
+                font-size: 16px;
+                """
+        )
         return vbox
 
     def interactionMode(self):
@@ -416,12 +471,14 @@ class WorkSpace(QWidget):
                 operations, self.solutionType = checkTypes(lhs, rhs)
             if isinstance(operations, list) and showbuttons:
                 opButtons = []
+                if 'differentiate' in operations:
+                    opButtons.append('graph')
                 if len(operations) > 0:
                     if len(operations) == 1:
                         if (operations[0] not in ['integrate', 'differentiate', 'find roots', 'factorize']) and (not self.simul):
-                            opButtons = ['simplify']
+                            opButtons.append('simplify')
                     else:
-                        opButtons = ['simplify']
+                        opButtons.append('simplify')
                 for operation in operations:
                     if operation == '+':
                         opButtons.append("addition")
@@ -503,6 +560,12 @@ class WorkSpace(QWidget):
                             self.onSolvePress(opButtons[i * 2 + j]))
                         self.solutionOptionsBox.addWidget(
                             self.solutionButtons[(i, j)], i, j)
+                        self.solutionButtons[(i, j)].setStyleSheet(
+                                """
+                                background-color: rgb(210, 210, 210);
+                                font-size: 16px;
+                                """
+                        )
         else:
             self.bottomButton.setParent(None)
             self.solutionWidget = QWidget()
@@ -516,6 +579,12 @@ class WorkSpace(QWidget):
                             self.onSolvePress(opButtons[i * 2 + j]))
                         self.solutionOptionsBox.addWidget(
                             self.solutionButtons[(i, j)], i, j)
+                        self.solutionButtons[(i, j)].setStyleSheet(
+                                """
+                                background-color: rgb(210, 210, 210);
+                                font-size: 16px;
+                                """
+                        )
             self.solutionWidget.setLayout(self.solutionOptionsBox)
             self.buttonSplitter.addWidget(self.solutionWidget)
             self.buttonSet = True
@@ -523,12 +592,14 @@ class WorkSpace(QWidget):
     def refreshButtons(self, operations):
         if isinstance(operations, list):
             opButtons = []
+            if 'differentiate' in operations:
+                opButtons.append('graph')
             if len(operations) > 0:
                 if len(operations) == 1:
                     if operations[0] == 'solve':
-                        opButtons = ['simplify']
+                        opButtons.append('simplify')
                 else:
-                    opButtons = ['simplify']
+                    opButtons.append('simplify')
             for operation in operations:
                 if operation == '+':
                     opButtons.append("addition")
@@ -610,6 +681,7 @@ class WorkSpace(QWidget):
             self.myQListWidget.setItemWidget(
                 myQListWidgetItem, myQCustomQWidget)
             i += 1
+            myQCustomQWidget.setStyleSheet("background-color: rgb(210, 210, 210);")
         file.close()
         self.myQListWidget.resize(400, 300)
         self.myQListWidget.itemClicked.connect(self.Clicked)
@@ -618,6 +690,8 @@ class WorkSpace(QWidget):
         self.clearButton = QtWidgets.QPushButton('Clear equations')
         self.clearButton.clicked.connect(self.clearHistory)
         self.equationListVbox.addWidget(self.clearButton)
+        self.myQListWidget.setStyleSheet("background-color: rgb(210, 210, 210);") # colors inside of widget
+        self.clearButton.setStyleSheet("background-color: rgb(210, 210, 210)") # colors button
         return self.equationListVbox
 
     def inputsLayout(self, loadList="Greek"):
@@ -630,6 +704,7 @@ class WorkSpace(QWidget):
                     if (i * 10 + j) < len(self.inputGreek):
                         self.buttons[(i, j)] = QtWidgets.QPushButton(
                             self.inputGreek[i * 10 + j])
+                        self.checkForColorChange(self.buttons[(i, j)]) # color change function
                         self.buttons[(i, j)].resize(100, 100)
                         self.buttons[(i, j)].clicked.connect(
                             self.onInputPress(self.inputGreek[i * 10 + j]))
@@ -647,7 +722,32 @@ class WorkSpace(QWidget):
         # inputSplitter.addWidget(inputTypeSplitter)
         # inputSplitter.addWidget(inputWidget)
         inputLayout.addWidget(inputWidget)
+        inputWidget.setStyleSheet("background-color: rgb(120, 120, 120);") # colors the space around input buttons
+
         return inputLayout
+
+    def checkForColorChange(self, button): # changes button color
+        color = "rgb(210, 210, 210)"
+        bold = "normal"
+        match button.text():
+            case "Ans":
+                color = "green"
+                bold = "bold"
+            case "C" | "DEL":
+                color = "red"
+                bold = "bold"
+            case "+" | "*" | "/" | "-":
+                color = "orange"
+                bold = "bold"
+
+        button.setStyleSheet(f"""
+                background-color: {color};
+                font-weight: {bold};
+                font-size: 16px;
+                """
+        )
+
+
 
     def onActivated(self, text):
         for i in reversed(range(self.inputBox.count())):
@@ -679,6 +779,8 @@ class WorkSpace(QWidget):
             elif name == 'DEL':
                 cursor = self.textedit.textCursor()
                 cursor.deletePreviousChar()
+            elif name == 'Ans':
+                self.textedit.insertPlainText(self.previousAnswer)
             else:
                 self.textedit.insertPlainText(str(name))
         return calluser
@@ -761,6 +863,13 @@ class WorkSpace(QWidget):
                     variables = getVariables(lhs, rhs)
                     self.wrtVariableButtons(variables, name)
                     self.resultOut = False
+                elif name == 'graph':
+                    if self.solutionType == 'expression':
+                        self.tokens, availableOperations, tokenString, equationTokens, comments = simplify(self.tokens)
+                    else:
+                        self.lTokens, self.rTokens, availableOperations, tokenString, equationTokens, comments = simplifyEquation(self.lTokens, self.rTokens)
+                    self.showPlotter = True
+                self.previousAnswer = tokenString
             else:
                 """
                 This part handles the cases when VisMa is dealing with matrices.
@@ -824,6 +933,7 @@ class WorkSpace(QWidget):
                         showSteps(self)
                     if self.showPlotter is True:
                         plot(self)
+                    self.previousAnswer = tokenString
                 else:
                     if self.dualOperandMatrix:
                         if not self.scalarOperationsMatrix:
@@ -844,6 +954,7 @@ class WorkSpace(QWidget):
                         cursor.insertText(tokenString)
                     if self.showStepByStep is True:
                         showSteps(self)
+                    self.previousAnswer = tokenString
         return calluser
 
     def onWRTVariablePress(self, varName, operation):
@@ -881,7 +992,6 @@ class WorkSpace(QWidget):
                     self.rTokens = rhs
                     operations, self.solutionType = checkTypes(lhs, rhs)
                     self.refreshButtons(operations)
-
             else:
                 if operation == 'solve':
                     if not self.simul:
@@ -938,10 +1048,10 @@ class QCustomQWidget(QtWidgets.QWidget):
         self.setLayout(self.allQHBoxLayout)
         self.textUpQLabel.setStyleSheet('''
         color: black;
-        ''')
+        ''') # Colors the text in history tab: the equation number
         self.textDownQLabel.setStyleSheet('''
         color: black;
-        ''')
+        ''') # Colors the text in history tab: the input
 
     def setTextUp(self, text):
         self.textUpQLabel.setText(text)

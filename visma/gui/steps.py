@@ -18,9 +18,11 @@ def stepsFigure(workspace):
     """
     workspace.stepsfigure = Figure()
     workspace.stepscanvas = FigureCanvas(workspace.stepsfigure)
+    workspace.stepsfigure.set_facecolor("none") # make figure transparent so that background of scrollbar is visible
     workspace.stepsfigure.clear()
     workspace.scroll = QScrollArea()
     workspace.scroll.setWidget(workspace.stepscanvas)
+    workspace.scroll.setStyleSheet("background-color: rgb(210, 210, 210)") # color background of scrollbar
     stepslayout = QVBoxLayout()
     stepslayout.addWidget(workspace.scroll)
     return stepslayout
@@ -37,7 +39,7 @@ def showSteps(workspace):
                                    verticalalignment='top', size=qApp.font().pointSize()*workspace.stepsFontSize)
     workspace.stepscanvas.draw()
     hbar = workspace.scroll.horizontalScrollBar()
-    hbar.setValue((hbar.minimum()+hbar.maximum())/2)
+    hbar.setValue((hbar.minimum()+hbar.maximum())//2)
 
 
 ###############

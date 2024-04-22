@@ -250,18 +250,21 @@ def expressionSimplification(tokens_now, scope, tokens1):
                     if len(tokens1[i + 1].tokens) == 1 and isinstance(tokens1[i + 1].tokens[0], Constant):
                         tokens1[i + 1] = Constant(tokens1[i + 1].tokens[0].calculate(), 1, 1)
             if (isinstance(tokens1[i], Binary) and tokens1[i].value == '^') and isinstance(tokens1[i + 1], Constant):
-                if float(tokens1[i + 1].calculate()).is_integer():
-                    rep = int(tokens1[i + 1].calculate())
-                    for _ in range(rep - 1):
-                        pfTokens.extend([Binary('*'), tokens1[i - 1]])
-                    i += 1
-                else:
-                    pfTokens.append(tokens1[i])
+                value = str(tokens1[i - 1])[1:len(str(tokens1[i - 1])) - 1]
+                value = float(value)
+                value **= tokens1[i + 1].calculate()
+                tokens1[i + 1] = Constant(value, 1, 1)
+
+                del pfTokens[len(pfTokens) - 1]
+                pfTokens.append(tokens1[i + 1])
+                del tokens1[i]
+                del tokens1[i - 1]
             else:
                 pfTokens.append(tokens1[i])
         else:
             pfTokens.append(tokens1[i])
         i += 1
+
     tokens1 = copy.deepcopy(pfTokens)
     animation.append(pfTokens)
     comments.append(['Expanding the powers of expressions'])
@@ -440,68 +443,3 @@ def simplifification(tokens):
     tokens, animation = postSimplification(tokens, animation)
     token_string = tokensToString(tokens)
     return tokens, availableOperations, token_string, animation, comments
-
-
-'''
-def defineScopeVariable(variable, scope):
-    token = copy.deepcopy(variable)
-    local_scope = copy.deepcopy(scope)
-    if isinstance(token.value, list):
-        for j, val in enumerate(token.value):
-            if val.__class__ in [Binary, Variable, Constant, Expression]:
-                local_scope_value = copy.deepcopy(local_scope)
-                local_scope_value.extend(-1)
-                local_scope_value.extend(j)
-                val.scope = local_scope_value
-
-    if isinstance(token.power, list):
-        for j, val in enumerate(token.value):
-            if val.__class__ in [Binary, Variable, Constant, Expression]:
-                local_scope_value = copy.deepcopy(local_scope)
-                local_scope_value.extend(-2)
-                local_scope_value.extend(j)
-                val.scope = local_scope_value
-
-    return token
-
-
-def defineScopeConstant(constant, scope):
-    token = copy.deepcopy(constant)
-    local_scope = copy.deepcopy(scope)
-    if isinstance(token.value, list):
-        for j, val in enumerate(token.value):
-            if val.__class__ in [Binary, Variable, Constant, Expression]:
-                local_scope_value = copy.deepcopy(local_scope)
-                local_scope_value.extend(-1)
-                local_scope_value.extend(j)
-                val.scope = local_scope_value
-
-    if isinstance(token.power, list):
-        for j, val in enumerate(token.value):
-            if val.__class__ in [Binary, Variable, Constant, Expression]:
-                local_scope_value = copy.deepcopy(local_scope)
-                local_scope_value.extend(-2)
-                local_scope_value.extend(j)
-                val.scope = local_scope_value
-    return token
-
-
-def defineScope(tokens, scope=None):
-    if scope is None:
-        scope = []
-    i = 0
-    for token in tokens:
-        local_scope = copy.deepcopy(scope)
-        local_scope.extend(i)
-        token.scope = local_scope
-        if isinstance(token, Variable):
-            token = defineScopeVariable(token, copy.deepcopy(local_scope))
-        elif isinstance(token, Constant):
-            token = defineScopeConstant(token, copy.deepcopy(local_scope))
-        elif isinstance(token, Expression):
-            token.tokens = defineScope(token.tokens, local_scope)
-        elif isinstance(token, Binary):
-            pass
-        i += 1
-    return tokens
-'''

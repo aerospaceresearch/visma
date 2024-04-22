@@ -14,7 +14,7 @@ def init():
     class VisMa_Prompt(Cmd):
         '''This inititates the main VisMa Prompt from where user may move to CLI/GUI'''
 
-        userManual = "|_________________________________________________________________________________________________|\n"\
+        userManual = " _________________________________________________________________________________________________ \n"\
                      "| gui  ->> opens Visma in GUI mode.                                                               |\n"\
                      "| Ctrl + D ->> Closes the prompt.                                                                     |\n"\
                      "| exit ->> Closes the prompt.                                                                     |\n"\
@@ -31,6 +31,10 @@ def init():
                      "|-------------------------------------------------------------------------------------------------|\n"\
                      "| integrate( expression , variable )  ->> Integrates the expression by the given variable.        |\n"\
                      "| differentiate( expression , variable ) ->> Differentiates the expression by the given variable. |\n"\
+                     "|-------------------------------------------------------------------------------------------------|\n"\
+                     "| Matrices should be input in the following format:                                               |\n"\
+                     "| Single: mat_([x00 x01; x10 x11])                                                                |\n"\
+                     "| Double: mat_([x00 x01; x10 x11], [y00 y01; y10 y11])                                            |\n"\
                      "|_________________________________________________________________________________________________|\n"\
 
         prompt = '>>> '

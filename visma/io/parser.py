@@ -36,22 +36,75 @@ def resultLatex(equationTokens, operation, comments, solutionType, simul=False, 
     else:
         finalSteps = 'INPUT: ' + '(Multiple ' + r'$' + ' equations)' + r'$' + '\n'
     finalSteps += 'OPERATION: ' + operation + '\n'
-    finalSteps += 'OUTPUT: ' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
+    # print(equationLatex[-1])
+    roundedStep = roundEquationLatexOutput(equationLatex, -1, 6)
+    # print(equationLatex[-1])
+    finalSteps += 'OUTPUT: ' + r'$' + roundedStep + r'$' + 2*'\n'
+    # finalSteps += 'OUTPUT: ' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
 
     for i, _ in enumerate(equationLatex):
         if comments[i] != [] and equationLatex[i] != '':
             finalSteps += '(' + str(comments[i][0]) + ')' + '\n'
-            finalSteps += r'$' + equationLatex[i] + r'$' + 2*"\n"
+            if i == len(equationLatex) - 1:
+                # print(equationLatex[i])
+                roundedStep = roundEquationLatexOutput(equationLatex, i, 6)
+                # print(equationLatex[i])
+                pass
+            else:
+                # print(equationLatex[i])
+                roundedStep = roundEquationLatexOutput(equationLatex, i, 2)
+                # print(equationLatex[i])
+                pass
+            finalSteps += r'$' + roundedStep + r'$' + 2*"\n"
+            # finalSteps += '\n' + r'$' + equationLatex[-1] + r'$' + 2*'\n'
         elif comments[i] != [] and equationLatex[i] == '':
             finalSteps += '\n' + '[' + str(comments[i][0]) + ']' + '\n'
         elif comments[i] == [] and equationLatex[i] != '':
-            finalSteps += '\n' + r'$' + equationLatex[i] + r'$' + 2*'\n'
+            if i == len(equationLatex) - 1:
+                # print(equationLatex[i])
+                roundedStep = roundEquationLatexOutput(equationLatex, i, 6)
+                # print(equationLatex[i])
+                pass
+            else:
+                # print(equationLatex[i])
+                roundedStep = roundEquationLatexOutput(equationLatex, i, 2)
+                # print(equationLatex[i])
+                pass
+            finalSteps += '\n' + r'$' + roundedStep + r'$' + 2*'\n'
+            # finalSteps += '\n' + r'$' + equationLatex[i] + r'$' + 2*'\n'
 
     if mathError(equationTokens[-1]) and (not simul):
         finalSteps += 'Math Error: LHS not equal to RHS' + "\n"
 
     return finalSteps
 
+def roundEquationLatexOutput(equationLatex, index, roundLength):
+    equationSlice = equationLatex[index][0:]
+    while '{' in equationSlice:
+        openBracketIndex = equationSlice.index("{")
+        closeBracketIndex = equationSlice.index("}")
+        temp_openBracketIndex = openBracketIndex
+        while '{' in equationSlice[temp_openBracketIndex + 1: closeBracketIndex] and closeBracketIndex != len(equationSlice) - 1:
+            temp_openBracketIndex = equationSlice[openBracketIndex + 1: closeBracketIndex].index('{') + openBracketIndex + 1
+            closeBracketIndex = equationSlice[closeBracketIndex + 1:].index('}') + closeBracketIndex + 1
+            # print(equationSlice[openBracketIndex:closeBracketIndex + 1])
+            # print(openBracketIndex, closeBracketIndex)
+        if not equationSlice[closeBracketIndex - 1].isnumeric():
+            value = ''
+            try:
+                value = round(float(equationSlice[:openBracketIndex]), roundLength)
+            except ValueError:
+                pass
+            equationLatex[index] = equationLatex[index][0:equationLatex[index].index(equationSlice)] \
+                                    + str(value) + equationSlice[openBracketIndex:]
+            equationSlice = equationSlice[closeBracketIndex + 1:]
+            pass
+        else:
+            value = round(float(equationSlice[openBracketIndex + 1:closeBracketIndex]), roundLength)
+            equationLatex[index] = equationLatex[index][0:equationLatex[index].index(equationSlice)] \
+                                    + equationSlice[0: openBracketIndex] + '{' + str(value) + '}' + equationSlice[closeBracketIndex + 1:]
+            equationSlice = equationSlice[closeBracketIndex + 1:]
+    return equationLatex[index]
 
 def resultStringCLI(equationTokens, operation, comments, solutionType, simul=False, mat=False):
     """Converts tokens to final string format for displaying in terminal in CLI
