@@ -406,7 +406,8 @@ class WorkSpace(QWidget):
         self.buttonSplitter.addWidget(topButtonSplitter)
         self.buttonSplitter.addWidget(self.bottomButton)
         vbox.addWidget(self.buttonSplitter)
-        self.interactionModeButton.setStyleSheet("""
+        self.interactionModeButton.setStyleSheet(
+                """
                 background-color: rgb(210, 210, 210);
                 font-size: 16px;
                 """
@@ -559,7 +560,8 @@ class WorkSpace(QWidget):
                             self.onSolvePress(opButtons[i * 2 + j]))
                         self.solutionOptionsBox.addWidget(
                             self.solutionButtons[(i, j)], i, j)
-                        self.solutionButtons[(i, j)].setStyleSheet("""
+                        self.solutionButtons[(i, j)].setStyleSheet(
+                                """
                                 background-color: rgb(210, 210, 210);
                                 font-size: 16px;
                                 """
@@ -577,7 +579,8 @@ class WorkSpace(QWidget):
                             self.onSolvePress(opButtons[i * 2 + j]))
                         self.solutionOptionsBox.addWidget(
                             self.solutionButtons[(i, j)], i, j)
-                        self.solutionButtons[(i, j)].setStyleSheet("""
+                        self.solutionButtons[(i, j)].setStyleSheet(
+                                """
                                 background-color: rgb(210, 210, 210);
                                 font-size: 16px;
                                 """
